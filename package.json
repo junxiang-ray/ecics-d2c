@@ -25,6 +25,7 @@
     "antd": "^5.24.5",
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
+    "ecics-portal-website": "file:",
     "next": "13.5.11",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",

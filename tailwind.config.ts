@@ -11,6 +11,9 @@ const config: Config = {
       fontFamily: {
         primary: ['Inter', 'sans-serif'],
       },
+      colors: {
+        "brand-blue": "#00ADEF"
+      }
     },
     screens: {
       sm: "640px",
