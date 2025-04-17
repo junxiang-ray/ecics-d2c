@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Ref } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from 'next/navigation';
 import { Button } from "antd";
 import { ButtonProps } from "antd/lib/button/button";
 import "./index.scss";
@@ -12,12 +12,12 @@ type Props = { link?: string; innerRef?: Ref<HTMLButtonElement | HTMLAnchorEleme
     React.RefAttributes<HTMLButtonElement | HTMLAnchorElement>;
 
 const MButton = ({ className, link, onClick, ...props }: Props) => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const defaultClass = "m-btn py-8 justify-center opacity-70-hover border-radius-xxl";
     if (!className) className = defaultClass;
     else className += " " + defaultClass;
     if (!onClick && link) {
-        onClick = () => navigate(link);
+        onClick = () => router.push(link);
     }
     switch (props.type) {
         case "default":
