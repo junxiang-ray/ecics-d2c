@@ -22,10 +22,9 @@ export default function BusinessPartnerBar({
                 <div className="text-base">{businessName}</div>
                 <div className="text-sm font-semibold">{companyName}</div>
             </div>
-            <Button color="primary" variant="outlined" onClick={onSaveClick}>
+            <Button color="primary" variant="outlined" onClick={onSaveClick} style={{ borderRadius: 0 }}>
                 Save
             </Button>
         </div>
     );
 }
-
