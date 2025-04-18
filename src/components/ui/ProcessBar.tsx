@@ -1,20 +1,21 @@
 import { Steps } from "antd";
 import type { StepsProps } from "antd";
+import { StepProcessBar } from "@/enums/processBarEnums";
 
 interface ProcessBarProps {
-    currentStep: number;
+    currentStep: StepProcessBar;
 }
 
-const stepTitles = [
-    "Policy Details",
-    "Select Plan",
-    "Select Add On",
-    "Complete Purchase",
+const stepsData = [
+    { step: StepProcessBar.POLICY_DETAILS, title: "Policy Details" },
+    { step: StepProcessBar.SELECT_PLAN, title: "Select Plan" },
+    { step: StepProcessBar.SELECT_ADD_ON, title: "Select Add On" },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: "Complete Purchase" },
 ];
 
 export default function ProcessBar({currentStep}: ProcessBarProps) {
-    const steps: StepsProps["items"] = stepTitles.map((title, index) => {
-        const isWaiting = index > currentStep;
+    const steps: StepsProps["items"] = stepsData.map(({ title, step }) => {
+        const isWaiting = step > currentStep;
 
         return {
             title: (
