@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Modal, Radio, Space, Drawer, Typography, Flex } from "antd";
-import { PrimaryButton } from "./button";
-import { Grid } from "antd";
+"use client";
 
-const { useBreakpoint } = Grid;
+import React, { useState } from "react";
+import { Modal, Radio, Space, Drawer, Typography } from "antd";
+import { PrimaryButton } from "./button";
+import { useDeviceDetection } from "@/providers/useDeviceDetection";
 
 export interface VehicleSelection {
   regNo: string;
@@ -17,28 +17,15 @@ interface VehicleSelectionModalProps {
   onSubmit: (selected: VehicleSelection | null) => void;
 }
 
-const titleFontStyle: React.CSSProperties = {
-  fontFamily: "'Montserrat', Arial, sans-serif",
-  fontWeight: 700,
-  fontSize: "1rem",
-  lineHeight: "100%",
-};
+const titleFontClass = "font-bold text-base leading-none break-words";
+const commonFontClass = "mt-3 font-normal text-base leading-none break-words";
 
-const commonFontStyle: React.CSSProperties = {
-  fontFamily: "'Open Sans', Arial, sans-serif",
-  margin: 0,
-  fontWeight: 400,
-  fontSize: "0.9375rem",
-  lineHeight: "100%",
-};
-
-export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
+export const VehicleSelectionModal = ({
   vehicles,
   visible,
   onSubmit,
-}) => {
-  const screens = useBreakpoint(); // Gives you screen info like xs, sm, md, etc.
-  const isMobile = !screens.md;
+}: VehicleSelectionModalProps) => {
+  const { isMobile } = useDeviceDetection();
   const [selected, setSelected] = useState<string | null>(null);
 
   const onClick = () => {
@@ -52,40 +39,25 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
       <Radio.Group
         onChange={(e) => setSelected(e.target.value)}
         value={selected}
-        style={{ width: "100%", marginBottom: "1rem" }}
+        className="w-full"
       >
-        <Space direction="vertical" align="baseline" style={{ width: "100%" }}>
+        <Space direction="vertical" className="my-3">
           {vehicles.map((vehicle, index) => (
-            <Space key={index} direction="horizontal" align="baseline">
+            <Space
+              key={index}
+              direction="horizontal"
+              align="baseline"
+              className="w-full -my-3"
+            >
               <Radio key={index} value={vehicle.regNo}>
-                <Flex>
-                  <Typography.Paragraph
-                    style={{
-                      ...commonFontStyle,
-                      whiteSpace: "nowrap",
-                      width: "4.5rem",
-                    }}
-                  >
-                    {vehicle.regNo}
-                  </Typography.Paragraph>
-                </Flex>
+                <Typography.Paragraph className={commonFontClass + " w-20"}>
+                  {vehicle.regNo}
+                </Typography.Paragraph>
               </Radio>
-              <Typography.Paragraph
-                style={{
-                  ...commonFontStyle,
-                  padding: "0 0.5rem",
-                  fontWeight: 900,
-                }}
-              >
+              <Typography.Paragraph className={commonFontClass}>
                 ●
               </Typography.Paragraph>
-              <Typography.Paragraph
-                style={{
-                  ...commonFontStyle,
-                  wordBreak: "break-word",
-                  flex: 1,
-                }}
-              >
+              <Typography.Paragraph className={commonFontClass}>
                 {vehicle.vehMake} {vehicle.vehModel}
               </Typography.Paragraph>
             </Space>
@@ -110,16 +82,9 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
           open={visible}
           closable={false}
           height="auto"
-          style={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+          className="rounded-t-xl"
         >
-          <Typography.Title
-            level={5}
-            style={{
-              ...titleFontStyle,
-              marginTop: "0px",
-              marginBottom: "1rem",
-            }}
-          >
+          <Typography.Title level={5} className={titleFontClass}>
             Select the vehicle you want to insure now
           </Typography.Title>
           {content}
