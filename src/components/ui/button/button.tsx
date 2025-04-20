@@ -6,7 +6,6 @@ interface ButtonProps {
   disabled?: boolean;
   onClick?: () => void;
   className?: string;
-  style?: React.CSSProperties;
 }
 
 export const PrimaryButton = ({
@@ -15,7 +14,6 @@ export const PrimaryButton = ({
   disabled,
   onClick,
   className,
-  style,
 }: ButtonProps) => {
   const defaultClass = "w-full px-[18px] py-0 text-[16px] font-semibold";
   if (!className) className = defaultClass;
@@ -25,10 +23,7 @@ export const PrimaryButton = ({
       htmlType={htmlType}
       onClick={onClick}
       disabled={disabled}
-      className={className}
-      style={{
-        ...style,
-      }}
+      className={`${className} ${disabled ? '' : 'bg-brand-blue text-white'}`}
     >
       {label}
     </Button>

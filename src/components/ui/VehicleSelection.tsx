@@ -17,7 +17,6 @@ interface VehicleSelectionModalProps {
   onSubmit: (selected: VehicleSelection | null) => void;
 }
 
-const titleFontClass = "font-bold text-base leading-none break-words";
 const commonFontClass = "mt-3 font-normal text-base leading-none break-words";
 
 export const VehicleSelectionModal = ({
@@ -36,6 +35,9 @@ export const VehicleSelectionModal = ({
 
   const content = (
     <>
+      <div className="mb-3 font-bold text-base leading-none break-words">
+        Select the vehicle you want to insure now
+      </div>
       <Radio.Group
         onChange={(e) => setSelected(e.target.value)}
         value={selected}
@@ -83,15 +85,11 @@ export const VehicleSelectionModal = ({
           closable={false}
           height="auto"
           className="rounded-t-xl"
-        >
-          <Typography.Title level={5} className={titleFontClass}>
-            Select the vehicle you want to insure now
-          </Typography.Title>
+        >          
           {content}
         </Drawer>
       ) : (
         <Modal
-          title="Select the vehicle you want to insure now"
           open={visible}
           onOk={onClick}
           closable={false}
