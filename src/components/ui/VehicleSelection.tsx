@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Modal, Radio, Space, Drawer, Typography } from "antd";
-import { PrimaryButton } from "./button";
+import { PrimaryButton } from "./button/button";
 import { useDeviceDetection } from "@/providers/useDeviceDetection";
 
 export interface VehicleSelection {
