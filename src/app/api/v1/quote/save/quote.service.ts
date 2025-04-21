@@ -143,5 +143,4 @@ export async function saveQuote(data: saveQuoteDTO) {
     message: "Quote created successfully.",
     data: newQuote,
   };
-
 }

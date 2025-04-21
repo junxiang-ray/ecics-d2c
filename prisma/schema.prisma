@@ -119,15 +119,15 @@ model PersonalInfo {
   phone              String
   email              String
   name               String
-  gender             Gender
+  gender             String
   nric               String
-  maritalStatus      MaritalStatus
-  dateOfBirth        DateTime      @map("date_of_birth") @db.Date
+  maritalStatus      String
+  dateOfBirth        String        @map("date_of_birth")
   address            String
   vehicleMake        String        @map("vehicle_make")
   vehicleModel       String        @map("vehicle_model")
   yearOfRegistration String        @map("year_of_registration")
-  chassisNumber      String        @map("chassis_number")
+  vehicles           Json          
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @default(now()) @updatedAt
   quotes             Quote[]
