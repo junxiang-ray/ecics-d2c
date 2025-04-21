@@ -18,6 +18,7 @@
     "@tanstack/react-query-devtools": "^5.71.5",
     "antd": "^5.24.5",
     "axios": "^1.8.4",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "next": "13.5.11",
     "node-cron": "^3.0.3",

@@ -11,6 +11,13 @@ const config: Config = {
       fontFamily: {
         primary: ['Inter', 'sans-serif'],
       },
+      colors: {
+        primaryBlue: '#002EFF',
+        secondaryBlue: '#007AFF',
+      },
+      animation: {
+        'slide-up': 'slide-up 0.3s ease-out',
+      },
     },
     screens: {
       sm: "640px",
