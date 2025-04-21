@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { Modal, Radio, Space, Drawer, Typography } from "antd";
-import { PrimaryButton } from "./button/button";
-import { useDeviceDetection } from "@/providers/useDeviceDetection";
+import React, { useState } from 'react';
+import { Modal, Radio, Space, Drawer, Typography } from 'antd';
+import { useDeviceDetection } from '@/providers/useDeviceDetection';
+import { on } from 'events';
+import { PrimaryButton } from './ui/buttons';
 
 export interface VehicleSelection {
   regNo: string;
@@ -17,7 +18,7 @@ interface VehicleSelectionModalProps {
   onSubmit: (selected: VehicleSelection | null) => void;
 }
 
-const commonFontClass = "mt-3 font-normal text-base leading-none break-words";
+const commonFontClass = 'mt-3 font-normal text-base leading-none break-words';
 
 export const VehicleSelectionModal = ({
   vehicles,
@@ -35,24 +36,24 @@ export const VehicleSelectionModal = ({
 
   const content = (
     <>
-      <div className="mb-3 font-bold text-base leading-none break-words">
+      <div className='mb-3 break-words text-base font-bold leading-none'>
         Select the vehicle you want to insure now
       </div>
       <Radio.Group
         onChange={(e) => setSelected(e.target.value)}
         value={selected}
-        className="w-full"
+        className='w-full'
       >
-        <Space direction="vertical" className="my-3">
+        <Space direction='vertical' className='my-3'>
           {vehicles.map((vehicle, index) => (
             <Space
               key={index}
-              direction="horizontal"
-              align="baseline"
-              className="w-full -my-3"
+              direction='horizontal'
+              align='baseline'
+              className='-my-3 w-full'
             >
               <Radio key={index} value={vehicle.regNo}>
-                <Typography.Paragraph className={commonFontClass + " w-20"}>
+                <Typography.Paragraph className={commonFontClass + ' w-20'}>
                   {vehicle.regNo}
                 </Typography.Paragraph>
               </Radio>
@@ -67,12 +68,9 @@ export const VehicleSelectionModal = ({
         </Space>
       </Radio.Group>
 
-      <PrimaryButton
-        htmlType="button"
-        label="Continue"
-        onClick={onClick}
-        disabled={!selected}
-      ></PrimaryButton>
+      <PrimaryButton onClick={onClick} disabled={!selected}>
+        Continue
+      </PrimaryButton>
     </>
   );
 
@@ -80,12 +78,12 @@ export const VehicleSelectionModal = ({
     <>
       {isMobile ? (
         <Drawer
-          placement="bottom"
+          placement='bottom'
           open={visible}
           closable={false}
-          height="auto"
-          className="rounded-t-xl"
-        >          
+          height='auto'
+          className='rounded-t-xl'
+        >
           {content}
         </Drawer>
       ) : (
