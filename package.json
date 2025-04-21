@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@ant-design/nextjs-registry": "^1.0.2",
     "@next/font": "^14.2.15",
     "@prisma/client": "^6.5.0",
     "@reduxjs/toolkit": "^2.6.1",
@@ -26,7 +27,7 @@
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
     "ecics-portal-website": "file:",
-    "next": "13.5.11",
+    "next": "14.2.28",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",
     "prisma": "^6.5.0",

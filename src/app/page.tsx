@@ -1,20 +1,26 @@
 'use client';
-import { Button } from 'antd';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import Image from 'next/image';
 
 export default function Home() {
-  const test = () => {
-    console.log('test');
-  };
   return (
     <main className='flex min-h-screen flex-col items-center justify-between p-24'>
       <div className='flex h-full w-full flex-col items-center justify-center'>
-        <Image src='/ecics-50-years.svg' alt='Logo' width={260} height={260} />
+        <Image src='/ecics-50-years.svg' alt='Logo' width={260} height={72} />
         <h1 className='text-3xl font-bold'>Welcome to the ECICS</h1>
-        <Button className='bg-slate-50 p-4 px-2'>Button</Button>
-        <Button className='bg-slate-50 p-4 px-2' onClick={test}>
-          <a href='/api/configs'>API Configs</a>
-        </Button>
+        <div className='flex flex-col gap-4'>
+          <div className='flex w-96 gap-4'>
+            <SecondaryButton className='w-full'>Secondary</SecondaryButton>
+            <PrimaryButton className='w-full'>Primary</PrimaryButton>
+          </div>
+          <SecondaryButton
+            size='large'
+            className='font-[400]'
+            icon={<span>+</span>}
+          >
+            Add more drive
+          </SecondaryButton>
+        </div>
       </div>
     </main>
   );
