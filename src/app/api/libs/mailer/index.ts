@@ -1,7 +1,6 @@
 // lib/mailer.ts
 import nodemailer from 'nodemailer';
 import logger from '../logger';
-import { log } from 'console';
 
 interface MailOptions {
   to: string;
