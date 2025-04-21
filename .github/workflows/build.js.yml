@@ -1,0 +1,29 @@
+name: Check build
+
+on:
+  push:
+    branches: 
+        - main
+        - development
+  pull_request: {}
+
+jobs:
+  build:
+    name: 🚀 Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Set up Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: 📥 Download deps
+        run: npm install --frozen-lockfile
+
+      - name: Build project
+        run: npm run build --if-present
