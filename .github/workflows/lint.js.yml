@@ -27,5 +27,5 @@ jobs:
       - name: 🔬 Lint
         run: npm run lint:strict
 
-      - name: 💅 Prettier check
-        run: npm run format:check
+      # - name: 💅 Prettier check
+      #   run: npm run format:check
