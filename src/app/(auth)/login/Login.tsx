@@ -14,24 +14,14 @@ const Login = () => {
     };
 
     return (
-        <div className="relative min-h-screen">
-            {/*<div*/}
-            {/*    className="absolute top-0 left-0 w-full h-[100vh] bg-cover bg-center -z-10"*/}
-            {/*    style={{*/}
-            {/*        backgroundImage: "url('/login_background.svg')",*/}
-            {/*        backgroundSize: 'cover',*/}
-            {/*        backgroundRepeat: "no-repeat",*/}
-            {/*    }}*/}
-            {/*/>*/}
-            <Image
-                // src="/login_background.svg"
-                src="/login_bg.svg"
-                alt="Logo"
-                width={100}
-                height={100}
-            />
 
-            <div className="relative z-10 p-6">
+        <div className="absolute top-0 left-0 w-full h-[100vh] bg-cover bg-center -z-10"
+             style={{
+                 backgroundImage: "url('/login_backg.svg')",
+                 backgroundSize: 'cover',
+                 backgroundRepeat: "no-repeat",
+             }}>
+            <div className="relative z-10 p-6 mt-[445px]">
                 <div className="text-primaryBlue justify-self-center">
                     {"Get an instant quote with Myinfo login"}
                 </div>
