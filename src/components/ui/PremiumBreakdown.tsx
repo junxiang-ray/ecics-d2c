@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Space, Drawer, Flex } from "antd";
-import { PrimaryButton } from "./button";
 import { useDeviceDetection } from "@/providers/useDeviceDetection";
+import { PrimaryButton } from "./button/button";
 
 export interface PremiumBreakdown {
   name: string;
