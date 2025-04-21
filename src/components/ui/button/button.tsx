@@ -15,7 +15,7 @@ export const PrimaryButton = ({
   onClick,
   className,
 }: ButtonProps) => {
-  const defaultClass = "w-full px-[18px] py-0 text-[16px] font-semibold";
+  const defaultClass = "w-full text-base font-semibold";
   if (!className) className = defaultClass;
   return (
     <Button
