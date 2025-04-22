@@ -11,9 +11,7 @@ const ConfirmInfoModal = ({ onSave }: { onSave: () => void }) => {
       </div>
 
       <div className='flex justify-center gap-4'>
-        <SecondaryButton className='rounded-md border border-blue-600 bg-white px-4 py-2 text-blue-600 transition hover:bg-blue-50'>
-          Exit without saving
-        </SecondaryButton>
+        <SecondaryButton>Exit without saving</SecondaryButton>
         <PrimaryButton
           onClick={onSave}
           className='rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700'

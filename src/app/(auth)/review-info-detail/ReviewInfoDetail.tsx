@@ -4,7 +4,7 @@ import { Input } from 'antd';
 import { useState } from 'react';
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import Image from 'next/image';
-import { PrimaryButton } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 const ReviewInfoDetail = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -94,12 +94,7 @@ const ReviewInfoDetail = () => {
         </div>
       </div>
       <div className='flex justify-center gap-4 border-t bg-white p-4'>
-        <PrimaryButton
-          className='rounded-md border border-blue-600 bg-white px-4 py-2 text-blue-600 transition hover:bg-blue-50'
-          onClick={handleCloseModal}
-        >
-          Cancel
-        </PrimaryButton>
+        <SecondaryButton onClick={handleCloseModal}>Cancel</SecondaryButton>
         <PrimaryButton
           onClick={handleContinue}
           className='rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700'
