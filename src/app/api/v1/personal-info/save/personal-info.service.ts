@@ -1,8 +1,8 @@
 import { prisma } from "@/app/api/libs/prisma";
 import { savePersonalInfoDTO } from "./personal-info.dto";
 import logger from "@/app/api/libs/logger";
-import { generatePersonalInfoEmail } from "@/app/api/libs/mailer/templates";
 import { sendMail } from "@/app/api/libs/mailer";
+import { generateQuoteEmail } from "@/app/api/libs/mailer/templates";
 
 export async function savePersonalInfo(data: savePersonalInfoDTO) {
   try {
@@ -19,13 +19,7 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
         data: null,
       };
     }
-    const newQuote = await prisma.quote.create({
-      data: {
-       key: data.key,
-      }
-     });
-     logger.info(`Creating a new quote info: ${JSON.stringify(newQuote)}`);
-
+    
     const newPersonalInfo = await prisma.personalInfo.create({
       data: {
         email: data.email,
@@ -33,18 +27,26 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
         name: data.name,
         nric: data.nric,
         gender: data.gender,
-        maritalStatus: data.marital_status,
-        dateOfBirth: data.date_of_birth,
+        maritalStatus: data.maritalStatus,
+        dateOfBirth: data.dateOfBirth,
         address: data.address,
-        vehicleMake: data.vehicle_make,
-        vehicleModel: data.vehicle_model,
-        yearOfRegistration: data.year_of_registration,
+        vehicleMake: data.vehicleMake,
+        vehicleModel: data.vehicleModel,
+        yearOfRegistration: data.yearOfRegistration,
         vehicles: data.vehicles ?? [],
       },
     });
     logger.info(`Creating a new personal info: ${JSON.stringify(newPersonalInfo)}`);
+
+    const newQuote = await prisma.quote.create({
+      data: {
+        key: data.key,
+        personalInfoId: newPersonalInfo.id,
+      }
+     });
+     logger.info(`Creating a new quote info: ${JSON.stringify(newQuote)}`);
    
-    const retrieveQuoteHTML = generatePersonalInfoEmail({
+    const retrieveQuoteHTML = generateQuoteEmail({
       name: newPersonalInfo.name ?? "",
       quote_key: newQuote.key ?? "",
     });

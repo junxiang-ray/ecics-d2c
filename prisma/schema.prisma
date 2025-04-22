@@ -5,16 +5,16 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 enum Gender {
-  MALE
-  FEMALE
-  OTHER
+  Male
+  Female
+  Other
 }
 
 enum MaritalStatus {
-  SINGLE
-  MARRIED
-  DIVORCED
-  WIDOWED
+  Single
+  Married
+  Divorced
+  Widowed
 }
 
 generator client {
@@ -119,10 +119,10 @@ model PersonalInfo {
   phone              String
   email              String
   name               String
-  gender             String
+  gender             Gender
   nric               String
-  maritalStatus      String
-  dateOfBirth        String        @map("date_of_birth")
+  maritalStatus      MaritalStatus @map("marital_status")
+  dateOfBirth        DateTime       @map("date_of_birth") @db.Date
   address            String
   vehicleMake        String        @map("vehicle_make")
   vehicleModel       String        @map("vehicle_model")
