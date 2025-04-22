@@ -1,5 +1,6 @@
-import { Button } from 'antd';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
+import { SecondaryButton } from './ui/buttons';
+import { Button } from 'antd';
 
 interface BusinessPartnerBarProps {
   businessName?: string;
@@ -19,21 +20,23 @@ export default function BusinessPartnerBar({
       <Button
         type='text'
         shape='circle'
-        icon={<ArrowBackIcon />}
+        icon={<ArrowBackIcon size={16} className='mt-[7px]' />}
         onClick={onBackClick}
       />
       <div className='text-left'>
         <div className='text-base'>{businessName}</div>
-        <div className='text-sm font-semibold'>{companyName}</div>
+        <div className='max-w-[200px] truncate text-sm font-semibold md:max-w-none'>
+          {companyName}
+        </div>
       </div>
-      <Button
+      <SecondaryButton
         color='primary'
         variant='outlined'
         onClick={onSaveClick}
-        className='rounded-none'
+        className='link rounded-none'
       >
         Save
-      </Button>
+      </SecondaryButton>
     </div>
   );
 }

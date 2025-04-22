@@ -13,7 +13,12 @@ const config: Config = {
         primary: ['Inter', 'sans-serif'],
       },
       colors: {
+        primaryBlue: '#002EFF',
+        secondaryBlue: '#007AFF',
         'brand-blue': '#00ADEF',
+      },
+      animation: {
+        'slide-up': 'slide-up 0.3s ease-out',
       },
     },
     screens: {
