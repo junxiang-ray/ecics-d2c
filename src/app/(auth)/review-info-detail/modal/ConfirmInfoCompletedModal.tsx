@@ -1,5 +1,5 @@
-import MButton from '@/components/ui/button/MButton';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
+import { LinkButton } from '@/components/ui/buttons';
 
 const ConfirmInfoCompletedModal = () => {
   return (
@@ -15,7 +15,7 @@ const ConfirmInfoCompletedModal = () => {
       </div>
 
       <div className='flex justify-center gap-4 border-t bg-white p-4'>
-        <MButton type='link'>Go Back to Home</MButton>
+        <LinkButton type='link'>Go Back to Home</LinkButton>
       </div>
     </div>
   );

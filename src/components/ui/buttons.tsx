@@ -34,3 +34,19 @@ export const SecondaryButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
     );
   },
 );
+
+export const LinkButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
+  ({ className, children, ...rest }, ref) => {
+    return (
+      <Button
+        type='link'
+        size='large'
+        className={`${className} text-base font-semibold text-blue-400 underline hover:bg-transparent hover:underline`}
+        ref={ref}
+        {...rest}
+      >
+        {children}
+      </Button>
+    );
+  },
+);
