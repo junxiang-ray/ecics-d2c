@@ -97,7 +97,7 @@ const ReviewInfoDetail = () => {
         <SecondaryButton onClick={handleCloseModal}>Cancel</SecondaryButton>
         <PrimaryButton
           onClick={handleContinue}
-          className='rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700'
+          className='rounded-md px-4 py-2 text-white transition'
         >
           Continue
         </PrimaryButton>

@@ -14,7 +14,7 @@ const ConfirmInfoModal = ({ onSave }: { onSave: () => void }) => {
         <SecondaryButton>Exit without saving</SecondaryButton>
         <PrimaryButton
           onClick={onSave}
-          className='rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700'
+          className='rounded-md px-4 py-2 text-white transition'
         >
           Save my progress
         </PrimaryButton>
