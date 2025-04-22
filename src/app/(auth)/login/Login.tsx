@@ -60,9 +60,7 @@ const Login = () => {
         <div className='mt-6 rounded-lg border-2 border-secondaryBlue bg-white p-4'>
           <div className='text-lg font-bold'>Limited period offer</div>
           <div>
-            {
-              'Flash Sale: Special discount available for the next 50 customers!'
-            }
+            Flash Sale: Special discount available for the next 50 customers!'
           </div>
           <div className='mt-2 text-base font-bold'>
             15% discount on Car Insurance
