@@ -31,7 +31,7 @@ export const sendMail = async ({to, subject, html, bcc}: MailOptions) => {
       html: html,
     });
 
-    logger.info('Sending email save quote info successfully!');
+    logger.info('Sending email successfully!');
   } catch (error) {
     logger.error('Error sending email:', error);
   }

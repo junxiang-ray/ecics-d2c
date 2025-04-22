@@ -75,7 +75,7 @@ export async function saveQuote(data: saveQuoteDTO) {
             vehicleMake: true,
             vehicleModel: true,
             yearOfRegistration: true,
-            chassisNumber: true,
+            vehicles: true,
           },
         },
         countryNationality: {
@@ -115,9 +115,6 @@ export async function saveQuote(data: saveQuoteDTO) {
       isPaid: data.isPaid ?? false,
       expirationDate: data.expirationDate ? new Date(data.expirationDate) : undefined,
       key: data.key,
-      ipAddress: data.ipAddress,
-      country: data.country,
-      city: data.city,
       personalInfoId: data.personalInfoId,
       companyId: data.companyId,
       paymentResultId: data.paymentResultId,
@@ -129,8 +126,6 @@ export async function saveQuote(data: saveQuoteDTO) {
 
   const retrieveQuoteHTML = generateQuoteEmail({
     quote_key: newQuote.key ?? "",
-    quote_id: newQuote.quoteId ?? "",
-    quote_no: newQuote.quoteNo ?? "",
     name: newQuote.name ?? "",
   });
   sendMail({
@@ -143,5 +138,4 @@ export async function saveQuote(data: saveQuoteDTO) {
     message: "Quote created successfully.",
     data: newQuote,
   };
-
 }

@@ -1,5 +1,6 @@
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
-import MButton from '@/components/ui/button/MButton';
+import { SecondaryButton } from './ui/buttons';
+import { Button } from 'antd';
 
 interface BusinessPartnerBarProps {
   businessName?: string;
@@ -16,10 +17,10 @@ export default function BusinessPartnerBar({
 }: BusinessPartnerBarProps) {
   return (
     <div className='fixed left-0 top-0 z-50 flex w-full flex-row items-center justify-between bg-white px-8 py-3 shadow-md'>
-      <MButton
+      <Button
         type='text'
         shape='circle'
-        icon={<ArrowBackIcon />}
+        icon={<ArrowBackIcon size={16} className='mt-[7px]' />}
         onClick={onBackClick}
       />
       <div className='text-left'>
@@ -28,14 +29,14 @@ export default function BusinessPartnerBar({
           {companyName}
         </div>
       </div>
-      <MButton
+      <SecondaryButton
         color='primary'
         variant='outlined'
         onClick={onSaveClick}
         className='link rounded-none'
       >
         Save
-      </MButton>
+      </SecondaryButton>
     </div>
   );
 }

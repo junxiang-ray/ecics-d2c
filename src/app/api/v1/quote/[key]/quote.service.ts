@@ -42,7 +42,7 @@ export async function getQuoteByKey(key: string) {
             vehicleMake: true,
             vehicleModel: true,
             yearOfRegistration: true,
-            chassisNumber: true,
+            vehicles: true,
           },
         },
         countryNationality: {
