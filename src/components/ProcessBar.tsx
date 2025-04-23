@@ -43,14 +43,12 @@ export default function ProcessBar({ currentStep }: ProcessBarProps) {
   });
 
   return (
-    <div className='w-full overflow-auto'>
-      <Steps
-        current={currentStep}
-        labelPlacement='vertical'
-        direction='horizontal'
-        responsive={false}
-        items={steps}
-      />
-    </div>
+    <Steps
+      current={currentStep}
+      labelPlacement='vertical'
+      direction='horizontal'
+      responsive={false}
+      items={steps}
+    />
   );
 }
