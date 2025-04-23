@@ -42,7 +42,7 @@ const SelectPlan = () => {
             </div>
           </div>
           <div className='relative mt-6'>
-            <div className='relative z-0 overflow-hidden rounded-[12px] bg-[#F4FBFD]'>
+            <div className='relative z-0 overflow-hidden rounded-[12px] bg-review-blue'>
               <div className='pointer-events-none absolute inset-0 z-0 rounded-[12px] border border-secondaryBlue' />
               <div className='absolute left-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-plan-blue' />
               <div className='absolute right-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-plan-blue' />
@@ -97,7 +97,7 @@ const SelectPlan = () => {
             </div>
           </div>
           <div className='relative mt-6'>
-            <div className='relative z-0 overflow-hidden rounded-[12px] bg-[#F4FBFD]'>
+            <div className='relative z-0 overflow-hidden rounded-[12px] bg-review-blue'>
               <div className='pointer-events-none absolute inset-0 z-0 rounded-[12px] border border-secondaryBlue' />
               <div className='absolute left-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-white' />
               <div className='absolute right-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-white' />
