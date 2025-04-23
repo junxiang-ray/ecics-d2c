@@ -85,13 +85,13 @@ const SelectPlan = () => {
               Up to $50,000 complimentary Personal Accident coverage
             </div>
           </div>
-          <div className='mt-4 flex items-start'>
-            <CrossMarkIcon size={12} className='mt-[2px]' />
-            <div className='ml-[4px] text-sm'>Complete Vehicle Coverage</div>
+          <div className='mt-4 flex items-start opacity-30'>
+            <CrossMarkIcon size={16} className='mt-[6px]' />
+            <div className='text-sm'>Complete Vehicle Coverage</div>
           </div>
-          <div className='mt-4 flex items-start'>
-            <CrossMarkIcon size={12} className='mt-[2px]' />
-            <div className='ml-[4px] text-sm'>
+          <div className='mt-4 flex items-start opacity-30'>
+            <CrossMarkIcon size={16} className='mt-[6px]' />
+            <div className='text-sm'>
               Policy Excess: $750 for non-EV & BYD models & $ 1,500 for Tesla
               models
             </div>
