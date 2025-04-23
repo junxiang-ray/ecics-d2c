@@ -1,23 +1,38 @@
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
-import { SecondaryButton } from '@/components/ui/buttons';
-import { Button } from 'antd';
+'use client';
+import ProcessBar from '@/components/ProcessBar';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
+import { useState } from 'react';
+import { StepProcessBar } from '@/enums/processBarEnums';
+import { useRouter } from 'next/navigation';
+
+const mapStepToPath = {
+  [StepProcessBar.POLICY_DETAILS]: 'basic-detail',
+  [StepProcessBar.SELECT_PLAN]: 'plan',
+  [StepProcessBar.SELECT_ADD_ON]: 'add-on',
+  [StepProcessBar.COMPLETE_PURCHASE]: 'complete-purchase',
+};
 
 function InsuranceLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(StepProcessBar.POLICY_DETAILS);
+  const handleChangeStep = (step: StepProcessBar) => {
+    if (step === currentStep) return;
+    const path = mapStepToPath[step];
+    setCurrentStep(step);
+    router.push(`/insurance/${path}`);
+  };
   return (
     <div>
       <BusinessPartnerBar
         businessName='Business Partner Name'
         companyName='Leo Management Consultancy Pte Ltd'
       />
-      <ProgressBar />
-      {children}
+      <div className='px-6 pt-6'>
+        <ProcessBar currentStep={currentStep} onChange={handleChangeStep} />
+      </div>
+      <div className='px-4'>{children}</div>
     </div>
   );
 }
 
 export default InsuranceLayout;
-
-function ProgressBar() {
-  return <div className=''></div>;
-}
