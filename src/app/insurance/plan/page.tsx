@@ -1,5 +1,9 @@
-function PlanPage() {
-  return <div>Plan</div>;
-}
+import SelectPlan from '@/app/insurance/plan/SelectPlan';
 
-export default PlanPage;
+export default function ReviewInfoDetailPage() {
+  return (
+    <div>
+      <SelectPlan />
+    </div>
+  );
+}

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "mgdb": "npm install && npx prisma db push",
+    "mgdb": "npm install && npx prisma db push --accept-data-loss",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
