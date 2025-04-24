@@ -1,7 +1,8 @@
 'use client';
 
-import MainDriverDetailsIconSvg from '@/assets/icons/main_driver_details.svg';
 import SvgIcon, { SvgIconProps } from '@/components/SvgIcon';
+
+import MainDriverDetailsIconSvg from '@/assets/icons/review/main-driver-details.svg';
 
 const MainDriverDetailsIcon = (props: Omit<SvgIconProps, 'svg'>) => {
   return <SvgIcon svg={MainDriverDetailsIconSvg} {...props} />;

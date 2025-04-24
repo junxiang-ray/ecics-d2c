@@ -1,6 +1,6 @@
 'use client';
 
-import AdditionalDriverDetailsIconSvg from '@/assets/icons/additional_driver_details.svg';
+import AdditionalDriverDetailsIconSvg from '@/assets/icons/review/additional-driver-details.svg';
 import SvgIcon, { SvgIconProps } from '@/components/SvgIcon';
 
 const AdditionalDriverDetailsIcon = (props: Omit<SvgIconProps, 'svg'>) => {

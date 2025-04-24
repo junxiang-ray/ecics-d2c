@@ -1,6 +1,6 @@
 'use client';
 
-import ArrowUpIconSvg from '@/assets/icons/arrow_up.svg';
+import ArrowUpIconSvg from '@/assets/icons/review/arrow-up.svg';
 import SvgIcon, { SvgIconProps } from '@/components/SvgIcon';
 
 const ArrowUpIcon = (props: Omit<SvgIconProps, 'svg'>) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import BasicDetailsIconSvg from '@/assets/icons/basic_details.svg';
+import BasicDetailsIconSvg from '@/assets/icons/review/basic-details.svg';
 import SvgIcon, { SvgIconProps } from '@/components/SvgIcon';
 
 const BasicDetailsIcon = (props: Omit<SvgIconProps, 'svg'>) => {

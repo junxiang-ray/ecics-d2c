@@ -1,19 +1,20 @@
 'use client';
 import clsx from 'clsx';
-import { stat } from 'fs';
-import Image from 'next/image';
 import { useState } from 'react';
+
+import ArrowDownCircleIcon from '@/components/icons/ArrowDownCircle';
+import FinishIcon from '@/components/icons/FinishIcon';
 
 export type Status = 'new' | 'completed';
 export default function AddOnRow({
   title,
-  iconLink,
+  icon,
   status,
   isRecommended = false,
   children,
 }: {
   title: string;
-  iconLink: string;
+  icon: React.ReactNode;
   status: Status;
   isRecommended?: boolean;
   children?: React.ReactNode;
@@ -38,32 +39,22 @@ export default function AddOnRow({
       <div className='flex w-full items-center justify-between gap-4'>
         {status === 'new' ? (
           <div className='flex items-center gap-4'>
-            <Image src={iconLink} alt='health' width={20} height={20} />
+            <div className='h-5 w-5'>{icon}</div>
             <p className='font-bold'>{title}</p>
           </div>
         ) : (
           <div className='flex items-center gap-4 rounded-full'>
             <div className='rounded-full bg-white p-1'>
-              <Image
-                src='/icons/add-on/finish.svg'
-                alt='health'
-                width={16}
-                height={16}
-                className='rounded-full bg-white'
-              />
+              <FinishIcon className='rounded-full bg-white' />
             </div>
             <p className='font-bold'>{title}</p>
           </div>
         )}
-        <Image
-          src='/icons/add-on/arrow-down.svg'
-          alt='health'
-          className={clsx({
+        <ArrowDownCircleIcon
+          className={clsx('text-brand-blue', {
             'rotate-180': isOpen,
             'rounded-full bg-white': status === 'completed',
           })}
-          width={24}
-          height={24}
           onClick={() => setIsOpen(!isOpen)}
         />
       </div>
