@@ -25,8 +25,8 @@ export default function BusinessPartnerBar({
           className='border-none bg-gray-200'
         />
         <div className='text-xs'>
-          <p>Business Partner Name</p>
-          <p className='font-bold'>Leo Management Consultancy Pte Ltd</p>
+          <p>{businessName}</p>
+          <p className='font-bold'>{companyName}</p>
         </div>
       </div>
       <SecondaryButton size='small' className='rounded-sm px-2'>
