@@ -1,4 +1,5 @@
 import { Button } from 'antd';
+
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
 
@@ -20,9 +21,9 @@ export default function BusinessPartnerBar({
       <div className='flex gap-4'>
         <Button
           color='cyan'
-          icon={<ArrowBackIcon />}
+          icon={<ArrowBackIcon size={16} />}
           shape='circle'
-          className='border-none bg-gray-200'
+          className='border-none bg-gray-200 pt-[6px]'
         />
         <div className='text-xs'>
           <p>{businessName}</p>

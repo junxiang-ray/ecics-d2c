@@ -1,20 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import AddOnRow, { Status } from './AddOnRow';
 import { Select } from 'antd';
+import { useState } from 'react';
+
 import { SecondaryButton } from '@/components/ui/buttons';
+
+import AddOnRow, { Status } from './AddOnRow';
+
 export interface AddOnRowData {
   title: string;
-  iconLink: string;
+  icon: React.ReactNode;
 }
+
 export default function AddOnRowDetail({
   title,
-  iconLink,
+  icon,
   isRecommended = false,
 }: {
   title: string;
-  iconLink: string;
+  icon: React.ReactNode;
   isRecommended?: boolean;
 }) {
   const [status, setStatus] = useState<Status>('new');
@@ -22,7 +26,7 @@ export default function AddOnRowDetail({
     <AddOnRow
       isRecommended={isRecommended}
       title={title}
-      iconLink={iconLink}
+      icon={icon}
       status={status}
     >
       {status === 'new' && (

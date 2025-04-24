@@ -6,6 +6,11 @@
   font-weight: 500;
 }
 
+.new-line {
+  display: block;
+}
+
+/* Finished step */
 .ant-steps-item-finish .ant-steps-item-title,
 .ant-steps-item-process .ant-steps-item-title {
   white-space: normal;
@@ -14,6 +19,11 @@
 .ant-steps-item-finish .ant-steps-icon {
   color: white !important;
   margin-inline-start: 0px !important;
+  font-size: 16px;
+}
+
+.ant-steps-item-finish .ant-steps-item-tail::after {
+  background-color: #00adef !important;
 }
 
 .ant-steps-item-finish .ant-steps-item-icon {
@@ -29,4 +39,42 @@
 .ant-steps-item-process .ant-steps-item-icon {
   background-color: #00adef !important;
   border-color: #00adef !important;
+}
+
+.ant-steps-item-process .ant-steps-icon {
+  color: white !important;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.ant-steps-item-process .ant-steps-item-tail::after {
+  background-color: #d1d5db !important;
+}
+
+/* Wait step */
+.ant-steps-item-wait .ant-steps-item-tail::after {
+  background-color: #d1d5db !important;
+}
+
+.ant-steps-item-wait .ant-steps-item-title {
+  color: #696969 !important;
+}
+
+.custom-step-wait {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #9ca3af;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-step-wait::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background-color: #d9d9d9;
+  border-radius: 50%;
 }
