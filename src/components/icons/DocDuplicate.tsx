@@ -1,6 +1,6 @@
 'use client';
 
-import DocDuplicateIconSvg from '@/assets/icons/document_duplicate.svg';
+import DocDuplicateIconSvg from '@/assets/icons/document-duplicate.svg';
 import SvgIcon, { SvgIconProps } from '@/components/SvgIcon';
 
 const DocDuplicate = (props: Omit<SvgIconProps, 'svg'>) => {

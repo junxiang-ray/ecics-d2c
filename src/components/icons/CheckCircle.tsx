@@ -1,6 +1,6 @@
 'use client';
 
-import CheckCircleIconSvg from '@/assets/icons/check_circle.svg';
+import CheckCircleIconSvg from '@/assets/icons/check-circle.svg';
 import SvgIcon, { SvgIconProps } from '@/components/SvgIcon';
 
 const CheckCircle = (props: Omit<SvgIconProps, 'svg'>) => {
