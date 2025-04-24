@@ -6,12 +6,14 @@ import {
 } from '@ant-design/icons';
 import { SecondaryButton } from '@/components/ui/buttons';
 import InfoCard from '../InfoCard/InfoCard';
+import CheckCircle from '@/components/icons/CheckCircle';
+import DocDuplicate from '@/components/icons/DocDuplicate';
 
 export default function Summary() {
   const _renderCongratulation = () => {
     return (
       <div className='flex flex-row gap-5'>
-        <Image src='/circle.png' alt='circle' width={80} height={50} />
+        <CheckCircle size={48} />
         <p className='text-base font-semibold leading-5 text-[#171A1F]'>
           Congratulations! Your policy has been successfully purchased 🎉
         </p>
@@ -59,14 +61,12 @@ export default function Summary() {
 
   const _renderDoc = (title: string) => {
     return (
-      <div className='flex min-h-[126px] flex-row justify-between'>
+      <div className='flex min-h-[126px]'>
         <div className='flex flex-col justify-between border border-[#00ADEF] px-2 py-2'>
-          <Image
-            src='/document-duplicate.png'
-            alt='document-duplicate'
-            width={24}
-            height={4240}
-          />
+          <div>
+            {' '}
+            <DocDuplicate size={24} />
+          </div>
           <p className='text-[11px] font-semibold'>{title}</p>
           <div className='flex flex-row gap-2 text-[10px] font-semibold text-[#00ADEF]'>
             Read More <ArrowRightOutlined />
