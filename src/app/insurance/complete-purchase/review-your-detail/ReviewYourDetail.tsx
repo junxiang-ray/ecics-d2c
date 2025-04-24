@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
-import VehicleDetailsIcon from '@/components/icons/VehicleDetailsIcon';
+
+import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
+import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
 import ArrowUpIcon from '@/components/icons/ArrowUpIcon';
-import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
-import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
-import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
+import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
 import MainDriverDetailsIcon from '@/components/icons/MainDriverDetailsIcon';
+import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
+import VehicleDetailsIcon from '@/components/icons/VehicleDetailsIcon';
 
 const sections = [
   {
