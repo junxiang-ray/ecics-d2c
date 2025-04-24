@@ -13,29 +13,29 @@ const SelectPlan = () => {
           </div>
           <div className='text-lg font-bold'>Comprehensive Plan</div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Third-Party liability coverage relating to vehicle charging
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Free NCD Protector (from 10%) & Waiver of Excess
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Up to $50,000 complimentary Personal Accident coverage
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>Complete Vehicle Coverage</div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Policy Excess: $750 for non-EV & BYD models & $ 1,500 for Tesla
               models
@@ -68,19 +68,19 @@ const SelectPlan = () => {
         <div className='relative rounded-[4px] border border-secondaryBlue bg-white p-6'>
           <div className='text-lg font-bold'>Third Party & Theft</div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Third-Party liability coverage relating to vehicle charging
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Free NCD Protector (from 10%) & Waiver of Excess
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Up to $50,000 complimentary Personal Accident coverage
             </div>

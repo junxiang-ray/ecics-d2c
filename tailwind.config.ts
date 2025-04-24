@@ -16,7 +16,7 @@ const config: Config = {
         primaryBlue: '#002EFF',
         secondaryBlue: '#007AFF',
         'brand-blue': '#00ADEF',
-        'plan-blue': 'rgba(12, 140, 233, 0.3)',
+        'plan-blue': '#b6dbfd',
         'review-blue': '#F4FBFD',
       },
       animation: {
