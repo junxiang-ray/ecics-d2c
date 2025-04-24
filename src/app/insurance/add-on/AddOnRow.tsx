@@ -1,5 +1,6 @@
 'use client';
 import clsx from 'clsx';
+import { stat } from 'fs';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -21,7 +22,7 @@ export default function AddOnRow({
   return (
     <div
       className={clsx(
-        'relative rounded-xl border-[1px] bg-gray-100 px-4 py-4 shadow-md',
+        'relative rounded-xl border-[1px] bg-gray-100 p-4 shadow-md',
         {
           'pt-6': isRecommended,
           'bg-sky-200': status === 'completed',
@@ -34,7 +35,7 @@ export default function AddOnRow({
           <span className='text-white'>Recommended</span>
         </div>
       )}
-      <div className='flex justify-between'>
+      <div className='flex w-full items-center justify-between gap-4'>
         {status === 'new' ? (
           <div className='flex items-center gap-4'>
             <Image src={iconLink} alt='health' width={20} height={20} />
@@ -54,32 +55,19 @@ export default function AddOnRow({
             <p className='font-bold'>{title}</p>
           </div>
         )}
-
-        {isOpen ? (
-          <Image
-            src='/icons/add-on/arrow-up.svg'
-            alt='health'
-            className={clsx({
-              'rounded-full bg-white': status === 'completed',
-            })}
-            width={24}
-            height={24}
-            onClick={() => setIsOpen(false)}
-          />
-        ) : (
-          <Image
-            src='/icons/add-on/arrow-down.svg'
-            alt='health'
-            className={clsx({
-              'rounded-full bg-white': status === 'completed',
-            })}
-            width={24}
-            height={24}
-            onClick={() => setIsOpen(true)}
-          />
-        )}
+        <Image
+          src='/icons/add-on/arrow-down.svg'
+          alt='health'
+          className={clsx({
+            'rotate-180': isOpen,
+            'rounded-full bg-white': status === 'completed',
+          })}
+          width={24}
+          height={24}
+          onClick={() => setIsOpen(!isOpen)}
+        />
       </div>
-      <div className='pt-2'>{isOpen && <>{children}</>}</div>
+      {isOpen && <div className='pt-2'>{children}</div>}
     </div>
   );
 }

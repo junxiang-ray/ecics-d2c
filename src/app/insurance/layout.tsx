@@ -23,12 +23,14 @@ function InsuranceLayout({ children }: { children: React.ReactNode }) {
   };
   return (
     <div>
-      <BusinessPartnerBar
-        businessName='Business Partner Name'
-        companyName='Leo Management Consultancy Pte Ltd'
-      />
-      <div className='px-6 pt-6'>
-        <ProcessBar currentStep={currentStep} onChange={handleChangeStep} />
+      <div className='sticky top-0 z-10 w-screen bg-white'>
+        <BusinessPartnerBar
+          businessName='Business Partner Name'
+          companyName='Leo Management Consultancy Pte Ltd'
+        />
+        <div className='p-4'>
+          <ProcessBar currentStep={currentStep} onChange={handleChangeStep} />
+        </div>
       </div>
       <div className='px-4'>{children}</div>
     </div>

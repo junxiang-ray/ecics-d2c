@@ -12,7 +12,7 @@ const stepsData = [
   { step: StepProcessBar.POLICY_DETAILS, title: 'Policy Details' },
   { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
   { step: StepProcessBar.SELECT_ADD_ON, title: 'Select Add On' },
-  // { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Complete Purchase' },
+  { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Complete Purchase' },
 ];
 
 const getStepStatus = (step: StepProcessBar, currentStep: StepProcessBar) => {
@@ -53,7 +53,6 @@ export default function ProcessBar({ currentStep, onChange }: ProcessBarProps) {
       labelPlacement='vertical'
       direction='horizontal'
       items={steps}
-      responsive={false}
       size='small'
     />
   );

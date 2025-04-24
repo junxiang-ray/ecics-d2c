@@ -1,4 +1,5 @@
 'use client';
+import ProcessBar from '@/components/ProcessBar';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import Image from 'next/image';
 
@@ -21,6 +22,9 @@ export default function Home() {
             Add more drive
           </SecondaryButton>
         </div>
+      </div>
+      <div className='w-screen'>
+        <ProcessBar currentStep={1} />
       </div>
     </main>
   );
