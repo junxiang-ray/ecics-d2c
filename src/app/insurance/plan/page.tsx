@@ -1,4 +1,4 @@
-import SelectPlan from '@/app/(steps)/select-plan/SelectPlan';
+import SelectPlan from '@/app/insurance/plan/SelectPlan';
 
 export default function ReviewInfoDetailPage() {
   return (

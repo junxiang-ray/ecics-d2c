@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Modal, Radio, Space, Drawer, Typography } from 'antd';
-import { useDeviceDetection } from '@/providers/useDeviceDetection';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { on } from 'events';
 import { PrimaryButton } from './ui/buttons';
 

@@ -3,11 +3,12 @@
 @tailwind utilities;
 
 @import 'components/steps';
+@import 'components/forms';
 @import 'components/checkbox';
 @import 'components/_general.scss';
 
 :root {
-  // #region Primary Color
+  //
   --tw-color-primary-50: 240 249 255;
   --tw-color-primary-100: 224 242 254;
   --tw-color-primary-200: 186 230 253;

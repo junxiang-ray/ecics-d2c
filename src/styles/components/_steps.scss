@@ -1,5 +1,5 @@
 .ant-steps-item-tail {
-  padding: 1px 16px !important;
+  // padding: 0 16px !important;
 }
 
 .ant-steps-item-title {
@@ -18,6 +18,7 @@
 
 .ant-steps-item-finish .ant-steps-icon {
   color: white !important;
+  margin-inline-start: 0px !important;
   font-size: 16px;
 }
 

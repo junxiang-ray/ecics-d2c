@@ -1,9 +1,11 @@
-import { Steps } from 'antd';
-import type { StepsProps } from 'antd';
+'use client';
 import { StepProcessBar } from '@/enums/processBarEnums';
+import type { StepsProps } from 'antd';
+import { Steps } from 'antd';
 
 interface ProcessBarProps {
   currentStep: StepProcessBar;
+  onChange?: (current: number) => void;
 }
 
 const stepsData = [
@@ -13,42 +15,45 @@ const stepsData = [
   { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Complete Purchase' },
 ];
 
-export default function ProcessBar({ currentStep }: ProcessBarProps) {
+const getStepStatus = (step: StepProcessBar, currentStep: StepProcessBar) => {
+  if (step < currentStep) return 'finish';
+  if (step === currentStep) return 'process';
+  return 'wait';
+};
+
+function splitText(text: string): [string, string] {
+  const words = text.split(' ');
+  if (words.length <= 1) {
+    return [text, ''];
+  }
+  const firstWord = words[0];
+  const remaining = words.slice(1).join(' ');
+  return [firstWord, remaining];
+}
+
+export default function ProcessBar({ currentStep, onChange }: ProcessBarProps) {
   const steps: StepsProps['items'] = stepsData.map(({ title, step }) => {
-    const isWaiting = step > currentStep;
-
-    // Check if the title is "Select Add On"
-    const isSelectAddOn = title === 'Select Add On';
-
+    const stepStatus = getStepStatus(step, currentStep);
+    const [firstWord, remaining] = splitText(title);
     return {
       title: (
-        <div className='step-title'>
-          {isSelectAddOn ? (
-            <>
-              <span className='new-line'>Select</span>
-              <span className='new-line -mt-[7px]'>Add On</span>
-            </>
-          ) : (
-            title.split(' ').map((word, i) => (
-              <span key={i} className={i > 0 ? 'new-line leading-[1.1]' : ''}>
-                {word}
-                {i !== title.split(' ').length - 1 && ' '}
-              </span>
-            ))
-          )}
-        </div>
+        <p className='inline-block text-xs leading-4'>
+          <span className='block'>{firstWord}</span>
+          <span className='block'>{remaining}</span>
+        </p>
       ),
-      icon: isWaiting ? <div className='custom-step-wait' /> : undefined,
+      status: stepStatus,
+      // disabled: stepStatus === 'wait',
     };
   });
-
   return (
     <Steps
       current={currentStep}
+      onChange={onChange}
       labelPlacement='vertical'
       direction='horizontal'
-      responsive={false}
       items={steps}
+      size='small'
     />
   );
 }
