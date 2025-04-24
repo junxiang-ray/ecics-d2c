@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Space, Drawer, Flex } from 'antd';
-import { useDeviceDetection } from '@/providers/useDeviceDetection';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { PrimaryButton } from './ui/buttons';
 
 export interface PremiumBreakdown {
