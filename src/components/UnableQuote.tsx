@@ -1,8 +1,8 @@
-import { useDeviceDetection } from '@/providers/useDeviceDetection';
 import { Drawer, Modal } from 'antd';
 import React from 'react';
 import { PrimaryButton } from './ui/buttons';
 import { PhoneOutlined, MailOutlined } from '@ant-design/icons';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface UnableQuoteModalProps {
   visible: boolean;
