@@ -3,7 +3,7 @@ import ProcessBar from '@/components/ProcessBar';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
 import { useState } from 'react';
 import { StepProcessBar } from '@/enums/processBarEnums';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const mapStepToPath = {
   [StepProcessBar.POLICY_DETAILS]: 'basic-detail',
@@ -28,11 +28,11 @@ function InsuranceLayout({ children }: { children: React.ReactNode }) {
           businessName='Business Partner Name'
           companyName='Leo Management Consultancy Pte Ltd'
         />
-        <div className='p-4'>
+        <div className='p-4 pb-0'>
           <ProcessBar currentStep={currentStep} onChange={handleChangeStep} />
         </div>
       </div>
-      <div className='px-4'>{children}</div>
+      <div className=''>{children}</div>
     </div>
   );
 }

@@ -44,6 +44,10 @@ export default function ProcessBar({ currentStep, onChange }: ProcessBarProps) {
       ),
       status: stepStatus,
       // disabled: stepStatus === 'wait',
+      icon:
+        stepStatus === 'wait' ? (
+          <div className='custom-step-wait'></div>
+        ) : undefined,
     };
   });
   return (
@@ -52,8 +56,8 @@ export default function ProcessBar({ currentStep, onChange }: ProcessBarProps) {
       onChange={onChange}
       labelPlacement='vertical'
       direction='horizontal'
+      responsive={false}
       items={steps}
-      size='small'
     />
   );
 }

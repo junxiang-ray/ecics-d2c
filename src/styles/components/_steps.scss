@@ -1,13 +1,8 @@
-.ant-steps-item-tail {
-  // padding: 0 16px !important;
+.ant-steps.ant-steps-horizontal {
+  margin-left: -18px !important;
 }
-
 .ant-steps-item-title {
   font-weight: 500;
-}
-
-.new-line {
-  display: block;
 }
 
 /* Finished step */
@@ -58,6 +53,10 @@
 
 .ant-steps-item-wait .ant-steps-item-title {
   color: #696969 !important;
+}
+
+.ant-steps-item .ant-steps-item-container {
+  width: 80px !important;
 }
 
 .custom-step-wait {
