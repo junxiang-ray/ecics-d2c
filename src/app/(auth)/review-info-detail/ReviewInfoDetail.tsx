@@ -94,9 +94,9 @@ const ReviewInfoDetail = () => {
         </div>
       </div>
       <div className='flex justify-center gap-4 border-t bg-white p-4'>
-        <SecondaryButton onCancel={handleCloseModal}>Cancel</SecondaryButton>
+        <SecondaryButton onClick={handleCloseModal}>Cancel</SecondaryButton>
         <PrimaryButton
-          onCancel={handleContinue}
+          onClick={handleContinue}
           className='rounded-md px-4 py-2 text-white transition'
         >
           Continue

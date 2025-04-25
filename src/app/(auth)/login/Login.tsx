@@ -39,7 +39,7 @@ const Login = () => {
           <LinkButton
             type='link'
             className='pl-0'
-            onCancel={handleContinueWithoutMyinfo}
+            onClick={handleContinueWithoutMyinfo}
           >
             continue without Myinfo login
           </LinkButton>

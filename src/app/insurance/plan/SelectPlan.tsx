@@ -13,36 +13,36 @@ const SelectPlan = () => {
           </div>
           <div className='text-lg font-bold'>Comprehensive Plan</div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Third-Party liability coverage relating to vehicle charging
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Free NCD Protector (from 10%) & Waiver of Excess
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Up to $50,000 complimentary Personal Accident coverage
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>Complete Vehicle Coverage</div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Policy Excess: $750 for non-EV & BYD models & $ 1,500 for Tesla
               models
             </div>
           </div>
           <div className='relative mt-6'>
-            <div className='relative z-0 overflow-hidden rounded-[12px] bg-[#F4FBFD]'>
+            <div className='relative z-0 overflow-hidden rounded-[12px] bg-review-blue'>
               <div className='pointer-events-none absolute inset-0 z-0 rounded-[12px] border border-secondaryBlue' />
               <div className='absolute left-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-plan-blue' />
               <div className='absolute right-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-plan-blue' />
@@ -68,19 +68,19 @@ const SelectPlan = () => {
         <div className='relative rounded-[4px] border border-secondaryBlue bg-white p-6'>
           <div className='text-lg font-bold'>Third Party & Theft</div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Third-Party liability coverage relating to vehicle charging
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Free NCD Protector (from 10%) & Waiver of Excess
             </div>
           </div>
           <div className='mt-4 flex items-start'>
-            <TickCircleIcon size={12} className='mt-[2px]' />
+            <TickCircleIcon size={12} className='mt-[4px]' />
             <div className='ml-[4px] text-sm'>
               Up to $50,000 complimentary Personal Accident coverage
             </div>
@@ -97,7 +97,7 @@ const SelectPlan = () => {
             </div>
           </div>
           <div className='relative mt-6'>
-            <div className='relative z-0 overflow-hidden rounded-[12px] bg-[#F4FBFD]'>
+            <div className='relative z-0 overflow-hidden rounded-[12px] bg-review-blue'>
               <div className='pointer-events-none absolute inset-0 z-0 rounded-[12px] border border-secondaryBlue' />
               <div className='absolute left-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-white' />
               <div className='absolute right-[-8px] top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-[5px] border border-secondaryBlue bg-white' />
