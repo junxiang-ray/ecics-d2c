@@ -1,8 +1,8 @@
 'use client';
 
-import PolicyDetailForm from '@/components/ui/PolicyDetailForm';
-import { PromoCodeModel } from '@/components/ui/PromoCode';
-import VehicleBar from '@/components/ui/VehicleBar';
+import PolicyDetailForm from './PolicyDetailForm';
+import { PromoCodeModel } from '../components/PromoCode';
+import VehicleBar from '../components/VehicleBar';
 import {
   VehicleSelection,
   VehicleSelectionModal,

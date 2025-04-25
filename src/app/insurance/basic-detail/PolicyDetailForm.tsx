@@ -1,22 +1,24 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Form } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date';
-import { DatePickerField } from './form/datepicker';
+import { DatePickerField } from '@/components/ui//form/datepicker';
 import { MOTOR_QUOTE } from '@/libs/constants';
-import { DropdownField, DropdownOption } from './form/dropdownfield';
-import { InputField } from './form/inputfield';
-import RadioField from './form/radiofield';
-import { PromoCodeField, PromoCodeModel } from './PromoCode';
-import { PrimaryButton } from './buttons';
+import {
+  DropdownField,
+  DropdownOption,
+} from '@/components/ui//form/dropdownfield';
+import { InputField } from '@/components/ui//form/inputfield';
+import RadioField from '@/components/ui//form/radiofield';
+import { PromoCodeField, PromoCodeModel } from '../components/PromoCode';
+import { PrimaryButton } from '@/components/ui/buttons';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { UnableQuote } from '../UnableQuote';
+import { UnableQuote } from './modal/UnableQuote';
 
 const sryMsg = 'Sorry, we cannot provide you a quotation online';
 
