@@ -6,8 +6,8 @@ import { useState } from 'react';
 
 import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
-import MInput from '@/components/ui/input/MInput';
-import MTextArea from '@/components/ui/input/MTextArea';
+import MInput from '@/components/ui/form/input/MInput';
+import MTextArea from '@/components/ui/form/input/MTextArea';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 
@@ -95,6 +95,7 @@ const ManualReviewInfoDetail = () => {
               </div>
               <div className='min-w-[30%] flex-1'>
                 <div className='text-sm font-bold'>Date of Birth</div>
+                {/* eslint-disable-next-line react/jsx-no-undef */}
                 <MInput
                   type='text'
                   placeholder='29/12/1990'
