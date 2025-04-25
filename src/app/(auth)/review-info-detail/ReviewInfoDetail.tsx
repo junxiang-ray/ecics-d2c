@@ -104,11 +104,11 @@ const ReviewInfoDetail = () => {
               <div className='mt-6 flex items-center justify-between rounded-md border border-gray-300 bg-white p-4'>
                 <div className='w-[calc(50%-10px)]'>
                   <div className='text-sm font-bold'>Email Address</div>
-                  <InputField name='email' label='Email Address' />
+                  <InputField name='email' />
                 </div>
                 <div className='w-[calc(50%-10px)]'>
                   <div className='text-sm font-bold'>Phone Number</div>
-                  <InputField name='phone' label='Phone Number' />
+                  <InputField name='phone' />
                 </div>
               </div>
               <InfoSection
