@@ -11,7 +11,7 @@ import {
   DropdownField,
   DropdownOption,
 } from '@/components/ui//form/dropdownfield';
-import { InputField } from '@/components/ui//form/inputfield';
+import { InputField } from '@/components/ui/form/inputfield';
 import RadioField from '@/components/ui//form/radiofield';
 import { PromoCodeField, PromoCodeModel } from '../components/PromoCode';
 import { PrimaryButton } from '@/components/ui/buttons';
