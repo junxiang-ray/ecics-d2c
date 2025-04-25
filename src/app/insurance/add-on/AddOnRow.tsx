@@ -25,7 +25,7 @@ export default function AddOnRow({
       className={clsx(
         'relative rounded-xl border-[1px] bg-gray-100 p-4 shadow-md',
         {
-          'pt-6': isRecommended,
+          'pt-6': isRecommended && status === 'new',
           'bg-sky-200': status === 'completed',
           'border-sky-600': status === 'new',
         },
@@ -44,14 +44,17 @@ export default function AddOnRow({
           </div>
         ) : (
           <div className='flex items-center gap-4 rounded-full'>
-            <div className='rounded-full bg-white p-1'>
-              <FinishIcon className='rounded-full bg-white' />
+            <div className='flex items-center justify-center rounded-full bg-white p-[2px]'>
+              <FinishIcon
+                className='rounded-full bg-white text-sky-400'
+                size={18}
+              />
             </div>
             <p className='font-bold'>{title}</p>
           </div>
         )}
         <ArrowDownCircleIcon
-          className={clsx('text-brand-blue', {
+          className={clsx('cursor-pointer text-brand-blue', {
             'rotate-180': isOpen,
             'rounded-full bg-white': status === 'completed',
           })}

@@ -45,7 +45,7 @@ const mapIconToTypeAddOn = [
 
 function AddOnPage() {
   return (
-    <div>
+    <div className='px-4'>
       <div className='text-xl font-bold'>Select Add On</div>
       <div className='mt-4 flex flex-col gap-4'>
         {mapIconToTypeAddOn.map((item) => (

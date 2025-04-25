@@ -1,11 +1,11 @@
 import { PrimaryButton } from '@/components/ui/buttons';
 import { Checkbox } from 'antd';
 
-const SelfDeclarationModal = ({ onSave }: { onSave: () => void }) => {
+const SelfDeclarationContent = ({ onSave }: { onSave: () => void }) => {
   return (
-    <div className='flex flex-col justify-between p-4'>
+    <div className='flex flex-col justify-between'>
       <div>
-        <div className='text-center text-base font-bold'>Self Declaration</div>
+        <p className='text-center text-base font-bold'>Self Declaration</p>
         <div className='mt-4 text-sm'>
           <ul className='list-disc pl-4 text-justify'>
             <li>
@@ -51,4 +51,4 @@ const SelfDeclarationModal = ({ onSave }: { onSave: () => void }) => {
   );
 };
 
-export default SelfDeclarationModal;
+export default SelfDeclarationContent;
