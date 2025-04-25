@@ -9,6 +9,7 @@ export interface VehicleSelection {
   regNo: string;
   vehMake: string;
   vehModel: string;
+  regYear: string;
 }
 
 interface VehicleSelectionModalProps {

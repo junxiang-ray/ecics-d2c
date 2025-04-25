@@ -5,7 +5,7 @@ import {
   ShareAltOutlined,
 } from '@ant-design/icons';
 import { SecondaryButton } from '@/components/ui/buttons';
-import InfoCard from '../InfoCard/InfoCard';
+import InfoCard from './InfoCard';
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
 
