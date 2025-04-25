@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Modal, Radio, Space, Drawer, Typography } from 'antd';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { on } from 'events';
 import { PrimaryButton } from './ui/buttons';
 
 export interface VehicleSelection {

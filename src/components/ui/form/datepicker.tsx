@@ -1,5 +1,5 @@
 import { DatePicker, DatePickerProps } from 'antd';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { Controller, useFormContext } from 'react-hook-form';
 
 interface DatePickerFieldProps extends Omit<DatePickerProps, 'value'> {
