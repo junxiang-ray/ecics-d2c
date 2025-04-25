@@ -135,7 +135,12 @@ const ReviewInfoDetail = () => {
           Continue
         </PrimaryButton>
       </div>
-      {showConfirmModal && <ConfirmInfoModalWrapper />}
+      {showConfirmModal && (
+        <ConfirmInfoModalWrapper
+          showConfirmModal={showConfirmModal}
+          setShowConfirmModal={setShowConfirmModal}
+        />
+      )}
     </div>
   );
 };
