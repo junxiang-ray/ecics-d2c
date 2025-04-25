@@ -1,5 +1,9 @@
-function BasicDetailPage() {
-  return <div>Basic Detail Page</div>;
-}
+import { PolicyDetail } from './PolicyDetail';
 
-export default BasicDetailPage;
+export default function PolicyDetailPage() {
+  return (
+    <div>
+      <PolicyDetail />
+    </div>
+  );
+}
