@@ -19,7 +19,7 @@ const SvgIcon = ({
     <span
       role='img'
       className={`inline-flex items-center justify-center ${className}`}
-      onCancel={onClick}
+      onClick={onClick}
     >
       <SvgComponent width={size} height={size} />
     </span>
