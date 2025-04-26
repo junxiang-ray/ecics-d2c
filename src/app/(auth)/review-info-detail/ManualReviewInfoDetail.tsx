@@ -50,8 +50,7 @@ const ManualReviewInfoDetail = () => {
     },
   });
 
-  const handleContinue = (data: ReviewInfoForm) => {
-    console.log('Submitted data:', data);
+  const handleContinue = () => {
     setShowConfirmModal(false);
   };
 
