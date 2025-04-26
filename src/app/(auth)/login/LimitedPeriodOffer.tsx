@@ -1,17 +1,15 @@
 'use client';
 
 import { Checkbox } from 'antd';
-import { toast } from 'react-toastify';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 import CouponIcon from '@/components/icons/CouponIcon';
 import { LinkButton } from '@/components/ui/buttons';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import { authApi } from '@/api/auth';
-import { saveItemsToStorage } from '@/libs/utils/utils';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 const LimitedPeriodOffer = () => {
   const { isMobile } = useDeviceDetection();
@@ -32,18 +30,6 @@ const LimitedPeriodOffer = () => {
         toast.error('Code not found in login response.');
         return;
       }
-
-      const userInfo = await authApi.getUserInfoByCode(code);
-      if (userInfo) {
-        saveItemsToStorage(
-          { [ECICS_USER_INFO]: JSON.stringify(userInfo) },
-          'session',
-        );
-        toast.success('User info retrieved!');
-        router.push('/review-info-detail');
-      } else {
-        toast.error('Failed to retrieve user info.');
-      }
     } else {
       toast.error('Login failed.');
     }
@@ -52,7 +38,7 @@ const LimitedPeriodOffer = () => {
   return (
     <div className='relative z-10 mx-auto max-w-md px-4'>
       <button
-        className='flex items-center gap-2 rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'
+        className='flex items-center gap-2 justify-self-center rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'
         onClick={handleLogin}
       >
         <p className='text-xl font-semibold'>Retrieve Myinfo with</p>
