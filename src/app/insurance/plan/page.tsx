@@ -9,6 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
 import PlanCardMobile, { DataPlanCard } from './components/PlanCardMobile';
 import PlanCardDesktop from './components/PlanCardDesktop';
+import { useGetQuote } from '@/hook/insurance/quote';
 const plans: DataPlanCard[] = [
   {
     title: 'Third Party & Theft',
@@ -65,6 +66,8 @@ const plans: DataPlanCard[] = [
 function PlanPage() {
   const [screenWidth, setScreenWith] = useState(0);
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
+  const { data, isLoading } = useGetQuote('9dbb6b4e00432677');
+
   useLayoutEffect(() => {
     if (!window?.innerWidth) return;
     setScreenWith(window?.innerWidth - 32);

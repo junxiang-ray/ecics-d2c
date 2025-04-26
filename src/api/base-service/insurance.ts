@@ -1,7 +1,7 @@
 import baseClient from './api.config';
 
 export default {
-  createQuote() {
-    return baseClient.get('/quotes');
+  getQuoteByKey(key: string) {
+    return baseClient.get('/quote/' + key);
   },
 };
