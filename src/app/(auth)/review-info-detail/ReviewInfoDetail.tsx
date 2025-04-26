@@ -1,17 +1,19 @@
 'use client';
 
-import Image from 'next/image';
-import { useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { InputField } from '@/components/ui/form/inputfield';
+
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-import { InputField } from '@/components/ui/form/inputfield';
 
 const reviewInfoSchema = z.object({
   email: z.string().email('Invalid email'),
@@ -26,6 +28,7 @@ type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 const ReviewInfoDetail = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { isMobile } = useDeviceDetection();
+  const [commonInfo, setCommonInfo] = useState<any>(null);
 
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
@@ -43,30 +46,74 @@ const ReviewInfoDetail = () => {
     setShowConfirmModal(true);
   };
 
-  const commonInfo = {
-    email: 'abc@gmail.com',
-    phone: '+65 98888888',
-    personal: [
-      { label: 'Name as per NRIC', value: 'Sayan Chakraborty' },
-      { label: 'NRIC', value: 'ABC1234' },
-      { label: 'Gender', value: 'Male' },
-      { label: 'Marital Status', value: 'Married' },
-      { label: 'Date of Birth', value: '29/12/1990' },
-      { label: 'Address', value: '10 Eunos Road Singapore 400087' },
-    ],
-    vehicle: [
-      { label: 'Vehicle Make', value: 'BMW i5 2.5' },
-      { label: 'Vehicle First Registered in', value: '2024' },
-      { label: 'Vehicle Registration Number', value: 'SGT1818T' },
-      { label: 'Chassis Number', value: '234GH3' },
-      { label: 'Engine Number', value: '2345HE3' },
-      { label: 'Year of Registration', value: '2024' },
-      {
-        label: 'Driving Licence - Qualified Driving License Validity',
-        value: '2024',
-      },
-    ],
-  };
+  useEffect(() => {
+    const stored = sessionStorage.getItem(ECICS_USER_INFO);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+
+      const transformed = {
+        email: parsed.email?.value || '',
+        phone: `${parsed.mobileno?.prefix?.value || ''}${parsed.mobileno?.areacode?.value || ''} ${parsed.mobileno?.nbr?.value || ''}`,
+        personal: [
+          {
+            label: 'Name as per NRIC',
+            value: parsed.name?.value || '',
+          },
+          {
+            label: 'NRIC',
+            value: parsed.uinfin?.value || '',
+          },
+          {
+            label: 'Gender',
+            value: parsed.sex?.desc || '',
+          },
+          {
+            label: 'Marital Status',
+            value: parsed.marital?.desc || '',
+          },
+          {
+            label: 'Date of Birth',
+            value: parsed.dob?.value
+              ? new Date(parsed.dob.value).toLocaleDateString('en-GB')
+              : '',
+          },
+          {
+            label: 'Address',
+            value:
+              `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''} ${parsed.regadd?.postal?.value || ''}`.trim(),
+          },
+        ],
+        vehicle: [],
+      };
+
+      setCommonInfo(transformed);
+    }
+  }, []);
+
+  // const commonInfo = {
+  //   email: 'abc@gmail.com',
+  //   phone: '+65 98888888',
+  //   personal: [
+  //     { label: 'Name as per NRIC', value: 'Sayan Chakraborty' },
+  //     { label: 'NRIC', value: 'ABC1234' },
+  //     { label: 'Gender', value: 'Male' },
+  //     { label: 'Marital Status', value: 'Married' },
+  //     { label: 'Date of Birth', value: '29/12/1990' },
+  //     { label: 'Address', value: '10 Eunos Road Singapore 400087' },
+  //   ],
+  //   vehicle: [
+  //     { label: 'Vehicle Make', value: 'BMW i5 2.5' },
+  //     { label: 'Vehicle First Registered in', value: '2024' },
+  //     { label: 'Vehicle Registration Number', value: 'SGT1818T' },
+  //     { label: 'Chassis Number', value: '234GH3' },
+  //     { label: 'Engine Number', value: '2345HE3' },
+  //     { label: 'Year of Registration', value: '2024' },
+  //     {
+  //       label: 'Driving Licence - Qualified Driving License Validity',
+  //       value: '2024',
+  //     },
+  //   ],
+  // };
 
   return (
     <FormProvider {...methods}>
@@ -96,8 +143,18 @@ const ReviewInfoDetail = () => {
                 <div className='text-sm font-bold'>Phone Number</div>
                 <InputField name='phone' />
               </div>
-              <InfoSection title='Personal Info' data={commonInfo.personal} />
-              <InfoSection title='Vehicle Details' data={commonInfo.vehicle} />
+              {commonInfo && (
+                <>
+                  <InfoSection
+                    title='Personal Info'
+                    data={commonInfo.personal}
+                  />
+                  <InfoSection
+                    title='Vehicle Details'
+                    data={commonInfo.vehicle}
+                  />
+                </>
+              )}
             </div>
           ) : (
             <div className='w-2/3 justify-self-center'>
@@ -111,16 +168,20 @@ const ReviewInfoDetail = () => {
                   <InputField name='phone' />
                 </div>
               </div>
-              <InfoSection
-                title='Personal Details'
-                data={commonInfo.personal}
-                boxClass='mt-4'
-              />
-              <InfoSection
-                title='Vehicle Details'
-                data={commonInfo.vehicle}
-                boxClass='mt-4'
-              />
+              {commonInfo && (
+                <>
+                  <InfoSection
+                    title='Personal Details'
+                    data={commonInfo.personal}
+                    boxClass='mt-4'
+                  />
+                  <InfoSection
+                    title='Vehicle Details'
+                    data={commonInfo.vehicle}
+                    boxClass='mt-4'
+                  />
+                </>
+              )}
             </div>
           )}
         </div>

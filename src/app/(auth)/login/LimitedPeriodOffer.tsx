@@ -1,13 +1,17 @@
 'use client';
 
 import { Checkbox } from 'antd';
+import { toast } from 'react-toastify';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import CouponIcon from '@/components/icons/CouponIcon';
 import { LinkButton } from '@/components/ui/buttons';
-
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
+import { authApi } from '@/api/auth';
+import { saveItemsToStorage } from '@/libs/utils/utils';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 const LimitedPeriodOffer = () => {
   const { isMobile } = useDeviceDetection();
@@ -17,9 +21,40 @@ const LimitedPeriodOffer = () => {
     router.push('/review-info-detail');
   };
 
+  const handleLogin = async () => {
+    const loginUrl = await authApi.requestLogin();
+
+    if (loginUrl) {
+      const urlObj = new URL(loginUrl);
+      const code = urlObj.searchParams.get('code');
+
+      if (!code) {
+        toast.error('Code not found in login response.');
+        return;
+      }
+
+      const userInfo = await authApi.getUserInfoByCode(code);
+      if (userInfo) {
+        saveItemsToStorage(
+          { [ECICS_USER_INFO]: JSON.stringify(userInfo) },
+          'session',
+        );
+        toast.success('User info retrieved!');
+        router.push('/review-info-detail');
+      } else {
+        toast.error('Failed to retrieve user info.');
+      }
+    } else {
+      toast.error('Login failed.');
+    }
+  };
+
   return (
     <div className='relative z-10 mx-auto max-w-md px-4'>
-      <div className='flex items-center gap-2 rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'>
+      <button
+        className='flex items-center gap-2 rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'
+        onClick={handleLogin}
+      >
         <p className='text-xl font-semibold'>Retrieve Myinfo with</p>
         <Image
           src='/singpass.svg'
@@ -28,7 +63,7 @@ const LimitedPeriodOffer = () => {
           height={100}
           className='pt-2'
         />
-      </div>
+      </button>
       <div className='flex items-center justify-center gap-1 text-sm'>
         <span>or,</span>
         <LinkButton

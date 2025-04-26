@@ -18,3 +18,10 @@ export const MOTOR_QUOTE = {
   quick_proposal_hire_purchase: 'quick_proposal_hire_purchase',
   quick_proposal_other_hire_purchase: 'quick_proposal_other_hire_purchase',
 };
+
+export const HTTP_STATUS_CODE = {
+  SUCCESS: 200, // 200
+  BAD_REQUEST: 400, // 400
+  UNAUTHORIZED: 401, // 401
+  FORBIDDEN: 403, // 403
+};
