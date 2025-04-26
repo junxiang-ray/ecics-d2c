@@ -1,5 +1,9 @@
+import { toast } from 'react-toastify';
+
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
+import { authApi } from '@/api/auth';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 const ConfirmInfoModal = ({
@@ -10,6 +14,52 @@ const ConfirmInfoModal = ({
   onClose: () => void;
 }) => {
   const { isMobile } = useDeviceDetection();
+
+  const handleSave = async () => {
+    const stored = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!stored) {
+      toast.error('Missing user info in session.');
+      return;
+    }
+
+    const parsed = JSON.parse(stored);
+
+    const payload = {
+      email: parsed.email?.value || '',
+      phone: `${parsed.mobileno?.areacode?.value || ''}${parsed.mobileno?.nbr?.value || ''}`,
+      name: parsed.name?.value || '',
+      nric: parsed.uinfin?.value || '',
+      gender: parsed.sex?.desc || '',
+      marital_status: parsed.marital?.desc || '',
+      date_of_birth: parsed.dob?.value || '',
+      address: `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
+      vehicle_make: parsed.vehicle_make || '',
+      vehicle_model: parsed.vehicle_model || '',
+      year_of_registration: parsed.year_of_registration || '',
+      vehicles:
+        parsed.vehicles?.map((v: any) => ({
+          vehicleno: {
+            value: v.vehicleno?.value || '',
+          },
+          lastupdated: v.lastupdated || '',
+          source: v.source || [],
+          classification: v.classification || '[]',
+          chassisno: {
+            value: v.chassisno?.value || '',
+          },
+          engineno: {
+            value: v.engineno?.value || '',
+          },
+        })) || [],
+    };
+
+    const success = await authApi.savePersonalInfo(payload);
+    if (success) {
+      onSave();
+    } else {
+      toast.error('Failed to save personal info.');
+    }
+  };
 
   return (
     <div className='mx-auto flex h-full w-full flex-col justify-between p-6'>
@@ -23,7 +73,7 @@ const ConfirmInfoModal = ({
       </div>
       <div className={`flex flex-col gap-4 ${isMobile ? 'mt-20' : 'mt-4'}`}>
         <PrimaryButton
-          onClick={onSave}
+          onClick={handleSave}
           className='rounded-md px-4 py-2 text-white transition'
         >
           Save my progress
