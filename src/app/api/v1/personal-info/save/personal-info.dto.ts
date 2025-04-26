@@ -1,4 +1,4 @@
-import { REGEX_VALUES } from '@/utils/validation';
+import { REGEX_VALUES } from '@/app/api/utils/regex';
 import { z } from 'zod';
 
 export const savePersonalInfoDTOSchema = z.object({

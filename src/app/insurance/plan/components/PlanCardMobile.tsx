@@ -54,7 +54,7 @@ function PlanCardMobile({
         </div>
       ))}
       <div className='relative mt-6'>
-        <div className='bg-review-blue relative z-0 overflow-hidden rounded-xl'>
+        <div className='relative z-0 overflow-hidden rounded-xl bg-review-blue'>
           <div className='pointer-events-none absolute inset-0 z-0 rounded-xl border border-secondaryBlue' />
           <div
             className={clsx(
