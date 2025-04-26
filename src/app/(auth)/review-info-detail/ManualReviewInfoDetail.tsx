@@ -13,10 +13,19 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^[89]\d{7}$/;
+
 // Zod schema
 const reviewInfoSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  phoneNumber: z.string().min(8, 'Phone number is too short'),
+  email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
+  phoneNumber: z
+    .string()
+    .length(8, "Please enter an 8-digit number starting with '8' or '9'.")
+    .regex(
+      phoneRegex,
+      "Please enter an 8-digit number starting with '8' or '9'.",
+    ),
   name: z.string().min(1, 'Required'),
   nric: z.string().min(1, 'Required'),
   gender: z.string().min(1, 'Required'),

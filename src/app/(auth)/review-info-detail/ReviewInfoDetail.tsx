@@ -15,12 +15,18 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^[89]\d{7}$/;
+
 const reviewInfoSchema = z.object({
-  email: z.string().email('Invalid email'),
+  email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
   phone: z
     .string()
-    .min(8, 'The phone number must have at least 8 digits')
-    .regex(/^\+?[0-9\s-]+$/, 'Invalid phone number'),
+    .length(8, "Please enter an 8-digit number starting with '8' or '9'.")
+    .regex(
+      phoneRegex,
+      "Please enter an 8-digit number starting with '8' or '9'.",
+    ),
 });
 
 type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
