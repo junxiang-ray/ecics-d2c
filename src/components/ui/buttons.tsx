@@ -4,13 +4,20 @@ import { Button, ButtonProps } from 'antd';
 interface CustomButtonProps extends ButtonProps {}
 
 export const PrimaryButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
-  ({ className, children, ...rest }, ref) => {
+  ({ className = '', children, disabled, ...rest }, ref) => {
+    const baseStyle = 'px-3 text-base font-semibold hover:opacity-85';
+
+    const enabledStyle = 'bg-[#00adef] text-white';
+    const disabledStyle =
+      'bg-gray-400 text-white cursor-not-allowed opacity-90';
+
     return (
       <Button
         type='primary'
         size='large'
-        className={`${className} bg-[#00adef] px-3 text-base font-semibold hover:opacity-85`}
+        className={`${className} ${baseStyle} ${disabled ? disabledStyle : enabledStyle}`}
         ref={ref}
+        disabled={disabled}
         {...rest}
       >
         {children}
