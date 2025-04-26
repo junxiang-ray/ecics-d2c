@@ -2,6 +2,8 @@
 import ProcessBar from '@/components/ProcessBar';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import Image from 'next/image';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 export default function Home() {
   return (
@@ -23,7 +25,7 @@ export default function Home() {
           </SecondaryButton>
         </div>
       </div>
-      <div className='w-screen'>
+      <div className=''>
         <ProcessBar currentStep={1} />
       </div>
     </main>

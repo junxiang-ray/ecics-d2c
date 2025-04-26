@@ -1,52 +1,58 @@
 'use client';
-import { SecondaryButton } from '@/components/ui/buttons';
-import { Select } from 'antd';
-import { useState } from 'react';
-import AddOnRow, { Status } from './AddOnRow';
+
+import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
+import KeyIcon from '@/components/icons/KeyIcon';
+import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
+import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
+import RepairIcon from '@/components/icons/RepairIcon';
+import RoadSideIcon from '@/components/icons/RoadSideIcon';
+
 import AddOnRowDetail from './AddOnRowDetail';
+
 const mapIconToTypeAddOn = [
   {
     type: 'key',
-    iconLink: '/icons/add-on/key.svg',
+    icon: <KeyIcon className='text-brand-blue' />,
     isRecommended: true,
     title: 'Key Replacement Cover',
   },
   {
     type: 'repair',
-    iconLink: '/icons/add-on/repair.svg',
+    icon: <RepairIcon className='text-brand-blue' />,
     title: 'Repair at Any Workshop',
   },
   {
     type: 'roadside',
-    iconLink: '/icons/add-on/road-side.svg',
+    icon: <RoadSideIcon className='text-brand-blue' />,
     title: '24/7 Road side assistance',
   },
   {
     type: 'enhanced-accident',
-    iconLink: '/icons/add-on/enhanced-accident.svg',
+    icon: <EnhancedAccidentIcon className='text-brand-blue' />,
     title: 'Enhanced Accident Coverage',
   },
   {
     type: 'personal-accident',
-    iconLink: '/icons/add-on/personal-accident.svg',
+    icon: <PersonalAccidentIcon className='text-brand-blue' />,
     title: 'Personal Accident +',
   },
   {
     type: 'new-old-replacement',
-    iconLink: '/icons/add-on/new-old-replacement.svg',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
     title: 'New for Old Replacement',
   },
 ];
+
 function AddOnPage() {
   return (
-    <div>
+    <div className='px-4'>
       <div className='text-xl font-bold'>Select Add On</div>
       <div className='mt-4 flex flex-col gap-4'>
         {mapIconToTypeAddOn.map((item) => (
           <AddOnRowDetail
             key={item.type}
             title={item.title}
-            iconLink={item.iconLink}
+            icon={item.icon}
             isRecommended={item.isRecommended}
           />
         ))}

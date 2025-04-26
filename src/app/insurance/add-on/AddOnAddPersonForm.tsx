@@ -5,6 +5,7 @@ import { DatePicker, Form, Input, Select } from 'antd';
 import Image from 'next/image';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 export type Status = 'new' | 'completed';
 
 const schema = z.object({
@@ -43,12 +44,7 @@ export default function AddOnAddPersonForm({
     <div className='rounded-md bg-gray-100 p-4'>
       <div className='flex justify-between'>
         <p className='text-lg font-semibold'>Additional Driver 1</p>
-        <Image
-          src='/icons/add-on/delete.svg'
-          width={30}
-          height={30}
-          alt='delete'
-        />
+        <DeleteIcon />
       </div>
       <Form onFinish={handleSubmit(onSubmit)} className='mt-4'>
         <Form.Item
