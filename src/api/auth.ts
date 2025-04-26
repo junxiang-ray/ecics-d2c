@@ -8,6 +8,7 @@ import {
 import myClient from './configAPI';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const SINGPASS_SERVICE_URL = process.env.NEXT_PUBLIC_SINGPASS_SERVICE_URL;
 
 export const authApi = {
   requestLogin: async (): Promise<string | null> => {
@@ -16,7 +17,9 @@ export const authApi = {
       return null;
     }
     try {
-      const response = await myClient.get(`${BASE_URL}${API_LOGIN}`);
+      const response = await myClient.get(
+        `${SINGPASS_SERVICE_URL}${API_LOGIN}`,
+      );
       if (response?.meta?.code === HTTP_STATUS_CODE.SUCCESS) {
         return response.data ?? null;
       }
