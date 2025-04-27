@@ -1,58 +1,45 @@
 'use client';
 
 import { Checkbox } from 'antd';
-import { toast } from 'react-toastify';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import CouponIcon from '@/components/icons/CouponIcon';
 import { LinkButton } from '@/components/ui/buttons';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
-import { authApi } from '@/api/auth';
-import { saveItemsToStorage } from '@/libs/utils/utils';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { useRequestLogin } from '@/hook/auth/login';
+import { useRequestLogCar } from '@/hook/insurance/quote';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useState } from 'react';
 
 const LimitedPeriodOffer = () => {
-  const { isMobile } = useDeviceDetection();
   const router = useRouter();
+  const { isMobile } = useDeviceDetection();
 
-  const handleContinueWithoutMyinfo = () => {
-    router.push('/review-info-detail');
+  const [isDegreedWithDisclaimer, setIsDegreedWithDisclaimer] = useState(false);
+  const [isUserActive, setIsUserActive] = useState(false);
+
+  const { mutate: requestLogin } = useRequestLogin();
+  const { mutate: requestLogCar } = useRequestLogCar();
+
+  const handleLogin = () => {
+    setIsUserActive(true);
+    if (!isDegreedWithDisclaimer && isMobile) return;
+    requestLogin();
+    requestLogCar();
   };
 
-  const handleLogin = async () => {
-    const loginUrl = await authApi.requestLogin();
-
-    if (loginUrl) {
-      const urlObj = new URL(loginUrl);
-      const code = urlObj.searchParams.get('code');
-
-      if (!code) {
-        toast.error('Code not found in login response.');
-        return;
-      }
-
-      const userInfo = await authApi.getUserInfoByCode(code);
-      if (userInfo) {
-        saveItemsToStorage(
-          { [ECICS_USER_INFO]: JSON.stringify(userInfo) },
-          'session',
-        );
-        toast.success('User info retrieved!');
-        router.push('/review-info-detail');
-      } else {
-        toast.error('Failed to retrieve user info.');
-      }
-    } else {
-      toast.error('Login failed.');
-    }
+  const handleContinueWithoutMyinfo = () => {
+    setIsUserActive(true);
+    if (!isDegreedWithDisclaimer && isMobile) return;
+    requestLogCar();
+    router.push('/review-info-detail');
   };
 
   return (
     <div className='relative z-10 mx-auto max-w-md px-4'>
       <button
-        className='flex items-center gap-2 rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'
+        className='flex items-center gap-2 justify-self-center rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'
         onClick={handleLogin}
       >
         <p className='text-xl font-semibold'>Retrieve Myinfo with</p>
@@ -75,13 +62,24 @@ const LimitedPeriodOffer = () => {
         </LinkButton>
       </div>
       {isMobile && (
-        <div className='mt-4 flex flex-wrap items-center justify-center gap-1 text-center text-sm'>
-          <Checkbox className='custom-checkbox' />
-          <span>By using this platform, you agree to our</span>
-          <LinkButton type='link' className='pl-0'>
-            Disclaimer
-          </LinkButton>
-        </div>
+        <>
+          <div className='mt-4 flex flex-wrap items-center justify-center gap-1 text-center text-sm'>
+            <Checkbox
+              className='custom-checkbox'
+              checked={isDegreedWithDisclaimer}
+              onChange={(e) => setIsDegreedWithDisclaimer(e.target.checked)}
+            />
+            <span>By using this platform, you agree to our</span>
+            <LinkButton type='link' className='pl-0'>
+              Disclaimer
+            </LinkButton>
+          </div>
+          {!isDegreedWithDisclaimer && isUserActive && (
+            <p className='text-center text-xs text-red-500'>
+              Please read and agree with disclaimer term before continues
+            </p>
+          )}
+        </>
       )}
       <div className='mt-6 rounded-lg border-2 border-secondaryBlue bg-white p-4'>
         <div className='text-2xl font-bold'>Limited period offer</div>
