@@ -171,3 +171,14 @@ model CountryNationality {
 
   @@map("country_nationality")
 }
+
+model RequestLog {
+  id          Int      @id @default(autoincrement())
+  ip          String
+  country     String
+  city        String
+  productType String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  @@map("request_log")
+}
