@@ -14,12 +14,13 @@ import { ECICS_USER_INFO } from '@/constants/general.constant';
 export default function ReviewInfoDetailPage() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
+  const state = searchParams.get('state');
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        if (code) {
-          const userInfo = await authApi.getUserInfoByCode(code);
+        if (code && state) {
+          const userInfo = await authApi.getUserInfoByCode(code, state);
           if (userInfo) {
             saveItemsToStorage(
               { [ECICS_USER_INFO]: JSON.stringify(userInfo) },

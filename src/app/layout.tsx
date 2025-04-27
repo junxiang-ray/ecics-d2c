@@ -29,7 +29,7 @@ export default function RootLayout({
         <ReduxProvider>
           <ReactQueryProvider>
             <AntdRegistry>
-              <div className='mx-auto max-w-[1280px]'>{children}</div>
+              <div className='mx-auto'>{children}</div>
             </AntdRegistry>
           </ReactQueryProvider>
         </ReduxProvider>

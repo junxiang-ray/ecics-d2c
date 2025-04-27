@@ -28,15 +28,19 @@ export const authApi = {
     }
     return null;
   },
-  getUserInfoByCode: async (code: string): Promise<any | null> => {
+  getUserInfoByCode: async (
+    code: string,
+    state: string,
+  ): Promise<any | null> => {
     if (!BASE_URL) {
       console.error('API base URL is not defined.');
       return null;
     }
     try {
       const response = await myClient.get(
-        `${BASE_URL}${API_GET_USER_INFO}?code=${code}`,
+        `${BASE_URL}${API_GET_USER_INFO}?code=${code}&state=${state}`,
       );
+      console.log('getUserInfoByCode-response', response);
       if (response?.meta?.code === HTTP_STATUS_CODE.SUCCESS) {
         return response.data ?? null;
       }
