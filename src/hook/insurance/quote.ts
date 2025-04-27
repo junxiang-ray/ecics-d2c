@@ -25,3 +25,14 @@ export const useCreateQuote = () => {
     mutationKey: ['quote'],
   });
 };
+
+export const useRequestLogCar = () => {
+  const requestLogCar = async () => {
+    const res = await insurance.requestLogCar();
+    return res.data;
+  };
+  return useMutation({
+    mutationFn: requestLogCar,
+    mutationKey: ['log-car'],
+  });
+};

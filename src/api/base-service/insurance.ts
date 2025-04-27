@@ -16,4 +16,7 @@ export default {
   postPersonalInfoSave(payload: SavePersonalInfoPayload) {
     return baseClient.post<any>(`${API_POST_PERSONAL_INFO_SAVE}`, payload);
   },
+  requestLogCar() {
+    return baseClient.get<any>('/request-log/car');
+  },
 };
