@@ -39,8 +39,8 @@ const ReviewInfoDetail = () => {
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
     defaultValues: {
-      email: 'abc@gmail.com',
-      phone: '+65 98888888',
+      email: '',
+      phone: '',
     },
   });
 
@@ -91,35 +91,13 @@ const ReviewInfoDetail = () => {
         ],
         vehicle: [],
       };
-
       setCommonInfo(transformed);
+      methods.reset({
+        email: transformed.email,
+        phone: transformed.phone,
+      });
     }
   }, []);
-
-  // const commonInfo = {
-  //   email: 'abc@gmail.com',
-  //   phone: '+65 98888888',
-  //   personal: [
-  //     { label: 'Name as per NRIC', value: 'Sayan Chakraborty' },
-  //     { label: 'NRIC', value: 'ABC1234' },
-  //     { label: 'Gender', value: 'Male' },
-  //     { label: 'Marital Status', value: 'Married' },
-  //     { label: 'Date of Birth', value: '29/12/1990' },
-  //     { label: 'Address', value: '10 Eunos Road Singapore 400087' },
-  //   ],
-  //   vehicle: [
-  //     { label: 'Vehicle Make', value: 'BMW i5 2.5' },
-  //     { label: 'Vehicle First Registered in', value: '2024' },
-  //     { label: 'Vehicle Registration Number', value: 'SGT1818T' },
-  //     { label: 'Chassis Number', value: '234GH3' },
-  //     { label: 'Engine Number', value: '2345HE3' },
-  //     { label: 'Year of Registration', value: '2024' },
-  //     {
-  //       label: 'Driving Licence - Qualified Driving License Validity',
-  //       value: '2024',
-  //     },
-  //   ],
-  // };
 
   return (
     <FormProvider {...methods}>
@@ -149,17 +127,14 @@ const ReviewInfoDetail = () => {
                 <div className='text-sm font-bold'>Phone Number</div>
                 <InputField name='phone' />
               </div>
-              {commonInfo && (
-                <>
-                  <InfoSection
-                    title='Personal Info'
-                    data={commonInfo.personal}
-                  />
-                  <InfoSection
-                    title='Vehicle Details'
-                    data={commonInfo.vehicle}
-                  />
-                </>
+              {commonInfo?.personal && (
+                <InfoSection title='Personal Info' data={commonInfo.personal} />
+              )}
+              {commonInfo?.vehicle && commonInfo.vehicle.length > 0 && (
+                <InfoSection
+                  title='Vehicle Details'
+                  data={commonInfo.vehicle}
+                />
               )}
             </div>
           ) : (
@@ -174,19 +149,19 @@ const ReviewInfoDetail = () => {
                   <InputField name='phone' />
                 </div>
               </div>
-              {commonInfo && (
-                <>
-                  <InfoSection
-                    title='Personal Details'
-                    data={commonInfo.personal}
-                    boxClass='mt-4'
-                  />
-                  <InfoSection
-                    title='Vehicle Details'
-                    data={commonInfo.vehicle}
-                    boxClass='mt-4'
-                  />
-                </>
+              {commonInfo?.personal && (
+                <InfoSection
+                  title='Personal Details'
+                  data={commonInfo.personal}
+                  boxClass='mt-4'
+                />
+              )}
+              {commonInfo?.vehicle && commonInfo.vehicle.length > 0 && (
+                <InfoSection
+                  title='Vehicle Details'
+                  data={commonInfo.vehicle}
+                  boxClass='mt-4'
+                />
               )}
             </div>
           )}

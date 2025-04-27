@@ -1,44 +1,34 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
-import { toast } from 'react-toastify';
 
-import { saveItemsToStorage } from '@/libs/utils/utils';
-
-import { authApi } from '@/api/auth';
 import ManualReviewInfoDetail from '@/app/(auth)/review-info-detail/ManualReviewInfoDetail';
 import ReviewInfoDetail from '@/app/(auth)/review-info-detail/ReviewInfoDetail'; // import thêm
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { useGetUserInfo } from '@/hook/auth/login';
 
 export default function ReviewInfoDetailPage() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
-  const state = searchParams.get('state');
+  const state = searchParams.get('state') ?? '';
+  const code_verifier = sessionStorage.getItem('code_verifier') ?? '';
+  const nonce = sessionStorage.getItem('nonce') ?? '';
+  const params = {
+    code,
+    state,
+  };
+  const payload = {
+    code_verifier,
+    nonce,
+    state,
+  };
+  const { data, isLoading } = useGetUserInfo({
+    params,
+    payload,
+  });
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        if (code && state) {
-          const userInfo = await authApi.getUserInfoByCode(code, state);
-          if (userInfo) {
-            saveItemsToStorage(
-              { [ECICS_USER_INFO]: JSON.stringify(userInfo) },
-              'session',
-            );
-            toast.success('User info retrieved!');
-          } else {
-            toast.error('Failed to retrieve user info.');
-          }
-        }
-      } catch (error) {
-        toast.error('Error retrieving user info.');
-        console.error(error);
-      }
-    };
-
-    fetchUserInfo();
-  }, [code]);
+  if (isLoading) {
+    return 'isloading...';
+  }
 
   return <div>{code ? <ReviewInfoDetail /> : <ManualReviewInfoDetail />}</div>;
 }

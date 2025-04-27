@@ -3,12 +3,11 @@
 import { Checkbox } from 'antd';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 
 import CouponIcon from '@/components/icons/CouponIcon';
 import { LinkButton } from '@/components/ui/buttons';
 
-import { authApi } from '@/api/auth';
+import { useRequestLogin } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 const LimitedPeriodOffer = () => {
@@ -18,28 +17,13 @@ const LimitedPeriodOffer = () => {
   const handleContinueWithoutMyinfo = () => {
     router.push('/review-info-detail');
   };
-
-  const handleLogin = async () => {
-    const loginUrl = await authApi.requestLogin();
-
-    if (loginUrl) {
-      const urlObj = new URL(loginUrl);
-      const code = urlObj.searchParams.get('code');
-
-      if (!code) {
-        toast.error('Code not found in login response.');
-        return;
-      }
-    } else {
-      toast.error('Login failed.');
-    }
-  };
+  const { mutate: requestLogin, data: resLogin } = useRequestLogin();
 
   return (
     <div className='relative z-10 mx-auto max-w-md px-4'>
       <button
         className='flex items-center gap-2 justify-self-center rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'
-        onClick={handleLogin}
+        onClick={() => requestLogin()}
       >
         <p className='text-xl font-semibold'>Retrieve Myinfo with</p>
         <Image
