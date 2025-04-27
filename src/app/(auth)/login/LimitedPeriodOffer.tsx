@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import CouponIcon from '@/components/icons/CouponIcon';
 import { LinkButton } from '@/components/ui/buttons';
 
+import { useRequestLogin } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 const LimitedPeriodOffer = () => {
@@ -16,10 +17,14 @@ const LimitedPeriodOffer = () => {
   const handleContinueWithoutMyinfo = () => {
     router.push('/review-info-detail');
   };
+  const { mutate: requestLogin, data: resLogin } = useRequestLogin();
 
   return (
     <div className='relative z-10 mx-auto max-w-md px-4'>
-      <div className='flex items-center gap-2 rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'>
+      <button
+        className='flex items-center gap-2 justify-self-center rounded-lg bg-white px-4 py-3 shadow-lg shadow-black/20'
+        onClick={() => requestLogin()}
+      >
         <p className='text-xl font-semibold'>Retrieve Myinfo with</p>
         <Image
           src='/singpass.svg'
@@ -28,7 +33,7 @@ const LimitedPeriodOffer = () => {
           height={100}
           className='pt-2'
         />
-      </div>
+      </button>
       <div className='flex items-center justify-center gap-1 text-sm'>
         <span>or,</span>
         <LinkButton
