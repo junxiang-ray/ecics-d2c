@@ -26,11 +26,13 @@ schedule(process.env.QUOTE_REMINDER_CRON || '', async () => {
     },
   });
 
-  logger.info(`Quotes to be sent: ${quotes}`);
+  logger.info(`Quotes to be sent: ${JSON.stringify(quotes)}`);
 
   // sending email to each quote
   for (const quote of quotes) {
-    logger.info(`Send mail by cron tasks with quote data:  ${quote}`);
+    logger.info(
+      `Send mail by cron tasks with quote data: ${JSON.stringify(quote)}`,
+    );
     await sendingQuoteReminder(
       quote.quoteId,
       quote.quoteNo,

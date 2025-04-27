@@ -49,7 +49,7 @@ function InsuranceLayout({ children }: { children: React.ReactNode }) {
           </PrimaryButton>
         </div>
       </div>
-      <div className='w-full'>{children}</div>
+      <div className='mx-auto w-full max-w-[1280px]'>{children}</div>
     </>
   );
 }
