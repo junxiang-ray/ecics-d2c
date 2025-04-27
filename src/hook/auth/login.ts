@@ -1,10 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { UserInfoPayload } from '@/libs/types/auth';
+import { SavePersonalInfoPayload, UserInfoPayload } from '@/libs/types/auth';
 import { saveItemsToStorage } from '@/libs/utils/utils';
 
 import auth from '@/api/singpass-service/auth';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
+import insurance from '@/api/base-service/insurance';
 
 export const useRequestLogin = () => {
   const requestLogin = async () => {
@@ -40,14 +41,13 @@ export const useGetUserInfo = ({
   payload: UserInfoPayload;
 }) => {
   const getUserInfo = async () => {
-    const res = await auth.getUserInfo({ params, payload });
+    const res = await auth.postUserInfo({ params, payload });
     saveItemsToStorage(
       { [ECICS_USER_INFO]: JSON.stringify(res.data) },
       'session',
     );
     return res.data;
   };
-  console.log(111111, payload, params);
   return useQuery({
     queryFn: getUserInfo,
     queryKey: ['user-info', params],
@@ -56,5 +56,16 @@ export const useGetUserInfo = ({
       !!payload.nonce &&
       !!payload.state &&
       !!params?.code,
+  });
+};
+
+export const usePostPersonalInfo = () => {
+  const postPersonalInfo = async (payload: SavePersonalInfoPayload) => {
+    const res = await insurance.postPersonalInfoSave(payload);
+    return res.data;
+  };
+  return useMutation({
+    mutationFn: postPersonalInfo,
+    mutationKey: ['personal-info'],
   });
 };
