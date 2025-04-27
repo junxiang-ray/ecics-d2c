@@ -80,7 +80,6 @@ const ConfirmInfoModal = ({
       </div>
       <div className={`flex flex-col gap-4 ${isMobile ? 'mt-20' : 'mt-4'}`}>
         <PrimaryButton
-          loading={isSuccess}
           onClick={handleSave}
           className='rounded-md px-4 py-2 text-white transition'
         >

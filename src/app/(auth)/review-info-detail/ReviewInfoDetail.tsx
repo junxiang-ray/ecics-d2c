@@ -97,7 +97,7 @@ const ReviewInfoDetail = () => {
         phone: transformed.phone,
       });
     }
-  }, []);
+  }, [methods]);
 
   return (
     <FormProvider {...methods}>
