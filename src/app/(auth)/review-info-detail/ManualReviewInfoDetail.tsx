@@ -61,7 +61,7 @@ const ManualReviewInfoDetail = () => {
   });
 
   const handleContinue = () => {
-    router.push(ROUTES.INSURANCE.BASIC_DETAIL);
+    router.push(ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS);
   };
 
   const handleCancel = () => {
