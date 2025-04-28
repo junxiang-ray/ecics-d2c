@@ -25,14 +25,14 @@ const LimitedPeriodOffer = () => {
 
   const handleLogin = () => {
     setIsUserActive(true);
-    if (!isDegreedWithDisclaimer && isMobile) return;
+    if (!isDegreedWithDisclaimer) return;
     requestLogin();
     requestLogCar();
   };
 
   const handleContinueWithoutMyinfo = () => {
     setIsUserActive(true);
-    if (!isDegreedWithDisclaimer && isMobile) return;
+    if (!isDegreedWithDisclaimer) return;
     requestLogCar();
     router.push(ROUTES.AUTH.REVIEW_INFO_DETAIL);
   };
