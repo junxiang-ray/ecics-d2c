@@ -1,5 +1,6 @@
 import { VehicleSelection } from '@/components/VehicleSelection';
 import { PolicyDetail } from './PolicyDetail';
+import { Suspense } from 'react';
 
 export default function PolicyDetailPage() {
   // list from Singpass
@@ -20,11 +21,11 @@ export default function PolicyDetailPage() {
   };
 
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <PolicyDetail
         isSingPassFlow={true}
         selected_vehicle_singpass={selected_vehicle_singpass}
       />
-    </div>
+    </Suspense>
   );
 }
