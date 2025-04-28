@@ -17,6 +17,7 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
+import { capitalizeWords } from '@/libs/utils/utils';
 
 const reviewInfoSchema = z.object({
   email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
@@ -64,7 +65,7 @@ const ReviewInfoDetail = () => {
         personal: [
           {
             label: 'Name as per NRIC',
-            value: parsed.name?.value || '',
+            value: capitalizeWords(parsed.name?.value) || '',
           },
           {
             label: 'NRIC',
@@ -72,11 +73,11 @@ const ReviewInfoDetail = () => {
           },
           {
             label: 'Gender',
-            value: parsed.sex?.desc || '',
+            value: capitalizeWords(parsed.sex?.desc) || '',
           },
           {
             label: 'Marital Status',
-            value: parsed.marital?.desc || '',
+            value: capitalizeWords(parsed.marital?.desc) || '',
           },
           {
             label: 'Date of Birth',
@@ -86,11 +87,44 @@ const ReviewInfoDetail = () => {
           },
           {
             label: 'Address',
-            value:
-              `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''} ${parsed.regadd?.postal?.value || ''}`.trim(),
+            value: [
+              capitalizeWords(parsed.regadd?.block?.value || ''),
+              capitalizeWords(parsed.regadd?.street?.value || ''),
+              parsed.regadd?.floor?.value || parsed.regadd?.unit?.value
+                ? `#${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}`
+                : '',
+              capitalizeWords(parsed.regadd?.building?.value || ''),
+              capitalizeWords(parsed.regadd?.country?.desc || 'Singapore'),
+              parsed.regadd?.postal?.value,
+            ]
+              .filter(Boolean)
+              .join(' ')
+              .trim(),
           },
         ],
-        vehicle: [],
+        vehicle:
+          parsed.vehicles
+            ?.map((v: any) => [
+              {
+                label: 'Vehicle Make',
+                value: capitalizeWords(
+                  `${v.make?.value || ''} ${v.model?.value || ''}`,
+                ).trim(),
+              },
+              {
+                label: 'Year of Registration',
+                value: v.firstregistrationdate?.value
+                  ? new Date(v.firstregistrationdate.value)
+                      .getFullYear()
+                      .toString()
+                  : '',
+              },
+              {
+                label: 'Chassis Number',
+                value: v.vehicleno?.value || '',
+              },
+            ])
+            .flat() || [],
       };
       setCommonInfo(transformed);
       methods.reset({
