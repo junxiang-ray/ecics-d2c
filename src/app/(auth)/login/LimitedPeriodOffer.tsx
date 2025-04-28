@@ -3,18 +3,19 @@
 import { Checkbox } from 'antd';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import CouponIcon from '@/components/icons/CouponIcon';
 import { LinkButton } from '@/components/ui/buttons';
 
+import { ROUTES } from '@/constants/routes';
 import { useRequestLogin } from '@/hook/auth/login';
 import { useRequestLogCar } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useState } from 'react';
 
 const LimitedPeriodOffer = () => {
-  const router = useRouter();
   const { isMobile } = useDeviceDetection();
+  const router = useRouter();
 
   const [isDegreedWithDisclaimer, setIsDegreedWithDisclaimer] = useState(false);
   const [isUserActive, setIsUserActive] = useState(false);
@@ -33,7 +34,7 @@ const LimitedPeriodOffer = () => {
     setIsUserActive(true);
     if (!isDegreedWithDisclaimer && isMobile) return;
     requestLogCar();
-    router.push('/review-info-detail');
+    router.push(ROUTES.AUTH.REVIEW_INFO_DETAIL);
   };
 
   return (
