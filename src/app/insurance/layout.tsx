@@ -14,7 +14,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
 
 const stepToRoute: Record<StepProcessBar, string> = {
-  [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
+  [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS,
   [StepProcessBar.SELECT_PLAN]: ROUTES.INSURANCE.PLAN,
   [StepProcessBar.SELECT_ADD_ON]: ROUTES.INSURANCE.ADD_ON,
   [StepProcessBar.COMPLETE_PURCHASE]: ROUTES.INSURANCE.COMPLETE_PURCHASE,
