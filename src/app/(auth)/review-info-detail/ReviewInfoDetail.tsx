@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,12 +12,11 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
+import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phoneRegex = /^[89]\d{7}$/;
 
 const reviewInfoSchema = z.object({
   email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
@@ -35,6 +35,7 @@ const ReviewInfoDetail = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { isMobile } = useDeviceDetection();
   const [commonInfo, setCommonInfo] = useState<any>(null);
+  const router = useRouter();
 
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
@@ -45,7 +46,7 @@ const ReviewInfoDetail = () => {
   });
 
   const handleContinue = () => {
-    setShowConfirmModal(false);
+    router.push(ROUTES.INSURANCE.BASIC_DETAIL);
   };
 
   const handleCloseModal = () => {
