@@ -1,6 +1,6 @@
+import { EditOutlined } from '@ant-design/icons';
 import { Button, Flex } from 'antd';
 import React from 'react';
-import { EditOutlined } from '@ant-design/icons';
 
 interface VehicleBarProps {
   regNo: string;

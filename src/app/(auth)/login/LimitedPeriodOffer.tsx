@@ -62,26 +62,24 @@ const LimitedPeriodOffer = () => {
           continue without Myinfo login
         </LinkButton>
       </div>
-      {isMobile && (
-        <>
-          <div className='mt-4 flex flex-wrap items-center justify-center gap-1 text-center text-sm'>
-            <Checkbox
-              className='custom-checkbox'
-              checked={isDegreedWithDisclaimer}
-              onChange={(e) => setIsDegreedWithDisclaimer(e.target.checked)}
-            />
-            <span>By using this platform, you agree to our</span>
-            <LinkButton type='link' className='pl-0'>
-              Disclaimer
-            </LinkButton>
-          </div>
-          {!isDegreedWithDisclaimer && isUserActive && (
-            <p className='text-center text-xs text-red-500'>
-              Please read and agree with disclaimer term before continues
-            </p>
-          )}
-        </>
+
+      <div className='mt-4 flex flex-wrap items-center justify-center gap-1 text-center text-sm'>
+        <Checkbox
+          className='custom-checkbox'
+          checked={isDegreedWithDisclaimer}
+          onChange={(e) => setIsDegreedWithDisclaimer(e.target.checked)}
+        />
+        <span>By using this platform, you agree to our</span>
+        <LinkButton type='link' className='pl-0'>
+          Disclaimer
+        </LinkButton>
+      </div>
+      {!isDegreedWithDisclaimer && isUserActive && (
+        <p className='text-center text-xs text-red-500'>
+          Please read and agree with disclaimer term before continues
+        </p>
       )}
+
       <div className='mt-6 rounded-lg border-2 border-secondaryBlue bg-white p-4'>
         <div className='text-2xl font-bold'>Limited period offer</div>
         <div>
