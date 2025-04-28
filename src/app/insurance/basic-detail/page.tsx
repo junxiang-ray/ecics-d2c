@@ -1,8 +1,17 @@
+'use client';
 import { VehicleSelection } from '@/components/VehicleSelection';
+import { Suspense, useEffect, useState } from 'react';
 import { PolicyDetail } from './PolicyDetail';
-import { Suspense } from 'react';
 
 export default function PolicyDetailPage() {
+  const [isSingpassFlow, setIsSingpassFlow] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const query = new URLSearchParams(window.location.search);
+      const singpassFlow = query.get('singpass-flow') || 'false';
+      setIsSingpassFlow(singpassFlow === 'true');
+    }
+  }, []);
   // list from Singpass
   // const veh_selection_option = [
   //   { value: 'BMW | 116d 1.5', text: 'BMW 116d 1.5' },
@@ -23,7 +32,7 @@ export default function PolicyDetailPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <PolicyDetail
-        isSingPassFlow={true}
+        isSingPassFlow={isSingpassFlow}
         selected_vehicle_singpass={selected_vehicle_singpass}
       />
     </Suspense>

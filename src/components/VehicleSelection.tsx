@@ -45,7 +45,7 @@ export const VehicleSelectionModal = ({
         className='w-full'
       >
         <Space direction='vertical' className='my-3'>
-          {vehicles.map((vehicle, index) => (
+          {vehicles?.map((vehicle, index) => (
             <Space
               key={index}
               direction='horizontal'
@@ -53,7 +53,7 @@ export const VehicleSelectionModal = ({
               className='-my-3 w-full'
             >
               <Radio key={index} value={vehicle.regNo}>
-                <Typography.Paragraph className={commonFontClass + ' w-20'}>
+                <Typography.Paragraph className={commonFontClass + ' w-32'}>
                   {vehicle.regNo}
                 </Typography.Paragraph>
               </Radio>

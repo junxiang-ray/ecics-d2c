@@ -15,6 +15,10 @@ import { PromoCodeModel } from '../components/PromoCode';
 import VehicleBar from '../components/VehicleBar';
 import PolicyDetailForm from './PolicyDetailForm';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { useCreateQuote } from '@/hook/insurance/quote';
+import { QuoteCreationPayload } from '@/libs/types/quote';
+import { useRouter } from 'next/navigation';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 interface PolicyDetailProps {
   isSingPassFlow: boolean;
@@ -26,6 +30,7 @@ export const PolicyDetail = ({
   isSingPassFlow = false,
   selected_vehicle_singpass,
 }: PolicyDetailProps) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const partner_code = searchParams.get('partner_code') || '';
   const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
@@ -40,6 +45,22 @@ export const PolicyDetail = ({
   const [hirePurchaseList, setHirePurchaseList] = useState<DropdownOption[]>(
     [],
   );
+  const [userInfo, setUserInfo] = useState<any>(null);
+  useEffect(() => {
+    const userInfo = JSON.parse(
+      sessionStorage.getItem(ECICS_USER_INFO) ?? '{}',
+    );
+    setUserInfo(userInfo);
+    if (userInfo?.vehicles?.length) {
+      const vehicle = userInfo?.vehicles[0] as any;
+      setSelectedVehicle({
+        regNo: vehicle?.chassisno?.value,
+        make: vehicle?.make?.value,
+        model: vehicle?.model?.value,
+        first_registered_year: vehicle?.yearofmanufacture.value,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     //retrieve Make and Model List
@@ -66,28 +87,19 @@ export const PolicyDetail = ({
       [MOTOR_QUOTE.quick_proposal_promo_code]: initial_promo_code || '',
     };
 
-    if (selected_vehicle_singpass) {
-      setSelectedVehicle(selected_vehicle_singpass);
-    }
     setInitialValues(initialValues);
     fetchHirePurchaseList();
   }, []);
 
   // Options for Dropdown
-  const vehicles: VehicleSelection[] = [
-    {
-      regNo: 'SBA2828T',
-      make: 'MERCEDES BENZ',
-      model: 'MAYBACH GLA650',
-      first_registered_year: 2025,
-    },
-    {
-      regNo: 'STJ2923J',
-      make: 'BMW',
-      model: 'Q5 2.2',
-      first_registered_year: 2024,
-    },
-  ];
+  const vehicles: VehicleSelection[] = userInfo?.vehicles.map(
+    (vehicle: any) => ({
+      regNo: vehicle.chassisno?.value,
+      make: vehicle.make?.value,
+      model: vehicle.model?.value,
+      first_registered_year: vehicle?.yearofmanufacture.value,
+    }),
+  );
 
   // retrieve Hire purchase List
   const fetchHirePurchaseList = async () => {
@@ -150,7 +162,7 @@ export const PolicyDetail = ({
     setIsVehSelectionVisible(true);
     console.log('click');
   };
-
+  const { mutate: createQuote } = useCreateQuote();
   const handleSelection = (selected: VehicleSelection | null) => {
     if (selected) {
       setSelectedVehicle(selected);
@@ -163,31 +175,34 @@ export const PolicyDetail = ({
     payload = { ...data };
 
     if (isSingPassFlow) {
+      const userInfo = JSON.parse(
+        sessionStorage.getItem(ECICS_USER_INFO) ?? '{}',
+      );
       // data from Singpass
       const personal_info = {
-        name: 'Susan',
-        gender: 'FEMALE',
-        maritalStatus: 'SINGLE',
-        date_of_birth: '03/12/1998',
-        nric: 'S6020900F',
-        address: '10 Eunos Road Singapore 4324',
+        name: userInfo?.name.value,
+        gender: userInfo?.sex?.desc,
+        maritalStatus: userInfo?.marital?.value,
+        date_of_birth: userInfo?.dob?.value,
+        nric: userInfo?.uinfin?.value,
+        address: userInfo?.regadd?.value,
         driving_experience: 4,
-        phone_number: '98989898',
-        email: 'test@gmail.com',
+        phone_number: userInfo?.mobileno?.nbr?.value,
+        email: userInfo?.email?.value,
       };
 
       const vehicle_basic_details = {
-        make: 'Audi',
-        model: 'A8 3.0',
-        first_registered_year: '2024',
-        chasis_number: 'SBA123A',
+        make: selectedVehicle.make,
+        model: selectedVehicle.model,
+        first_registered_year: selectedVehicle.first_registered_year,
+        chasis_number: selectedVehicle.regNo,
       };
       payload = { ...payload, personal_info, vehicle_basic_details };
     }
 
     try {
-      console.log('submitted');
-      console.log('payload:', payload); // Form data after validation
+      createQuote(payload);
+      router.push('/insurance/plan');
     } catch (error) {
       console.error('Submission error:', error);
     }
@@ -202,7 +217,7 @@ export const PolicyDetail = ({
               <VehicleBar
                 selected_vehicle={selectedVehicle}
                 onClick={onEditClick}
-              ></VehicleBar>
+              />
             </div>
           </div>
         )}
