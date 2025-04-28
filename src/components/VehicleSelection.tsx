@@ -7,9 +7,9 @@ import { PrimaryButton } from './ui/buttons';
 
 export interface VehicleSelection {
   regNo: string;
-  vehMake: string;
-  vehModel: string;
-  regYear: string;
+  make: string;
+  model: string;
+  first_registered_year: number;
 }
 
 interface VehicleSelectionModalProps {
@@ -61,14 +61,14 @@ export const VehicleSelectionModal = ({
                 ●
               </Typography.Paragraph>
               <Typography.Paragraph className={commonFontClass}>
-                {vehicle.vehMake} {vehicle.vehModel}
+                {vehicle.make} {vehicle.model}
               </Typography.Paragraph>
             </Space>
           ))}
         </Space>
       </Radio.Group>
 
-      <PrimaryButton onClick={onClick} disabled={!selected}>
+      <PrimaryButton onClick={onClick} disabled={!selected} className='w-full'>
         Continue
       </PrimaryButton>
     </>
