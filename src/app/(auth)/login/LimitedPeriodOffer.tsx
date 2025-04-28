@@ -34,7 +34,8 @@ const LimitedPeriodOffer = () => {
     setIsUserActive(true);
     if (!isDegreedWithDisclaimer) return;
     requestLogCar();
-    router.push(ROUTES.AUTH.REVIEW_INFO_DETAIL);
+    const url = `${ROUTES.INSURANCE.BASIC_DETAIL}?singpass-flow=false`;
+    router.push(url);
   };
 
   return (

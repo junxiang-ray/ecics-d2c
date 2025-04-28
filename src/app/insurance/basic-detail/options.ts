@@ -1,7 +1,6 @@
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
-export const DEFAULT_PROMO_CODE = { code: 'CAR15', desc: '15' };
-// export const defaultPromoCode = null;
+export const DEFAULT_PROMO_CODE = { code: 'ECICS5', desc: '15' };
 
 export const DRV_EXP_OPTIONS: DropdownOption[] = [
   { value: 0, text: 'Less than 2 years' },
