@@ -33,3 +33,14 @@ export const saveToSessionStorage = (items: Record<string, string>) => {
     sessionStorage.setItem(key, value);
   });
 };
+
+/**
+ * Capitalize first letter of each word
+ */
+export const capitalizeWords = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
