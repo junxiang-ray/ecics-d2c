@@ -94,7 +94,7 @@ export const PolicyDetail = ({
   // Options for Dropdown
   const vehicles: VehicleSelection[] = userInfo?.vehicles?.map(
     (vehicle: any) => ({
-      regNo: vehicle.chassisno?.value,
+      regNo: vehicle.vehicleno?.value,
       make: vehicle.make?.value,
       model: vehicle.model?.value,
       first_registered_year: vehicle?.yearofmanufacture?.value,

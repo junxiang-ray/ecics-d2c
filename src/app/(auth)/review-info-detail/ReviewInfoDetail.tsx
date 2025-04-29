@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { capitalizeWords } from '@/libs/utils/utils';
+
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
@@ -17,7 +19,6 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-import { capitalizeWords } from '@/libs/utils/utils';
 
 const reviewInfoSchema = z.object({
   email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
@@ -103,28 +104,35 @@ const ReviewInfoDetail = () => {
           },
         ],
         vehicle:
-          parsed.vehicles
-            ?.map((v: any) => [
-              {
-                label: 'Vehicle Make',
-                value: capitalizeWords(
-                  `${v.make?.value || ''} ${v.model?.value || ''}`,
-                ).trim(),
-              },
-              {
-                label: 'Year of Registration',
-                value: v.firstregistrationdate?.value
-                  ? new Date(v.firstregistrationdate.value)
-                      .getFullYear()
-                      .toString()
-                  : '',
-              },
-              {
-                label: 'Chassis Number',
-                value: v.vehicleno?.value || '',
-              },
-            ])
-            .flat() || [],
+          parsed.vehicles?.length > 0
+            ? parsed.vehicles
+                .map((v: any) => [
+                  {
+                    label: 'Vehicle Make',
+                    value:
+                      capitalizeWords(
+                        `${v.make?.value || ''} ${v.model?.value || ''}`,
+                      ).trim() || 'N/A',
+                  },
+                  {
+                    label: 'Year of Registration',
+                    value: v.firstregistrationdate?.value
+                      ? new Date(v.firstregistrationdate.value)
+                          .getFullYear()
+                          .toString()
+                      : 'N/A',
+                  },
+                  {
+                    label: 'Chassis Number',
+                    value: v.vehicleno?.value || 'N/A',
+                  },
+                ])
+                .flat() || []
+            : [
+                { label: 'Vehicle Make', value: 'N/A' },
+                { label: 'Year of Registration', value: 'N/A' },
+                { label: 'Chassis Number', value: 'N/A' },
+              ],
       };
       setCommonInfo(transformed);
       methods.reset({
@@ -165,7 +173,7 @@ const ReviewInfoDetail = () => {
               {commonInfo?.personal && (
                 <InfoSection title='Personal Info' data={commonInfo.personal} />
               )}
-              {commonInfo?.vehicle && commonInfo.vehicle.length > 0 && (
+              {commonInfo?.vehicle && (
                 <InfoSection
                   title='Vehicle Details'
                   data={commonInfo.vehicle}
@@ -191,7 +199,7 @@ const ReviewInfoDetail = () => {
                   boxClass='mt-4'
                 />
               )}
-              {commonInfo?.vehicle && commonInfo.vehicle.length > 0 && (
+              {commonInfo?.vehicle && (
                 <InfoSection
                   title='Vehicle Details'
                   data={commonInfo.vehicle}
