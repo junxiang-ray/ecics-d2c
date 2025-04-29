@@ -13,7 +13,10 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import {
+  ECICS_USER_INFO,
+  IS_THREE_INPUT_COMPLETE,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -37,6 +40,8 @@ const ReviewInfoDetail = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { isMobile } = useDeviceDetection();
   const [commonInfo, setCommonInfo] = useState<any>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
+
   const router = useRouter();
 
   const methods = useForm<ReviewInfoForm>({
@@ -54,6 +59,13 @@ const ReviewInfoDetail = () => {
   const handleCloseModal = () => {
     setShowConfirmModal(true);
   };
+
+  useEffect(() => {
+    const isComplete = sessionStorage.getItem(IS_THREE_INPUT_COMPLETE);
+    if (!isComplete) {
+      setIsDisabled(true);
+    }
+  }, []);
 
   useEffect(() => {
     const stored = sessionStorage.getItem(ECICS_USER_INFO);
@@ -177,6 +189,7 @@ const ReviewInfoDetail = () => {
                 <InfoSection
                   title='Vehicle Details'
                   data={commonInfo.vehicle}
+                  setIsDisabled={setIsDisabled}
                 />
               )}
             </div>
@@ -204,6 +217,7 @@ const ReviewInfoDetail = () => {
                   title='Vehicle Details'
                   data={commonInfo.vehicle}
                   boxClass='mt-4'
+                  setIsDisabled={setIsDisabled}
                 />
               )}
             </div>
@@ -213,7 +227,8 @@ const ReviewInfoDetail = () => {
           <SecondaryButton onClick={handleCloseModal}>Cancel</SecondaryButton>
           <PrimaryButton
             onClick={handleContinue}
-            className='rounded-md px-4 py-2 text-white'
+            className='rounded-isDisble-white'
+            disabled={isDisabled}
           >
             Continue
           </PrimaryButton>

@@ -54,7 +54,7 @@ export const PolicyDetail = ({
     if (userInfo?.vehicles?.length) {
       const vehicle = userInfo?.vehicles[0] as any;
       setSelectedVehicle({
-        regNo: vehicle?.chassisno?.value,
+        regNo: vehicle?.vehicleno?.value,
         make: vehicle?.make?.value,
         model: vehicle?.model?.value,
         first_registered_year: vehicle?.yearofmanufacture.value,
