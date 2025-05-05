@@ -12,19 +12,27 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 const ConfirmInfoModal = ({
   onSave,
+  onFail,
   onClose,
 }: {
   onSave: () => void;
+  onFail: () => void;
   onClose: () => void;
 }) => {
   const { isMobile } = useDeviceDetection();
-  const { mutate: savePersonalInfo, isSuccess } = usePostPersonalInfo();
+  const {
+    mutate: savePersonalInfo,
+    isSuccess,
+    isError,
+  } = usePostPersonalInfo();
 
   useEffect(() => {
     if (isSuccess) {
       onSave();
+    } else if (isError) {
+      onFail();
     }
-  }, [isSuccess]);
+  }, [isSuccess, isError]);
 
   const handleSave = async () => {
     const stored = sessionStorage.getItem(ECICS_USER_INFO);
