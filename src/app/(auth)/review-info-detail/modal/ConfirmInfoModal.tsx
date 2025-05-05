@@ -45,7 +45,9 @@ const ConfirmInfoModal = ({
       date_of_birth: parsed.dob?.value
         ? convertDateToDDMMYYYY(parsed.dob.value)
         : '',
-      address: `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
+      address: [
+        `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
+      ].filter(Boolean),
       vehicle_make: parsed.vehicle_make || '',
       vehicle_model: parsed.vehicle_model || '',
       year_of_registration: parsed.year_of_registration || '',
