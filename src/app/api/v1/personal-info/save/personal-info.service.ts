@@ -43,7 +43,7 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
     const newQuote = await prisma.quote.create({
       data: {
         key: data.key,
-        personalInfoId: newPersonalInfo.id,
+        personal_info_id: newPersonalInfo.id,
       },
     });
     logger.info(`Creating a new quote info: ${JSON.stringify(newQuote)}`);

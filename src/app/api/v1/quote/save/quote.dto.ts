@@ -1,9 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const saveQuoteDTOSchema= z.object({
+export const saveQuoteDTOSchema = z.object({
   quoteId: z.string().nullable().optional(),
   quoteNo: z.string().nullable().optional(),
   policyId: z.string().nullable().optional(),
+  productId: z.string().nullable().optional(),
+  proposalId: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),
   name: z.string().nullable().optional(),
   email: z.string().nullable().optional(),
@@ -12,7 +14,7 @@ export const saveQuoteDTOSchema= z.object({
   isFinalized: z.boolean().nullable().optional(),
   isPaid: z.boolean().nullable().optional(),
   expirationDate: z.date().nullable().optional(),
-  key: z.string().min(1, "Code is required"),
+  key: z.string().min(1, 'Code is required'),
   ipAddress: z.string().nullable().optional(),
   country: z.string().nullable().optional(),
   city: z.string().nullable().optional(),

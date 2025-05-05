@@ -20,32 +20,28 @@ export async function saveQuote(data: saveQuoteDTO) {
     const updatedQuote = await prisma.quote.update({
       where: { id: existingQuote.id },
       data: {
-        quoteNo: data.quoteNo,
-        policyId: data.policyId,
+        quote_no: data.quoteNo,
+        policy_id: data.policyId,
         phone: data.phone,
         email: data.email,
         name: data.name,
         data: data.data,
-        partnerCode: data.partnerCode,
-        isFinalized: data.isFinalized ?? false,
-        isPaid: data.isPaid ?? false,
-        expirationDate: data.expirationDate
+        partner_code: data.partnerCode,
+        is_finalized: data.isFinalized ?? false,
+        is_paid: data.isPaid ?? false,
+        expiration_date: data.expirationDate
           ? new Date(data.expirationDate)
           : undefined,
         key: data.key,
-        ipAddress: data.ipAddress,
-        country: data.country,
-        city: data.city,
-        personalInfoId: data.personalInfoId,
-        companyId: data.companyId,
-        paymentResultId: data.paymentResultId,
-        countryNationalityId: data.countryNationalityId,
-        productTypeId: data.productTypeId,
-        promoCodeId: data.promoCodeId,
-        updatedAt: new Date(),
+        personal_info_id: data.personalInfoId,
+        company_id: data.companyId,
+        payment_result_id: data.paymentResultId,
+        country_nationality_id: data.countryNationalityId,
+        product_type_id: data.productTypeId,
+        promo_code_id: data.promoCodeId,
       },
       include: {
-        promoCode: {
+        promo_code: {
           select: {
             code: true,
             discount: true,
@@ -63,7 +59,7 @@ export async function saveQuote(data: saveQuoteDTO) {
             name: true,
           },
         },
-        personalInfo: {
+        personal_info: {
           select: {
             id: true,
             phone: true,
@@ -80,13 +76,13 @@ export async function saveQuote(data: saveQuoteDTO) {
             vehicles: true,
           },
         },
-        countryNationality: {
+        country_nationality: {
           select: {
             id: true,
             name: true,
           },
         },
-        productType: {
+        product_type: {
           select: {
             id: true,
             name: true,
@@ -107,26 +103,28 @@ export async function saveQuote(data: saveQuoteDTO) {
   );
   const newQuote = await prisma.quote.create({
     data: {
-      quoteId: data.quoteId,
-      quoteNo: data.quoteNo,
-      policyId: data.policyId,
+      quote_id: data.quoteId,
+      quote_no: data.quoteNo,
+      policy_id: data.policyId,
+      product_id: data.productId,
+      proposal_id: data.proposalId,
       phone: data.phone,
       email: data.email,
       name: data.name,
       data: data.data,
-      partnerCode: data.partnerCode,
-      isFinalized: data.isFinalized ?? false,
-      isPaid: data.isPaid ?? false,
-      expirationDate: data.expirationDate
+      partner_code: data.partnerCode,
+      is_finalized: data.isFinalized ?? false,
+      is_paid: data.isPaid ?? false,
+      expiration_date: data.expirationDate
         ? new Date(data.expirationDate)
         : undefined,
       key: data.key,
-      personalInfoId: data.personalInfoId,
-      companyId: data.companyId,
-      paymentResultId: data.paymentResultId,
-      countryNationalityId: data.countryNationalityId,
-      productTypeId: data.productTypeId,
-      promoCodeId: data.promoCodeId,
+      personal_info_id: data.personalInfoId,
+      company_id: data.companyId,
+      payment_result_id: data.paymentResultId,
+      country_nationality_id: data.countryNationalityId,
+      product_type_id: data.productTypeId,
+      promo_code_id: data.promoCodeId,
     },
   });
 
@@ -136,7 +134,7 @@ export async function saveQuote(data: saveQuoteDTO) {
   });
   sendMail({
     to: newQuote.email ?? '',
-    subject: `ECICS Limited | Your Car Insurance Quotation <${newQuote.quoteNo}>`,
+    subject: `ECICS Limited | Your Car Insurance Quotation <${newQuote.quote_no}>`,
     html: retrieveQuoteHTML,
   });
 
