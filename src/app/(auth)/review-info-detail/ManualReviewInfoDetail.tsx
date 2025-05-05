@@ -2,17 +2,27 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
+import dayjs from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { generateYearOptions } from '@/libs/utils/utils';
+
 import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { DatePickerField } from '@/components/ui/form/datepicker';
+import {
+  DropdownField,
+  DropdownOption,
+} from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { TextAreaField } from '@/components/ui/form/textareafield';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
+import { FIELD_NAMES_REVIEW_YOUR_MYINFO_DETAILS } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 
@@ -42,6 +52,19 @@ type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 const ManualReviewInfoDetail = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const router = useRouter();
+  const regYearOptions: DropdownOption[] = generateYearOptions();
+
+  const genderOptions: DropdownOption[] = [
+    { value: 'Male', text: 'Male' },
+    { value: 'Female', text: 'Female' },
+  ];
+
+  const maritalStatusOptions: DropdownOption[] = [
+    { value: 'Married', text: 'Married' },
+    { value: 'Single', text: 'Single' },
+    { value: 'Widowed', text: 'Widowed' },
+    { value: 'Divorced', text: 'Divorced' },
+  ];
 
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
@@ -127,20 +150,36 @@ const ManualReviewInfoDetail = () => {
                   </div>
                   <div className='min-w-[30%] flex-1'>
                     <div className='text-sm font-bold'>Gender</div>
-                    <InputField name='gender' placeholder='Male' />
+                    <DropdownField
+                      name={FIELD_NAMES_REVIEW_YOUR_MYINFO_DETAILS.gender}
+                      placeholder='Select gender'
+                      options={genderOptions}
+                    />
                   </div>
                   <div className='min-w-[30%] flex-1'>
                     <div className='text-sm font-bold'>Marital Status</div>
-                    <InputField name='maritalStatus' placeholder='Married' />
+                    <DropdownField
+                      name={
+                        FIELD_NAMES_REVIEW_YOUR_MYINFO_DETAILS.marital_status
+                      }
+                      placeholder='Select marital status'
+                      options={maritalStatusOptions}
+                    ></DropdownField>
                   </div>
                   <div className='min-w-[30%] flex-1'>
                     <div className='text-sm font-bold'>Date of Birth</div>
-                    <InputField name='dob' placeholder='29/12/1990' />
+                    <DatePickerField
+                      name='dob'
+                      placeholder='29/12/1990'
+                      minDate={dayjs().startOf('day').subtract(70, 'years')}
+                      maxDate={dayjs().startOf('day').subtract(25, 'years')}
+                    />
                   </div>
                   <div className='min-w-[30%] flex-1'>
                     <div className='text-sm font-bold'>Address</div>
-                    <InputField
+                    <TextAreaField
                       name='address'
+                      rows={4}
                       placeholder='10 Eunos Road Singapore 400087'
                     />
                   </div>
@@ -161,7 +200,11 @@ const ManualReviewInfoDetail = () => {
                     <div className='text-sm font-bold'>
                       Year of Registration
                     </div>
-                    <InputField name='vehicleYear' placeholder='2024' />
+                    <DropdownField
+                      name={FIELD_NAMES_REVIEW_YOUR_MYINFO_DETAILS.vehicle_year}
+                      placeholder='Select registration year'
+                      options={regYearOptions}
+                    ></DropdownField>
                   </div>
                   <div className='min-w-[30%] flex-1'>
                     <div className='text-sm font-bold'>Chassis Number</div>
