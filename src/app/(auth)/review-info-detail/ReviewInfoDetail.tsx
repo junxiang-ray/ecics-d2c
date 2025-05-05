@@ -20,6 +20,10 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
+import { toast } from 'react-toastify';
+import { SavePersonalInfoPayload } from '@/libs/types/auth';
+import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
+import { usePostPersonalInfo } from '@/hook/auth/login';
 
 const reviewInfoSchema = z.object({
   email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
@@ -39,7 +43,7 @@ const ReviewInfoDetail = () => {
   const { isMobile } = useDeviceDetection();
   const [commonInfo, setCommonInfo] = useState<any>(null);
   const router = useRouter();
-
+  const { mutate: savePersonalInfo } = usePostPersonalInfo();
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
     defaultValues: {
@@ -49,6 +53,55 @@ const ReviewInfoDetail = () => {
   });
 
   const handleContinue = () => {
+    const stored = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!stored) {
+      toast.error('Missing user info in session.');
+      return;
+    }
+
+    const parsed = JSON.parse(stored);
+
+    const payload: SavePersonalInfoPayload = {
+      email: parsed.email?.value || '',
+      phone: `${parsed.mobileno?.nbr?.value || ''}`,
+      name: parsed.name?.value || '',
+      nric: parsed.uinfin?.value || '',
+      gender: parsed.sex?.desc || '',
+      marital_status: parsed.marital?.desc || '',
+      date_of_birth: parsed.dob?.value
+        ? convertDateToDDMMYYYY(parsed.dob.value)
+        : '',
+      address: [
+        parsed.regadd?.block?.value || '',
+        parsed.regadd?.street?.value || '',
+        `#${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}`,
+        parsed.regadd?.postal?.value || '',
+        parsed.regadd?.country?.desc || '',
+      ].filter(Boolean),
+      vehicle_make: parsed.vehicle_make || '',
+      vehicle_model: parsed.vehicle_model || '',
+      year_of_registration: parsed.year_of_registration || '',
+      vehicles:
+        parsed.vehicles?.map((v: any) => ({
+          vehicleno: {
+            value: v.vehicleno?.value || '',
+          },
+          chassisno: {
+            value: v.chassisno?.value || '',
+          },
+          make: {
+            value: v.make?.value || '',
+          },
+          model: {
+            value: v.model?.value || '',
+          },
+          engineno: {
+            value: v.engineno?.value || '',
+          },
+        })) || [],
+      key: `key-${Date.now()}`,
+    };
+    savePersonalInfo(payload);
     router.push(ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS);
   };
 
