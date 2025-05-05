@@ -31,6 +31,7 @@ export const DropdownField = ({
               {...props}
               {...field}
               optionFilterProp='children'
+              value={field.value}
               status={fieldState.invalid ? 'error' : ''}
               className={`w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
             >

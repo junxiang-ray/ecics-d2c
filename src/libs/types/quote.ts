@@ -1,18 +1,99 @@
 export interface QuoteResponse {
   message: string;
-  data: {
-    quote_info: QuoteInfo;
-    plans: Plan[];
-  };
+  data: Quote;
+}
+export interface Quote {
+  id: number;
+  quote_id: string;
+  quote_no: string;
+  policy_id: string;
+  product_id: string;
+  proposal_id: string;
+  phone: string;
+  email: string;
+  name: string;
+  data: QuoteData;
+  partner_code: string;
+  is_finalized: boolean;
+  is_paid: boolean;
+  is_sending_email: boolean;
+  expiration_date: string; // ISO string date
+  key: string;
+  created_at: string; // ISO string date
+  update_at: string; // ISO string date
+  personal_info_id: string | null;
+  company_id: number;
+  payment_result_id: string | null;
+  country_nationality_id: string | null;
+  product_type_id: string | null;
+  promo_code_id: string | null;
+  promo_code: string | null;
+  company: Company;
+  country_nationality: any;
+  product_type: any;
+}
+export interface Company {
+  id: number;
+  name: string;
+}
+export interface QuoteData {
+  plans: Plan[];
+  vehicles: Vehicle[];
+  personal_info: PersonalInfo;
+  vehicle_info_selected: Vehicle;
+  insurance_additional_info: InsuranceAdditionalInfo;
 }
 
+export interface Plan {
+  id: number;
+  code: string;
+  title: string;
+  addons: Addon[];
+  key_map: string;
+  benefits: any[]; // Benefits array is empty in the sample; adjust if needed.
+  sub_title: string | null;
+  created_at: string;
+  updated_at: string;
+  product_type: ProductType;
+  is_recommended: boolean;
+  premium_bef_gst: number;
+  premium_with_gst: number;
+}
+export interface Vehicle {
+  vehicle_make: string;
+  chasis_number: string;
+  vehicle_model: string;
+  first_registered_year: string;
+}
+
+export interface InsuranceAdditionalInfo {
+  end_date: string;
+  start_date: string;
+  no_of_claim: number;
+  no_claim_discount: number;
+}
+export interface PersonalInfo {
+  name: string;
+  nric: string;
+  email: string;
+  gender: string;
+  address: string;
+  phone_number: string;
+  date_of_birth: string;
+  marital_status: string;
+  driving_experience: number;
+}
+export interface ProductType {
+  id: number;
+  name: string;
+}
 export interface QuoteCreationPayload {
   key: string;
   partner_code: string;
   promo_code: string;
   company_id: number;
-  personal_info: PersonalInfo;
-  vehicle_basic_details: VehicleBasicDetails;
+  personal_info: PersonalPayload;
+  vehicle_basic_details: Vehicle;
   insurance_additional_info: InsuranceAdditionalInfo;
 }
 
@@ -66,23 +147,7 @@ export interface Addon {
   options: Option[];
 }
 
-export interface Plan {
-  id: string;
-  title: string;
-  subtitle: string;
-  benefits: Benefit[];
-  is_recommended: boolean;
-  premium_with_gst: number;
-  premium_bef_gst: number;
-  addons: Addon[];
-}
-
-export interface QuoteData {
-  quote_info: QuoteInfo;
-  plans: Plan[];
-}
-
-export interface PersonalInfo {
+export interface PersonalPayload {
   name?: string;
   gender?: string;
   maritalStatus?: string;
@@ -92,18 +157,4 @@ export interface PersonalInfo {
   driving_experience: number;
   phone_number: string;
   email: string;
-}
-
-export interface VehicleBasicDetails {
-  make: string;
-  model: string;
-  first_registered_year: string;
-  chasis_number: string;
-}
-
-export interface InsuranceAdditionalInfo {
-  no_claim_discount: number;
-  no_of_claim: number;
-  start_date: string;
-  end_date: string;
 }
