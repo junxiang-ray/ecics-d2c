@@ -1,11 +1,22 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Tooltip } from 'antd';
+import dayjs from 'dayjs';
+import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { generateYearOptions } from '@/libs/utils/utils';
+
 import WarningIcon from '@/components/icons/WarningIcon';
+import { DatePickerField } from '@/components/ui/form/datepicker';
+import {
+  DropdownField,
+  DropdownOption,
+} from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { TextAreaField } from '@/components/ui/form/textareafield';
 
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 
@@ -68,6 +79,8 @@ const LabeledInputField = ({
   </div>
 );
 
+const isReadOnly = true;
+
 const DesktopReviewInfoDetail = ({
   commonInfo,
 }: DesktopReviewInfoDetailProps) => {
@@ -86,6 +99,20 @@ const DesktopReviewInfoDetail = ({
     {},
   );
 
+  const regYearOptions: DropdownOption[] = generateYearOptions();
+
+  const genderOptions: DropdownOption[] = [
+    { value: 'Male', text: 'Male' },
+    { value: 'Female', text: 'Female' },
+  ];
+
+  const maritalStatusOptions: DropdownOption[] = [
+    { value: 'Married', text: 'Married' },
+    { value: 'Single', text: 'Single' },
+    { value: 'Widowed', text: 'Widowed' },
+    { value: 'Divorced', text: 'Divorced' },
+  ];
+
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
     defaultValues: {
@@ -99,38 +126,25 @@ const DesktopReviewInfoDetail = ({
   const boxWrapperClass =
     'mt-6 rounded-md border border-gray-300 bg-gray-100 p-4';
 
-  const personalFields = [
-    { label: 'Name as per NRIC', name: 'personal.nameaspernric' },
-    { label: 'NRIC', name: 'personal.nric' },
-    { label: 'Gender', name: 'personal.gender' },
-    { label: 'Marital Status', name: 'personal.maritalstatus' },
-    { label: 'Date of Birth', name: 'personal.dateofbirth' },
-    { label: 'Address', name: 'personal.address' },
-  ];
-
-  const vehicleFields = [
-    { label: 'Vehicle Make', name: 'vehicle.vehiclemake' },
-    { label: 'Year of Registration', name: 'vehicle.yearofregistration' },
-    { label: 'Chassis Number', name: 'vehicle.chassisnumber' },
-  ];
-
   return (
     <div className='flex flex-col'>
       <div className='relative z-10 flex-grow'>
         <FormProvider {...methods}>
           <div className='w-full'>
             {/* Email & Phone */}
-            <div className={boxWrapperClass}>
+            <div className={`${boxWrapperClass}`}>
               <div className='flex items-center justify-between'>
                 <div className='text-base font-bold'>
                   Enter a valid Email and Contact Number
                 </div>
-                <div className='flex items-center font-bold'>
-                  <WarningIcon size={14} />
-                  <div className='ml-[2px] text-[10px]'>
-                    Why do we need this?
-                  </div>
-                </div>
+                <Tooltip title='We use this information to verify your identity and pre-fill your application with accurate government-verified data. This helps ensure a faster, more secure, and seamless submission process.'>
+                  <span className='flex cursor-pointer items-center font-bold'>
+                    <WarningIcon size={14} />
+                    <span className='ml-1 text-[10px]'>
+                      Why do we need this?
+                    </span>
+                  </span>
+                </Tooltip>
               </div>
               <div className='mt-4 flex gap-4'>
                 <LabeledInputField label='Email Address' name='email' />
@@ -144,9 +158,44 @@ const DesktopReviewInfoDetail = ({
                 Personal Info
               </div>
               <div className='mt-2 flex flex-wrap gap-4'>
-                {personalFields.map(({ label, name }) => (
-                  <LabeledInputField key={name} label={label} name={name} />
-                ))}
+                <LabeledInputField
+                  label='Name as per NRIC'
+                  name='personal.nameaspernric'
+                />
+                <LabeledInputField label='NRIC' name='personal.nric' />
+                <div className='min-w-[30%] flex-1'>
+                  <div className='text-sm font-bold'>Gender</div>
+                  <DropdownField
+                    name='personal.gender'
+                    options={genderOptions}
+                    disabled={isReadOnly}
+                  />
+                </div>
+                <div className='min-w-[30%] flex-1'>
+                  <div className='text-sm font-bold'>Marital Status</div>
+                  <DropdownField
+                    name='personal.maritalstatus'
+                    options={maritalStatusOptions}
+                    disabled={isReadOnly}
+                  ></DropdownField>
+                </div>
+                <div className='min-w-[30%] flex-1'>
+                  <div className='text-sm font-bold'>Date of Birth</div>
+                  <DatePickerField
+                    name='personal.dateofbirth'
+                    disabled={isReadOnly}
+                    minDate={dayjs().startOf('day').subtract(70, 'years')}
+                    maxDate={dayjs().startOf('day').subtract(25, 'years')}
+                  />
+                </div>
+                <div className='min-w-[30%] flex-1'>
+                  <div className='text-sm font-bold'>Address</div>
+                  <TextAreaField
+                    name='personal.address'
+                    rows={4}
+                    disabled={isReadOnly}
+                  />
+                </div>
               </div>
             </div>
 
@@ -156,9 +205,22 @@ const DesktopReviewInfoDetail = ({
                 Vehicle Details
               </div>
               <div className='mt-2 flex flex-wrap gap-4'>
-                {vehicleFields.map(({ label, name }) => (
-                  <LabeledInputField key={name} label={label} name={name} />
-                ))}
+                <LabeledInputField
+                  label='Vehicle Make'
+                  name='vehicle.vehiclemake'
+                />
+                <div className='min-w-[30%] flex-1'>
+                  <div className='text-sm font-bold'>Year of Registration</div>
+                  <DropdownField
+                    name='vehicle.yearofregistration'
+                    options={regYearOptions}
+                    disabled={isReadOnly}
+                  ></DropdownField>
+                </div>
+                <LabeledInputField
+                  label='Chassis Number'
+                  name='vehicle.chassisnumber'
+                />
               </div>
             </div>
           </div>

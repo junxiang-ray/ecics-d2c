@@ -17,17 +17,3 @@ export const MOTOR_QUOTE = {
   quick_proposal_hire_purchase: 'quick_proposal_hire_purchase',
   quick_proposal_other_hire_purchase: 'quick_proposal_other_hire_purchase',
 };
-
-export const FIELD_NAMES_REVIEW_YOUR_MYINFO_DETAILS = {
-  email: 'email',
-  phone_number: 'phone_number',
-  name: 'name',
-  nric: 'nric',
-  gender: 'gender',
-  marital_status: 'marital_status',
-  dob: 'dob',
-  address: 'address',
-  vehicle_make: 'vehicle_make',
-  vehicle_year: 'vehicle_year',
-  chassis_number: 'chassis_number',
-};
