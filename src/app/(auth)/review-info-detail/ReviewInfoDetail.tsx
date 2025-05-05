@@ -7,9 +7,12 @@ import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { capitalizeWords } from '@/libs/utils/utils';
+
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
+import DesktopReviewInfoDetail from '@/app/(auth)/review-info-detail/DesktopReviewInfoDetail';
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
@@ -17,7 +20,6 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-import { capitalizeWords } from '@/libs/utils/utils';
 
 const reviewInfoSchema = z.object({
   email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
@@ -139,13 +141,32 @@ const ReviewInfoDetail = () => {
       <div className='flex min-h-screen flex-col'>
         <div className='relative z-10 flex-grow p-6'>
           <div className='flex items-center justify-between'>
-            <Image
-              src='/singpass.svg'
-              alt='Singpass Logo'
-              width={170}
-              height={170}
-            />
-            <Image src='/ecics.svg' alt='ECICS Logo' width={100} height={100} />
+            {isMobile ? (
+              <>
+                <Image
+                  src='/singpass.svg'
+                  alt='Singpass Logo'
+                  width={170}
+                  height={170}
+                />
+                <Image
+                  src='/ecics.svg'
+                  alt='ECICS Logo'
+                  width={100}
+                  height={100}
+                />
+              </>
+            ) : (
+              <>
+                <Image src='/ecics.svg' alt='Logo' width={100} height={100} />
+                <Image
+                  src='/singpass.svg'
+                  alt='Logo'
+                  width={170}
+                  height={170}
+                />
+              </>
+            )}
           </div>
 
           <div className='mt-6 text-lg font-bold'>
@@ -173,39 +194,19 @@ const ReviewInfoDetail = () => {
               )}
             </div>
           ) : (
-            <div className='w-2/3 justify-self-center'>
-              <div className='mt-6 flex items-center justify-between rounded-md border border-gray-300 bg-white p-4'>
-                <div className='w-[calc(50%-10px)]'>
-                  <div className='text-sm font-bold'>Email Address</div>
-                  <InputField name='email' />
-                </div>
-                <div className='w-[calc(50%-10px)]'>
-                  <div className='text-sm font-bold'>Phone Number</div>
-                  <InputField name='phone' />
-                </div>
-              </div>
-              {commonInfo?.personal && (
-                <InfoSection
-                  title='Personal Details'
-                  data={commonInfo.personal}
-                  boxClass='mt-4'
-                />
-              )}
-              {commonInfo?.vehicle && commonInfo.vehicle.length > 0 && (
-                <InfoSection
-                  title='Vehicle Details'
-                  data={commonInfo.vehicle}
-                  boxClass='mt-4'
-                />
-              )}
-            </div>
+            <DesktopReviewInfoDetail commonInfo={commonInfo} />
           )}
         </div>
-        <div className='flex justify-center gap-4 border-t bg-white p-4'>
-          <SecondaryButton onClick={handleCloseModal}>Cancel</SecondaryButton>
+        <div className='fixed bottom-0 left-0 right-0 z-20 flex justify-center gap-4 border-t bg-white p-4'>
+          <SecondaryButton
+            className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
+            onClick={handleCloseModal}
+          >
+            Cancel
+          </SecondaryButton>
           <PrimaryButton
             onClick={handleContinue}
-            className='rounded-md px-4 py-2 text-white'
+            className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
           >
             Continue
           </PrimaryButton>
