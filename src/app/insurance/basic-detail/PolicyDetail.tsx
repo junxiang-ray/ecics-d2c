@@ -1,24 +1,25 @@
 'use client';
 
-import {
-  VehicleSelection,
-  VehicleSelectionModal,
-} from '@/components/VehicleSelection';
-import { MOTOR_QUOTE } from '@/constants';
-import { adjustDateInDate } from '@/libs/utils/date-utils';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
+
+import { adjustDateInDate } from '@/libs/utils/date-utils';
+
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
-import { useSearchParams } from 'next/navigation';
+import { VehicleSelectionModal } from '@/components/VehicleSelection';
+
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { MOTOR_QUOTE } from '@/constants';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { useCreateQuote } from '@/hook/insurance/quote';
+import { VehicleSelection } from '@/interfaces/vehicle.interface';
+
 import { DEFAULT_PROMO_CODE } from './options';
+import PolicyDetailForm from './PolicyDetailForm';
 import { PromoCodeModel } from '../components/PromoCode';
 import VehicleBar from '../components/VehicleBar';
-import PolicyDetailForm from './PolicyDetailForm';
-import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { useCreateQuote } from '@/hook/insurance/quote';
-import { QuoteCreationPayload } from '@/libs/types/quote';
-import { useRouter } from 'next/navigation';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 interface PolicyDetailProps {
   isSingPassFlow: boolean;

@@ -11,21 +11,20 @@ import { z } from 'zod';
 
 import { SavePersonalInfoPayload } from '@/libs/types/auth';
 import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
-import { capitalizeWords } from '@/libs/utils/utils';
+import { capitalizeWords, saveToSessionStorage } from '@/libs/utils/utils';
 
 import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
+import { VehicleSelectionModal } from '@/components/VehicleSelection';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
-import {
-  ECICS_USER_INFO,
-  IS_THREE_INPUT_COMPLETE,
-} from '@/constants/general.constant';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { VehicleSelection } from '@/interfaces/vehicle.interface';
 
 import InfoSection from './InfoSection';
 
@@ -55,12 +54,21 @@ const reviewInfoSchema = z.object({
 const isReadOnly = true;
 type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 
+interface CommonInfo {
+  email: string;
+  phone: string;
+  personal: Array<{ label: string; value: string }>;
+  vehicle: Array<{ label: string; value: string }>;
+}
+
 const ReviewInfoDetail = () => {
   const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { isMobile } = useDeviceDetection();
-  const [commonInfo, setCommonInfo] = useState<any>(null);
+  const [commonInfo, setCommonInfo] = useState<CommonInfo | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [showChooseVehicleModal, setShowChooseVehicleModal] = useState(false);
+  const [refreshSession, setRefreshSession] = useState(false);
 
   const { mutate: savePersonalInfo } = usePostPersonalInfo();
   const methods = useForm<ReviewInfoForm>({
@@ -70,66 +78,6 @@ const ReviewInfoDetail = () => {
       phone: '',
     },
   });
-
-  const handleContinue = () => {
-    const stored = sessionStorage.getItem(ECICS_USER_INFO);
-    if (!stored) {
-      toast.error('Missing user info in session.');
-      return;
-    }
-
-    const parsed = JSON.parse(stored);
-
-    const payload: SavePersonalInfoPayload = {
-      email: parsed.email?.value || '',
-      phone: `${parsed.mobileno?.nbr?.value || ''}`,
-      name: parsed.name?.value || '',
-      nric: parsed.uinfin?.value || '',
-      gender: parsed.sex?.desc || '',
-      marital_status: parsed.marital?.desc || '',
-      date_of_birth: parsed.dob?.value
-        ? convertDateToDDMMYYYY(parsed.dob.value)
-        : '',
-      address: [
-        `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
-      ].filter(Boolean),
-      vehicle_make: parsed.vehicle_make || '',
-      vehicle_model: parsed.vehicle_model || '',
-      year_of_registration: parsed.year_of_registration || '',
-      vehicles:
-        parsed.vehicles?.map((v: any) => ({
-          vehicleno: {
-            value: v.vehicleno?.value || '',
-          },
-          chassisno: {
-            value: v.chassisno?.value || '',
-          },
-          make: {
-            value: v.make?.value || '',
-          },
-          model: {
-            value: v.model?.value || '',
-          },
-          engineno: {
-            value: v.engineno?.value || '',
-          },
-        })) || [],
-      key: `key-${Date.now()}`,
-    };
-    savePersonalInfo(payload);
-    router.push(ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS);
-  };
-
-  const handleCloseModal = () => {
-    setShowConfirmModal(true);
-  };
-
-  useEffect(() => {
-    const isComplete = sessionStorage.getItem(IS_THREE_INPUT_COMPLETE);
-    if (!isComplete) {
-      setIsDisabled(true);
-    }
-  }, []);
 
   useEffect(() => {
     const stored = sessionStorage.getItem(ECICS_USER_INFO);
@@ -211,12 +159,112 @@ const ReviewInfoDetail = () => {
               ],
       };
       setCommonInfo(transformed);
+
+      // Check if any vehicle field has "N/A"
+      const hasInvalidVehicle = transformed.vehicle.some(
+        (item: any) => item.value === 'N/A',
+      );
+      if (hasInvalidVehicle) {
+        setIsDisabled(true);
+      }
+
       methods.reset({
         email: transformed.email,
         phone: transformed.phone,
       });
+      if ((parsed.vehicles?.length || 0) > 1) {
+        setShowChooseVehicleModal(true);
+      }
     }
-  }, [methods]);
+  }, [methods, refreshSession]);
+
+  const stored = sessionStorage.getItem(ECICS_USER_INFO);
+  const parsed = stored ? JSON.parse(stored) : null;
+
+  const vehicles: VehicleSelection[] = (parsed?.vehicles ?? []).map(
+    (vehicle: any) => ({
+      regNo: vehicle.vehicleno?.value,
+      make: vehicle.make?.value,
+      model: vehicle.model?.value,
+      first_registered_year: vehicle.firstregistrationdate?.value,
+    }),
+  );
+
+  const handleSelection = (selected: VehicleSelection | null) => {
+    if (selected) {
+      // Retrieve user info from sessionStorage
+      const stored = sessionStorage.getItem(ECICS_USER_INFO);
+      const parsed = stored ? JSON.parse(stored) : null;
+
+      if (parsed && parsed.vehicles) {
+        // Filter vehicles to only include the one matching the selected vehicle
+        const filteredVehicles = parsed.vehicles.filter(
+          (vehicle: any) => vehicle.vehicleno.value === selected.regNo,
+        );
+
+        // Update the sessionStorage with the filtered vehicles
+        parsed.vehicles = filteredVehicles;
+
+        sessionStorage.removeItem(ECICS_USER_INFO);
+        // Save the updated user info back to sessionStorage
+        saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
+        setRefreshSession((prev) => !prev);
+      }
+    }
+    setShowChooseVehicleModal(false);
+  };
+
+  const handleContinue = () => {
+    const stored = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!stored) {
+      toast.error('Missing user info in session.');
+      return;
+    }
+    const parsed = JSON.parse(stored);
+
+    const payload: SavePersonalInfoPayload = {
+      email: parsed.email?.value || '',
+      phone: `${parsed.mobileno?.nbr?.value || ''}`,
+      name: parsed.name?.value || '',
+      nric: parsed.uinfin?.value || '',
+      gender: parsed.sex?.desc || '',
+      marital_status: parsed.marital?.desc || '',
+      date_of_birth: parsed.dob?.value
+        ? convertDateToDDMMYYYY(parsed.dob.value)
+        : '',
+      address: [
+        `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
+      ].filter(Boolean),
+      vehicle_make: parsed.vehicle_make || '',
+      vehicle_model: parsed.vehicle_model || '',
+      year_of_registration: parsed.year_of_registration || '',
+      vehicles:
+        parsed.vehicles?.map((v: any) => ({
+          vehicleno: {
+            value: v.vehicleno?.value || '',
+          },
+          chassisno: {
+            value: v.chassisno?.value || '',
+          },
+          make: {
+            value: v.make?.value || '',
+          },
+          model: {
+            value: v.model?.value || '',
+          },
+          engineno: {
+            value: v.engineno?.value || '',
+          },
+        })) || [],
+      key: `key-${Date.now()}`,
+    };
+    savePersonalInfo(payload);
+    router.push(ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS);
+  };
+
+  const handleCloseModal = () => {
+    setShowConfirmModal(true);
+  };
 
   return (
     <FormProvider {...methods}>
@@ -266,7 +314,7 @@ const ReviewInfoDetail = () => {
               {commonInfo?.personal && (
                 <InfoSection title='Personal Info' data={commonInfo.personal} />
               )}
-              {commonInfo?.vehicle && (
+              {!showChooseVehicleModal && commonInfo?.vehicle && (
                 <InfoSection
                   title='Vehicle Details'
                   data={commonInfo.vehicle}
@@ -308,7 +356,7 @@ const ReviewInfoDetail = () => {
                   boxClass='mt-4'
                 />
               )}
-              {commonInfo?.vehicle && (
+              {!showChooseVehicleModal && commonInfo?.vehicle && (
                 <InfoSection
                   title='Vehicle Details'
                   data={commonInfo.vehicle}
@@ -319,7 +367,7 @@ const ReviewInfoDetail = () => {
             </div>
           )}
         </div>
-        <div className='fixed bottom-0 left-0 right-0 z-20 flex justify-center gap-4 border-t bg-white p-4'>
+        <div className='sticky bottom-0 left-0 right-0 z-20 flex justify-center gap-4 border-t bg-white p-4'>
           <SecondaryButton
             className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
             onClick={handleCloseModal}
@@ -338,6 +386,14 @@ const ReviewInfoDetail = () => {
           <ConfirmInfoModalWrapper
             showConfirmModal={showConfirmModal}
             setShowConfirmModal={setShowConfirmModal}
+          />
+        )}
+        {showChooseVehicleModal && (
+          <VehicleSelectionModal
+            isReviewScreen={true}
+            visible={showChooseVehicleModal}
+            vehicles={vehicles}
+            onSubmit={handleSelection}
           />
         )}
       </div>
