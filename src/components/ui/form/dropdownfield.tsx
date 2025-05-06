@@ -34,6 +34,7 @@ export const DropdownField = ({
               {...field}
               disabled={disabled}
               optionFilterProp='children'
+              value={field.value}
               status={fieldState.invalid ? 'error' : ''}
               className={`w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
               suffixIcon={

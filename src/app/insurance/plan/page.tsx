@@ -36,7 +36,7 @@ function PlanPage() {
         phone_number: '98989898',
         email: 'test321@gmail.com',
       },
-      vehicle_basic_details: {
+      vehicle_info_selected: {
         make: 'Audi',
         model: 'A1 1.0',
         first_registered_year: '2024',
