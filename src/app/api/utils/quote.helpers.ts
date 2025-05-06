@@ -140,3 +140,14 @@ export function mappedAddonPremiums(quoteData: any): Record<string, number> {
         ?.buy_up_ncd_if_selected ?? 0,
   };
 }
+
+export const addonToQuickProposalMap: Record<string, string> = {
+  CAR_COM_ANW: 'quick_proposal_any_workshop',
+  CAR_COM_AJE: 'quick_proposal_excess',
+  CAR_COM_BUN: 'quick_proposal_bun',
+  CAR_COM_RSA: 'quick_proposal_ra24',
+  CAR_COM_NOR: 'quick_proposal_new_for_old',
+  CAR_COM_PAC: 'quick_proposal_pa_plus',
+  CAR_COM_MDE: 'quick_proposal_me',
+  CAR_COM_KRC: 'quick_proposal_krc',
+};

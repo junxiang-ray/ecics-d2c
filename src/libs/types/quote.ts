@@ -61,7 +61,7 @@ export interface Addon {
   is_display: boolean;
   is_recommended: boolean;
   description: string;
-  default_option_id: string | null;
+  default_option_id: number | null;
   depends_on?: string[];
   options: Option[];
 }
