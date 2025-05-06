@@ -1,3 +1,5 @@
+import { DropdownOption } from '@/components/ui/form/dropdownfield';
+import { v4 as uuid } from 'uuid';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 export const removeFromLocalStorage = (keys: string[]) => {
@@ -34,6 +36,20 @@ export const saveToSessionStorage = (items: Record<string, string>) => {
   });
 };
 
+export const generateYearOptions = (): DropdownOption[] => {
+  const currentYear = new Date().getFullYear();
+  const years: DropdownOption[] = [];
+
+  for (let year = currentYear; year >= currentYear - 20; year--) {
+    years.push({
+      value: year.toString(),
+      text: year.toString(),
+    });
+  }
+
+  return years;
+};
+
 /**
  * Capitalize first letter of each word
  */
@@ -43,4 +59,14 @@ export const capitalizeWords = (str: string): string => {
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+};
+
+export const generateKeyAndAttachToUrl = (key: string) => {
+  const generatedKey = key || uuid();
+  const url = new URL(window.location.href);
+  if (!key) {
+    url.searchParams.set('key', generatedKey);
+    window.history.replaceState({}, '', url.toString());
+  }
+  return generatedKey;
 };

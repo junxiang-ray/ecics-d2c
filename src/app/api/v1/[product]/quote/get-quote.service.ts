@@ -24,22 +24,11 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
       }
     }
 
-    // Check if quote already exists
-    const quoteFound = await prisma.quote.findFirst({
-      where: {
-        key: data.key,
-      },
-    });
-
-    if (quoteFound) {
-      return ErrBadRequest('Quote already exists');
-    }
-
     const payloadData = {
       product_id: PRODUCT_ID.CAR,
-      quick_quote_make: data.vehicle_basic_details.make,
-      quick_quote_model: data.vehicle_basic_details.model,
-      quick_quote_reg_yyyy: data.vehicle_basic_details.first_registered_year,
+      quick_quote_make: data.vehicle_info_selected.vehicle_make,
+      quick_quote_model: data.vehicle_info_selected.vehicle_model,
+      quick_quote_reg_yyyy: data.vehicle_info_selected.first_registered_year,
       quick_quote_owner_dob: data.personal_info.date_of_birth,
       quick_quote_owner_drv_exp:
         data.personal_info.driving_experience.toString(),
@@ -63,30 +52,62 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
 
     if (response.data.status === 0) {
       const quoteResInfo = response.data.data;
-      const responseData = formatCarQuoteInfo(quoteResInfo, data);
+      const planData = await formatCarQuoteInfo(quoteResInfo, data);
 
-      // Save quote to database
-      await prisma.quote.create({
-        data: {
-          quoteId: quoteResInfo.product_id,
-          quoteNo: quoteResInfo.quote_no,
-          policyId: quoteResInfo.policy_id,
-          phone: data.personal_info.phone_number,
-          email: data.personal_info.email,
-          name: data.personal_info.name,
-          data: {
-            quoteRes: { ...quoteResInfo },
-          },
-          partnerCode: data?.partner_code || '',
-          expirationDate: new Date(quoteResInfo.quote_expiry_date),
+      logger.info(`Formatted quote data: ${JSON.stringify(planData)}`);
+
+      const quoteFound = await prisma.quote.findFirst({
+        where: {
           key: data.key,
-          promoCodeId: promoCodeData?.id || null,
-          companyId: data?.company_id || null,
         },
       });
 
+      let quoteInfo = null;
+      const quoteData = {
+        quote_id: quoteResInfo.quote_id,
+        quote_no: quoteResInfo.quote_no,
+        policy_id: quoteResInfo.policy_id,
+        product_id: quoteResInfo.product_id,
+        proposal_id: quoteResInfo.proposal_id,
+        phone: data.personal_info.phone_number,
+        email: data.personal_info.email,
+        name: data.personal_info.name,
+        quote_res_from_ISP: quoteResInfo,
+        data: {
+          ...(quoteFound?.data && typeof quoteFound.data === 'object'
+            ? quoteFound.data
+            : {}),
+          plans: planData,
+          personal_info: data.personal_info,
+          vehicle_info_selected: data.vehicle_info_selected,
+          insurance_additional_info: data.insurance_additional_info,
+        },
+        partner_code: data?.partner_code || '',
+        expiration_date: new Date(quoteResInfo.quote_expiry_date),
+        key: data.key,
+        promo_code_id: promoCodeData?.id || null,
+        company_id: data?.company_id || null,
+      };
+
+      if (quoteFound) {
+        quoteInfo = await prisma.quote.update({
+          where: { id: quoteFound.id },
+          data: quoteData,
+          omit: {
+            quote_res_from_ISP: true,
+          },
+        });
+      } else {
+        quoteInfo = await prisma.quote.create({
+          data: quoteData,
+          omit: {
+            quote_res_from_ISP: true,
+          },
+        });
+      }
+
       return successRes({
-        data: responseData,
+        data: quoteInfo,
         message: 'Quote generated successfully',
       });
     }

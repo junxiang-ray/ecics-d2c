@@ -3,7 +3,6 @@
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 import { MOTOR_QUOTE } from '@/constants';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
 import {
   useCreateQuote,
   useGetHirePurchaseList,
@@ -12,6 +11,7 @@ import {
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { Vehicle } from '@/libs/types/quote';
 import { adjustDateInDate, convertDateFormat } from '@/libs/utils/date-utils';
+import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
@@ -38,7 +38,8 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
   const userInfo = quoteInfo?.data?.personal_info;
   const vehicles = quoteInfo?.data?.vehicles ?? [];
   const vehicleSelected = quoteInfo?.data?.vehicle_info_selected;
-  console.log('userInfo :>> ', quoteInfo);
+  const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
+
   useEffect(() => {
     if (vehicleSelected) {
       setSelectedVehicle(vehicleSelected);
@@ -50,28 +51,33 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
     router.push('/insurance/plan');
   }, [isSuccess]);
 
-  const initialValues = {
-    [MOTOR_QUOTE.quick_proposal_start_date]: new Date(),
-    [MOTOR_QUOTE.quick_proposal_end_date]: adjustDateInDate(
-      new Date(),
-      1,
-      0,
-      -1,
-    ),
-    [MOTOR_QUOTE.quick_quote_owner_ncd]: 40,
-    [MOTOR_QUOTE.quick_proposal_promo_code]: promo_code ?? '',
-    [MOTOR_QUOTE.quick_quote_email]: userInfo?.email ?? '',
-    [MOTOR_QUOTE.quick_quote_mobile]: userInfo?.phone_number ?? '',
-    // [MOTOR_QUOTE.quick_quote_owner_dob]: convertDateFormat(
-    //   userInfo?.date_of_birth as string,
-    //   'DD/MM/YYYY',
-    // ),
-    [MOTOR_QUOTE.quick_quote_make]: selectedVehicle?.vehicle_make ?? '',
-    [MOTOR_QUOTE.quick_quote_model]: selectedVehicle?.vehicle_model ?? '',
-    [MOTOR_QUOTE.quick_quote_reg_yyyy]: selectedVehicle?.first_registered_year,
-  };
-  // Options for Dropdown
+  const startDate = new Date();
+  const endDate = adjustDateInDate(new Date(), 1, 0, -1);
 
+  const initialValues = {
+    [MOTOR_QUOTE.quick_proposal_promo_code]: promo_code ?? '',
+    [MOTOR_QUOTE.quick_proposal_start_date]:
+      insuranceInfo?.start_date ?? startDate,
+    [MOTOR_QUOTE.quick_proposal_end_date]: insuranceInfo?.end_date ?? endDate,
+    [MOTOR_QUOTE.quick_quote_owner_ncd]: insuranceInfo?.no_claim_discount ?? 0,
+    [MOTOR_QUOTE.quick_quote_owner_no_of_claims]:
+      insuranceInfo?.no_of_claim ?? 0,
+
+    [MOTOR_QUOTE.quick_quote_email]: userInfo?.email ?? '',
+    [MOTOR_QUOTE.quick_quote_mobile]: userInfo?.phone ?? '',
+    [MOTOR_QUOTE.quick_quote_owner_dob]: userInfo?.date_of_birth ?? '',
+    [MOTOR_QUOTE.quick_quote_owner_drv_exp]:
+      userInfo?.driving_experience ?? undefined,
+
+    // [MOTOR_QUOTE.quick_quote_make]: selectedVehicle?.vehicle_make ?? '',
+    // [MOTOR_QUOTE.quick_quote_model]: selectedVehicle?.vehicle_model ?? '',
+    [MOTOR_QUOTE.quick_quote_reg_yyyy]:
+      selectedVehicle?.first_registered_year ?? undefined,
+    [MOTOR_QUOTE.quick_proposal_hire_purchase]:
+      quoteInfo?.company_id ?? undefined,
+  };
+
+  // Options for Dropdown
   const hirePurchaseListFormatted: DropdownOption[] = [
     { value: 0, text: '-- Others (Not Available in this list) --' },
     ...(Array.isArray(hirePurchaseList)
@@ -98,34 +104,31 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     let payload;
-    payload = { ...data };
 
-    if (isSingPassFlow) {
-      const userInfo = JSON.parse(
-        sessionStorage.getItem(ECICS_USER_INFO) ?? '{}',
-      );
+    const keyQuote = generateKeyAndAttachToUrl(key);
+    payload = { ...data, key: keyQuote };
+
+    if (isSingPassFlow && userInfo) {
       // data from Singpass
       const personal_info = {
-        name: userInfo?.name.value,
-        gender: userInfo?.sex?.desc,
-        maritalStatus: userInfo?.marital?.value,
-        date_of_birth: convertDateFormat(userInfo?.dob?.value, 'DD/MM/YYYY'),
-        nric: userInfo?.uinfin?.value,
-        address: userInfo?.regadd?.value,
+        name: userInfo?.name,
+        gender: userInfo?.gender,
+        maritalStatus: userInfo?.marital_status,
+        date_of_birth: convertDateFormat(userInfo?.date_of_birth, 'DD/MM/YYYY'),
+        nric: userInfo?.nric,
+        address: userInfo?.address,
         driving_experience: 4,
-        phone_number: userInfo?.mobileno?.nbr?.value,
-        email: userInfo?.email?.value,
+        phone: userInfo?.phone,
+        email: userInfo?.email,
       };
 
-      const vehicle_basic_details = {
-        // make: selectedVehicle.make,
-        // model: selectedVehicle.model,
-        make: 'Audi',
-        model: 'A1 1.0',
+      const vehicle_info_selected = {
+        vehicle_make: selectedVehicle?.vehicle_make,
+        vehicle_model: selectedVehicle?.vehicle_model,
         first_registered_year: selectedVehicle?.first_registered_year,
         chasis_number: selectedVehicle?.chasis_number,
       };
-      payload = { ...payload, personal_info, vehicle_basic_details };
+      payload = { ...payload, personal_info, vehicle_info_selected };
     }
 
     try {

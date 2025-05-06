@@ -20,6 +20,22 @@ export interface PromoCodeResponse {
     is_valid: boolean;
   };
 }
+export interface VehicleMakeResponse {
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    group_name: string;
+  }[];
+}
+export interface VehicleModelResponse {
+  message: string;
+  data: {
+    id: string;
+    name: string;
+  }[];
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   verifyPartnerCode(partner_code: string) {
@@ -29,9 +45,9 @@ export default {
     return baseClient.post<PromoCodeResponse>('/promo-code/validation', data);
   },
   getVehicleMakes() {
-    return baseClient.get<any>('/vehicle-makes/car');
+    return baseClient.get<VehicleMakeResponse>('/vehicle-makes/car');
   },
   getVehicleModels(id: string) {
-    return baseClient.get<any>('/vehicle-models/car/' + id);
+    return baseClient.get<VehicleModelResponse>('/vehicle-models/car/' + id);
   },
 };

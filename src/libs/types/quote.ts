@@ -78,7 +78,7 @@ export interface PersonalInfo {
   email: string;
   gender: string;
   address: string;
-  phone_number: string;
+  phone: string;
   date_of_birth: string;
   marital_status: string;
   driving_experience: number;
@@ -93,7 +93,7 @@ export interface QuoteCreationPayload {
   promo_code: string;
   company_id: number;
   personal_info: PersonalPayload;
-  vehicle_basic_details: Vehicle;
+  vehicle_info_selected: Vehicle;
   insurance_additional_info: InsuranceAdditionalInfo;
 }
 
@@ -155,6 +155,6 @@ export interface PersonalPayload {
   nric?: string;
   address?: string;
   driving_experience: number;
-  phone_number: string;
+  phone: string;
   email: string;
 }

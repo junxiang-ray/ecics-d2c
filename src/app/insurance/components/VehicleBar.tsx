@@ -34,7 +34,7 @@ const VehicleBar = ({
           <span>{selected_vehicle?.chasis_number}</span>
           <span className='px-2'>-</span>
           <span className='overflow-hidden truncate whitespace-nowrap'>
-            {selected_vehicle?.make} {selected_vehicle?.model}
+            {selected_vehicle?.vehicle_make} {selected_vehicle?.vehicle_model}
           </span>
           <span className='px-2'>-</span>
           <span>{selected_vehicle?.first_registered_year}</span>

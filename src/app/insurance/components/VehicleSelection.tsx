@@ -59,7 +59,7 @@ export const VehicleSelectionModal = ({
                 ●
               </Typography.Paragraph>
               <Typography.Paragraph className={commonFontClass}>
-                {vehicle.make} {vehicle.model}
+                {vehicle.vehicle_make} {vehicle.vehicle_model}
               </Typography.Paragraph>
             </Space>
           ))}

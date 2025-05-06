@@ -206,8 +206,7 @@ const PolicyDetailForm = ({
   const drvExp = watch(MOTOR_QUOTE.quick_quote_owner_drv_exp) as number;
   const make = watch(MOTOR_QUOTE.quick_quote_make) as string;
 
-  const { data: makeOptions, isLoading: isLoadingMakeOptions } =
-    useGetVehicleMakes();
+  const { data: makeOptions } = useGetVehicleMakes();
   const { data: modelOptions, isLoading: isLoadingModelOptions } =
     useGetVehicleModels(make);
 
@@ -238,6 +237,7 @@ const PolicyDetailForm = ({
       setShowCSModal(true);
     }
   }, [drvExp]);
+
   useEffect(() => {
     if (no_claim >= 2) {
       setShowCSModal(true);
@@ -294,21 +294,21 @@ const PolicyDetailForm = ({
   );
 
   const handleSubmit = (value: FormData) => {
-    let vehicle_basic_details;
+    let vehicle_info_selected;
     let personal_info;
-    const makeName =
-      makeOptionsFormatted.find(
-        (item) => item.value === value[MOTOR_QUOTE.quick_quote_make],
-      )?.text ?? '';
-    const modelName =
-      modelOptionsFormatted.find(
-        (item) => item.value === value[MOTOR_QUOTE.quick_quote_model],
-      )?.text ?? '';
 
     if (!isSingpassFlow) {
-      vehicle_basic_details = {
-        make: makeName,
-        model: modelName,
+      const makeName =
+        makeOptionsFormatted.find(
+          (item) => item.value === value[MOTOR_QUOTE.quick_quote_make],
+        )?.text ?? '';
+      const modelName =
+        modelOptionsFormatted.find(
+          (item) => item.value === value[MOTOR_QUOTE.quick_quote_model],
+        )?.text ?? '';
+      vehicle_info_selected = {
+        vehicle_make: makeName,
+        vehicle_model: modelName,
         first_registered_year: value[
           MOTOR_QUOTE.quick_quote_reg_yyyy
         ] as string,
@@ -320,7 +320,7 @@ const PolicyDetailForm = ({
           value[MOTOR_QUOTE.quick_quote_owner_dob] as Date,
         ).format('DD/MM/YYYY'),
         driving_experience: value[MOTOR_QUOTE.quick_quote_owner_drv_exp],
-        phone_number: value[MOTOR_QUOTE.quick_quote_mobile],
+        phone: value[MOTOR_QUOTE.quick_quote_mobile],
         email: value[MOTOR_QUOTE.quick_quote_email],
       };
     }
@@ -331,7 +331,7 @@ const PolicyDetailForm = ({
       promo_code: applyPromoCode,
       company_id: value[MOTOR_QUOTE.quick_proposal_hire_purchase],
       personal_info: personal_info,
-      vehicle_basic_details: vehicle_basic_details,
+      vehicle_info_selected: vehicle_info_selected,
       insurance_additional_info: {
         no_claim_discount: value[MOTOR_QUOTE.quick_quote_owner_ncd],
         no_of_claim: value[MOTOR_QUOTE.quick_quote_owner_no_of_claims],

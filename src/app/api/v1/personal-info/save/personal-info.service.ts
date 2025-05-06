@@ -22,17 +22,15 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
 
     const newPersonalInfo = await prisma.personalInfo.create({
       data: {
-        email: data.email,
-        phone: data.phone,
-        name: data.name,
-        nric: data.nric,
-        gender: data.gender,
-        maritalStatus: data.maritalStatus,
-        dateOfBirth: data.dateOfBirth,
-        address: data.address,
-        vehicleMake: data.vehicleMake,
-        vehicleModel: data.vehicleModel,
-        yearOfRegistration: data.yearOfRegistration,
+        email: data.personal_info.email,
+        phone: data.personal_info.phone,
+        name: data.personal_info.name,
+        nric: data.personal_info.nric,
+        gender: data.personal_info.gender,
+        marital_status: data.personal_info.marital_status,
+        date_of_birth: data.personal_info.date_of_birth,
+        address: data.personal_info.address,
+        year_of_registration: data.vehicle_info_selected.year_of_registration,
         vehicles: data.vehicles ?? [],
       },
     });
@@ -43,21 +41,29 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
     const newQuote = await prisma.quote.create({
       data: {
         key: data.key,
-        personalInfoId: newPersonalInfo.id,
+        data: {
+          personal_info: data.personal_info,
+          vehicle_info_selected: data.vehicle_info_selected,
+          vehicles: data.vehicles,
+        },
+        is_sending_email: data.is_sending_email ? true : false,
       },
     });
+
     logger.info(`Creating a new quote info: ${JSON.stringify(newQuote)}`);
 
-    const retrieveQuoteHTML = generateQuoteEmail({
-      name: newPersonalInfo.name ?? '',
-      quote_key: newQuote.key ?? '',
-    });
+    if (data.is_sending_email) {
+      const retrieveQuoteHTML = generateQuoteEmail({
+        name: newPersonalInfo.name ?? '',
+        quote_key: newQuote.key ?? '',
+      });
 
-    sendMail({
-      to: newPersonalInfo.email ?? '',
-      subject: `ECICS Limited |`,
-      html: retrieveQuoteHTML,
-    });
+      sendMail({
+        to: newPersonalInfo.email ?? '',
+        subject: `ECICS Limited |`,
+        html: retrieveQuoteHTML,
+      });
+    }
 
     return {
       message: 'Personal info created successfully.',
