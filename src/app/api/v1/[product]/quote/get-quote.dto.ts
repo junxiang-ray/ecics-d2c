@@ -22,9 +22,7 @@ export const generateQuoteSchema = z.object({
         'Date of birth must be in the format dd-mm-yyyy',
       ),
     driving_experience: z.number(),
-    phone_number: z
-      .string()
-      .regex(REGEX_VALUES.PHONE_NUMBER, 'Phone number invalid'),
+    phone: z.string().regex(REGEX_VALUES.PHONE_NUMBER, 'Phone number invalid'),
     email: z.string().regex(REGEX_VALUES.PHONE_NUMBER, 'Phone number invalid'),
   }),
   vehicle_info_selected: z.any().optional(),
