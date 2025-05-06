@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
+import { InputField } from '@/components/ui/form/inputfield';
+
 import {
   ECICS_USER_INFO,
   IS_THREE_INPUT_COMPLETE,
@@ -14,6 +16,7 @@ type InfoSectionProps = {
   boxClass?: string;
   setIsDisabled?: (val: boolean) => void;
 };
+const isReadOnly = true;
 
 const InfoSection: React.FC<InfoSectionProps> = ({
   title,
@@ -96,7 +99,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
               <div className='text-sm font-bold'>{item.label}</div>
               <div className='text-sm'>
                 {item.value === 'N/A' ? (
-                  <input
+                  <InputField
                     name={item.label.toLowerCase().replace(/\s+/g, '_')}
                     type='text'
                     className='w-full border border-gray-300 p-2'
@@ -109,8 +112,16 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                       )
                     }
                   />
-                ) : (
+                ) : isMobile ? (
                   item.value
+                ) : (
+                  <InputField
+                    name={item.label.toLowerCase().replace(/\s+/g, '_')}
+                    defaultValue={item.value}
+                    type='text'
+                    className='w-full border border-gray-300 p-2'
+                    disabled={isReadOnly}
+                  />
                 )}
               </div>
             </div>
@@ -123,7 +134,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
   return (
     <div
-      className={`${isMobile ? '' : 'rounded-md border border-gray-300 bg-white p-4'} mt-4 ${boxClass}`}
+      className={`${isMobile ? '' : 'rounded-md border border-gray-300 bg-gray-100 p-4'} mt-4 ${boxClass}`}
     >
       <div className='text-base font-bold underline underline-offset-4'>
         {title}

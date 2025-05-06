@@ -1,18 +1,22 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Tooltip } from 'antd';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { z } from 'zod';
 
+import { SavePersonalInfoPayload } from '@/libs/types/auth';
+import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
 import { capitalizeWords } from '@/libs/utils/utils';
 
+import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import DesktopReviewInfoDetail from '@/app/(auth)/review-info-detail/DesktopReviewInfoDetail';
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import {
   ECICS_USER_INFO,
@@ -20,13 +24,10 @@ import {
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
+import { usePostPersonalInfo } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-import { toast } from 'react-toastify';
-import { SavePersonalInfoPayload } from '@/libs/types/auth';
-import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
-import { usePostPersonalInfo } from '@/hook/auth/login';
 
 const reviewInfoSchema = z.object({
   email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
@@ -37,17 +38,30 @@ const reviewInfoSchema = z.object({
       phoneRegex,
       "Please enter an 8-digit number starting with '8' or '9'.",
     ),
+  personal: z.object({
+    nameAsPerNric: z.string().min(1, 'Required'),
+    nric: z.string().min(1, 'Required'),
+    gender: z.string().min(1, 'Required'),
+    maritalStatus: z.string().min(1, 'Required'),
+    dateOfBirth: z.string().min(1, 'Required'),
+    address: z.string().min(1, 'Required'),
+  }),
+  vehicle: z.object({
+    vehicleMake: z.string().min(1, 'Required'),
+    yearOfRegistration: z.string().min(4, 'Enter a valid year'),
+    chassisNumber: z.string().min(1, 'Required'),
+  }),
 });
-
+const isReadOnly = true;
 type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 
 const ReviewInfoDetail = () => {
+  const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { isMobile } = useDeviceDetection();
   const [commonInfo, setCommonInfo] = useState<any>(null);
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const router = useRouter();
   const { mutate: savePersonalInfo } = usePostPersonalInfo();
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
@@ -236,20 +250,18 @@ const ReviewInfoDetail = () => {
               </>
             )}
           </div>
-
           <div className='mt-6 text-lg font-bold'>
             Review your Myinfo details
           </div>
-
           {isMobile ? (
             <div>
               <div className='mt-4'>
                 <div className='text-sm font-bold'>Email Address</div>
-                <InputField name='email' />
+                <InputField name='email' disabled={isReadOnly} />
               </div>
               <div className='mt-4'>
                 <div className='text-sm font-bold'>Phone Number</div>
-                <InputField name='phone' />
+                <InputField name='phone' disabled={isReadOnly} />
               </div>
               {commonInfo?.personal && (
                 <InfoSection title='Personal Info' data={commonInfo.personal} />
@@ -263,21 +275,35 @@ const ReviewInfoDetail = () => {
               )}
             </div>
           ) : (
-            // <DesktopReviewInfoDetail commonInfo={commonInfo} />
-            <div className='w-2/3 justify-self-center'>
-              <div className='mt-6 flex items-center justify-between rounded-md border border-gray-300 bg-white p-4'>
-                <div className='w-[calc(50%-10px)]'>
-                  <div className='text-sm font-bold'>Email Address</div>
-                  <InputField name='email' />
+            <div className='w-full justify-self-center'>
+              <div className='mt-6 items-center justify-between rounded-md border border-gray-300 bg-gray-100 p-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='text-base font-bold'>
+                    Enter a valid Email and Contact Number
+                  </div>
+                  <Tooltip title='We use this information to verify your identity and pre-fill your application with accurate government-verified data. This helps ensure a faster, more secure, and seamless submission process.'>
+                    <span className='flex cursor-pointer items-center font-bold'>
+                      <WarningIcon size={14} />
+                      <span className='ml-1 text-[10px]'>
+                        Why do we need this?
+                      </span>
+                    </span>
+                  </Tooltip>
                 </div>
-                <div className='w-[calc(50%-10px)]'>
-                  <div className='text-sm font-bold'>Phone Number</div>
-                  <InputField name='phone' />
+                <div className='mt-4 flex gap-4'>
+                  <div className='w-[calc(50%-10px)]'>
+                    <div className='text-sm font-bold'>Email Address</div>
+                    <InputField name='email' disabled={isReadOnly} />
+                  </div>
+                  <div className='w-[calc(50%-10px)]'>
+                    <div className='text-sm font-bold'>Phone Number</div>
+                    <InputField name='phone' disabled={isReadOnly} />
+                  </div>
                 </div>
               </div>
               {commonInfo?.personal && (
                 <InfoSection
-                  title='Personal Details'
+                  title='Personal Info'
                   data={commonInfo.personal}
                   boxClass='mt-4'
                 />
@@ -302,7 +328,7 @@ const ReviewInfoDetail = () => {
           </SecondaryButton>
           <PrimaryButton
             onClick={handleContinue}
-            className='rounded-isDisble-white w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
+            className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
             disabled={isDisabled}
           >
             Continue
