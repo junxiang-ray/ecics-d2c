@@ -54,6 +54,7 @@ export interface Plan {
   sub_title: string | null;
   created_at: string;
   updated_at: string;
+  subtitle?: string;
   product_type: ProductType;
   is_recommended: boolean;
   premium_bef_gst: number;
