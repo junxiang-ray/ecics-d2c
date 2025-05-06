@@ -12,6 +12,7 @@ import { capitalizeWords } from '@/libs/utils/utils';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
+import DesktopReviewInfoDetail from '@/app/(auth)/review-info-detail/DesktopReviewInfoDetail';
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import {
   ECICS_USER_INFO,
@@ -22,6 +23,10 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
+import { toast } from 'react-toastify';
+import { SavePersonalInfoPayload } from '@/libs/types/auth';
+import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
+import { usePostPersonalInfo } from '@/hook/auth/login';
 
 const reviewInfoSchema = z.object({
   email: z.string().regex(emailRegex, 'Please enter a valid email address.'),
@@ -43,7 +48,7 @@ const ReviewInfoDetail = () => {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const router = useRouter();
-
+  const { mutate: savePersonalInfo } = usePostPersonalInfo();
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
     defaultValues: {
@@ -53,6 +58,51 @@ const ReviewInfoDetail = () => {
   });
 
   const handleContinue = () => {
+    const stored = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!stored) {
+      toast.error('Missing user info in session.');
+      return;
+    }
+
+    const parsed = JSON.parse(stored);
+
+    const payload: SavePersonalInfoPayload = {
+      email: parsed.email?.value || '',
+      phone: `${parsed.mobileno?.nbr?.value || ''}`,
+      name: parsed.name?.value || '',
+      nric: parsed.uinfin?.value || '',
+      gender: parsed.sex?.desc || '',
+      marital_status: parsed.marital?.desc || '',
+      date_of_birth: parsed.dob?.value
+        ? convertDateToDDMMYYYY(parsed.dob.value)
+        : '',
+      address: [
+        `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
+      ].filter(Boolean),
+      vehicle_make: parsed.vehicle_make || '',
+      vehicle_model: parsed.vehicle_model || '',
+      year_of_registration: parsed.year_of_registration || '',
+      vehicles:
+        parsed.vehicles?.map((v: any) => ({
+          vehicleno: {
+            value: v.vehicleno?.value || '',
+          },
+          chassisno: {
+            value: v.chassisno?.value || '',
+          },
+          make: {
+            value: v.make?.value || '',
+          },
+          model: {
+            value: v.model?.value || '',
+          },
+          engineno: {
+            value: v.engineno?.value || '',
+          },
+        })) || [],
+      key: `key-${Date.now()}`,
+    };
+    savePersonalInfo(payload);
     router.push(ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS);
   };
 
@@ -159,13 +209,32 @@ const ReviewInfoDetail = () => {
       <div className='flex min-h-screen flex-col'>
         <div className='relative z-10 flex-grow p-6'>
           <div className='flex items-center justify-between'>
-            <Image
-              src='/singpass.svg'
-              alt='Singpass Logo'
-              width={170}
-              height={170}
-            />
-            <Image src='/ecics.svg' alt='ECICS Logo' width={100} height={100} />
+            {isMobile ? (
+              <>
+                <Image
+                  src='/singpass.svg'
+                  alt='Singpass Logo'
+                  width={170}
+                  height={170}
+                />
+                <Image
+                  src='/ecics.svg'
+                  alt='ECICS Logo'
+                  width={100}
+                  height={100}
+                />
+              </>
+            ) : (
+              <>
+                <Image src='/ecics.svg' alt='Logo' width={100} height={100} />
+                <Image
+                  src='/singpass.svg'
+                  alt='Logo'
+                  width={170}
+                  height={170}
+                />
+              </>
+            )}
           </div>
 
           <div className='mt-6 text-lg font-bold'>
@@ -194,6 +263,7 @@ const ReviewInfoDetail = () => {
               )}
             </div>
           ) : (
+            // <DesktopReviewInfoDetail commonInfo={commonInfo} />
             <div className='w-2/3 justify-self-center'>
               <div className='mt-6 flex items-center justify-between rounded-md border border-gray-300 bg-white p-4'>
                 <div className='w-[calc(50%-10px)]'>
@@ -223,11 +293,16 @@ const ReviewInfoDetail = () => {
             </div>
           )}
         </div>
-        <div className='flex justify-center gap-4 border-t bg-white p-4'>
-          <SecondaryButton onClick={handleCloseModal}>Cancel</SecondaryButton>
+        <div className='fixed bottom-0 left-0 right-0 z-20 flex justify-center gap-4 border-t bg-white p-4'>
+          <SecondaryButton
+            className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
+            onClick={handleCloseModal}
+          >
+            Cancel
+          </SecondaryButton>
           <PrimaryButton
             onClick={handleContinue}
-            className='rounded-isDisble-white'
+            className='rounded-isDisble-white w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
             disabled={isDisabled}
           >
             Continue
