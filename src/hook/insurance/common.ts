@@ -1,5 +1,13 @@
-import verify from '@/api/base-service/verify';
 import { useMutation, useQuery } from '@tanstack/react-query';
+
+import { VehicleCheckResponse } from '@/libs/types/auth';
+
+import verify from '@/api/base-service/verify';
+
+interface CheckVehiclePayload {
+  vehicle_make: string;
+  vehicle_model: string;
+}
 
 export const useVerifyPartnerCode = (partner_code: string) => {
   const fetchQuote = async () => {
@@ -51,5 +59,26 @@ export const useGetVehicleModels = (id: string) => {
     queryFn: fetchVehicleModels,
     queryKey: ['vehicle-models', id],
     enabled: !!id,
+  });
+};
+
+export const usePostCheckVehicle = (onUnmatch: () => void) => {
+  const fetchCheckVehicle = async (
+    payload: CheckVehiclePayload,
+  ): Promise<VehicleCheckResponse> => {
+    const res = await verify.postCheckVehicle(payload);
+    return res.data.data;
+  };
+
+  return useMutation<VehicleCheckResponse, Error, CheckVehiclePayload>({
+    mutationFn: fetchCheckVehicle,
+    mutationKey: ['check-vehicle'],
+    onError: (error) => {
+      const errorMessage = (error as any)?.response?.data?.message;
+      if (errorMessage === 'Vehicle make or model not found') {
+        onUnmatch(); // Trigger modal
+      }
+      console.error(error);
+    },
   });
 };
