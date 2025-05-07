@@ -9,11 +9,11 @@ import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
-
 import AddOnPricingSummary from '@/app/insurance/add-on/AddOnPricingSummary';
-
 import AddOnRowDetail from './AddOnRowDetail';
 import HeaderAddOn from './HeaderAddOn';
+import AdditionDriver from '../components/AdditionDriver';
+import { SecondaryButton } from '@/components/ui/buttons';
 
 const mapIconToTypeAddOn = [
   {
@@ -51,7 +51,9 @@ const mapIconToTypeAddOn = [
 
 function AddOnPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
+  const [dataDrivers, setDataDrivers] = useState<any[]>([]);
+  console.log(dataDrivers, 'test');
   return (
     <div className='w-full'>
       <div className='mt-2 flex flex-col gap-4 px-4'>
@@ -70,6 +72,35 @@ function AddOnPage() {
           ))}
         </div>
       </div>
+      <div className='mt-2 md:px-44'>
+        <div className='mt-2 flex w-full flex-row items-center justify-between rounded-t-md border border-[#DEE1E6] px-4 py-3 shadow-lg'>
+          <div className='flex flex-col gap-2'>
+            <p className='text-[18px] font-semibold leading-6 md:text-[28px] md:font-bold'>
+              S$ 2700{' '}
+              <span className='text-[15px] text-[#FF0004] line-through md:text-[20px] md:font-normal'>
+                $3200
+              </span>
+            </p>
+            <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
+              Premium breakdown
+            </p>
+          </div>
+          <SecondaryButton className='rounded-xl bg-[#00ADEF] px-6 leading-4 text-white'>
+            Continue
+          </SecondaryButton>
+          <SecondaryButton
+            className='rounded-xl bg-[#00ADEF] px-6 leading-4 text-white'
+            onClick={() => setIsShowAdditionDriver(true)}
+          >
+            Add Driver(s)
+          </SecondaryButton>
+        </div>
+      </div>
+      <AdditionDriver
+        isShowAdditionDriver={isShowAdditionDriver}
+        setIsShowAdditionDriver={setIsShowAdditionDriver}
+        setDataDrivers={setDataDrivers}
+      />
       <AddOnPricingSummary />
       <Modal
         title='Edit Information'
