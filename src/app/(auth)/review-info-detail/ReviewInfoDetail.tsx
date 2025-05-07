@@ -199,9 +199,10 @@ const ReviewInfoDetail = () => {
 
   const stored = sessionStorage.getItem(ECICS_USER_INFO);
   const parsed = stored ? JSON.parse(stored) : null;
+  console.log('parsed?.vehicles', parsed);
 
   const vehicles: Vehicle[] = (parsed?.vehicles ?? []).map((vehicle: any) => ({
-    chasis_number: vehicle.chassisno?.value,
+    chasis_number: vehicle.vehicleno?.value,
     vehicle_make: vehicle.make?.value,
     vehicle_model: vehicle.model?.value,
     first_registered_year: vehicle.firstregistrationdate?.value,
@@ -216,7 +217,7 @@ const ReviewInfoDetail = () => {
       if (parsed && parsed.vehicles) {
         // Filter vehicles to only include the one matching the selected vehicle
         const filteredVehicles = parsed.vehicles.filter(
-          (vehicle: any) => vehicle.chassisno.value === selected.chasis_number,
+          (vehicle: any) => vehicle.vehicleno.value === selected.chasis_number,
         );
 
         // Update the sessionStorage with the filtered vehicles
@@ -265,7 +266,7 @@ const ReviewInfoDetail = () => {
       },
       vehicles:
         parsed.vehicles?.map((v: any) => ({
-          chasis_number: v.chassisno?.value || '',
+          chasis_number: v.vehicleno?.value || '',
           vehicle_make: v.make?.value || '',
           vehicle_model: v.model?.value || '',
           first_registered_year: v.year_of_registration || '',
