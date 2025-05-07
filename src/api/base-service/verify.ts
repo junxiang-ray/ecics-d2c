@@ -1,25 +1,14 @@
-import { QuoteResponse } from '@/libs/types/quote';
-
+import { PromoCode } from '@/libs/types/quote';
 import baseClient from './api.config';
-import { get } from 'http';
 interface VerifyPromoCodeData {
   promo_code: string;
   product_type: string;
 }
 export interface PromoCodeResponse {
   message: string;
-  data: {
-    code: string;
-    discount: number;
-    startTime: string;
-    endTime: string;
-    description: string;
-    products: string[];
-    isPublic: boolean;
-    isShowCountdown: boolean;
-    is_valid: boolean;
-  };
+  data: PromoCode;
 }
+
 export interface VehicleMakeResponse {
   message: string;
   data: {

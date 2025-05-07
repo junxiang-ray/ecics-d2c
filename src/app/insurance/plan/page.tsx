@@ -1,46 +1,87 @@
 'use client';
 
 import { PrimaryButton } from '@/components/ui/buttons';
-import { useCreateQuote, useGetQuote } from '@/hook/insurance/quote';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useGetQuote } from '@/hook/insurance/quote';
+import { Plan } from '@/libs/types/quote';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { Navigation } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import PlanCardDesktop from './components/PlanCardDesktop';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
-import { useSearchParams } from 'next/navigation';
-
+import { Spin } from 'antd';
+export interface FormatPlan extends Plan {
+  discount: number;
+  currentPrice: number;
+}
 function PlanPage() {
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
 
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
   const { data: quoteInfo, isLoading } = useGetQuote(key);
   const plans = quoteInfo?.data?.plans ?? [];
+  const plansFormatted: FormatPlan[] = plans.map((plan) => ({
+    ...plan,
+    discount: quoteInfo?.promo_code?.discount ?? 0,
+    currentPrice:
+      plan.premium_with_gst /
+      (1 - (quoteInfo?.promo_code?.discount ?? 0) / 100),
+  }));
+
+  useEffect(() => {
+    if (!plansFormatted.length) return;
+    const recommendedPlan = plansFormatted.find((plan) => plan.is_recommended);
+    if (recommendedPlan) {
+      setSelectedPlan(recommendedPlan);
+      return;
+    }
+    setSelectedPlan(plansFormatted[0]);
+  }, [plans]);
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <div className='flex w-full flex-col justify-center'>
       {/* UI for Mobile */}
-      <div className='mx-4 md:hidden'>
-        <PlanCardMobile plans={plans} />
+      <div className='mx-4 pb-20 md:hidden'>
+        <PlanCardMobile
+          plans={plansFormatted}
+          selectedPlan={selectedPlan}
+          setSelectedPlan={setSelectedPlan}
+        />
       </div>
 
       {/* UI for Desktop */}
       <div className='hidden pt-4 md:block'>
-        <PlanCardDesktop plans={plans} />
+        <PlanCardDesktop
+          plans={plansFormatted}
+          selectedPlan={selectedPlan}
+          setSelectedPlan={setSelectedPlan}
+        />
       </div>
-      <div className='fixed bottom-0 left-1/2 z-10 mt-4 w-full -translate-x-1/2 transform shadow-sm shadow-gray-300 md:bottom-14  md:max-w-[600px] md:rounded-md md:border-none'>
+      <div className='fixed bottom-0 left-1/2 z-10 mt-4 w-full -translate-x-1/2 transform shadow-sm shadow-gray-300 md:bottom-14  md:max-w-[800px] md:rounded-md md:border-none'>
         <div className='flex w-full justify-between border-t-2 bg-white p-4 py-2 md:border-none md:py-4'>
           <div className='md:flex md:items-center md:gap-4'>
             <p>
-              <span className='text-lg font-semibold md:text-3xl'>S$ 2700</span>{' '}
-              <span className='text-lg font-semibold text-red-500 md:text-2xl'>
-                $3200
+              <span className='text-lg font-semibold md:text-3xl'>
+                S$ {selectedPlan?.premium_with_gst.toFixed(2)}
+              </span>{' '}
+              <span className='ps-4 text-lg font-semibold text-red-500 md:text-2xl'>
+                $ {selectedPlan?.currentPrice.toFixed(2)}
               </span>
             </p>
-            <p className='font-semibold'>(15 inclusive of GST)</p>
+            <p className='font-semibold'>
+              ({selectedPlan?.discount} inclusive of GST)
+            </p>
           </div>
           <PrimaryButton
             onClick={() => setShowConfirmDeclaration(true)}

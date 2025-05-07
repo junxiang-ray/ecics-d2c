@@ -27,7 +27,7 @@ export interface Quote {
   country_nationality_id: string | null;
   product_type_id: string | null;
   promo_code_id: string | null;
-  promo_code: string | null;
+  promo_code: PromoCode | null;
   company: Company;
   country_nationality: any;
   product_type: any;
@@ -50,7 +50,7 @@ export interface Plan {
   title: string;
   addons: Addon[];
   key_map: string;
-  benefits: any[]; // Benefits array is empty in the sample; adjust if needed.
+  benefits: Benefit[]; // Benefits array is empty in the sample; adjust if needed.
   sub_title: string | null;
   created_at: string;
   updated_at: string;
@@ -59,6 +59,12 @@ export interface Plan {
   is_recommended: boolean;
   premium_bef_gst: number;
   premium_with_gst: number;
+}
+export interface Benefit {
+  id: number;
+  name: string;
+  is_active: boolean;
+  order: number;
 }
 export interface Vehicle {
   vehicle_make: string;
@@ -158,4 +164,16 @@ export interface PersonalPayload {
   driving_experience: number;
   phone: string;
   email: string;
+}
+
+export interface PromoCode {
+  code: string;
+  discount: number;
+  startTime: string;
+  endTime: string;
+  description: string;
+  products: string[];
+  isPublic: boolean;
+  isShowCountdown: boolean;
+  is_valid: boolean;
 }

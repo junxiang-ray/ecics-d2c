@@ -1,13 +1,13 @@
 'use client';
 import { Checkbox, Drawer, Modal } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 function SelfDeclarationConfirmModal({
   visible,
@@ -20,7 +20,7 @@ function SelfDeclarationConfirmModal({
 }) {
   const { isMobile } = useDeviceDetection();
   const [isChecked, setIsChecked] = useState(false);
-  const router = useRouter();
+  const router = useRouterWithQuery();
 
   const handleCheckboxChange = (e: CheckboxChangeEvent) => {
     setIsChecked(e.target.checked);
