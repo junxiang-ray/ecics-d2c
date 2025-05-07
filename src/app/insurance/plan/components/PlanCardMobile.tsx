@@ -3,26 +3,28 @@ import CrossMarkIcon from '@/components/icons/CrossMark';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
 import { Plan } from '@/libs/types/quote';
 import clsx from 'clsx';
+import { FormatPlan } from '../page';
 
 function PlanCardMobile({
-  active = false,
   plans,
-  onClick,
+  selectedPlan,
+  setSelectedPlan,
 }: {
-  active?: boolean;
-  plans: Plan[];
-  onClick?: () => void;
+  plans: FormatPlan[];
+  selectedPlan: FormatPlan | null;
+  setSelectedPlan: (plan: FormatPlan | null) => void;
 }) {
   return (
     <div>
       {plans.map((plan, index) => {
         const isRecommended = plan.is_recommended;
-        const activeFeatures = plan.benefits.filter(
-          (feature) => feature.is_active,
-        );
-        const inactiveFeatures = plan.benefits.filter(
-          (feature) => !feature.is_active,
-        );
+        const activeFeatures = plan.benefits
+          .filter((feature) => feature.is_active)
+          .sort((a, b) => a.order - b.order);
+        const inactiveFeatures = plan.benefits
+          .filter((feature) => !feature.is_active)
+          .sort((a, b) => a.order - b.order);
+        const active = selectedPlan?.id === plan.id;
         return (
           <div
             className={clsx(
@@ -32,6 +34,7 @@ function PlanCardMobile({
                 : 'border-secondaryBlue bg-white',
             )}
             key={index}
+            onClick={() => setSelectedPlan(plan)}
           >
             {isRecommended && (
               <div className='absolute -top-3 right-4 rounded-full bg-sky-500 px-3 py-1'>
@@ -68,17 +71,21 @@ function PlanCardMobile({
                 />
                 <div className='flex items-center p-4 pb-2'>
                   <div className='text-center text-base font-semibold text-black'>
-                    $S {plan.premium_with_gst}
+                    $S {plan.premium_with_gst.toFixed(2)}
                   </div>
-                  <div className='ml-1 text-center text-sm font-medium text-[#FD1212] line-through decoration-1'>
-                    $S {plan.premium_bef_gst}
-                  </div>
+                  {!!plan.discount && (
+                    <div className='ml-1 text-center text-sm font-medium text-[#FD1212] line-through decoration-1'>
+                      $S {plan.currentPrice.toFixed(2)}
+                    </div>
+                  )}
                 </div>
                 <div className='mx-4 border-t border-dashed border-secondaryBlue' />
                 <div className='p-4 pt-[10px]'>
-                  <div className='text-sm font-semibold text-black'>
-                    CAR (15% off applied)
-                  </div>
+                  {plan.discount && (
+                    <div className='text-sm font-semibold text-black'>
+                      CAR ({plan.discount}% off applied)
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

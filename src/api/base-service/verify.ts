@@ -1,3 +1,4 @@
+import { PromoCode } from '@/libs/types/quote';
 import {
   API_GET_LIST_VEHICLE_MAKES,
   API_GET_LIST_VEHICLE_MODELS,
@@ -11,18 +12,9 @@ interface VerifyPromoCodeData {
 }
 export interface PromoCodeResponse {
   message: string;
-  data: {
-    code: string;
-    discount: number;
-    startTime: string;
-    endTime: string;
-    description: string;
-    products: string[];
-    isPublic: boolean;
-    isShowCountdown: boolean;
-    is_valid: boolean;
-  };
+  data: PromoCode;
 }
+
 export interface VehicleMakeResponse {
   message: string;
   data: {
