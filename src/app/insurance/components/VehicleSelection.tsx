@@ -1,18 +1,17 @@
 'use client';
 
-import { Drawer, Modal, Radio, Space, Typography } from 'antd';
-import React, { useState } from 'react';
-
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { VehicleSelection } from '@/interfaces/vehicle.interface';
-
-import { PrimaryButton } from './ui/buttons';
+import { Drawer, Modal, Radio, Space, Typography } from 'antd';
+import { useState } from 'react';
+import { PrimaryButton } from '../../../components/ui/buttons';
+import { Vehicle } from '@/libs/types/quote';
 
 interface VehicleSelectionModalProps {
   isReviewScreen?: boolean;
-  vehicles: VehicleSelection[];
+  vehicles: Vehicle[];
   visible: boolean;
-  onSubmit: (selected: VehicleSelection | null) => void;
+  selected?: Vehicle | null;
+  setSelected: (selected: Vehicle | null) => void;
 }
 
 const defaultProps = {
@@ -25,15 +24,20 @@ export const VehicleSelectionModal = ({
   isReviewScreen,
   vehicles,
   visible,
-  onSubmit,
+  selected,
+  setSelected,
 }: VehicleSelectionModalProps) => {
   const { isMobile } = useDeviceDetection();
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selectedChasisNumber, setSelectedChasisNumber] = useState(
+    selected?.chasis_number,
+  );
 
   const handleClick = () => {
-    const selectedVehicle = vehicles.find((v) => v.regNo === selected);
+    const selectedVehicle = vehicles.find(
+      (v) => v.chasis_number === selectedChasisNumber,
+    );
     onSubmit(selectedVehicle || null);
-    setSelected(null);
+    setSelected(selectedVehicle || null);
   };
 
   const content = (
@@ -48,11 +52,11 @@ export const VehicleSelectionModal = ({
       </div>
 
       <Radio.Group
-        onChange={(e) => setSelected(e.target.value)}
-        value={selected}
+        onChange={(e) => setSelectedChasisNumber(e.target.value)}
+        value={selectedChasisNumber}
         className='w-full'
       >
-        <Space direction='vertical' className='my-3 w-full'>
+        <Space direction='vertical' className='my-3'>
           {vehicles?.map((vehicle, index) => (
             <Space
               key={index}
@@ -60,16 +64,16 @@ export const VehicleSelectionModal = ({
               align='baseline'
               className='-my-3 w-full'
             >
-              <Radio key={index} value={vehicle.regNo}>
+              <Radio key={index} value={vehicle.chasis_number}>
                 <Typography.Paragraph className={`${commonFontClass} w-32`}>
-                  {vehicle.regNo}
+                  {vehicle.chasis_number}
                 </Typography.Paragraph>
               </Radio>
               <Typography.Paragraph className={commonFontClass}>
                 ●
               </Typography.Paragraph>
               <Typography.Paragraph className={commonFontClass}>
-                {vehicle.make} {vehicle.model}
+                {vehicle.vehicle_make} {vehicle.vehicle_model}
               </Typography.Paragraph>
             </Space>
           ))}
@@ -78,7 +82,7 @@ export const VehicleSelectionModal = ({
 
       <PrimaryButton
         onClick={handleClick}
-        disabled={!selected}
+        disabled={!selectedChasisNumber}
         className='w-full'
       >
         {isReviewScreen ? 'Submit' : 'Continue'}

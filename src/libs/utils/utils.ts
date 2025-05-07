@@ -1,5 +1,5 @@
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
-
+import { v4 as uuid } from 'uuid';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 export const removeFromLocalStorage = (keys: string[]) => {
@@ -59,4 +59,14 @@ export const capitalizeWords = (str: string): string => {
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+};
+
+export const generateKeyAndAttachToUrl = (key: string) => {
+  const generatedKey = key || uuid();
+  const url = new URL(window.location.href);
+  if (!key) {
+    url.searchParams.set('key', generatedKey);
+    window.history.replaceState({}, '', url.toString());
+  }
+  return generatedKey;
 };
