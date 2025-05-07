@@ -3,12 +3,12 @@ import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 import { PlusOutlined } from '@ant-design/icons';
-import { Drawer } from 'antd';
+import { Drawer, Modal } from 'antd';
 import { zodResolver } from '@hookform/resolvers/zod';
-import dayjs from 'dayjs';
 import { useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface Props {
   isShowAdditionDriver: boolean;
@@ -88,6 +88,7 @@ const AdditionDriver = ({
 
   const [isWarningDriver, setIsWarningDriver] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const { isMobile } = useDeviceDetection();
 
   const handleAddDriver = () => {
     if (fields.length < 3) {
@@ -213,7 +214,7 @@ const AdditionDriver = ({
     </>
   );
 
-  return (
+  return isMobile ? (
     <Drawer
       placement='bottom'
       open={isShowAdditionDriver}
@@ -228,13 +229,35 @@ const AdditionDriver = ({
         <FormProvider {...methods}>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className='flex flex-col gap-8 py-6'
+            className='flex w-full flex-col gap-8 py-6'
           >
             {content}
           </form>
         </FormProvider>
       </div>
     </Drawer>
+  ) : (
+    <Modal
+      open={isShowAdditionDriver}
+      closable={false}
+      onCancel={() => setIsShowAdditionDriver(false)}
+      maskClosable={false}
+      keyboard={false}
+      footer={null}
+      centered
+      width={600}
+    >
+      <div style={{ maxHeight: 'calc(100vh - 60px)', overflowY: 'auto' }}>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className='flex flex-col gap-8 py-6'
+          >
+            {content}
+          </form>
+        </FormProvider>
+      </div>
+    </Modal>
   );
 };
 
