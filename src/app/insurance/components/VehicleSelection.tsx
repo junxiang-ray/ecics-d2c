@@ -1,10 +1,13 @@
 'use client';
 
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { Drawer, Modal, Radio, Space, Typography } from 'antd';
 import { useState } from 'react';
-import { PrimaryButton } from '../../../components/ui/buttons';
+
 import { Vehicle } from '@/libs/types/quote';
+
+import { PrimaryButton } from '@/components/ui/buttons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface VehicleSelectionModalProps {
   isReviewScreen?: boolean;
@@ -36,7 +39,6 @@ export const VehicleSelectionModal = ({
     const selectedVehicle = vehicles.find(
       (v) => v.chasis_number === selectedChasisNumber,
     );
-    onSubmit(selectedVehicle || null);
     setSelected(selectedVehicle || null);
   };
 

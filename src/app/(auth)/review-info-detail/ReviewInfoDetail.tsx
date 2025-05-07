@@ -7,26 +7,26 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 
-import { SavePersonalInfoPayload } from '@/libs/types/auth';
+import { SavePersonalInfoPayload, Vehicle } from '@/libs/types/auth';
 import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
 import { capitalizeWords, saveToSessionStorage } from '@/libs/utils/utils';
 
 import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
-import { VehicleSelectionModal } from '@/components/VehicleSelection';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
+import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
-import { usePostCheckVehicle } from '@/hook/insurance/verify';
+import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { VehicleSelection } from '@/interfaces/vehicle.interface';
 
 import InfoSection from './InfoSection';
 
@@ -141,9 +141,12 @@ const ReviewInfoDetail = () => {
                   {
                     label: 'Vehicle Make',
                     value:
-                      capitalizeWords(
-                        `${v.make?.value || ''} ${v.model?.value || ''}`,
-                      ).trim() || 'N/A',
+                      capitalizeWords(`${v.make?.value || ''} `).trim() || null,
+                  },
+                  {
+                    label: 'Vehicle Model',
+                    value:
+                      capitalizeWords(`${v.model?.value || ''}`).trim() || null,
                   },
                   {
                     label: 'Year of Registration',
@@ -151,25 +154,26 @@ const ReviewInfoDetail = () => {
                       ? new Date(v.firstregistrationdate.value)
                           .getFullYear()
                           .toString()
-                      : 'N/A',
+                      : null,
                   },
                   {
                     label: 'Chassis Number',
-                    value: v.vehicleno?.value || 'N/A',
+                    value: v.vehicleno?.value || null,
                   },
                 ])
                 .flat() || []
             : [
-                { label: 'Vehicle Make', value: 'N/A' },
-                { label: 'Year of Registration', value: 'N/A' },
-                { label: 'Chassis Number', value: 'N/A' },
+                { label: 'Vehicle Make', value: null },
+                { label: 'Vehicle Model', value: null },
+                { label: 'Year of Registration', value: null },
+                { label: 'Chassis Number', value: null },
               ],
       };
       setCommonInfo(transformed);
 
-      // Check if any vehicle field has "N/A"
+      // Check if any vehicle field has "null"
       const hasInvalidVehicle = transformed.vehicle.some(
-        (item: any) => item.value === 'N/A',
+        (item: any) => item.value === null,
       );
       if (hasInvalidVehicle) {
         setIsDisabled(true);
@@ -196,16 +200,14 @@ const ReviewInfoDetail = () => {
   const stored = sessionStorage.getItem(ECICS_USER_INFO);
   const parsed = stored ? JSON.parse(stored) : null;
 
-  const vehicles: VehicleSelection[] = (parsed?.vehicles ?? []).map(
-    (vehicle: any) => ({
-      regNo: vehicle.vehicleno?.value,
-      make: vehicle.make?.value,
-      model: vehicle.model?.value,
-      first_registered_year: vehicle.firstregistrationdate?.value,
-    }),
-  );
+  const vehicles: Vehicle[] = (parsed?.vehicles ?? []).map((vehicle: any) => ({
+    chasis_number: vehicle.chassisno?.value,
+    vehicle_make: vehicle.make?.value,
+    vehicle_model: vehicle.model?.value,
+    first_registered_year: vehicle.firstregistrationdate?.value,
+  }));
 
-  const handleSelection = (selected: VehicleSelection | null) => {
+  const handleSelection = (selected: Vehicle | null) => {
     if (selected) {
       // Retrieve user info from sessionStorage
       const stored = sessionStorage.getItem(ECICS_USER_INFO);
@@ -214,7 +216,7 @@ const ReviewInfoDetail = () => {
       if (parsed && parsed.vehicles) {
         // Filter vehicles to only include the one matching the selected vehicle
         const filteredVehicles = parsed.vehicles.filter(
-          (vehicle: any) => vehicle.vehicleno.value === selected.regNo,
+          (vehicle: any) => vehicle.chassisno.value === selected.chasis_number,
         );
 
         // Update the sessionStorage with the filtered vehicles
@@ -238,7 +240,7 @@ const ReviewInfoDetail = () => {
     const parsed = JSON.parse(stored);
 
     const payload: SavePersonalInfoPayload = {
-      key: `key-${Date.now()}`,
+      key: `key-${uuid()}`,
       personal_info: {
         name: parsed.name?.value || '',
         gender: parsed.sex?.desc || '',
@@ -270,7 +272,13 @@ const ReviewInfoDetail = () => {
         })) || [],
     };
     savePersonalInfo(payload);
-    router.push(ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS);
+
+    // Redirect
+    const queryParams = new URLSearchParams({
+      key: `${uuid()}`,
+    }).toString();
+    const url = `${ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS}&${queryParams}`;
+    router.push(url);
   };
 
   const handleCloseModal = () => {
@@ -408,7 +416,7 @@ const ReviewInfoDetail = () => {
             isReviewScreen={true}
             visible={showChooseVehicleModal}
             vehicles={vehicles}
-            onSubmit={handleSelection}
+            setSelected={handleSelection}
           />
         )}
         {showUnMatchModal && (

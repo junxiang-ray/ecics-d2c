@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { v4 as uuid } from 'uuid';
 
 import { SavePersonalInfoPayload } from '@/libs/types/auth';
 import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
@@ -44,7 +45,7 @@ const ConfirmInfoModal = ({
     const parsed = JSON.parse(stored);
 
     const payload: SavePersonalInfoPayload = {
-      key: `key-${Date.now()}`,
+      key: `key-${uuid()}`,
       personal_info: {
         name: parsed.name?.value || '',
         gender: parsed.sex?.desc || '',

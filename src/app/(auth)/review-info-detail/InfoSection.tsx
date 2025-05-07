@@ -9,6 +9,16 @@ import {
   IS_THREE_INPUT_COMPLETE,
 } from '@/constants/general.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import {
+  useGetVehicleMakes,
+  useGetVehicleModels,
+} from '@/hook/insurance/common';
+import {
+  DropdownField,
+  DropdownOption,
+} from '@/components/ui/form/dropdownfield';
+import { VehicleResponse } from '@/api/base-service/verify';
+import { FormProvider, useForm } from 'react-hook-form';
 
 type InfoSectionProps = {
   title: string;
@@ -25,6 +35,10 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   setIsDisabled,
 }) => {
   const { isMobile } = useDeviceDetection();
+  const methods = useForm();
+  const { setValue, watch } = methods;
+  const selectedMakeId = watch('vehicle_make');
+
   const sessionData = JSON.parse(
     sessionStorage.getItem(ECICS_USER_INFO) || '{}',
   );
@@ -39,10 +53,15 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   };
 
   const checkInputsCompleted = (updatedVehicles: any[]) => {
-    const requiredFields = ['make', 'firstregistrationdate', 'vehicleno'];
+    const requiredFields = [
+      'make',
+      'model',
+      'firstregistrationdate',
+      'vehicleno',
+    ];
     return updatedVehicles.every((vehicle) =>
       requiredFields.every(
-        (field) => vehicle[field]?.value && vehicle[field]?.value !== 'N/A',
+        (field) => vehicle[field]?.value && vehicle[field]?.value !== null,
       ),
     );
   };
@@ -61,9 +80,9 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     let vehicleno = prevVehicle.vehicleno?.value || '';
 
     if (field === 'vehicle_make') {
-      const [newMake, ...newModel] = value.split(' ');
-      make = newMake;
-      model = newModel.join(' ');
+      make = value;
+    } else if (field === 'vehicle_model') {
+      model = value;
     } else if (field === 'year_of_registration') {
       year = value;
     } else if (field === 'chassis_number') {
@@ -88,44 +107,112 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     updateSessionStorage(updatedVehicles);
   };
 
+  //Call API
+  const { data: makeOptionsData } = useGetVehicleMakes();
+  const makeOptions: DropdownOption[] =
+    makeOptionsData?.map((item: VehicleResponse) => ({
+      value: item.id,
+      text: item.name,
+    })) || [];
+
+  const { data: modelOptionsData } = useGetVehicleModels(selectedMakeId || '');
+  const modelOptions: DropdownOption[] =
+    modelOptionsData?.map((item: VehicleResponse) => ({
+      value: item.id,
+      text: item.name,
+    })) || [];
+
   const renderGrid = () => {
     const chunks = [];
     for (let i = 0; i < data.length; i += 2) {
       const chunk = data.slice(i, i + 2); // Take two items at a time
       chunks.push(
         <div key={i} className='mt-2 grid grid-cols-2 gap-4'>
-          {chunk.map((item, idx) => (
-            <div key={idx}>
-              <div className='text-sm font-bold'>{item.label}</div>
-              <div className='text-sm'>
-                {item.value === 'N/A' ? (
-                  <InputField
-                    name={item.label.toLowerCase().replace(/\s+/g, '_')}
-                    type='text'
-                    className='w-full border border-gray-300 p-2'
-                    placeholder={`Enter ${item.label} info`}
-                    onChange={(e) =>
-                      handleInputChange(
-                        0,
-                        item.label.toLowerCase().replace(/\s+/g, '_'),
-                        e.target.value,
-                      )
-                    }
-                  />
-                ) : isMobile ? (
-                  item.value
-                ) : (
-                  <InputField
-                    name={item.label.toLowerCase().replace(/\s+/g, '_')}
-                    defaultValue={item.value}
-                    type='text'
-                    className='w-full border border-gray-300 p-2'
-                    disabled={isReadOnly}
-                  />
-                )}
+          {chunk.map((item, idx) => {
+            const nameKey = item.label.toLowerCase().replace(/\s+/g, '_');
+            const isVehicleMake = nameKey === 'vehicle_make';
+            const isVehicleModel = nameKey === 'vehicle_model';
+
+            if (item.value == null && (isVehicleMake || isVehicleModel)) {
+              return (
+                <FormProvider key={idx} {...methods}>
+                  <div>
+                    {isVehicleMake && (
+                      <>
+                        <div className='font-bold'>Vehicle Make</div>
+                        <DropdownField
+                          className='h-[40px]'
+                          name='vehicle_make'
+                          placeholder='Enter vehicle make'
+                          options={makeOptions}
+                          onChange={(value) => {
+                            const selectedMake = makeOptions.find(
+                              (option) => option.value === value,
+                            );
+                            const makeText = selectedMake
+                              ? selectedMake.text
+                              : '';
+                            setValue('vehicle_model', undefined);
+                            handleInputChange(0, 'vehicle_make', makeText);
+                          }}
+                        />
+                      </>
+                    )}
+                    {isVehicleModel && (
+                      <>
+                        <div className='font-bold'>Vehicle Model</div>
+                        <DropdownField
+                          className='h-[40px]'
+                          name='vehicle_model'
+                          placeholder='Enter vehicle model'
+                          disabled={!selectedMakeId}
+                          options={modelOptions}
+                          onChange={(value) => {
+                            const selectedModel = modelOptions.find(
+                              (option) => option.value === value,
+                            );
+                            const modelText = selectedModel
+                              ? selectedModel.text
+                              : '';
+                            handleInputChange(0, 'vehicle_model', modelText);
+                          }}
+                        />
+                      </>
+                    )}
+                  </div>
+                </FormProvider>
+              );
+            }
+
+            return (
+              <div key={idx}>
+                <div className='text-sm font-bold'>{item.label}</div>
+                <div className='text-sm'>
+                  {item.value == null ? (
+                    <InputField
+                      name={nameKey}
+                      type='text'
+                      className='w-full border border-gray-300 p-2'
+                      placeholder={`Enter ${item.label} info`}
+                      onChange={(e) =>
+                        handleInputChange(0, nameKey, e.target.value)
+                      }
+                    />
+                  ) : isMobile ? (
+                    item.value
+                  ) : (
+                    <InputField
+                      name={nameKey}
+                      defaultValue={item.value}
+                      type='text'
+                      className='w-full border border-gray-300 p-2'
+                      disabled={isReadOnly}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>,
       );
     }

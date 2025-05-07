@@ -7,11 +7,12 @@ import {
   DropdownOption,
 } from '@/components/ui/form/dropdownfield';
 
+import { VehicleResponse } from '@/api/base-service/verify';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import {
   useGetVehicleMakes,
   useGetVehicleModels,
-} from '@/hook/insurance/verify';
+} from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 const UnMatchVehicleModal = ({ onClose }: { onClose: () => void }) => {
@@ -47,14 +48,14 @@ const UnMatchVehicleModal = ({ onClose }: { onClose: () => void }) => {
 
   const { data } = useGetVehicleMakes();
   const makeOptions: DropdownOption[] =
-    data?.map((item) => ({
+    data?.map((item: VehicleResponse) => ({
       value: item.id,
       text: item.name,
     })) || [];
 
   const { data: modelOptionsData } = useGetVehicleModels(selectedMakeId || '');
   const modelOptions: DropdownOption[] =
-    modelOptionsData?.map((item) => ({
+    modelOptionsData?.map((item: VehicleResponse) => ({
       value: item.id,
       text: item.name,
     })) || [];
