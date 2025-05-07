@@ -19,10 +19,12 @@ import { InputField } from '@/components/ui/form/inputfield';
 import { VehicleSelectionModal } from '@/components/VehicleSelection';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
+import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
+import { usePostCheckVehicle } from '@/hook/insurance/verify';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { VehicleSelection } from '@/interfaces/vehicle.interface';
 
@@ -68,9 +70,14 @@ const ReviewInfoDetail = () => {
   const [commonInfo, setCommonInfo] = useState<CommonInfo | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [showChooseVehicleModal, setShowChooseVehicleModal] = useState(false);
+  const [showUnMatchModal, setShowUnMatchModal] = useState(false);
   const [refreshSession, setRefreshSession] = useState(false);
 
   const { mutate: savePersonalInfo } = usePostPersonalInfo();
+  const { mutate: postCheckVehicle } = usePostCheckVehicle(() => {
+    setShowUnMatchModal(true);
+  });
+
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
     defaultValues: {
@@ -175,6 +182,14 @@ const ReviewInfoDetail = () => {
       if ((parsed.vehicles?.length || 0) > 1) {
         setShowChooseVehicleModal(true);
       }
+
+      if (parsed.vehicles?.length === 1) {
+        const singleVehicle = parsed.vehicles[0];
+        postCheckVehicle({
+          vehicle_make: singleVehicle.make?.value,
+          vehicle_model: singleVehicle.model?.value,
+        });
+      }
     }
   }, [methods, refreshSession]);
 
@@ -237,7 +252,7 @@ const ReviewInfoDetail = () => {
           : '',
         year_of_registration: parsed.year_of_registration || '',
         driving_experience: parsed.driving_experience || 0,
-        phone_number: `${parsed.mobileno?.nbr?.value || ''}`,
+        phone: `${parsed.mobileno?.nbr?.value || ''}`,
         email: parsed.email?.value || '',
       },
       vehicle_info_selected: {
@@ -310,13 +325,15 @@ const ReviewInfoDetail = () => {
               {commonInfo?.personal && (
                 <InfoSection title='Personal Info' data={commonInfo.personal} />
               )}
-              {!showChooseVehicleModal && commonInfo?.vehicle && (
-                <InfoSection
-                  title='Vehicle Details'
-                  data={commonInfo.vehicle}
-                  setIsDisabled={setIsDisabled}
-                />
-              )}
+              {!showChooseVehicleModal &&
+                !showUnMatchModal &&
+                commonInfo?.vehicle && (
+                  <InfoSection
+                    title='Vehicle Details'
+                    data={commonInfo.vehicle}
+                    setIsDisabled={setIsDisabled}
+                  />
+                )}
             </div>
           ) : (
             <div className='w-full justify-self-center'>
@@ -352,14 +369,16 @@ const ReviewInfoDetail = () => {
                   boxClass='mt-4'
                 />
               )}
-              {!showChooseVehicleModal && commonInfo?.vehicle && (
-                <InfoSection
-                  title='Vehicle Details'
-                  data={commonInfo.vehicle}
-                  boxClass='mt-4'
-                  setIsDisabled={setIsDisabled}
-                />
-              )}
+              {!showChooseVehicleModal &&
+                !showUnMatchModal &&
+                commonInfo?.vehicle && (
+                  <InfoSection
+                    title='Vehicle Details'
+                    data={commonInfo.vehicle}
+                    boxClass='mt-4'
+                    setIsDisabled={setIsDisabled}
+                  />
+                )}
             </div>
           )}
         </div>
@@ -391,6 +410,9 @@ const ReviewInfoDetail = () => {
             vehicles={vehicles}
             onSubmit={handleSelection}
           />
+        )}
+        {showUnMatchModal && (
+          <UnMatchVehicleModal onClose={() => setShowUnMatchModal(false)} />
         )}
       </div>
     </FormProvider>

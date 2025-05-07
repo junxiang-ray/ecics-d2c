@@ -1,4 +1,4 @@
-import { QuoteResponse } from '@/libs/types/quote';
+import { API_POST_CHECK_VEHICLE } from '@/constants/api.constant';
 
 import baseClient from './api.config';
 interface VerifyPromoCodeData {
@@ -12,5 +12,9 @@ export default {
   },
   verifyPromoCode(data: VerifyPromoCodeData) {
     return baseClient.post<any>('/promo-code/validation', data);
+  },
+
+  postCheckVehicle(payload: { vehicle_make: string; vehicle_model: string }) {
+    return baseClient.post<any>(`${API_POST_CHECK_VEHICLE}`, payload);
   },
 };

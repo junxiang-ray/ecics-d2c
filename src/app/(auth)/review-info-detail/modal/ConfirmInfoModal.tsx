@@ -58,7 +58,7 @@ const ConfirmInfoModal = ({
           : '',
         year_of_registration: parsed.year_of_registration || '',
         driving_experience: parsed.driving_experience || 0,
-        phone_number: `${parsed.mobileno?.nbr?.value || ''}`,
+        phone: `${parsed.mobileno?.nbr?.value || ''}`,
         email: parsed.email?.value || '',
       },
       vehicle_info_selected: {
