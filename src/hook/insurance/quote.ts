@@ -11,6 +11,7 @@ export const useGetQuote = (key: string) => {
   return useQuery({
     queryFn: fetchQuote,
     queryKey: ['quote', key],
+    enabled: !!key,
   });
 };
 

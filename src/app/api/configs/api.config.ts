@@ -26,7 +26,6 @@ async function refreshToken() {
     });
     token = response.data.data.token;
 
-    logger.info(`Token refreshed successfully: ${token}`);
     return token;
   } catch (error) {
     logger.error('Error refreshing token:', error);

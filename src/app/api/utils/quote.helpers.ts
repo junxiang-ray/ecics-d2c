@@ -1,3 +1,5 @@
+import { CAR_INSURANCE } from '../constants/car.insurance';
+
 export function mappedPlanPremiums(quoteData: any): Record<string, number> {
   return {
     COM: quoteData?.comp_plan?.plan_premium_with_gst ?? 0,
@@ -151,3 +153,49 @@ export const addonToQuickProposalMap: Record<string, string> = {
   CAR_COM_MDE: 'quick_proposal_me',
   CAR_COM_KRC: 'quick_proposal_krc',
 };
+
+export function applyAddlDriverLogic(selected_value: string) {
+  if (selected_value === CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.ALL_DRIVERS) {
+    return {
+      quick_proposal_has_addl_driver: CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.NO,
+      quick_proposal_has_yied_driver: CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.YES,
+    };
+  } else if (
+    selected_value ===
+    CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.DRIVERS_AGE_FROM_27_TO_70
+  ) {
+    return {
+      quick_proposal_has_addl_driver: CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.YES,
+      quick_proposal_has_yied_driver: CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.NO,
+    };
+  } else {
+    return {
+      quick_proposal_has_addl_driver: CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.NO,
+      quick_proposal_has_yied_driver: CAR_INSURANCE.ADD_ONS.ADDL_DRIVER.NO,
+    };
+  }
+}
+
+export function applyLouAndCcLogic(value: string) {
+  if (value === CAR_INSURANCE.ADD_ONS.LOU.YES) {
+    return {
+      quick_proposal_lou: CAR_INSURANCE.ADD_ONS.LOU.YES,
+      quick_proposal_cc: CAR_INSURANCE.ADD_ONS.CC.NO,
+    };
+  } else if (value === CAR_INSURANCE.ADD_ONS.CC.YES_UP_TO_1600CC) {
+    return {
+      quick_proposal_lou: CAR_INSURANCE.ADD_ONS.LOU.NO,
+      quick_proposal_cc: CAR_INSURANCE.ADD_ONS.CC.YES_UP_TO_1600CC,
+    };
+  } else if (value === CAR_INSURANCE.ADD_ONS.CC.YES_UP_TO_2000CC) {
+    return {
+      quick_proposal_lou: CAR_INSURANCE.ADD_ONS.LOU.NO,
+      quick_proposal_cc: CAR_INSURANCE.ADD_ONS.CC.YES_UP_TO_2000CC,
+    };
+  } else {
+    return {
+      quick_proposal_lou: CAR_INSURANCE.ADD_ONS.LOU.NO,
+      quick_proposal_cc: CAR_INSURANCE.ADD_ONS.CC.NO,
+    };
+  }
+}

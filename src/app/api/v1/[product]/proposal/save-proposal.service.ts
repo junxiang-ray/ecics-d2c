@@ -1,8 +1,14 @@
+import apiServer from '@/app/api/configs/api.config';
 import { CAR_INSURANCE } from '@/app/api/constants/car.insurance';
-import { ErrNotFound } from '@/app/api/core/error.response';
+import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
+import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
-import { addonToQuickProposalMap } from '@/app/api/utils/quote.helpers';
+import {
+  addonToQuickProposalMap,
+  applyAddlDriverLogic,
+  applyLouAndCcLogic,
+} from '@/app/api/utils/quote.helpers';
 
 export async function saveProposalForCar(data: any) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;
@@ -35,44 +41,42 @@ export async function saveProposalForCar(data: any) {
     payload[quickKey] = selected_addons[addonKey] || 'NO';
   }
 
-  // update quick_proposal_any_workshop and quick_proposal_excess based on selected_plan
+  // update quick_proposal_any_workshop and quick_proposal_excess
   if (selected_plan !== CAR_INSURANCE.PLAN_NAME.COM) {
     payload.quick_proposal_any_workshop = 'N.A.';
     payload.quick_proposal_excess = 'N.A.';
   }
 
-  // Add-on LOU & cc
-  const louValue = selected_addons['CAR_COM_LOU'];
+  // Add-on BUN
+  if (selected_plan === CAR_INSURANCE.PLAN_NAME.TPO) {
+    payload.quick_proposal_bun = selected_addons['CAR_TPO_BUN'] || 'NO';
+  }
+  if (selected_plan === CAR_INSURANCE.PLAN_NAME.TPFT) {
+    payload.quick_proposal_bun = selected_addons['CAR_TPFT_BUN'] || 'NO';
+  }
 
-  switch (louValue) {
-    case 'YES':
-      payload.quick_proposal_lou = 'YES';
-      payload.quick_proposal_cc = 'NO';
+  // Add-on LOU & CC
+  const louKeys = CAR_INSURANCE.CODE_LOUS;
+  for (const key of louKeys) {
+    if (selected_addons[key]) {
+      const result = applyLouAndCcLogic(selected_addons[key]);
+      payload.quick_proposal_lou = result.quick_proposal_lou;
+      payload.quick_proposal_cc = result.quick_proposal_cc;
       break;
-    case 'YES (up to 1,600cc)':
-      payload.quick_proposal_lou = 'NO';
-      payload.quick_proposal_cc = 'YES (up to 1,600cc)';
-      break;
-    case 'YES (up to 2,000cc)':
-      payload.quick_proposal_lou = 'NO';
-      payload.quick_proposal_cc = 'YES (up to 2,000cc)';
-      break;
-    default:
-      payload.quick_proposal_lou = 'NO';
-      payload.quick_proposal_cc = 'NO';
-      break;
+    }
   }
 
   // Add-on additional driver
-  if (selected_addons['CAR_COM_AND'] === 'all_drivers') {
-    payload.quick_proposal_has_addl_driver = 'NO';
-    payload.quick_proposal_has_yied_driver = 'YES';
-  } else if (selected_addons['CAR_COM_AND'] === 'drivers_age_from_27_to_70') {
-    payload.quick_proposal_has_addl_driver = 'YES';
-    payload.quick_proposal_has_yied_driver = 'NO';
-  } else {
-    payload.quick_proposal_has_addl_driver = 'NO';
-    payload.quick_proposal_has_yied_driver = 'NO';
+  const addlDriverKeys = CAR_INSURANCE.CODE_ADDL_DRIVERS;
+  for (const addlDriverKey of addlDriverKeys) {
+    if (selected_addons[addlDriverKey]) {
+      const result = applyAddlDriverLogic(selected_addons[addlDriverKey]);
+      payload.quick_proposal_has_addl_driver =
+        result.quick_proposal_has_addl_driver;
+      payload.quick_proposal_has_yied_driver =
+        result.quick_proposal_has_yied_driver;
+      break;
+    }
   }
 
   // Add named driver information
@@ -88,8 +92,19 @@ export async function saveProposalForCar(data: any) {
       driver?.marital_status || '';
   }
 
+  logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
+
+  const resSaveProposal = await apiServer.post('/b2c/proposal', payload);
+  logger.info(
+    `Response from ISP save proposal: ${JSON.stringify(resSaveProposal)}`,
+  );
+
+  if (resSaveProposal.data.status !== 0) {
+    return ErrFromISPRes('Failed to save proposal');
+  }
+
   return successRes({
     message: 'Proposal saved successfully',
-    data: payload,
+    data: resSaveProposal,
   });
 }
