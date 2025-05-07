@@ -1,5 +1,7 @@
-import { DropdownOption } from '@/components/ui/form/dropdownfield';
 import { v4 as uuid } from 'uuid';
+
+import { DropdownOption } from '@/components/ui/form/dropdownfield';
+
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 export const removeFromLocalStorage = (keys: string[]) => {
@@ -69,4 +71,18 @@ export const generateKeyAndAttachToUrl = (key: string) => {
     window.history.replaceState({}, '', url.toString());
   }
   return generatedKey;
+};
+
+export const calculateAge = (dob: string) => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+  return age;
 };

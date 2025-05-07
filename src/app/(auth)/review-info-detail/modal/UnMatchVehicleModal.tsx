@@ -14,6 +14,7 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { saveToSessionStorage } from '@/libs/utils/utils';
 
 const UnMatchVehicleModal = ({ onClose }: { onClose: () => void }) => {
   const { isMobile } = useDeviceDetection();
@@ -26,22 +27,37 @@ const UnMatchVehicleModal = ({ onClose }: { onClose: () => void }) => {
     sessionStorage.getItem(ECICS_USER_INFO) || '{}',
   );
 
-  const updateSessionStorage = (updatedVehicles: any[]) => {
-    sessionStorage.setItem(
-      ECICS_USER_INFO,
-      JSON.stringify({ ...sessionData, vehicles: updatedVehicles }),
-    );
-  };
-
   const handleSubmit = methods.handleSubmit((data) => {
     const { vehicle_make, vehicle_model } = data;
-    if (vehicle_make && vehicle_model) {
+
+    const selectedMake = makeOptions.find(
+      (make) => make.value === vehicle_make,
+    );
+    const selectedModel = modelOptions.find(
+      (model) => model.value === vehicle_model,
+    );
+
+    if (selectedMake && selectedModel) {
+      const updatedVehicles = (sessionData.vehicles || []).map(
+        (vehicle: any, index: number) => {
+          if (index === 0) {
+            return {
+              ...vehicle,
+              make: { value: selectedMake.text },
+              model: { value: selectedModel.text },
+            };
+          }
+          return vehicle;
+        },
+      );
+
       const updatedSession = {
         ...sessionData,
-        vehicle_make,
-        vehicle_model,
+        vehicles: updatedVehicles,
       };
-      updateSessionStorage(updatedSession);
+      saveToSessionStorage({
+        [ECICS_USER_INFO]: JSON.stringify(updatedSession),
+      });
     }
     onClose();
   });

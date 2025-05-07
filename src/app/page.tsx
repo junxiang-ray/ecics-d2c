@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 export default function Home() {
   const router = useRouter();
   useEffect(() => {
+    sessionStorage.clear();
     router.push('/login');
   }, [router]);
 
