@@ -70,7 +70,7 @@ const ConfirmInfoModal = ({
       },
       vehicles:
         parsed.vehicles?.map((v: any) => ({
-          chasis_number: v.chassisno?.value || '',
+          chasis_number: v.vehicleno?.value || '',
           vehicle_make: v.make?.value || '',
           vehicle_model: v.model?.value || '',
           first_registered_year: v.year_of_registration || '',
