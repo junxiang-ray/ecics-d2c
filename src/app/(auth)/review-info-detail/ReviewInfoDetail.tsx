@@ -12,7 +12,11 @@ import { z } from 'zod';
 
 import { SavePersonalInfoPayload, Vehicle } from '@/libs/types/auth';
 import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
-import { capitalizeWords, saveToSessionStorage } from '@/libs/utils/utils';
+import {
+  calculateAge,
+  capitalizeWords,
+  saveToSessionStorage,
+} from '@/libs/utils/utils';
 
 import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
@@ -20,6 +24,7 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
+import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
@@ -71,7 +76,13 @@ const ReviewInfoDetail = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [showChooseVehicleModal, setShowChooseVehicleModal] = useState(false);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+  const [showOverAgeModal, setShowOverAgeModal] = useState(false);
   const [refreshSession, setRefreshSession] = useState(false);
+
+  const handleGoBack = () => {
+    setShowOverAgeModal(false);
+    router.push(ROUTES.AUTH.LOGIN);
+  };
 
   const { mutate: savePersonalInfo } = usePostPersonalInfo();
   const { mutate: postCheckVehicle } = usePostCheckVehicle(() => {
@@ -199,7 +210,6 @@ const ReviewInfoDetail = () => {
 
   const stored = sessionStorage.getItem(ECICS_USER_INFO);
   const parsed = stored ? JSON.parse(stored) : null;
-  console.log('parsed?.vehicles', parsed);
 
   const vehicles: Vehicle[] = (parsed?.vehicles ?? []).map((vehicle: any) => ({
     chasis_number: vehicle.vehicleno?.value,
@@ -272,8 +282,15 @@ const ReviewInfoDetail = () => {
           first_registered_year: v.year_of_registration || '',
         })) || [],
     };
-    savePersonalInfo(payload);
 
+    //Check age
+    const age = calculateAge(payload?.personal_info.date_of_birth);
+    if (age < 26 || age > 70) {
+      setShowOverAgeModal(true);
+      return;
+    }
+
+    savePersonalInfo(payload);
     // Redirect
     const queryParams = new URLSearchParams({
       key: `${uuid()}`,
@@ -422,6 +439,9 @@ const ReviewInfoDetail = () => {
         )}
         {showUnMatchModal && (
           <UnMatchVehicleModal onClose={() => setShowUnMatchModal(false)} />
+        )}
+        {showOverAgeModal && (
+          <UnableQuote onClick={handleGoBack} visible={showOverAgeModal} />
         )}
       </div>
     </FormProvider>
