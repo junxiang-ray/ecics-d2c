@@ -1,4 +1,4 @@
-import apiServer from '@/app/api/configs/api.config';
+import { handleApiCallToISP } from '@/app/api/configs/api.config';
 import { CAR_INSURANCE } from '@/app/api/constants/car.insurance';
 import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
@@ -9,8 +9,9 @@ import {
   applyAddlDriverLogic,
   applyLouAndCcLogic,
 } from '@/app/api/utils/quote.helpers';
+import { saveQuoteProposalDTO } from './save-proposal.dto';
 
-export async function saveProposalForCar(data: any) {
+export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;
 
   const quoteInfo = await prisma.quote.findFirst({
@@ -91,20 +92,29 @@ export async function saveProposalForCar(data: any) {
     payload[`quick_proposal_addl_nd${i + 1}_marital_status`] =
       driver?.marital_status || '';
   }
-
   logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
 
-  const resSaveProposal = await apiServer.post('/b2c/proposal', payload);
+  const resSaveProposal = await handleApiCallToISP('/b2c/proposal', payload);
   logger.info(
-    `Response from ISP save proposal: ${JSON.stringify(resSaveProposal)}`,
+    `Response from save proposal: ${JSON.stringify(resSaveProposal)}`,
   );
 
-  if (resSaveProposal.data.status !== 0) {
+  if (resSaveProposal.status !== 0) {
     return ErrFromISPRes('Failed to save proposal');
   }
 
+  const proposalResInfo = {
+    product_id: resSaveProposal.data.product_id,
+    policy_id: resSaveProposal.data.policy_id,
+    quote_id: resSaveProposal.data.quote_id,
+    quote_no: resSaveProposal.data.quote_no,
+    proposal_id: resSaveProposal.data.proposal_id,
+    plan_selected: resSaveProposal.data.plan_selected,
+    final_premium: resSaveProposal.data.final_premium,
+  };
+
   return successRes({
     message: 'Proposal saved successfully',
-    data: resSaveProposal,
+    data: proposalResInfo,
   });
 }
