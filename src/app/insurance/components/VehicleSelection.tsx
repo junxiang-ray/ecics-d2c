@@ -1,21 +1,30 @@
 'use client';
 
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { Drawer, Modal, Radio, Space, Typography } from 'antd';
 import { useState } from 'react';
-import { PrimaryButton } from '../../../components/ui/buttons';
+
 import { Vehicle } from '@/libs/types/quote';
 
+import { PrimaryButton } from '@/components/ui/buttons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 interface VehicleSelectionModalProps {
+  isReviewScreen?: boolean;
   vehicles: Vehicle[];
   visible: boolean;
   selected?: Vehicle | null;
   setSelected: (selected: Vehicle | null) => void;
 }
 
+const defaultProps = {
+  isReviewScreen: false,
+};
+
 const commonFontClass = 'mt-3 font-normal text-base leading-none break-words';
 
 export const VehicleSelectionModal = ({
+  isReviewScreen,
   vehicles,
   visible,
   selected,
@@ -26,17 +35,24 @@ export const VehicleSelectionModal = ({
     selected?.chasis_number,
   );
 
-  const onClick = () => {
+  const handleClick = () => {
     const selectedVehicle = vehicles.find(
       (v) => v.chasis_number === selectedChasisNumber,
     );
     setSelected(selectedVehicle || null);
   };
+
   const content = (
     <>
+      {isReviewScreen && (
+        <div className='mb-3 text-base'>
+          We have found multiple vehicles in your Myinfo data
+        </div>
+      )}
       <div className='mb-3 break-words text-base font-bold leading-none'>
         Select the vehicle you want to insure now
       </div>
+
       <Radio.Group
         onChange={(e) => setSelectedChasisNumber(e.target.value)}
         value={selectedChasisNumber}
@@ -51,7 +67,7 @@ export const VehicleSelectionModal = ({
               className='-my-3 w-full'
             >
               <Radio key={index} value={vehicle.chasis_number}>
-                <Typography.Paragraph className={commonFontClass + ' w-32'}>
+                <Typography.Paragraph className={`${commonFontClass} w-32`}>
                   {vehicle.chasis_number}
                 </Typography.Paragraph>
               </Radio>
@@ -67,40 +83,38 @@ export const VehicleSelectionModal = ({
       </Radio.Group>
 
       <PrimaryButton
-        onClick={onClick}
+        onClick={handleClick}
         disabled={!selectedChasisNumber}
         className='w-full'
       >
-        Continue
+        {isReviewScreen ? 'Submit' : 'Continue'}
       </PrimaryButton>
     </>
   );
 
-  return (
-    <>
-      {isMobile ? (
-        <Drawer
-          placement='bottom'
-          open={visible}
-          closable={false}
-          height='auto'
-          className='rounded-t-xl'
-        >
-          {content}
-        </Drawer>
-      ) : (
-        <Modal
-          open={visible}
-          onOk={onClick}
-          closable={false}
-          maskClosable={false}
-          keyboard={false}
-          footer={null}
-          centered
-        >
-          {content}
-        </Modal>
-      )}
-    </>
+  return isMobile ? (
+    <Drawer
+      placement='bottom'
+      open={visible}
+      closable={false}
+      height='auto'
+      className='rounded-t-xl'
+    >
+      {content}
+    </Drawer>
+  ) : (
+    <Modal
+      open={visible}
+      onOk={handleClick}
+      closable={false}
+      maskClosable={false}
+      keyboard={false}
+      footer={null}
+      centered
+    >
+      {content}
+    </Modal>
   );
 };
+
+VehicleSelectionModal.defaultProps = defaultProps;

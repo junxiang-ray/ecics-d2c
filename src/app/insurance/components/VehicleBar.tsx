@@ -1,8 +1,10 @@
-import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
-import { Vehicle } from '@/libs/types/quote';
 import { EditOutlined } from '@ant-design/icons';
 import { Button, Flex } from 'antd';
 import { useState } from 'react';
+
+import { Vehicle } from '@/libs/types/quote';
+
+import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
 
 interface VehicleBarProps {
   selected_vehicle: Vehicle | null;

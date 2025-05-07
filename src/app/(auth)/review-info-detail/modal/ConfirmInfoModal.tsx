@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { v4 as uuid } from 'uuid';
 
 import { SavePersonalInfoPayload } from '@/libs/types/auth';
 import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
@@ -44,40 +45,36 @@ const ConfirmInfoModal = ({
     const parsed = JSON.parse(stored);
 
     const payload: SavePersonalInfoPayload = {
-      email: parsed.email?.value || '',
-      phone: `${parsed.mobileno?.nbr?.value || ''}`,
-      name: parsed.name?.value || '',
-      nric: parsed.uinfin?.value || '',
-      gender: parsed.sex?.desc || '',
-      marital_status: parsed.marital?.desc || '',
-      date_of_birth: parsed.dob?.value
-        ? convertDateToDDMMYYYY(parsed.dob.value)
-        : '',
-      address: [
-        `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
-      ].filter(Boolean),
-      vehicle_make: parsed.vehicle_make || '',
-      vehicle_model: parsed.vehicle_model || '',
-      year_of_registration: parsed.year_of_registration || '',
+      key: `key-${uuid()}`,
+      personal_info: {
+        name: parsed.name?.value || '',
+        gender: parsed.sex?.desc || '',
+        marital_status: parsed.marital?.desc || '',
+        nric: parsed.uinfin?.value || '',
+        address: [
+          `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
+        ].filter(Boolean),
+        date_of_birth: parsed.dob?.value
+          ? convertDateToDDMMYYYY(parsed.dob.value)
+          : '',
+        year_of_registration: parsed.year_of_registration || '',
+        driving_experience: parsed.driving_experience || 0,
+        phone: `${parsed.mobileno?.nbr?.value || ''}`,
+        email: parsed.email?.value || '',
+      },
+      vehicle_info_selected: {
+        vehicle_make: parsed.vehicle_make || '',
+        vehicle_model: parsed.vehicle_model || '',
+        first_registered_year: parsed.year_of_registration || '',
+        chasis_number: parsed.chassisno?.value || '',
+      },
       vehicles:
         parsed.vehicles?.map((v: any) => ({
-          vehicleno: {
-            value: v.vehicleno?.value || '',
-          },
-          chassisno: {
-            value: v.chassisno?.value || '',
-          },
-          make: {
-            value: v.make?.value || '',
-          },
-          model: {
-            value: v.model?.value || '',
-          },
-          engineno: {
-            value: v.engineno?.value || '',
-          },
+          chasis_number: v.chassisno?.value || '',
+          vehicle_make: v.make?.value || '',
+          vehicle_model: v.model?.value || '',
+          first_registered_year: v.year_of_registration || '',
         })) || [],
-      key: `key-${Date.now()}`,
     };
     savePersonalInfo(payload);
   };

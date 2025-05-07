@@ -31,28 +31,51 @@ export default function AddOnRowDetail({
     >
       {status === 'new' && (
         <>
-          <p className='font-medium'>
+          <p className='text-[13px] font-semibold leading-[19px] text-[#535353]'>
             Get reimbursed for replacing your car keys if they’re lost due to
             theft, robbery, or an accident.
           </p>
-          <hr className=' my-2 bg-sky-500' />
-          <div className='flex items-center justify-between'>
-            <p>Select Coverage Amount</p>
+          <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
+          <div className='flex items-center justify-between text-[14px]'>
+            <p className='font-semibold leading-[20px] text-[#525252]'>
+              Select Coverage Amount
+            </p>
             <Select
-              defaultValue='SGD 500'
+              defaultValue='jack'
               style={{ width: 120 }}
-              className='w-28'
+              className='[&_.ant-select-selector]:border-0.5 w-28 [&_.ant-select-selector]:border-[#00ADEF]'
               options={[
-                { value: 'jack', label: 'SGD 500' },
-                { value: 'lucy', label: 'SGD 500' },
-                { value: 'Yiminghe', label: 'SGD 500' },
+                {
+                  value: 'jack',
+                  label: (
+                    <span className='font-semibold text-[#1E1E1E]'>
+                      SGD 500
+                    </span>
+                  ),
+                },
+                {
+                  value: 'lucy',
+                  label: (
+                    <span className='font-semibold text-[#1E1E1E]'>
+                      SGD 500
+                    </span>
+                  ),
+                },
+                {
+                  value: 'Yiminghe',
+                  label: (
+                    <span className='font-semibold text-[#1E1E1E]'>
+                      SGD 500
+                    </span>
+                  ),
+                },
               ]}
             />
           </div>
-          <div className='flex items-center justify-between pt-2'>
-            <p>SGD 43</p>
+          <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
+            <p className='text-[#525252]'>SGD 43</p>
             <SecondaryButton
-              className='h-8 w-28 rounded-md py-0 leading-4 text-black'
+              className='black h-8 w-28 rounded-md !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
               onClick={() => setStatus('completed')}
             >
               Add
@@ -62,13 +85,15 @@ export default function AddOnRowDetail({
       )}
       {status === 'completed' && (
         <>
-          <p className='font-medium'>
+          <p className='font-semibold leading-5 text-[#333333]'>
             Get reimbursed for replacing your car keys if they’re lost due to
             theft, robbery, or an accident.
           </p>
-          <hr className=' my-2 bg-sky-500' />
-          <div className='flex items-center justify-between pt-2'>
-            <p>SGD 43</p>
+          <div className=' my-2 border-t border-dashed border-[#00ADEFB2]' />
+          <div className='flex items-center justify-between pt-2 text-[14px]'>
+            <p className='font-semibold leading-[20px] text-[#333333]'>
+              SGD 43
+            </p>
             <SecondaryButton
               className='h-8 w-28 rounded-md py-0 leading-4 text-red-500'
               onClick={() => setStatus('new')}

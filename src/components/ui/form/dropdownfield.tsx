@@ -7,7 +7,9 @@ interface DropdownFieldProps extends SelectProps {
   name: string;
   options: DropdownOption[];
   label?: string;
+  className?: string;
 }
+
 export interface DropdownOption {
   value: string | number;
   text: string;
@@ -18,9 +20,11 @@ export const DropdownField = ({
   label,
   options,
   disabled,
+  className,
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
+
   return (
     <>
       <Controller
@@ -28,13 +32,17 @@ export const DropdownField = ({
         control={control}
         render={({ field, fieldState }) => (
           <>
-            <span className='text-base font-semibold'>{label}</span>
+            {label && <span className='text-base font-semibold'>{label}</span>}
             <Select
               {...props}
               {...field}
+              value={field.value}
+              onChange={(value, option) => {
+                field.onChange(value);
+                props.onChange?.(value, option);
+              }}
               disabled={disabled}
               optionFilterProp='children'
-              value={field.value}
               status={fieldState.invalid ? 'error' : ''}
               className={`w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
               suffixIcon={
