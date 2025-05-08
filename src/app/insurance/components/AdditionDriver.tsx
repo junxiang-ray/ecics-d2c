@@ -2,61 +2,50 @@ import DeleteIcon from '@/components/icons/DeleteIcon';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
-import { PlusOutlined } from '@ant-design/icons';
-import { Drawer, Modal } from 'antd';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useRef, useState } from 'react';
-import { FormProvider, useForm, useFieldArray } from 'react-hook-form';
-import { z } from 'zod';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { PlusOutlined } from '@ant-design/icons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Drawer, Modal } from 'antd';
+import { useMemo, useRef, useState } from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import {
+  GENDER_OPTIONS,
+  MARITAL_STATUS_OPTIONS,
+} from '../basic-detail/options';
 
 interface Props {
   isShowAdditionDriver: boolean;
   setIsShowAdditionDriver: (value: boolean) => void;
   setDataDrivers: (data: any[]) => void;
+  dataDrivers: any[];
 }
-
-export const GENDER_OPTIONS = [
-  { value: 'male', text: 'Male' },
-  { value: 'female', text: 'Female' },
-];
-
-export const MARITAL_STATUS_OPTIONS = [
-  { value: 'single', text: 'Single' },
-  { value: 'married', text: 'Married' },
-  { value: 'divorced', text: 'Divorced' },
-  { value: 'widowed', text: 'Widowed' },
-];
-
 export const DRIVING_EXPERIENCE_OPTIONS = [
-  { value: 'Less than 1 year', text: 'Less than 1 year' },
-  { value: '1 year', text: '1 year' },
-  { value: '2 year', text: '2 years' },
-  { value: '3 year', text: '3 years' },
-  { value: '4 year', text: '4 years' },
-  { value: '5 year', text: '5 years' },
-  { value: '6 year', text: '6 years and above' },
+  { value: 0, text: 'Less than 1 year' },
+  { value: 1, text: '1 year' },
+  { value: 2, text: '2 years' },
+  { value: 3, text: '3 years' },
+  { value: 4, text: '4 years' },
+  { value: 5, text: '5 years' },
+  { value: 6, text: '6 years and above' },
 ];
-
 const createSchema = () =>
   z.object({
-    drivers: z
-      .array(
-        z.object({
-          name: z.string().min(1, 'Name is required'),
-          nric: z.string().min(1, 'NRIC/FIN is required'),
-          birthDate: z
-            .date({ required_error: 'Date of birth is required' })
-            .refine(
-              (date) => date <= new Date(),
-              'Date of birth cannot be in the future',
-            ),
-          gender: z.string().min(1, 'Gender is required'),
-          marital: z.string().min(1, 'Marital status is required'),
-          Driving: z.string().min(1, 'Driving experience is required'),
-        }),
-      )
-      .min(1, 'At least one driver is required'),
+    drivers: z.array(
+      z.object({
+        name: z.string().min(1, 'Name is required'),
+        nric_or_fin: z.string().min(1, 'NRIC/FIN is required'),
+        date_of_birth: z
+          .date({ required_error: 'Date of birth is required' })
+          .refine(
+            (date) => date <= new Date(),
+            'Date of birth cannot be in the future',
+          ),
+        gender: z.string().min(1, 'Gender is required'),
+        marital_status: z.string().min(1, 'Marital status is required'),
+        driving_experience: z.number().min(1, 'Driving experience is required'),
+      }),
+    ),
   });
 
 type FormData = z.infer<ReturnType<typeof createSchema>>;
@@ -65,13 +54,13 @@ const AdditionDriver = ({
   isShowAdditionDriver,
   setIsShowAdditionDriver,
   setDataDrivers,
+  dataDrivers,
 }: Props) => {
   const schema = useMemo(() => createSchema(), []);
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { drivers: [{} as any] },
+    defaultValues: { drivers: dataDrivers },
     mode: 'onSubmit',
   });
 
@@ -144,12 +133,12 @@ const AdditionDriver = ({
               placeholder='Enter your Name'
             />
             <InputField
-              name={`drivers.${index}.nric`}
+              name={`drivers.${index}.nric_or_fin`}
               label='NRIC'
               placeholder='Enter NRIC/FIN'
             />
             <DatePickerField
-              name={`drivers.${index}.birthDate`}
+              name={`drivers.${index}.date_of_birth`}
               label='Date of Birth'
             />
             <DropdownField
@@ -159,13 +148,13 @@ const AdditionDriver = ({
               options={GENDER_OPTIONS}
             />
             <DropdownField
-              name={`drivers.${index}.marital`}
+              name={`drivers.${index}.marital_status`}
               label='Marital Status'
               placeholder='Select marital status'
               options={MARITAL_STATUS_OPTIONS}
             />
             <DropdownField
-              name={`drivers.${index}.Driving`}
+              name={`drivers.${index}.driving_experience`}
               label='Driving Experience'
               placeholder='Select driving experience'
               options={DRIVING_EXPERIENCE_OPTIONS}
