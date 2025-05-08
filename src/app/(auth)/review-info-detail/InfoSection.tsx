@@ -69,32 +69,52 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     const updatedVehicles = [...vehicles];
     const prevVehicle = updatedVehicles[index] || {};
 
-    let make = prevVehicle.make?.value || '';
-    let model = prevVehicle.model?.value || '';
-    let year = prevVehicle.firstregistrationdate?.value
-      ? new Date(prevVehicle.firstregistrationdate.value)
-          .getFullYear()
-          .toString()
-      : '';
-    let vehicleno = prevVehicle.vehicleno?.value || '';
+    const vehicleData: Record<string, any> = {
+      vehicleno: prevVehicle.vehicleno?.value || '',
+      firstregistrationdate: prevVehicle.firstregistrationdate?.value
+        ? new Date(prevVehicle.firstregistrationdate.value)
+            .getFullYear()
+            .toString()
+        : '',
+      make: prevVehicle.make?.value || '',
+      model: prevVehicle.model?.value || '',
+      engineno: prevVehicle.engineno?.value || '',
+      chassisno: prevVehicle.chassisno?.value || '',
+      enginecapacity: prevVehicle.enginecapacity?.value || '',
+      powerrate: prevVehicle.powerrate?.value || '',
+      yearofmanufacture: prevVehicle.yearofmanufacture?.value || '',
+    };
 
-    if (field === 'vehicle_make') {
-      make = value;
-    } else if (field === 'vehicle_model') {
-      model = value;
-    } else if (field === 'year_of_registration') {
-      year = value;
-    } else if (field === 'chassis_number') {
-      vehicleno = value;
+    const fieldMap: Record<string, keyof typeof vehicleData> = {
+      vehicle_number: 'vehicleno',
+      year_of_registration: 'firstregistrationdate',
+      vehicle_make: 'make',
+      vehicle_model: 'model',
+      engine_number: 'engineno',
+      chassis_number: 'chassisno',
+      engine_capacity: 'enginecapacity',
+      power_ate: 'powerrate',
+      year_of_manufacture: 'yearofmanufacture',
+    };
+
+    const targetField = fieldMap[field];
+    if (targetField) {
+      vehicleData[targetField] = value;
     }
 
     updatedVehicles[index] = {
       ...prevVehicle,
-      make: { value: make },
-      model: { value: model },
-      firstregistrationdate: { value: `${year}-01-01` },
-      yearofmanufacture: { value: year },
-      vehicleno: { value: vehicleno },
+      vehicleno: { value: vehicleData.vehicleno },
+      firstregistrationdate: {
+        value: `${vehicleData.firstregistrationdate}-01-01`,
+      },
+      make: { value: vehicleData.make },
+      model: { value: vehicleData.model },
+      engineno: { value: vehicleData.engineno },
+      chassisno: { value: vehicleData.chassisno },
+      enginecapacity: { value: vehicleData.enginecapacity },
+      powerrate: { value: vehicleData.powerrate },
+      yearofmanufacture: { value: vehicleData.yearofmanufacture },
     };
 
     const isInputsCompleted = checkInputsCompleted(updatedVehicles);
@@ -191,7 +211,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                     <input
                       name={nameKey}
                       type='text'
-                      className={`h-[30px] w-full rounded-[6px] border border-gray-300 bg-gray-200 p-2 ${isReadOnly ? 'cursor-not-allowed' : ''}`}
+                      className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
                       placeholder={`Enter ${item.label} info`}
                       onChange={(e) =>
                         handleInputChange(0, nameKey, e.target.value)
