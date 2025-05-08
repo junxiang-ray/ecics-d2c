@@ -8,45 +8,17 @@ import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import ImportantNoticeModal from './review-your-detail/modal/ImportantNoticeModal';
-
-interface QuoteParams {
-  data: {
-    plans: any[];
-    selected_addons: {
-      [key: string]: string;
-    };
-    selected_plan: string;
-    insurance_additional_info: {
-      end_date: string;
-      no_claim_discount: number;
-      no_of_claim: number;
-      start_date: string;
-    };
-    vehicle_info_selected: {
-      engine_no: string;
-      chassis_no: string;
-      vehicle_make: string;
-      chasis_number: string;
-      vehicle_model: string;
-      first_registered_year: string;
-    };
-  };
-  company: {
-    id: number;
-    name: string;
-  };
-}
+import ReviewDesktop from './ReviewDesktop';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { ROUTES } from '@/constants/routes';
+import { useGetQuote } from '@/hook/insurance/quote';
 
 export default function Page() {
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;
   }>({});
   const [showModal, setShowModal] = useState(false);
-  const [quote, setQuote] = useState<QuoteParams | null>(null);
-
-  useEffect(() => {
-    getQuote();
-  }, []);
+  const { isMobile } = useDeviceDetection();
 
   const toggleSection = (key: string) => {
     setExpandedSections((prev) => ({
@@ -54,18 +26,26 @@ export default function Page() {
       [key]: !prev[key],
     }));
   };
-  const getQuote = async () => {
-    try {
-      const res = await fetch(`/api/v1/quote//1745750192970`);
-      const response = await res.json();
-      setQuote(response.data);
-    } catch (error) {
-      console.error('Failed to fetch hire purchase list:', error);
-    }
-  };
+
+  const { data: quote } = useGetQuote('1745750192188');
 
   const handleEditClick = (key: string) => {
     toggleSection(key);
+  };
+
+  const routerBySectionKey = (key: string) => {
+    switch (key) {
+      case 'basic':
+        return ROUTES.INSURANCE.BASIC_DETAIL;
+      case 'addons':
+        return ROUTES.INSURANCE.ADD_ON;
+      case 'policy':
+        return ROUTES.INSURANCE.PLAN;
+      case 'driver':
+        return ROUTES.INSURANCE.ADD_ON;
+      default:
+        return undefined;
+    }
   };
 
   const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
@@ -84,23 +64,62 @@ export default function Page() {
       };
     });
 
+  const getAdditionalDriverData = (drivers: any[] = []) => {
+    return drivers.flatMap((driver, index) => [
+      {
+        title: `Additional Driver ${index + 1}`,
+        value: '',
+        isTitleOnly: true,
+      },
+      {
+        title: 'Name',
+        value: driver.name,
+      },
+      {
+        title: 'NRIC',
+        value: driver.nric_or_fin,
+      },
+    ]);
+  };
+
+  const getDriverSections = (drivers: any[] = []) => {
+    return drivers.map((driver, index) => {
+      const data = [
+        { title: 'Name as Per NRIC', value: driver.name },
+        { title: 'NRIC', value: driver.nric_or_fin },
+        { title: 'Date of Birth', value: driver.date_of_birth },
+        { title: 'Gender', value: driver.gender },
+        { title: 'Marital Status', value: driver.marital_status },
+        { title: 'Driving Experience', value: driver.driving_experience },
+      ];
+
+      return {
+        key: `driver-${index}`,
+        title: `Additional Driver ${index + 1}`,
+        description: driver.name,
+        icon: <AdditionalDriverDetailsIcon className='text-white' />,
+        data,
+      };
+    });
+  };
+
   const sharedDataMap: { [key: string]: { title: string; value: any }[] } = {
     basic: [
       {
         title: 'Policy Start Date',
-        value: quote?.data.insurance_additional_info.start_date,
+        value: quote?.data.insurance_additional_info?.start_date || 'N/A',
       },
       {
         title: 'Policy End Date',
-        value: quote?.data.insurance_additional_info.end_date,
+        value: quote?.data.insurance_additional_info?.end_date,
       },
       {
         title: 'No Claim Discount',
-        value: `${quote?.data.insurance_additional_info.no_claim_discount}%`,
+        value: `${quote?.data.insurance_additional_info?.no_claim_discount}%`,
       },
       {
         title: 'Number of claims in last 3 years',
-        value: quote?.data.insurance_additional_info.no_of_claim,
+        value: quote?.data.insurance_additional_info?.no_of_claim,
       },
       { title: 'Vehicle financed by', value: quote?.company?.name || 'N/A' },
     ],
@@ -124,30 +143,36 @@ export default function Page() {
       },
       {
         title: 'Chassis Number',
-        value: quote?.data.vehicle_info_selected?.chassis_no || 'N/A',
+        value: quote?.data.vehicle_info_selected?.chasis_number || 'N/A',
       },
       {
         title: 'Engine Number',
-        value: quote?.data.vehicle_info_selected?.engine_no || 'N/A',
+        value: quote?.data.vehicle_info_selected?.engine_number || 'N/A',
       },
       { title: 'Engine Capacity', value: 'N/A' },
       { title: 'Power Rate', value: 'N/A' },
       { title: 'Year of Manufacture', value: 'N/A' },
     ],
     policy: [
-      { title: 'Selected Plan', value: quote?.data.selected_plan },
+      { title: 'Selected Plan', value: quote?.data.selected_plan || 'N/A' },
       {
         title: 'Policy Start Date',
-        value: quote?.data.insurance_additional_info.start_date || 'N/A',
+        value: quote?.data.insurance_additional_info?.start_date || 'N/A',
       },
       {
         title: 'Policy End Date',
-        value: quote?.data.insurance_additional_info.end_date || 'N/A',
+        value: quote?.data.insurance_additional_info?.end_date || 'N/A',
       },
     ],
     addons: addonsSectionData,
-    driver: [{ title: 'Driver Name', value: 'Steve Smith' }],
-    owner: [{ title: 'Owner Name', value: 'John Doe' }],
+    driver: getAdditionalDriverData(quote?.data.add_named_driver_info),
+    owner: [
+      { title: 'Owner Name', value: `${quote?.data.personal_info?.name} ` },
+      {
+        title: 'Chasis number',
+        value: `${quote?.data.vehicle_info_selected?.chasis_number} `,
+      },
+    ],
   };
 
   const sections = [
@@ -184,7 +209,7 @@ export default function Page() {
     {
       key: 'owner',
       title: 'Vehicle Owner',
-      description: 'BMW i5 2.2 ST1234B',
+      description: `${quote?.data.personal_info?.name}  ${quote?.data.vehicle_info_selected?.chasis_number}`,
       icon: <PersonIcon className='text-white' />,
     },
   ];
@@ -192,24 +217,70 @@ export default function Page() {
   return (
     <div className='px-4'>
       <h1 className='mb-4 text-xl font-bold'>Review your details</h1>
-      {sections.map((section) => (
-        <ReviewSection
-          key={section.key}
-          title={section.title}
-          description={section.description}
-          icon={section.icon}
-          data={sharedDataMap[section.key] || []}
-          isExpanded={!!expandedSections[section.key]}
-          onToggle={() => handleEditClick(section.key)}
-          setShowModal={setShowModal}
-        />
-      ))}
+      <div className='flex flex-col lg:flex-row lg:gap-8'>
+        <div className='flex-1'>
+          {sections.map((section) => {
+            if (section.key === 'driver') {
+              const drivers = getDriverSections(
+                quote?.data.add_named_driver_info,
+              );
+              return drivers.map((driverSection) =>
+                isMobile ? (
+                  <ReviewSection
+                    key={driverSection.key}
+                    title={driverSection.title}
+                    description={driverSection.description}
+                    icon={driverSection.icon}
+                    data={driverSection.data}
+                    isExpanded={!!expandedSections[driverSection.key]}
+                    onToggle={() => handleEditClick(driverSection.key)}
+                    setShowModal={setShowModal}
+                    editRoute={ROUTES.INSURANCE.ADD_ON}
+                  />
+                ) : (
+                  <ReviewDesktop
+                    key={driverSection.key}
+                    title={driverSection.title}
+                    description={driverSection.description}
+                    icon={driverSection.icon}
+                    data={driverSection.data}
+                    isExpanded={!!expandedSections[driverSection.key]}
+                    onToggle={() => handleEditClick(driverSection.key)}
+                    setShowModal={setShowModal}
+                    editRoute={ROUTES.INSURANCE.ADD_ON}
+                  />
+                ),
+              );
+            }
 
-      {showModal && (
-        <div className='fixed bottom-0 left-0 right-0 z-50 animate-slide-up rounded-t-2xl bg-white shadow-lg sm:mx-auto sm:max-w-md'>
-          <ImportantNoticeModal onSave={() => setShowModal(false)} />
+            return isMobile ? (
+              <ReviewSection
+                key={section.key}
+                title={section.title}
+                description={section.description}
+                icon={section.icon}
+                data={sharedDataMap[section.key] || []}
+                isExpanded={!!expandedSections[section.key]}
+                onToggle={() => handleEditClick(section.key)}
+                setShowModal={setShowModal}
+                editRoute={routerBySectionKey(section.key)}
+              />
+            ) : (
+              <ReviewDesktop
+                key={section.key}
+                title={section.title}
+                description={section.description}
+                icon={section.icon}
+                data={sharedDataMap[section.key] || []}
+                isExpanded={!!expandedSections[section.key]}
+                onToggle={() => handleEditClick(section.key)}
+                setShowModal={setShowModal}
+                editRoute={routerBySectionKey(section.key)}
+              />
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 }
