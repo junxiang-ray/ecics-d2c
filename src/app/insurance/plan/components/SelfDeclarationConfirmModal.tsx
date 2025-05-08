@@ -20,7 +20,6 @@ function SelfDeclarationConfirmModal({
 }) {
   const { isMobile } = useDeviceDetection();
   const [isChecked, setIsChecked] = useState(false);
-  const router = useRouterWithQuery();
 
   const handleCheckboxChange = (e: CheckboxChangeEvent) => {
     setIsChecked(e.target.checked);
@@ -28,7 +27,6 @@ function SelfDeclarationConfirmModal({
 
   const handleOkayClick = () => {
     onOk();
-    router.push(ROUTES.INSURANCE.ADD_ON);
   };
 
   const content = (
