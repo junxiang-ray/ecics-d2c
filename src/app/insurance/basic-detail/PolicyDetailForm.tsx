@@ -1,24 +1,5 @@
 'use client';
 
-import { DatePickerField } from '@/components/ui//form/datepicker';
-import {
-  DropdownField,
-  DropdownOption,
-} from '@/components/ui//form/dropdownfield';
-import RadioField from '@/components/ui//form/radiofield';
-import { PrimaryButton } from '@/components/ui/buttons';
-import { InputField } from '@/components/ui/form/inputfield';
-import { MOTOR_QUOTE } from '@/constants';
-import { emailRegex, phoneRegex } from '@/constants/validation.constant';
-import {
-  useGetVehicleMakes,
-  useGetVehicleModels,
-} from '@/hook/insurance/common';
-import {
-  adjustDateInDate,
-  adjustDateInDayjs,
-  dateToDayjs,
-} from '@/libs/utils/date-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, Spin } from 'antd';
 import { FormProps } from 'antd/es/form';
@@ -27,7 +8,29 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { PromoCodeField } from '../components/PromoCode';
+
+import {
+  adjustDateInDate,
+  adjustDateInDayjs,
+  dateToDayjs,
+} from '@/libs/utils/date-utils';
+
+import { DatePickerField } from '@/components/ui//form/datepicker';
+import {
+  DropdownField,
+  DropdownOption,
+} from '@/components/ui//form/dropdownfield';
+import RadioField from '@/components/ui//form/radiofield';
+import { PrimaryButton } from '@/components/ui/buttons';
+import { InputField } from '@/components/ui/form/inputfield';
+
+import { MOTOR_QUOTE } from '@/constants';
+import { emailRegex, phoneRegex } from '@/constants/validation.constant';
+import {
+  useGetVehicleMakes,
+  useGetVehicleModels,
+} from '@/hook/insurance/common';
+
 import { UnableQuote } from './modal/UnableQuote';
 import {
   CLAIM_AMOUNT_OPTIONS,
@@ -36,6 +39,7 @@ import {
   NO_CLAIM_OPTIONS,
   REG_YEAR_OPTIONS,
 } from './options';
+import { PromoCodeField } from '../components/PromoCode';
 
 const sryMsg = 'Sorry, we cannot provide you a quotation online';
 

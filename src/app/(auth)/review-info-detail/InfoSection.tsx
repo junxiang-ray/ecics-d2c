@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import {
@@ -21,9 +22,10 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 type InfoSectionProps = {
   title: string;
-  data: { label: string; value: string | any[] }[];
+  data: { label: string; value: string | number | null }[];
   boxClass?: string;
   setIsDisabled?: (val: boolean) => void;
+  vehicleIndex?: number;
 };
 const isReadOnly = true;
 
@@ -32,6 +34,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   data,
   boxClass = '',
   setIsDisabled,
+  vehicleIndex,
 }) => {
   const { isMobile } = useDeviceDetection();
   const methods = useForm();
@@ -51,7 +54,27 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     setVehicles(updatedVehicles);
   };
 
-  const checkInputsCompleted = (updatedVehicles: any[]) => {
+  const updateVehicleOnlyInSessionStorage = (
+    updatedVehicle: VehicleSingPassResponse,
+    index: number,
+  ) => {
+    const sessionDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!sessionDataRaw) return;
+
+    const sessionData = JSON.parse(sessionDataRaw);
+    const existingVehicles: VehicleSingPassResponse[] =
+      sessionData.vehicles || [];
+
+    const updatedVehicles = [...existingVehicles];
+    updatedVehicles[index] = updatedVehicle;
+
+    sessionStorage.setItem(
+      ECICS_USER_INFO,
+      JSON.stringify({ ...sessionData, vehicles: updatedVehicles }),
+    );
+  };
+
+  const checkInputsCompleted = (vehicle: any) => {
     const requiredFields = [
       'vehicleno',
       'firstregistrationdate',
@@ -63,10 +86,8 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       'powerrate',
       'yearofmanufacture',
     ];
-    return updatedVehicles.every((vehicle) =>
-      requiredFields.every(
-        (field) => vehicle[field]?.value && vehicle[field]?.value !== null,
-      ),
+    return requiredFields.every(
+      (field) => vehicle?.[field]?.value && vehicle?.[field]?.value !== null,
     );
   };
 
@@ -122,13 +143,23 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       yearofmanufacture: { value: vehicleData.yearofmanufacture },
     };
 
-    const isInputsCompleted = checkInputsCompleted(updatedVehicles);
+    const isInputsCompleted = checkInputsCompleted(updatedVehicles[index]);
     saveToSessionStorage({
       [IS_THREE_INPUT_COMPLETE]: String(isInputsCompleted),
     });
     setIsDisabled?.(!isInputsCompleted);
 
-    updateSessionStorage(updatedVehicles);
+    if (data.some((item) => item.value == null)) {
+      const vehicleLength = sessionData.vehicle?.length ?? 0;
+      if (vehicleLength === 0) {
+        updateSessionStorage(updatedVehicles);
+      } else if (vehicleLength === 1) {
+        updateSessionStorage(updatedVehicles);
+        updateVehicleOnlyInSessionStorage(updatedVehicles[index], index);
+      } else {
+        updateVehicleOnlyInSessionStorage(updatedVehicles[index], index);
+      }
+    }
   };
 
   //Call API
@@ -146,7 +177,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       text: item.name,
     })) || [];
 
-  const renderGrid = () => {
+  const renderGrid = (vehicleIndex: number) => {
     const chunks = [];
     for (let i = 0; i < data.length; i += 2) {
       const chunk = data.slice(i, i + 2); // Take two items at a time
@@ -156,8 +187,13 @@ const InfoSection: React.FC<InfoSectionProps> = ({
             const nameKey = item.label.toLowerCase().replace(/\s+/g, '_');
             const isVehicleMake = nameKey === 'vehicle_make';
             const isVehicleModel = nameKey === 'vehicle_model';
+            const isVehicleYearRegistration =
+              nameKey === 'year_of_registration';
 
-            if (item.value == null && (isVehicleMake || isVehicleModel)) {
+            if (
+              item.value == null &&
+              (isVehicleMake || isVehicleModel || isVehicleYearRegistration)
+            ) {
               return (
                 <FormProvider key={idx} {...methods}>
                   <div>
@@ -177,7 +213,11 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                               ? selectedMake.text
                               : '';
                             setValue('vehicle_model', undefined);
-                            handleInputChange(0, 'vehicle_make', makeText);
+                            handleInputChange(
+                              vehicleIndex,
+                              'vehicle_make',
+                              makeText,
+                            );
                           }}
                         />
                       </>
@@ -198,7 +238,35 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                             const modelText = selectedModel
                               ? selectedModel.text
                               : '';
-                            handleInputChange(0, 'vehicle_model', modelText);
+                            handleInputChange(
+                              vehicleIndex,
+                              'vehicle_model',
+                              modelText,
+                            );
+                          }}
+                        />
+                      </>
+                    )}
+                    {isVehicleYearRegistration && (
+                      <>
+                        <div className='font-bold'>Year of Registration</div>
+                        <DropdownField
+                          className='h-[40px]'
+                          name='year_of_registration'
+                          placeholder='Select year'
+                          options={Array.from({ length: 21 }, (_, i) => {
+                            const year = new Date().getFullYear() - i;
+                            return {
+                              value: year.toString(),
+                              text: year.toString(),
+                            };
+                          })}
+                          onChange={(value) => {
+                            handleInputChange(
+                              vehicleIndex,
+                              'year_of_registration',
+                              value,
+                            );
                           }}
                         />
                       </>
@@ -219,7 +287,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                       className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
                       placeholder={`Enter ${item.label} info`}
                       onChange={(e) =>
-                        handleInputChange(0, nameKey, e.target.value)
+                        handleInputChange(vehicleIndex, nameKey, e.target.value)
                       }
                     />
                   ) : isMobile ? (
@@ -229,7 +297,9 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                       name={nameKey}
                       defaultValue={item.value}
                       type='text'
-                      className={`h-[30px] w-full rounded-[6px] border border-gray-300 bg-gray-200 p-2 ${isReadOnly ? 'cursor-not-allowed' : ''}`}
+                      className={`h-[30px] w-full rounded-[6px] border border-gray-300 bg-gray-200 p-2 ${
+                        isReadOnly ? 'cursor-not-allowed' : ''
+                      }`}
                       disabled={isReadOnly}
                     />
                   )}
@@ -250,7 +320,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       <div className='text-base font-bold underline underline-offset-4'>
         {title}
       </div>
-      {renderGrid()}
+      {renderGrid(vehicleIndex ?? 0)}
     </div>
   );
 };
