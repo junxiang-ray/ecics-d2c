@@ -8,47 +8,195 @@ import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
 import AddOnRowDetail from './AddOnRowDetail';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { Button, Modal } from 'antd';
-import { useState } from 'react';
+import { Button, Modal, Spin } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import HeaderAddOn from './HeaderAddOn';
+import { useGetQuote } from '@/hook/insurance/quote';
+import { useSearchParams } from 'next/navigation';
+import { Addon, Option } from '@/libs/types/quote';
+import { FeeBar } from '../components/FeeBar';
 
 const mapIconToTypeAddOn = [
   {
-    type: 'key',
+    code: 'CAR_COM_ANW',
     icon: <KeyIcon className='text-brand-blue' />,
     isRecommended: true,
     title: 'Key Replacement Cover',
   },
   {
-    type: 'repair',
+    code: 'CAR_COM_AJE',
     icon: <RepairIcon className='text-brand-blue' />,
     title: 'Repair at Any Workshop',
   },
   {
-    type: 'roadside',
+    code: 'CAR_COM_AND',
     icon: <RoadSideIcon className='text-brand-blue' />,
     title: '24/7 Road side assistance',
   },
   {
-    type: 'enhanced-accident',
+    code: 'CAR_COM_BUN',
     icon: <EnhancedAccidentIcon className='text-brand-blue' />,
     title: 'Enhanced Accident Coverage',
   },
   {
-    type: 'personal-accident',
+    code: 'CAR_COM_LOU',
     icon: <PersonalAccidentIcon className='text-brand-blue' />,
     title: 'Personal Accident +',
   },
   {
-    type: 'new-old-replacement',
+    code: 'CAR_COM_PAC',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    title: 'New for Old Replacement',
+  },
+  {
+    code: 'CAR_COM_MDE',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    title: 'New for Old Replacement',
+  },
+  {
+    code: 'CAR_COM_RSA',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    title: 'New for Old Replacement',
+  },
+  {
+    code: 'CAR_COM_KRC',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    title: 'New for Old Replacement',
+  },
+  {
+    code: 'CAR_COM_NOR',
     icon: <NewOldReplacementIcon className='text-brand-blue' />,
     title: 'New for Old Replacement',
   },
 ];
 
-function AddOnPage() {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+export interface AddOnFormat extends Addon {
+  icon: JSX.Element | null;
+  selectedOption: Option | null;
+  feeAdded: number; // feeAdded is the fee used to calculate the premium for the addon
 
+  activeOption: Option | null;
+  feeSelected: number; // feeSelected is the fee used to show fee when user change option
+}
+const selected_addons: any = {
+  CAR_COM_ANW: 'YES', //or "NO"
+  CAR_COM_AJE: 'SGD 1,500.00', // or "SGD 1,500.00" if not selected ANW
+  CAR_COM_AND: 'NO', // or "drivers_age_from_27_to_70" || all_drivers
+  CAR_COM_BUN: 'NO', //or "YES"
+  CAR_COM_LOU: 'YES (up to 2,000cc)', // or YES || "YES (up to 1,600cc) || "YES (up to 2,000cc)"
+  CAR_COM_PAC: 'NO', //"YES (+SGD 60K)" //"YES (+SGD 100K)"
+  CAR_COM_MDE: 'NO', //quick_proposal_me: "YES (+SGD 200)" //YES (+SGD 1700)
+  CAR_COM_RSA: 'NO', // NO //quick_proposal_ra24
+  CAR_COM_KRC: 'NO', // NO quick_proposal_krc
+  CAR_COM_NOR: 'NO',
+};
+function calculateFee(
+  option: Option,
+  addonsAdded: Record<string, string>,
+): number {
+  if (!option?.dependencies || option.dependencies.length === 0) {
+    return option.premium_with_gst ?? 0;
+  }
+  const dependency = option.dependencies.find((dep) =>
+    dep.conditions.every(
+      (condition) => addonsAdded[condition.addon.code] === condition.value,
+    ),
+  );
+  return dependency?.premium_with_gst ?? 0;
+}
+
+function AddOnPage() {
+  const searchParams = useSearchParams();
+  const key = searchParams.get('key') || '';
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const { data: quoteInfo, isLoading } = useGetQuote(key);
+  const plan = quoteInfo?.data?.plans[0];
+  const addons = plan?.addons ?? [];
+  const [addonsAdded, setAddonsAdded] = useState<any>(null);
+  const [addonsSelected, setAddonsSelected] = useState<any>(null);
+
+  const defaultAddonsAdded = useMemo(() => {
+    if (!plan?.addons.length) return {};
+    const addonCodes = plan.addons.map((addon) => addon.code);
+    return Object.fromEntries(addonCodes.map((code) => [code, 'NO']));
+  }, [plan]);
+
+  const defaultAddonsSelected = useMemo(() => {
+    if (!plan?.addons.length) return {};
+    return plan.addons.reduce(
+      (acc: Record<string, string>, addon) => {
+        if (addon.type === 'checkbox') {
+          acc[addon.code] = 'YES';
+        } else {
+          const selectedValue = selected_addons[addon.code];
+          if (selectedValue && selectedValue !== 'NO') {
+            acc[addon.code] = selectedValue;
+          } else {
+            const defaultOption = addon.options.find(
+              (option) => option.id === addon.default_option_id,
+            );
+            acc[addon.code] = defaultOption
+              ? defaultOption.value
+              : addon.options[0]?.value;
+          }
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [plan]);
+
+  useEffect(() => {
+    setAddonsAdded(defaultAddonsAdded);
+    setAddonsSelected(defaultAddonsSelected);
+  }, [defaultAddonsAdded, defaultAddonsSelected]);
+
+  const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
+    // map the icon to the addon
+    const iconMatched = mapIconToTypeAddOn.find(
+      (item) => item.code === addon.code,
+    );
+
+    // For feeAdded use the "addonsAdded" defaults
+    const initValueForAdded = addonsAdded[addon.code] ?? null;
+    const selectedOptionForAdded = addon.options.find(
+      (option) => option.value === initValueForAdded,
+    );
+    const feeAdded = selectedOptionForAdded
+      ? calculateFee(selectedOptionForAdded, addonsAdded)
+      : 0;
+
+    // For feeSelected use the "addonsSelected" defaults
+    const initValueForSelected = addonsSelected[addon.code] ?? null;
+    const activeOption = addon.options.find(
+      (option) => option.value === initValueForSelected,
+    );
+    const feeSelected = activeOption
+      ? calculateFee(activeOption, addonsAdded)
+      : 0;
+
+    return {
+      ...addon,
+      icon: iconMatched?.icon || null,
+      selectedOption: selectedOptionForAdded ?? null,
+      feeAdded: feeAdded,
+      activeOption: activeOption ?? null,
+      feeSelected: feeSelected,
+    };
+  });
+
+  const totalAdditionFee = addonsFormatted.reduce((acc, addon) => {
+    const fee = addon.feeAdded ?? 0;
+    return acc + fee;
+  }, 0);
+  const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
   return (
     <div className='w-full'>
       <div className='mt-2 flex flex-col gap-4 px-4'>
@@ -57,34 +205,27 @@ function AddOnPage() {
         </div>
 
         <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
-          {mapIconToTypeAddOn.map((item) => (
+          {addonsFormatted.map((addon) => (
             <AddOnRowDetail
-              key={item.type}
-              title={item.title}
-              icon={item.icon}
-              isRecommended={item.isRecommended}
+              key={addon.code}
+              addon={addon}
+              addonsAdded={addonsAdded}
+              setAddonsAdded={setAddonsAdded}
+              addonsSelected={addonsSelected}
+              setAddonsSelected={setAddonsSelected}
             />
           ))}
         </div>
       </div>
 
       <div className='mt-2 md:px-44'>
-        <div className='mt-2 flex w-full flex-row items-center justify-between rounded-t-md border border-[#DEE1E6] px-4 py-3 shadow-lg'>
-          <div className='flex flex-col gap-2'>
-            <p className='text-[18px] font-semibold leading-6 md:text-[28px] md:font-bold'>
-              S$ 2700{' '}
-              <span className='text-[15px] text-[#FF0004] line-through md:text-[20px] md:font-normal'>
-                $3200
-              </span>
-            </p>
-            <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
-              Premium breakdown
-            </p>
-          </div>
-          <SecondaryButton className='rounded-xl bg-[#00ADEF] px-6 leading-4 text-white'>
-            Continue
-          </SecondaryButton>
-        </div>
+        <FeeBar
+          fee={totalFee}
+          discount={15}
+          title='Premium breakdown'
+          textButton='Continue'
+          onClick={() => setIsModalVisible(true)}
+        />
       </div>
       <Modal
         title='Edit Information'

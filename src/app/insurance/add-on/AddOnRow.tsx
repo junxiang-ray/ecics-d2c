@@ -14,7 +14,7 @@ export default function AddOnRow({
   isRecommended = false,
   children,
 }: {
-  title: string;
+  title: string | null;
   icon: React.ReactNode;
   status: Status;
   isRecommended?: boolean;
