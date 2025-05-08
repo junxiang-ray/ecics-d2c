@@ -17,7 +17,6 @@ function PlanCardDesktop({
   selectedPlan: FormatPlan | null;
   setSelectedPlan: (plan: FormatPlan | null) => void;
 }) {
-  const [activePlan, setActivePlan] = useState('Third Party & Theft');
   return (
     <div className='flex  w-full justify-center gap-6 lg:gap-10'>
       {plans?.map((plan, index) => {
@@ -39,7 +38,6 @@ function PlanCardDesktop({
                 'border-sky-500': active,
               },
             )}
-            onClick={() => setSelectedPlan(plan)}
           >
             <div className='flex h-full flex-col justify-between px-4'>
               <div className='relative z-10'>
@@ -91,7 +89,7 @@ function PlanCardDesktop({
                 className={clsx('w-full py-2 transition-colors duration-500', {
                   'bg-black hover:opacity-80': active,
                 })}
-                onClick={() => setActivePlan(plan.title)}
+                onClick={() => setSelectedPlan(plan)}
               >
                 Select
               </PrimaryButton>

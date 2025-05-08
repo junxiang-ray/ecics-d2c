@@ -14,7 +14,7 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import {
-  useCreateQuote,
+  useGenerateQuote,
   useGetHirePurchaseList,
   useGetQuote,
 } from '@/hook/insurance/quote';
@@ -38,7 +38,7 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
   const { data: quoteInfo } = useGetQuote(key);
-  const { mutate: createQuote, isSuccess } = useCreateQuote();
+  const { mutate: generateQuote, isSuccess } = useGenerateQuote();
 
   const userInfo = quoteInfo?.data?.personal_info;
   const vehicles = quoteInfo?.data?.vehicles ?? [];
@@ -137,7 +137,7 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
     }
 
     try {
-      createQuote(payload);
+      generateQuote(payload);
     } catch (error) {
       console.error('Submission error:', error);
     }

@@ -1,7 +1,6 @@
 'use client';
 import CrossMarkIcon from '@/components/icons/CrossMark';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
-import { Plan } from '@/libs/types/quote';
 import clsx from 'clsx';
 import { FormatPlan } from '../page';
 
@@ -41,7 +40,7 @@ function PlanCardMobile({
                 <span className='text-white'>Recommended</span>
               </div>
             )}
-            <div className='text-lg font-bold'>Comprehensive Plan</div>
+            <div className='text-lg font-bold'>{plan.title}</div>
             {activeFeatures.map((feature, index) => (
               <div className='mt-4 flex items-start gap-2' key={index}>
                 <TickCircleIcon size={12} className='mt-[6px]' />

@@ -1,3 +1,5 @@
+export type MaritalStatusType = 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED';
+export type GenderType = 'MALE' | 'FEMALE';
 export interface QuoteResponse {
   message: string;
   data: Quote;
@@ -37,13 +39,23 @@ export interface Company {
   name: string;
 }
 export interface QuoteData {
-  plans: Plan[];
-  vehicles: Vehicle[];
-  personal_info: PersonalInfo;
-  vehicle_info_selected: Vehicle;
-  insurance_additional_info: InsuranceAdditionalInfo;
+  plans?: Plan[];
+  vehicles?: Vehicle[];
+  personal_info?: PersonalInfo;
+  vehicle_info_selected?: Vehicle;
+  insurance_additional_info?: InsuranceAdditionalInfo;
+  selected_plan?: string;
+  selected_addons?: Record<string, string>;
+  add_named_driver_info?: AddNamedDriverInfo[];
 }
-
+export interface AddNamedDriverInfo {
+  name: string;
+  gender: GenderType;
+  nric_or_fin: string;
+  date_of_birth: string;
+  marital_status: MaritalStatusType;
+  driving_experience: number;
+}
 export interface Plan {
   id: number;
   code: string;
@@ -104,6 +116,13 @@ export interface QuoteCreationPayload {
   insurance_additional_info: InsuranceAdditionalInfo;
 }
 
+export interface ProposalPayload {
+  key: string;
+  selected_plan: string;
+  selected_addons: Record<string, string>;
+  add_named_driver_info: AddNamedDriverInfo[];
+}
+
 export interface QuoteInfo {
   product_id: string;
   policy_id: string;
@@ -121,37 +140,48 @@ export interface Benefit {
   is_active: boolean;
 }
 
-export interface Condition {
-  addon_id: string;
-  value: boolean;
+export interface Addon {
+  id: number;
+  code: string;
+  type: 'select' | 'checkbox'; // adjust as needed
+  title: string;
+  key_map: string | null;
+  options: Option[];
+  sub_title: string | null;
+  is_display: boolean;
+  description: string | null;
+  is_recommended: boolean;
+  premium_bef_gst: number;
+  premium_with_gst: number;
+  default_option_id: number | null;
+}
+export interface Option {
+  id: number;
+  label: string;
+  value: string;
+  key_map: string | null;
+  description: string;
+  dependencies: Dependency[];
+  premium_bef_gst: number;
+  premium_with_gst: number;
 }
 
 export interface Dependency {
-  conditions: Condition[];
-  premium_with_gst: number;
+  key_map: string;
+  conditions: DependencyCondition[];
   premium_bef_gst: number;
+  premium_with_gst: number;
 }
 
-export interface Option {
-  id: string;
-  label: string;
-  description: string;
+export interface DependencyCondition {
+  addon: DependencyAddon;
   value: string;
-  dependencies: Dependency[];
-  premium_with_gst: number;
-  premium_bef_gst: number;
 }
 
-export interface Addon {
-  id: string;
+export interface DependencyAddon {
+  id: number;
+  code: string;
   title: string;
-  type: 'with_options' | 'without_options';
-  is_display: boolean;
-  is_recommended: boolean;
-  description: string;
-  default_option_id: string | null;
-  depends_on?: string[];
-  options: Option[];
 }
 
 export interface PersonalPayload {
