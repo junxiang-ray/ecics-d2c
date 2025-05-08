@@ -11,7 +11,7 @@ import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 
 import { SavePersonalInfoPayload, Vehicle } from '@/libs/types/auth';
-import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
+import { convertDateToDDMMYYYY, extractYear } from '@/libs/utils/date-utils';
 import {
   calculateAge,
   capitalizeWords,
@@ -84,7 +84,7 @@ const ReviewInfoDetail = () => {
     router.push(ROUTES.AUTH.LOGIN);
   };
 
-  const { mutate: savePersonalInfo } = usePostPersonalInfo();
+  const { mutate: savePersonalInfo, isSuccess } = usePostPersonalInfo();
   const { mutate: postCheckVehicle } = usePostCheckVehicle(() => {
     setShowUnMatchModal(true);
   });
@@ -175,11 +175,7 @@ const ReviewInfoDetail = () => {
                   },
                   {
                     label: 'Year of Registration',
-                    value: v.firstregistrationdate?.value
-                      ? new Date(v.firstregistrationdate.value)
-                          .getFullYear()
-                          .toString()
-                      : null,
+                    value: extractYear(v.firstregistrationdate?.value) || null,
                   },
                   {
                     label: 'Vehicle Make',
@@ -244,11 +240,13 @@ const ReviewInfoDetail = () => {
       }
 
       if (parsed.vehicles?.length === 1) {
-        const singleVehicle = parsed.vehicles[0];
-        postCheckVehicle({
-          vehicle_make: singleVehicle.make?.value,
-          vehicle_model: singleVehicle.model?.value,
-        });
+        const vehicle = parsed.vehicles[0];
+        const make = vehicle?.make?.trim();
+        const model = vehicle?.model?.trim();
+
+        if (!make || !model) {
+          setShowUnMatchModal(true);
+        }
       }
     }
   }, [methods, refreshSession]);
@@ -294,9 +292,24 @@ const ReviewInfoDetail = () => {
       return;
     }
     const parsed = JSON.parse(stored);
+    if (parsed.vehicle_selected?.length === 1) {
+      const singleVehicle = parsed.vehicle_selected[0];
+      postCheckVehicle({
+        vehicle_make: singleVehicle.make?.value,
+        vehicle_model: singleVehicle.model?.value,
+      });
+    }
+
+    const v = parsed.vehicle_selected?.[0] || {};
+    const vehicle_info_selected = {
+      chasis_number: v.vehicleno?.value || '',
+      vehicle_make: v.make?.value || '',
+      vehicle_model: v.model?.value || '',
+      first_registered_year: extractYear(v.firstregistrationdate?.value) || '',
+    };
 
     const payload: SavePersonalInfoPayload = {
-      key: `key-${uuid()}`,
+      key: `${uuid()}`,
       personal_info: {
         name: parsed.name?.value || '',
         gender: parsed.sex?.desc || '',
@@ -313,22 +326,18 @@ const ReviewInfoDetail = () => {
         phone: `${parsed.mobileno?.nbr?.value || ''}`,
         email: parsed.email?.value || '',
       },
-      vehicle_info_selected: {
-        vehicle_make: parsed.vehicle_make || '',
-        vehicle_model: parsed.vehicle_model || '',
-        first_registered_year: parsed.year_of_registration || '',
-        chasis_number: parsed.chassisno?.value || '',
-      },
+      vehicle_info_selected,
       vehicles:
         parsed.vehicles?.map((v: any) => ({
           chasis_number: v.vehicleno?.value || '',
           vehicle_make: v.make?.value || '',
           vehicle_model: v.model?.value || '',
-          first_registered_year: v.year_of_registration || '',
+          first_registered_year:
+            extractYear(v.firstregistrationdate?.value) || '',
         })) || [],
     };
 
-    //Check age
+    // Requirement: Check age between 26 and 70
     const age = calculateAge(payload?.personal_info.date_of_birth);
     if (age < 26 || age > 70) {
       setShowOverAgeModal(true);
@@ -336,12 +345,15 @@ const ReviewInfoDetail = () => {
     }
 
     savePersonalInfo(payload);
+
     // Redirect
-    const queryParams = new URLSearchParams({
-      key: `${uuid()}`,
-    }).toString();
-    const url = `${ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS}&${queryParams}`;
-    router.push(url);
+    if (isSuccess) {
+      const queryParams = new URLSearchParams({
+        key: payload.key,
+      }).toString();
+      const url = `${ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS}&${queryParams}`;
+      router.push(url);
+    }
   };
 
   const handleCloseModal = () => {

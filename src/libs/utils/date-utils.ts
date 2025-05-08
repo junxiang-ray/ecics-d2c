@@ -162,3 +162,10 @@ export const convertDateToDDMMYYYY = (date: string) => {
   const year = dateObj.getFullYear();
   return `${day}/${month}/${year}`;
 };
+
+//get only year
+export const extractYear = (dateString?: string): string | null => {
+  if (!dateString) return null;
+  const date = new Date(dateString);
+  return isNaN(date.getTime()) ? null : date.getFullYear().toString();
+};

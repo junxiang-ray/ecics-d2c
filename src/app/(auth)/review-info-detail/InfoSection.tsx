@@ -46,17 +46,22 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   const updateSessionStorage = (updatedVehicles: any[]) => {
     sessionStorage.setItem(
       ECICS_USER_INFO,
-      JSON.stringify({ ...sessionData, vehicles: updatedVehicles }),
+      JSON.stringify({ ...sessionData, vehicle_selected: updatedVehicles }),
     );
     setVehicles(updatedVehicles);
   };
 
   const checkInputsCompleted = (updatedVehicles: any[]) => {
     const requiredFields = [
+      'vehicleno',
+      'firstregistrationdate',
       'make',
       'model',
-      'firstregistrationdate',
-      'vehicleno',
+      'engineno',
+      'chassisno',
+      'enginecapacity',
+      'powerrate',
+      'yearofmanufacture',
     ];
     return updatedVehicles.every((vehicle) =>
       requiredFields.every(
@@ -93,7 +98,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       engine_number: 'engineno',
       chassis_number: 'chassisno',
       engine_capacity: 'enginecapacity',
-      power_ate: 'powerrate',
+      power_rate: 'powerrate',
       year_of_manufacture: 'yearofmanufacture',
     };
 
