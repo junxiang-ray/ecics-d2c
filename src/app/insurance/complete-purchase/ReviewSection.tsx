@@ -8,7 +8,7 @@ interface ReviewSectionProps {
   title: string;
   description: string;
   icon: React.ReactNode;
-  data: { title: string; value: string }[];
+  data: { title: string; value: any }[];
   isExpanded: boolean;
   onToggle: () => void;
   setShowModal: (showModal: boolean) => void;
