@@ -21,6 +21,9 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
     select: {
       quote_id: true,
       proposal_id: true,
+      data: true,
+      id: true,
+      company: true,
     },
   });
 
@@ -92,6 +95,40 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
     payload[`quick_proposal_addl_nd${i + 1}_marital_status`] =
       driver?.marital_status || '';
   }
+
+  // Add personal information
+  const { personal_info, vehicle_info_selected } = quoteInfo.data as {
+    personal_info: {
+      name?: string;
+      nric?: string;
+      gender?: string;
+      date_of_birth?: string;
+      marital_status?: string;
+      address?: string[];
+      post_code?: string;
+    };
+    vehicle_info_selected: {
+      chasis_number?: string;
+      chassis_no?: string;
+      engine_no?: string;
+    };
+  };
+
+  payload.quick_proposal_veh_reg_no =
+    vehicle_info_selected?.chasis_number || '';
+  payload.quick_proposal_chassis_no = vehicle_info_selected?.chassis_no || '';
+  payload.quick_proposal_engine_no = vehicle_info_selected?.engine_no || '';
+  payload.quick_proposal_hire_purchase = quoteInfo.company?.name || '';
+  payload.quick_proposal_proposer_name = personal_info?.name || '';
+  payload.quick_proposal_proposer_nric = personal_info?.nric || '';
+  payload.quick_proposal_proposer_gender = personal_info?.gender || '';
+  payload.quick_proposal_proposer_marital_status =
+    personal_info?.marital_status || '';
+  payload.quick_proposal_address_line1 = personal_info?.address?.[0] || '';
+  payload.quick_proposal_address_line2 = personal_info?.address?.[1] || '';
+  payload.quick_proposal_address_line3 = personal_info?.address?.[2] || '';
+  payload.quick_proposal_post_code = personal_info?.post_code || '';
+
   logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
 
   const resSaveProposal = await handleApiCallToISP('/b2c/proposal', payload);
@@ -103,18 +140,23 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
     return ErrFromISPRes('Failed to save proposal');
   }
 
-  const proposalResInfo = {
-    product_id: resSaveProposal.data.product_id,
-    policy_id: resSaveProposal.data.policy_id,
-    quote_id: resSaveProposal.data.quote_id,
-    quote_no: resSaveProposal.data.quote_no,
-    proposal_id: resSaveProposal.data.proposal_id,
-    plan_selected: resSaveProposal.data.plan_selected,
-    final_premium: resSaveProposal.data.final_premium,
-  };
+  // Update the quote in the database
+  const quoteData = quoteInfo.data;
+  await prisma.quote.update({
+    where: {
+      id: quoteInfo.id,
+    },
+    data: {
+      data: {
+        ...(quoteData && typeof quoteData === 'object' ? quoteData : {}),
+        selected_addons: selected_addons,
+        add_named_driver_info: add_named_driver_info,
+      },
+    },
+  });
 
   return successRes({
     message: 'Proposal saved successfully',
-    data: proposalResInfo,
+    data: resSaveProposal.data,
   });
 }

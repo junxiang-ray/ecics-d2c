@@ -1,20 +1,21 @@
 'use client';
 
+import AddOnPricingSummary from '@/app/insurance/add-on/AddOnPricingSummary';
 import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
 import KeyIcon from '@/components/icons/KeyIcon';
 import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
-import AddOnRowDetail from './AddOnRowDetail';
-import { SecondaryButton } from '@/components/ui/buttons';
-import { Button, Modal, Spin } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
-import HeaderAddOn from './HeaderAddOn';
 import { useGetQuote } from '@/hook/insurance/quote';
-import { useSearchParams } from 'next/navigation';
 import { Addon, Option } from '@/libs/types/quote';
-import { FeeBar } from '../components/FeeBar';
+import { Modal, Spin } from 'antd';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import AdditionDriver from '../components/AdditionDriver';
+import { PricingSummary } from '../components/FeeBar';
+import AddOnRowDetail from './AddOnRowDetail';
+import HeaderAddOn from './HeaderAddOn';
 
 const mapIconToTypeAddOn = [
   {
@@ -109,11 +110,14 @@ function AddOnPage() {
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
+  const [dataDrivers, setDataDrivers] = useState<any[]>([]);
+  const [addonsAdded, setAddonsAdded] = useState<any>(null);
+  const [addonsSelected, setAddonsSelected] = useState<any>(null);
+
   const { data: quoteInfo, isLoading } = useGetQuote(key);
   const plan = quoteInfo?.data?.plans[0];
   const addons = plan?.addons ?? [];
-  const [addonsAdded, setAddonsAdded] = useState<any>(null);
-  const [addonsSelected, setAddonsSelected] = useState<any>(null);
 
   const defaultAddonsAdded = useMemo(() => {
     if (!plan?.addons.length) return {};
@@ -217,9 +221,8 @@ function AddOnPage() {
           ))}
         </div>
       </div>
-
       <div className='mt-2 md:px-44'>
-        <FeeBar
+        <PricingSummary
           fee={totalFee}
           discount={15}
           title='Premium breakdown'
@@ -227,6 +230,11 @@ function AddOnPage() {
           onClick={() => setIsModalVisible(true)}
         />
       </div>
+      <AdditionDriver
+        isShowAdditionDriver={isShowAdditionDriver}
+        setIsShowAdditionDriver={setIsShowAdditionDriver}
+        setDataDrivers={setDataDrivers}
+      />
       <Modal
         title='Edit Information'
         open={isModalVisible}

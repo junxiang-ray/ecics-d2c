@@ -1,13 +1,17 @@
-import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
 
 import { SavePersonalInfoPayload } from '@/libs/types/auth';
 import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
+import { calculateAge } from '@/libs/utils/utils';
 
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
+import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -20,12 +24,19 @@ const ConfirmInfoModal = ({
   onFail: () => void;
   onClose: () => void;
 }) => {
+  const router = useRouter();
   const { isMobile } = useDeviceDetection();
   const {
     mutate: savePersonalInfo,
     isSuccess,
     isError,
   } = usePostPersonalInfo();
+
+  const [showOverAgeModal, setShowOverAgeModal] = useState(false);
+  const handleGoBack = () => {
+    setShowOverAgeModal(false);
+    router.push(ROUTES.AUTH.LOGIN);
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -70,12 +81,19 @@ const ConfirmInfoModal = ({
       },
       vehicles:
         parsed.vehicles?.map((v: any) => ({
-          chasis_number: v.chassisno?.value || '',
+          chasis_number: v.vehicleno?.value || '',
           vehicle_make: v.make?.value || '',
           vehicle_model: v.model?.value || '',
           first_registered_year: v.year_of_registration || '',
         })) || [],
     };
+
+    //Check age
+    const age = calculateAge(payload?.personal_info.date_of_birth);
+    if (age < 26 || age > 70) {
+      setShowOverAgeModal(true);
+      return;
+    }
     savePersonalInfo(payload);
   };
 
@@ -103,6 +121,7 @@ const ConfirmInfoModal = ({
           Exit without saving
         </SecondaryButton>
       </div>
+      <UnableQuote onClick={handleGoBack} visible={showOverAgeModal} />
     </div>
   );
 };

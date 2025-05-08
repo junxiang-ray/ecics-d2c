@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 
-export function FeeBar({
+export function PricingSummary({
   fee,
   discount, // 10% = 10, 0% = 0
   title,

@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
-import { InputField } from '@/components/ui/form/inputfield';
-
-import {
-  ECICS_USER_INFO,
-  IS_THREE_INPUT_COMPLETE,
-} from '@/constants/general.constant';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import {
-  useGetVehicleMakes,
-  useGetVehicleModels,
-} from '@/hook/insurance/common';
 import {
   DropdownField,
   DropdownOption,
 } from '@/components/ui/form/dropdownfield';
+
 import { VehicleResponse } from '@/api/base-service/verify';
-import { FormProvider, useForm } from 'react-hook-form';
+import {
+  ECICS_USER_INFO,
+  IS_THREE_INPUT_COMPLETE,
+} from '@/constants/general.constant';
+import {
+  useGetVehicleMakes,
+  useGetVehicleModels,
+} from '@/hook/insurance/common';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 type InfoSectionProps = {
   title: string;
@@ -189,10 +188,10 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 <div className='text-sm font-bold'>{item.label}</div>
                 <div className='text-sm'>
                   {item.value == null ? (
-                    <InputField
+                    <input
                       name={nameKey}
                       type='text'
-                      className='w-full border border-gray-300 p-2'
+                      className={`h-[30px] w-full rounded-[6px] border border-gray-300 bg-gray-200 p-2 ${isReadOnly ? 'cursor-not-allowed' : ''}`}
                       placeholder={`Enter ${item.label} info`}
                       onChange={(e) =>
                         handleInputChange(0, nameKey, e.target.value)
@@ -201,11 +200,11 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                   ) : isMobile ? (
                     item.value
                   ) : (
-                    <InputField
+                    <input
                       name={nameKey}
                       defaultValue={item.value}
                       type='text'
-                      className='w-full border border-gray-300 p-2'
+                      className={`h-[30px] w-full rounded-[6px] border border-gray-300 bg-gray-200 p-2 ${isReadOnly ? 'cursor-not-allowed' : ''}`}
                       disabled={isReadOnly}
                     />
                   )}
