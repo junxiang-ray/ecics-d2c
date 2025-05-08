@@ -1,11 +1,13 @@
 import { CloseOutlined, TagOutlined } from '@ant-design/icons';
 import { Button, Flex, Form, Input, InputProps } from 'antd';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+
 import { SecondaryButton } from '@/components/ui/buttons';
+
+import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
-import { useCallback, useEffect, useState } from 'react';
-import { PromoCodeResponse } from '@/api/base-service/verify';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;

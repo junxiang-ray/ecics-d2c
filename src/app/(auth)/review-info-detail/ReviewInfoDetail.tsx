@@ -58,7 +58,7 @@ const reviewInfoSchema = z.object({
     chassisNumber: z.string().min(1, 'Required'),
   }),
 });
-const isReadOnly = true;
+
 type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 
 interface CommonInfo {
@@ -144,11 +144,43 @@ const ReviewInfoDetail = () => {
               .join(' ')
               .trim(),
           },
+          {
+            label: 'Qualified Driving License',
+            value: parsed.drivinglicence?.qdl?.classes?.length
+              ? parsed.drivinglicence.qdl.classes
+                  .map((c: any) => {
+                    const cls = c.class?.value || '';
+                    const issued = c.issuedate?.value
+                      ? new Date(c.issuedate.value)
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })
+                          .replace(/ /g, ' ')
+                      : '';
+                    return `${cls} / ${issued}`;
+                  })
+                  .join(', ')
+              : '',
+          },
         ],
         vehicle:
           parsed.vehicles?.length > 0
             ? parsed.vehicles
                 .map((v: any) => [
+                  {
+                    label: 'Vehicle Number',
+                    value: v.vehicleno?.value || null,
+                  },
+                  {
+                    label: 'Year of Registration',
+                    value: v.firstregistrationdate?.value
+                      ? new Date(v.firstregistrationdate.value)
+                          .getFullYear()
+                          .toString()
+                      : null,
+                  },
                   {
                     label: 'Vehicle Make',
                     value:
@@ -160,24 +192,37 @@ const ReviewInfoDetail = () => {
                       capitalizeWords(`${v.model?.value || ''}`).trim() || null,
                   },
                   {
-                    label: 'Year of Registration',
-                    value: v.firstregistrationdate?.value
-                      ? new Date(v.firstregistrationdate.value)
-                          .getFullYear()
-                          .toString()
-                      : null,
+                    label: 'Engine Number',
+                    value: v.engineno?.value || null,
                   },
                   {
                     label: 'Chassis Number',
-                    value: v.vehicleno?.value || null,
+                    value: v.chassisno?.value || null,
+                  },
+                  {
+                    label: 'Engine Capacity',
+                    value: v.enginecapacity?.value || null,
+                  },
+                  {
+                    label: 'Power Rate',
+                    value: v.powerrate?.value || null,
+                  },
+                  {
+                    label: 'Year of Manufacture',
+                    value: v.yearofmanufacture?.value || null,
                   },
                 ])
                 .flat() || []
             : [
+                { label: 'Vehicle Number', value: null },
+                { label: 'Year of Registration', value: null },
                 { label: 'Vehicle Make', value: null },
                 { label: 'Vehicle Model', value: null },
-                { label: 'Year of Registration', value: null },
+                { label: 'Engine Number', value: null },
                 { label: 'Chassis Number', value: null },
+                { label: 'Engine Capacity', value: null },
+                { label: 'Power Rate', value: null },
+                { label: 'Year of Manufacture', value: null },
               ],
       };
       setCommonInfo(transformed);
@@ -342,11 +387,11 @@ const ReviewInfoDetail = () => {
             <div>
               <div className='mt-4'>
                 <div className='text-sm font-bold'>Email Address</div>
-                <InputField name='email' disabled={isReadOnly} />
+                <InputField name='email' />
               </div>
               <div className='mt-4'>
                 <div className='text-sm font-bold'>Phone Number</div>
-                <InputField name='phone' disabled={isReadOnly} />
+                <InputField name='phone' />
               </div>
               {commonInfo?.personal && (
                 <InfoSection title='Personal Info' data={commonInfo.personal} />
@@ -380,11 +425,11 @@ const ReviewInfoDetail = () => {
                 <div className='mt-4 flex gap-4'>
                   <div className='w-[calc(50%-10px)]'>
                     <div className='text-sm font-bold'>Email Address</div>
-                    <InputField name='email' disabled={isReadOnly} />
+                    <InputField name='email' />
                   </div>
                   <div className='w-[calc(50%-10px)]'>
                     <div className='text-sm font-bold'>Phone Number</div>
-                    <InputField name='phone' disabled={isReadOnly} />
+                    <InputField name='phone' />
                   </div>
                 </div>
               </div>
