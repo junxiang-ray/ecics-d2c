@@ -13,6 +13,7 @@ export interface UserInfoPayload {
 
 export interface SavePersonalInfoPayload {
   key: string;
+  is_sending_email?: boolean;
   personal_info: {
     name: string;
     gender: string;

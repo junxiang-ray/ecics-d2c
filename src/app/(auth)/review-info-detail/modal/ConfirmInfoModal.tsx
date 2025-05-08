@@ -57,6 +57,7 @@ const ConfirmInfoModal = ({
 
     const payload: SavePersonalInfoPayload = {
       key: `key-${uuid()}`,
+      is_sending_email: true,
       personal_info: {
         name: parsed.name?.value || '',
         gender: parsed.sex?.desc || '',
