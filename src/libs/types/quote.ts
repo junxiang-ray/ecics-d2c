@@ -1,3 +1,5 @@
+export type MaritalStatusType = 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED';
+export type GenderType = 'MALE' | 'FEMALE';
 export interface QuoteResponse {
   message: string;
   data: Quote;
@@ -37,13 +39,23 @@ export interface Company {
   name: string;
 }
 export interface QuoteData {
-  plans: Plan[];
-  vehicles: Vehicle[];
-  personal_info: PersonalInfo;
-  vehicle_info_selected: Vehicle;
-  insurance_additional_info: InsuranceAdditionalInfo;
+  plans?: Plan[];
+  vehicles?: Vehicle[];
+  personal_info?: PersonalInfo;
+  vehicle_info_selected?: Vehicle;
+  insurance_additional_info?: InsuranceAdditionalInfo;
+  selected_plan?: string;
+  selected_addons?: Record<string, string>;
+  add_named_driver_info?: AddNamedDriverInfo[];
 }
-
+export interface AddNamedDriverInfo {
+  name: string;
+  gender: GenderType;
+  nric_or_fin: string;
+  date_of_birth: string;
+  marital_status: MaritalStatusType;
+  driving_experience: number;
+}
 export interface Plan {
   id: number;
   code: string;
@@ -102,6 +114,13 @@ export interface QuoteCreationPayload {
   personal_info: PersonalPayload;
   vehicle_info_selected: Vehicle;
   insurance_additional_info: InsuranceAdditionalInfo;
+}
+
+export interface ProposalPayload {
+  key: string;
+  selected_plan: string;
+  selected_addons: Record<string, string>;
+  add_named_driver_info: AddNamedDriverInfo[];
 }
 
 export interface QuoteInfo {

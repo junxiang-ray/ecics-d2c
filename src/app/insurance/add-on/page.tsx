@@ -1,14 +1,13 @@
 'use client';
 
-import AddOnPricingSummary from '@/app/insurance/add-on/AddOnPricingSummary';
 import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
 import KeyIcon from '@/components/icons/KeyIcon';
 import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
-import { useGetQuote } from '@/hook/insurance/quote';
-import { Addon, Option } from '@/libs/types/quote';
+import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
+import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
 import { Modal, Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -79,18 +78,7 @@ export interface AddOnFormat extends Addon {
   activeOption: Option | null;
   feeSelected: number; // feeSelected is the fee used to show fee when user change option
 }
-const selected_addons: any = {
-  CAR_COM_ANW: 'YES', //or "NO"
-  CAR_COM_AJE: 'SGD 1,500.00', // or "SGD 1,500.00" if not selected ANW
-  CAR_COM_AND: 'NO', // or "drivers_age_from_27_to_70" || all_drivers
-  CAR_COM_BUN: 'NO', //or "YES"
-  CAR_COM_LOU: 'YES (up to 2,000cc)', // or YES || "YES (up to 1,600cc) || "YES (up to 2,000cc)"
-  CAR_COM_PAC: 'NO', //"YES (+SGD 60K)" //"YES (+SGD 100K)"
-  CAR_COM_MDE: 'NO', //quick_proposal_me: "YES (+SGD 200)" //YES (+SGD 1700)
-  CAR_COM_RSA: 'NO', // NO //quick_proposal_ra24
-  CAR_COM_KRC: 'NO', // NO quick_proposal_krc
-  CAR_COM_NOR: 'NO',
-};
+
 function calculateFee(
   option: Option,
   addonsAdded: Record<string, string>,
@@ -110,13 +98,17 @@ function AddOnPage() {
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
-  const [dataDrivers, setDataDrivers] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState<any[]>([]);
   const [addonsAdded, setAddonsAdded] = useState<any>(null);
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
 
   const { data: quoteInfo, isLoading } = useGetQuote(key);
-  const plan = quoteInfo?.data?.plans[0];
+  const { mutate: saveProposal, isSuccess: hasSaveProposal } =
+    useSaveProposal();
+
+  const plan = quoteInfo?.data?.plans?.find(
+    (plan) => quoteInfo.data?.selected_plan === plan.title,
+  );
   const addons = plan?.addons ?? [];
 
   const defaultAddonsAdded = useMemo(() => {
@@ -127,12 +119,13 @@ function AddOnPage() {
 
   const defaultAddonsSelected = useMemo(() => {
     if (!plan?.addons.length) return {};
+    const selected_addons = quoteInfo?.data?.selected_addons ?? {};
     return plan.addons.reduce(
       (acc: Record<string, string>, addon) => {
         if (addon.type === 'checkbox') {
           acc[addon.code] = 'YES';
         } else {
-          const selectedValue = selected_addons[addon.code];
+          const selectedValue = selected_addons?.[addon.code];
           if (selectedValue && selectedValue !== 'NO') {
             acc[addon.code] = selectedValue;
           } else {
@@ -151,6 +144,7 @@ function AddOnPage() {
   }, [plan]);
 
   useEffect(() => {
+    // setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
     setAddonsAdded(defaultAddonsAdded);
     setAddonsSelected(defaultAddonsSelected);
   }, [defaultAddonsAdded, defaultAddonsSelected]);
@@ -162,7 +156,7 @@ function AddOnPage() {
     );
 
     // For feeAdded use the "addonsAdded" defaults
-    const initValueForAdded = addonsAdded[addon.code] ?? null;
+    const initValueForAdded = addonsAdded?.[addon.code] ?? null;
     const selectedOptionForAdded = addon.options.find(
       (option) => option.value === initValueForAdded,
     );
@@ -171,7 +165,7 @@ function AddOnPage() {
       : 0;
 
     // For feeSelected use the "addonsSelected" defaults
-    const initValueForSelected = addonsSelected[addon.code] ?? null;
+    const initValueForSelected = addonsSelected?.[addon.code] ?? null;
     const activeOption = addon.options.find(
       (option) => option.value === initValueForSelected,
     );
@@ -194,6 +188,25 @@ function AddOnPage() {
     return acc + fee;
   }, 0);
   const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
+
+  const handleContinue = () => {
+    const addonsAdd: Record<string, string> = { ...addonsAdded };
+    //CAR_COM_AJE: "SGD 750.00" (CAR_COM_ANW: NO), or "SGD 1,500.00" (CAR_COM_ANW: YES):
+    if (addonsAdd?.['CAR_COM_AJE'] === 'NO') {
+      addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
+    }
+    if (addonsAdd?.['CAR_COM_AJE'] === 'YES') {
+      addonsAdd['CAR_COM_AJE'] = 'SGD 1,500.00';
+    }
+    const data: ProposalPayload = {
+      key: key,
+      selected_plan: quoteInfo?.data?.selected_plan ?? '',
+      selected_addons: addonsAdd,
+      add_named_driver_info: drivers,
+    };
+    saveProposal(data);
+  };
+
   if (isLoading) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
@@ -217,6 +230,8 @@ function AddOnPage() {
               setAddonsAdded={setAddonsAdded}
               addonsSelected={addonsSelected}
               setAddonsSelected={setAddonsSelected}
+              drivers={drivers}
+              setDrivers={setDrivers}
             />
           ))}
         </div>
@@ -227,14 +242,10 @@ function AddOnPage() {
           discount={15}
           title='Premium breakdown'
           textButton='Continue'
-          onClick={() => setIsModalVisible(true)}
+          onClick={() => handleContinue()}
         />
       </div>
-      <AdditionDriver
-        isShowAdditionDriver={isShowAdditionDriver}
-        setIsShowAdditionDriver={setIsShowAdditionDriver}
-        setDataDrivers={setDataDrivers}
-      />
+
       <Modal
         title='Edit Information'
         open={isModalVisible}

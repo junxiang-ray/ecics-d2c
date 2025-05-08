@@ -1,7 +1,11 @@
 'use client';
 
 import { PrimaryButton } from '@/components/ui/buttons';
-import { useGetQuote } from '@/hook/insurance/quote';
+import {
+  useGenerateQuote,
+  useGetQuote,
+  useSaveQuote,
+} from '@/hook/insurance/quote';
 import { Plan } from '@/libs/types/quote';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -11,18 +15,28 @@ import PlanCardDesktop from './components/PlanCardDesktop';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
 import { Spin } from 'antd';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { ROUTES } from '@/constants/routes';
 export interface FormatPlan extends Plan {
   discount: number;
   currentPrice: number;
 }
 function PlanPage() {
+  const router = useRouterWithQuery();
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
 
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
   const { data: quoteInfo, isLoading } = useGetQuote(key);
+  const { mutate: saveQuote, isPending: isSaving, isSuccess } = useSaveQuote();
   const plans = quoteInfo?.data?.plans ?? [];
+  useEffect(() => {
+    if (isSuccess) {
+      router.push(ROUTES.INSURANCE.ADD_ON);
+    }
+  }, [isSuccess]);
+
   const plansFormatted: FormatPlan[] = plans.map((plan) => ({
     ...plan,
     discount: quoteInfo?.promo_code?.discount ?? 0,
@@ -33,14 +47,31 @@ function PlanPage() {
 
   useEffect(() => {
     if (!plansFormatted.length) return;
+    if (quoteInfo?.data?.selected_plan) {
+      const selectedPlan = plansFormatted.find(
+        (plan) => plan.title === quoteInfo?.data?.selected_plan,
+      );
+      if (selectedPlan) {
+        setSelectedPlan(selectedPlan);
+        return;
+      }
+    }
     const recommendedPlan = plansFormatted.find((plan) => plan.is_recommended);
     if (recommendedPlan) {
       setSelectedPlan(recommendedPlan);
       return;
     }
-    setSelectedPlan(plansFormatted[0]);
   }, [plans]);
 
+  const choicePlan = (plan: FormatPlan | null) => {
+    const data = {
+      ...quoteInfo?.data,
+      selected_plan: plan?.title,
+      key: key,
+    };
+    saveQuote({ key, data });
+    setShowConfirmDeclaration(false);
+  };
   if (isLoading) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
@@ -86,6 +117,8 @@ function PlanPage() {
           <PrimaryButton
             onClick={() => setShowConfirmDeclaration(true)}
             className='md:w-40'
+            disabled={!selectedPlan?.id}
+            loading={isSaving}
           >
             Continue
           </PrimaryButton>
@@ -94,7 +127,7 @@ function PlanPage() {
 
       <SelfDeclarationConfirmModal
         visible={showConfirmDeclaration}
-        onOk={() => setShowConfirmDeclaration(false)}
+        onOk={() => choicePlan(selectedPlan)}
       />
     </div>
   );
