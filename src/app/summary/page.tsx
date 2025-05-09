@@ -16,7 +16,7 @@ export default function Summary() {
 
   const _renderCongratulation = () => {
     return (
-      <div className='flex flex-row gap-5'>
+      <div className='flex flex-row items-center gap-5'>
         <CheckCircle size={48} />
         <p className='text-base font-semibold leading-5 text-[#171A1F]'>
           Congratulations! Your policy has been successfully purchased 🎉
@@ -97,7 +97,7 @@ export default function Summary() {
     });
 
   return (
-    <div className='flex w-full flex-col gap-6 px-6 py-4'>
+    <div className='flex w-full flex-col items-center justify-center gap-6 px-6 py-4'>
       {_renderCongratulation()}
       <p className='text-[15px] font-normal leading-5'>
         A confirmation email with the policy details has been sent to your
@@ -138,6 +138,8 @@ export default function Summary() {
         ]}
       />
       {_renderRewarded()}
+      {/* {_renderRewarded()}
+>>>>>>> development
       {_renderCashBack()}
       <div>
         <p className='mb-2 text-base font-semibold leading-5'>
@@ -147,7 +149,7 @@ export default function Summary() {
           {_renderDoc('Authorized Workshop Plan')}
           {_renderDoc('Private Car Policy Wording')}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -7,7 +7,7 @@ type Props = {
 const InfoCard = (props: Props) => {
   const { title, data, extraTitle, extraData } = props;
   return (
-    <div className='w-full rounded-[10px] border border-[#EDEDED] shadow-[0px_4px_20px_0px_#00000014]'>
+    <div className='w-full max-w-[350px] rounded-[10px] border border-[#EDEDED] shadow-[0px_4px_20px_0px_#00000014]'>
       <p className='rounded-t-[10px] border border-[#00ADEF] bg-[#F4FBFD] px-4 py-3 text-base font-semibold'>
         {title}
       </p>
