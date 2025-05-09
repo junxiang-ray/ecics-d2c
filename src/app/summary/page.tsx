@@ -12,7 +12,7 @@ import DocDuplicate from '@/components/icons/DocDuplicate';
 export default function Summary() {
   const _renderCongratulation = () => {
     return (
-      <div className='flex flex-row gap-5'>
+      <div className='flex flex-row items-center gap-5'>
         <CheckCircle size={48} />
         <p className='text-base font-semibold leading-5 text-[#171A1F]'>
           Congratulations! Your policy has been successfully purchased 🎉
@@ -77,37 +77,39 @@ export default function Summary() {
   };
 
   return (
-    <div className='flex w-full flex-col gap-6 px-6 py-4'>
+    <div className='flex w-full flex-col items-center justify-center gap-6 px-6 py-4'>
       {_renderCongratulation()}
       <p className='text-[15px] font-normal leading-5'>
         A confirmation email with the policy details has been sent to your
         registered email.
       </p>
-      <InfoCard
-        title='Policy Details'
-        data={[
-          { label: 'Plan Type', value: 'Comprehensive' },
-          { label: 'Policy Start Date', value: '15/12/2025' },
-          { label: 'Policy End Date', value: '15/12/2026' },
-          { label: 'Loss of Use', value: 'Transport Allowance' },
-          { label: 'Personal Accident+', value: '+S$30,000' },
-        ]}
-        extraTitle='Add Ons:'
-      />
+      <div className='flex flex-col justify-center gap-8 md:flex-row md:gap-10'>
+        <InfoCard
+          title='Policy Details'
+          data={[
+            { label: 'Plan Type', value: 'Comprehensive' },
+            { label: 'Policy Start Date', value: '15/12/2025' },
+            { label: 'Policy End Date', value: '15/12/2026' },
+            { label: 'Loss of Use', value: 'Transport Allowance' },
+            { label: 'Personal Accident+', value: '+S$30,000' },
+          ]}
+          extraTitle='Add Ons:'
+        />
 
-      <InfoCard
-        title='Insured Info'
-        data={[
-          { label: 'Name', value: 'Rahul Shah' },
-          { label: 'Mobile Number', value: '+65 9887506' },
-          { label: 'Email', value: 'sayangmail.com' },
-          {
-            label: 'Address',
-            value: '#10 Eunos Road Building 2 Singapore 400071',
-          },
-        ]}
-      />
-      {_renderRewarded()}
+        <InfoCard
+          title='Insured Info'
+          data={[
+            { label: 'Name', value: 'Rahul Shah' },
+            { label: 'Mobile Number', value: '+65 9887506' },
+            { label: 'Email', value: 'sayangmail.com' },
+            {
+              label: 'Address',
+              value: '#10 Eunos Road Building 2 Singapore 400071',
+            },
+          ]}
+        />
+      </div>
+      {/* {_renderRewarded()}
       {_renderCashBack()}
       <div>
         <p className='mb-2 text-base font-semibold leading-5'>
@@ -117,7 +119,7 @@ export default function Summary() {
           {_renderDoc('Authorized Workshop Plan')}
           {_renderDoc('Private Car Policy Wording')}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
