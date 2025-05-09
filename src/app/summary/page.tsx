@@ -1,4 +1,4 @@
-import Image from 'next/image';
+'use client';
 import {
   ArrowRightOutlined,
   CopyOutlined,
@@ -8,8 +8,12 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import InfoCard from './InfoCard';
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
+import { useGetQuote } from '@/hook/insurance/quote';
+import React from 'react';
 
 export default function Summary() {
+  const { data: quote } = useGetQuote('1745750192188');
+
   const _renderCongratulation = () => {
     return (
       <div className='flex flex-row items-center gap-5'>
@@ -76,6 +80,22 @@ export default function Summary() {
     );
   };
 
+  const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
+    .filter(([, selectedValue]) => selectedValue !== 'NO')
+    .map(([code, selectedValue]) => {
+      const addon = quote?.data.plans?.[0]?.addons?.find(
+        (a: any) => a.code === code,
+      );
+      const label =
+        addon?.options?.find((opt: any) => opt.value === selectedValue)
+          ?.label || selectedValue;
+
+      return {
+        title: addon?.title || code,
+        value: label,
+      };
+    });
+
   return (
     <div className='flex w-full flex-col items-center justify-center gap-6 px-6 py-4'>
       {_renderCongratulation()}
@@ -83,33 +103,43 @@ export default function Summary() {
         A confirmation email with the policy details has been sent to your
         registered email.
       </p>
-      <div className='flex flex-col justify-center gap-8 md:flex-row md:gap-10'>
-        <InfoCard
-          title='Policy Details'
-          data={[
-            { label: 'Plan Type', value: 'Comprehensive' },
-            { label: 'Policy Start Date', value: '15/12/2025' },
-            { label: 'Policy End Date', value: '15/12/2026' },
-            { label: 'Loss of Use', value: 'Transport Allowance' },
-            { label: 'Personal Accident+', value: '+S$30,000' },
-          ]}
-          extraTitle='Add Ons:'
-        />
-
-        <InfoCard
-          title='Insured Info'
-          data={[
-            { label: 'Name', value: 'Rahul Shah' },
-            { label: 'Mobile Number', value: '+65 9887506' },
-            { label: 'Email', value: 'sayangmail.com' },
-            {
-              label: 'Address',
-              value: '#10 Eunos Road Building 2 Singapore 400071',
-            },
-          ]}
-        />
-      </div>
+      <InfoCard
+        title='Policy Details'
+        data={[
+          {
+            label: 'Plan Type',
+            value: quote?.data.selected_plan || 'N/A',
+          },
+          {
+            label: 'Policy Start Date',
+            value: quote?.data.insurance_additional_info?.start_date || 'N/A',
+          },
+          {
+            label: 'Policy End Date',
+            value: quote?.data.insurance_additional_info?.end_date || 'N/A',
+          },
+        ]}
+        extraTitle='Add Ons:'
+        extraData={addonsSectionData}
+      />
+      <InfoCard
+        title='Insured Info'
+        data={[
+          { label: 'Name', value: quote?.data.personal_info?.name || 'N/A' },
+          {
+            label: 'Mobile Number',
+            value: quote?.data.personal_info?.phone || 'N/A',
+          },
+          { label: 'Email', value: quote?.data.personal_info?.email || 'N/A' },
+          {
+            label: 'Address',
+            value: quote?.data.personal_info?.address || 'N/A',
+          },
+        ]}
+      />
+      {_renderRewarded()}
       {/* {_renderRewarded()}
+>>>>>>> development
       {_renderCashBack()}
       <div>
         <p className='mb-2 text-base font-semibold leading-5'>
