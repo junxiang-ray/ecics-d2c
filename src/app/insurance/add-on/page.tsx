@@ -8,13 +8,16 @@ import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
 import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
 import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
-import { Modal, Spin } from 'antd';
+import { Drawer, Modal, Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import AdditionDriver from '../components/AdditionDriver';
 import { PricingSummary } from '../components/FeeBar';
 import AddOnRowDetail from './AddOnRowDetail';
 import HeaderAddOn from './HeaderAddOn';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { ROUTES } from '@/constants/routes';
 
 const mapIconToTypeAddOn = [
   {
@@ -101,6 +104,9 @@ function AddOnPage() {
   const [drivers, setDrivers] = useState<any[]>([]);
   const [addonsAdded, setAddonsAdded] = useState<any>(null);
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
+  const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
+  const router = useRouterWithQuery();
+  const isMobile = useDeviceDetection();
 
   const { data: quoteInfo, isLoading } = useGetQuote(key);
   const { mutate: saveProposal, isSuccess: hasSaveProposal } =
@@ -189,7 +195,13 @@ function AddOnPage() {
   }, 0);
   const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
 
-  const handleContinue = () => {
+  useEffect(() => {
+    if (!hasSaveProposal) return;
+    setIsShowPopupPremium(false);
+    router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
+  }, [hasSaveProposal]);
+
+  const handleOkay = () => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
     //CAR_COM_AJE: "SGD 750.00" (CAR_COM_ANW: NO), or "SGD 1,500.00" (CAR_COM_ANW: YES):
     if (addonsAdd?.['CAR_COM_AJE'] === 'NO') {
@@ -214,6 +226,80 @@ function AddOnPage() {
       </div>
     );
   }
+
+  const _renderPremium = () => {
+    const planFee = totalFee || 0;
+    const discountRate = quoteInfo?.promo_code?.discount || 0;
+    const couponDiscount = planFee * (discountRate / 100);
+    const gst = 35;
+    const addonsSectionData = Object.entries(
+      quoteInfo?.data.selected_addons || {},
+    )
+      .filter(([, selectedValue]) => selectedValue !== 'NO')
+      .map(([code, selectedValue]) => {
+        const addon = addonsFormatted.find((a) => a.code === code);
+        const value =
+          addon?.options?.find((opt: any) => opt.value === selectedValue)
+            ?.value || selectedValue;
+
+        return {
+          title: addon?.title || code,
+          value: value,
+        };
+      });
+
+    const addOnTotal = addonsSectionData.reduce((acc, addon) => {
+      const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
+      return acc + value;
+    }, 0);
+    const netPremium = planFee - couponDiscount + addOnTotal + gst;
+
+    return (
+      <div className='flex flex-col gap-6'>
+        <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
+          Premium Breakdown
+        </p>
+        <div className='flex flex-col gap-6'>
+          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
+            <div className='flex flex-row justify-between font-semibold '>
+              <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
+              <p>SDG {planFee}</p>
+            </div>
+            <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
+              <p>Coupon Discount</p>
+              <p>-SDG {couponDiscount}</p>
+            </div>
+          </div>
+
+          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
+            <p>Add-on:</p>
+            {addonsSectionData.map((addon) => (
+              <p key={addon.title} className='flex flex-row justify-between'>
+                {addon.title}: <span>SDG {addOnTotal}</span>
+              </p>
+            ))}
+          </div>
+          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
+            <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
+              <p>GST</p>
+              <p>SDG {gst}</p>
+            </div>
+            <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
+              <p>Net Premium</p>
+              <p>SDG {netPremium.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+        <div
+          className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+          onClick={() => handleOkay()}
+        >
+          Okay
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className='w-full'>
       <div className='mt-2 flex flex-col gap-4 px-4'>
@@ -242,7 +328,7 @@ function AddOnPage() {
           discount={15}
           title='Premium breakdown'
           textButton='Continue'
-          onClick={() => handleContinue()}
+          onClick={() => setIsShowPopupPremium(true)}
         />
       </div>
 
@@ -254,6 +340,32 @@ function AddOnPage() {
       >
         <p>Here you can edit the car info or insurance details.</p>
       </Modal>
+
+      {isMobile.isMobile ? (
+        <Drawer
+          placement='bottom'
+          open={isShowPopupPremium}
+          onClose={() => setIsShowPopupPremium(false)}
+          closable={false}
+          height='auto'
+          className='rounded-t-xl'
+        >
+          {_renderPremium()}
+        </Drawer>
+      ) : (
+        <Modal
+          open={isShowPopupPremium}
+          onCancel={() => setIsShowPopupPremium(false)}
+          closable={false}
+          maskClosable={true}
+          keyboard={true}
+          footer={null}
+          width={400}
+          centered
+        >
+          <div>{_renderPremium()}</div>
+        </Modal>
+      )}
     </div>
   );
 }
