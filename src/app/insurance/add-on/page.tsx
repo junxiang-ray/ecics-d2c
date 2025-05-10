@@ -3,9 +3,7 @@
 import { Drawer, Modal, Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-
 import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
-
 import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
 import KeyIcon from '@/components/icons/KeyIcon';
 import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
@@ -14,7 +12,6 @@ import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
 import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import AddOnRowDetail from './AddOnRowDetail';
 import HeaderAddOn from './HeaderAddOn';
@@ -309,9 +306,15 @@ function AddOnPage() {
         <>
           <div className='mt-2 flex flex-col gap-4 px-4'>
             <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-              <HeaderAddOn setIsModalVisible={setIsModalVisible} />
+              <HeaderAddOn
+                setIsModalVisible={setIsModalVisible}
+                selectPlan={quoteInfo?.data.selected_plan}
+                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+                insuranceAdditionalInfo={
+                  quoteInfo?.data.insurance_additional_info?.no_of_claim
+                }
+              />
             </div>
-
             <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
               {addonsFormatted.map((addon) => (
                 <AddOnRowDetail
