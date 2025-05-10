@@ -307,7 +307,14 @@ function AddOnPage() {
     <div className='w-full'>
       <div className='mt-2 flex flex-col gap-4 px-4'>
         <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-          <HeaderAddOn setIsModalVisible={setIsModalVisible} />
+          <HeaderAddOn
+            setIsModalVisible={setIsModalVisible}
+            selectPlan={quoteInfo?.data.selected_plan}
+            vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+            insuranceAdditionalInfo={
+              quoteInfo?.data.insurance_additional_info?.no_of_claim
+            }
+          />
         </div>
 
         <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
