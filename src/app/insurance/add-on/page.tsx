@@ -311,7 +311,7 @@ function AddOnPage() {
                 selectPlan={quoteInfo?.data.selected_plan}
                 vehicleInfo={quoteInfo?.data.vehicle_info_selected}
                 insuranceAdditionalInfo={
-                  quoteInfo?.data.insurance_additional_info?.no_of_claim
+                  quoteInfo?.data.insurance_additional_info?.no_claim_discount
                 }
               />
             </div>

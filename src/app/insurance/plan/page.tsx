@@ -17,6 +17,7 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import PlanCardDesktop from './components/PlanCardDesktop';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
+import HeaderPlan from './components/HeaderPlan';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -73,6 +74,7 @@ function PlanPage() {
     saveQuote({ key, data });
     setShowConfirmDeclaration(false);
   };
+
   if (isLoading) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
@@ -83,6 +85,12 @@ function PlanPage() {
 
   return (
     <div className='flex w-full flex-col justify-center'>
+      <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4'>
+        <HeaderPlan
+          vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+          insuranceAdditionalInfo={quoteInfo?.data.insurance_additional_info}
+        />
+      </div>
       {/* UI for Mobile */}
       <div className='mx-4 pb-20 md:hidden'>
         <PlanCardMobile
