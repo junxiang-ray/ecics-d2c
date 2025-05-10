@@ -1,22 +1,23 @@
 'use client';
 
-import { PrimaryButton } from '@/components/ui/buttons';
-import {
-  useGenerateQuote,
-  useGetQuote,
-  useSaveQuote,
-} from '@/hook/insurance/quote';
-import { Plan } from '@/libs/types/quote';
+import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/navigation';
+
+import { Plan } from '@/libs/types/quote';
+
+import { PrimaryButton } from '@/components/ui/buttons';
+
+import { ROUTES } from '@/constants/routes';
+import { useGetQuote, useSaveQuote } from '@/hook/insurance/quote';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+
 import PlanCardDesktop from './components/PlanCardDesktop';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
-import { Spin } from 'antd';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
+
 export interface FormatPlan extends Plan {
   discount: number;
   currentPrice: number;

@@ -1,23 +1,26 @@
 'use client';
 
+import { Drawer, Modal, Spin } from 'antd';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+
+import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
+
 import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
 import KeyIcon from '@/components/icons/KeyIcon';
 import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
+
+import { ROUTES } from '@/constants/routes';
 import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
-import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
-import { Drawer, Modal, Spin } from 'antd';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import AdditionDriver from '../components/AdditionDriver';
-import { PricingSummary } from '../components/FeeBar';
-import AddOnRowDetail from './AddOnRowDetail';
-import HeaderAddOn from './HeaderAddOn';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
+
+import AddOnRowDetail from './AddOnRowDetail';
+import HeaderAddOn from './HeaderAddOn';
+import { PricingSummary } from '../components/FeeBar';
 
 const mapIconToTypeAddOn = [
   {
