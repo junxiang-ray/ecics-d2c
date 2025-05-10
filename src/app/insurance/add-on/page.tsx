@@ -12,12 +12,10 @@ import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
-
-import { ROUTES } from '@/constants/routes';
 import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-
+import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import AddOnRowDetail from './AddOnRowDetail';
 import HeaderAddOn from './HeaderAddOn';
 import { PricingSummary } from '../components/FeeBar';
@@ -108,7 +106,7 @@ function AddOnPage() {
   const [addonsAdded, setAddonsAdded] = useState<any>(null);
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
-  const router = useRouterWithQuery();
+  const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
   const isMobile = useDeviceDetection();
 
   const { data: quoteInfo, isLoading } = useGetQuote(key);
@@ -201,7 +199,7 @@ function AddOnPage() {
   useEffect(() => {
     if (!hasSaveProposal) return;
     setIsShowPopupPremium(false);
-    router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
+    setIsShowBonusDetail(true);
   }, [hasSaveProposal]);
 
   const handleOkay = () => {
@@ -305,69 +303,75 @@ function AddOnPage() {
 
   return (
     <div className='w-full'>
-      <div className='mt-2 flex flex-col gap-4 px-4'>
-        <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-          <HeaderAddOn setIsModalVisible={setIsModalVisible} />
-        </div>
-
-        <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
-          {addonsFormatted.map((addon) => (
-            <AddOnRowDetail
-              key={addon.code}
-              addon={addon}
-              addonsAdded={addonsAdded}
-              setAddonsAdded={setAddonsAdded}
-              addonsSelected={addonsSelected}
-              setAddonsSelected={setAddonsSelected}
-              drivers={drivers}
-              setDrivers={setDrivers}
-            />
-          ))}
-        </div>
-      </div>
-      <div className='mt-2 md:px-44'>
-        <PricingSummary
-          fee={totalFee}
-          discount={15}
-          title='Premium breakdown'
-          textButton='Continue'
-          onClick={() => setIsShowPopupPremium(true)}
-        />
-      </div>
-
-      <Modal
-        title='Edit Information'
-        open={isModalVisible}
-        footer={[]}
-        onCancel={() => setIsModalVisible(false)}
-      >
-        <p>Here you can edit the car info or insurance details.</p>
-      </Modal>
-
-      {isMobile.isMobile ? (
-        <Drawer
-          placement='bottom'
-          open={isShowPopupPremium}
-          onClose={() => setIsShowPopupPremium(false)}
-          closable={false}
-          height='auto'
-          className='rounded-t-xl'
-        >
-          {_renderPremium()}
-        </Drawer>
+      {isShowBonusDetail ? (
+        <AddOnBonusDetailManualForm />
       ) : (
-        <Modal
-          open={isShowPopupPremium}
-          onCancel={() => setIsShowPopupPremium(false)}
-          closable={false}
-          maskClosable={true}
-          keyboard={true}
-          footer={null}
-          width={400}
-          centered
-        >
-          <div>{_renderPremium()}</div>
-        </Modal>
+        <>
+          <div className='mt-2 flex flex-col gap-4 px-4'>
+            <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
+              <HeaderAddOn setIsModalVisible={setIsModalVisible} />
+            </div>
+
+            <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
+              {addonsFormatted.map((addon) => (
+                <AddOnRowDetail
+                  key={addon.code}
+                  addon={addon}
+                  addonsAdded={addonsAdded}
+                  setAddonsAdded={setAddonsAdded}
+                  addonsSelected={addonsSelected}
+                  setAddonsSelected={setAddonsSelected}
+                  drivers={drivers}
+                  setDrivers={setDrivers}
+                />
+              ))}
+            </div>
+          </div>
+          <div className='mt-2 md:px-44'>
+            <PricingSummary
+              fee={totalFee}
+              discount={15}
+              title='Premium breakdown'
+              textButton='Continue'
+              onClick={() => setIsShowPopupPremium(true)}
+            />
+          </div>
+
+          <Modal
+            title='Edit Information'
+            open={isModalVisible}
+            footer={[]}
+            onCancel={() => setIsModalVisible(false)}
+          >
+            <p>Here you can edit the car info or insurance details.</p>
+          </Modal>
+
+          {isMobile.isMobile ? (
+            <Drawer
+              placement='bottom'
+              open={isShowPopupPremium}
+              onClose={() => setIsShowPopupPremium(false)}
+              closable={false}
+              height='auto'
+              className='rounded-t-xl'
+            >
+              {_renderPremium()}
+            </Drawer>
+          ) : (
+            <Modal
+              open={isShowPopupPremium}
+              onCancel={() => setIsShowPopupPremium(false)}
+              closable={false}
+              maskClosable={true}
+              keyboard={true}
+              footer={null}
+              width={400}
+              centered
+            >
+              <div>{_renderPremium()}</div>
+            </Modal>
+          )}
+        </>
       )}
     </div>
   );
