@@ -19,7 +19,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { ROUTES } from '@/constants/routes';
 
-const mapIconToTypeAddOn = [
+export const mapIconToTypeAddOn = [
   {
     code: 'CAR_COM_ANW',
     icon: <KeyIcon className='text-brand-blue' />,
@@ -219,14 +219,6 @@ function AddOnPage() {
     saveProposal(data);
   };
 
-  if (isLoading) {
-    return (
-      <div className='flex h-96 w-full items-center justify-center'>
-        <Spin size='large' />
-      </div>
-    );
-  }
-
   const _renderPremium = () => {
     const planFee = totalFee || 0;
     const discountRate = quoteInfo?.promo_code?.discount || 0;
@@ -299,6 +291,14 @@ function AddOnPage() {
       </div>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <div className='w-full'>
