@@ -1,7 +1,17 @@
 'use client';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
+import dayjs from 'dayjs';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { SubmitHandler } from 'react-hook-form';
+
+import { Vehicle } from '@/libs/types/quote';
+import { adjustDateInDate, convertDateFormat } from '@/libs/utils/date-utils';
+import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
+
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
+
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -10,15 +20,9 @@ import {
   useGetQuote,
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { Vehicle } from '@/libs/types/quote';
-import { adjustDateInDate, convertDateFormat } from '@/libs/utils/date-utils';
-import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
-import dayjs from 'dayjs';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { SubmitHandler } from 'react-hook-form';
-import VehicleBar from '../components/VehicleBar';
+
 import PolicyDetailForm from './PolicyDetailForm';
+import VehicleBar from '../components/VehicleBar';
 
 interface PolicyDetailProps {
   isSingPassFlow: boolean;
