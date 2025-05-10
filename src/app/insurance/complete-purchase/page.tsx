@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
 import ReviewSection from './ReviewSection';
 import PersonIcon from '@/components/icons/PersonIcon';
@@ -7,11 +7,78 @@ import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
-import ImportantNoticeModal from './review-your-detail/modal/ImportantNoticeModal';
 import ReviewDesktop from './ReviewDesktop';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { ROUTES } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
+import { AddOnFormat } from '../add-on/page';
+import { Option } from '@/libs/types/quote';
+import { PricingSummary } from '../components/FeeBar';
+import { useSearchParams } from 'next/navigation';
+import { Spin } from 'antd';
+import KeyIcon from '@/components/icons/KeyIcon';
+import RepairIcon from '@/components/icons/RepairIcon';
+import RoadSideIcon from '@/components/icons/RoadSideIcon';
+import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
+import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
+
+function calculateFee(
+  option: Option,
+  addonsAdded: Record<string, string>,
+): number {
+  if (!option?.dependencies || option.dependencies.length === 0) {
+    return option.premium_with_gst ?? 0;
+  }
+  const dependency = option.dependencies.find((dep) =>
+    dep.conditions.every(
+      (condition) => addonsAdded[condition.addon.code] === condition.value,
+    ),
+  );
+  return dependency?.premium_with_gst ?? 0;
+}
+
+const mapCodeTypeAddon = [
+  {
+    code: 'CAR_COM_ANW',
+    icon: <KeyIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_AJE',
+    icon: <RepairIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_AND',
+    icon: <RoadSideIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_BUN',
+    icon: <EnhancedAccidentIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_LOU',
+    icon: <PersonalAccidentIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_PAC',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_MDE',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_RSA',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_KRC',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_NOR',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+];
 
 export default function Page() {
   const [expandedSections, setExpandedSections] = useState<{
@@ -27,7 +94,9 @@ export default function Page() {
     }));
   };
 
-  const { data: quote } = useGetQuote('1745750192188');
+  const searchParams = useSearchParams();
+  const key = searchParams.get('key') || '';
+  const { data: quote, isLoading } = useGetQuote(key);
 
   const handleEditClick = (key: string) => {
     toggleSection(key);
@@ -214,72 +283,258 @@ export default function Page() {
     },
   ];
 
+  const plan = quote?.data?.plans?.find(
+    (plan) => quote.data?.selected_plan === plan.title,
+  );
+  const [addonsAdded, setAddonsAdded] = useState<any>(null);
+  const [addonsSelected, setAddonsSelected] = useState<any>(null);
+
+  const defaultAddonsAdded = useMemo(() => {
+    if (!plan?.addons.length) return {};
+    const addonCodes = plan.addons.map((addon) => addon.code);
+    return Object.fromEntries(addonCodes.map((code) => [code, 'NO']));
+  }, [plan]);
+
+  const defaultAddonsSelected = useMemo(() => {
+    if (!plan?.addons.length) return {};
+    const selected_addons = quote?.data?.selected_addons ?? {};
+    return plan.addons.reduce(
+      (acc: Record<string, string>, addon) => {
+        if (addon.type === 'checkbox') {
+          acc[addon.code] = 'YES';
+        } else {
+          const selectedValue = selected_addons?.[addon.code];
+          if (selectedValue && selectedValue !== 'NO') {
+            acc[addon.code] = selectedValue;
+          } else {
+            const defaultOption = addon.options.find(
+              (option) => option.id === addon.default_option_id,
+            );
+            acc[addon.code] = defaultOption
+              ? defaultOption.value
+              : addon.options[0]?.value;
+          }
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [plan]);
+
+  useEffect(() => {
+    // setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
+    setAddonsAdded(defaultAddonsAdded);
+    setAddonsSelected(defaultAddonsSelected);
+  }, [defaultAddonsAdded, defaultAddonsSelected]);
+
+  const addons = plan?.addons ?? [];
+
+  const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
+    // map the icon to the addon
+    const iconMatched = mapCodeTypeAddon.find(
+      (item) => item.code === addon.code,
+    );
+
+    // For feeAdded use the "addonsAdded" defaults
+    const initValueForAdded = addonsAdded?.[addon.code] ?? null;
+    const selectedOptionForAdded = addon.options.find(
+      (option) => option.value === initValueForAdded,
+    );
+    const feeAdded = selectedOptionForAdded
+      ? calculateFee(selectedOptionForAdded, addonsAdded)
+      : 0;
+
+    // For feeSelected use the "addonsSelected" defaults
+    const initValueForSelected = addonsSelected?.[addon.code] ?? null;
+    const activeOption = addon.options.find(
+      (option) => option.value === initValueForSelected,
+    );
+    const feeSelected = activeOption
+      ? calculateFee(activeOption, addonsAdded)
+      : 0;
+
+    return {
+      ...addon,
+      icon: iconMatched?.icon || null,
+      selectedOption: selectedOptionForAdded ?? null,
+      feeAdded: feeAdded,
+      activeOption: activeOption ?? null,
+      feeSelected: feeSelected,
+    };
+  });
+
+  const totalAdditionFee = addonsFormatted.reduce((acc, addon) => {
+    const fee = addon.feeAdded ?? 0;
+    return acc + fee;
+  }, 0);
+
+  const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
+
+  const _renderPremium = () => {
+    const planFee = totalFee || 0;
+    const discountRate = quote?.promo_code?.discount || 0;
+    const couponDiscount = planFee * (discountRate / 100);
+    const gst = 35;
+    const addonsSectionDataT = Object.entries(quote?.data.selected_addons || {})
+      .filter(([, selectedValue]) => selectedValue !== 'NO')
+      .map(([code, selectedValue]) => {
+        const addon = addonsFormatted.find((a) => a.code === code);
+        const value =
+          addon?.options?.find((opt: any) => opt.value === selectedValue)
+            ?.value || selectedValue;
+
+        return {
+          title: addon?.title || code,
+          value: value,
+        };
+      });
+
+    const addOnTotal = addonsSectionData.reduce((acc, addon) => {
+      const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
+      return acc + value;
+    }, 0);
+
+    const netPremium = planFee - couponDiscount + addOnTotal + gst;
+
+    return (
+      <div>
+        <div className='flex w-full min-w-[300px] flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
+          <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
+            Premium Breakdown
+          </p>
+          <div className='flex flex-col gap-3'>
+            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
+              <div className='flex flex-row justify-between text-base leading-[30px] text-[#171A1F]'>
+                <p className='font-normal'>
+                  {quote?.data?.selected_plan ?? ''}
+                </p>
+                <p>SDG {planFee}</p>
+              </div>
+              <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
+                <p>Coupon Discount</p>
+                <p>-SDG {couponDiscount}</p>
+              </div>
+            </div>
+
+            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
+              <p className='font-bold text-[#171A1F]'>Add-on:</p>
+              {addonsSectionDataT.map((addon) => (
+                <p key={addon.title} className='flex flex-row justify-between'>
+                  {addon.title}: <span>SDG {addOnTotal}</span>
+                </p>
+              ))}
+            </div>
+            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
+              <div className='flex flex-row justify-between'>
+                <p>Net Premium</p>
+                <p>SDG {netPremium.toFixed(2)}</p>
+              </div>
+              <div className='flex flex-row justify-between'>
+                <p>GST</p>
+                <p>SDG {gst}</p>
+              </div>
+            </div>
+            <div className='flex flex-row justify-between font-bold'>
+              <p>Total (including GST)</p>
+            </div>
+          </div>
+          <div className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'>
+            Pay
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
+
   return (
     <div className='px-4'>
       <h1 className='mb-4 text-xl font-bold'>Review your details</h1>
-      <div className='flex flex-col lg:flex-row lg:gap-8'>
-        <div className='flex-1'>
-          {sections.map((section) => {
-            if (section.key === 'driver') {
-              const drivers = getDriverSections(
-                quote?.data.add_named_driver_info,
-              );
-              return drivers.map((driverSection) =>
-                isMobile ? (
-                  <ReviewSection
-                    key={driverSection.key}
-                    title={driverSection.title}
-                    description={driverSection.description}
-                    icon={driverSection.icon}
-                    data={driverSection.data}
-                    isExpanded={!!expandedSections[driverSection.key]}
-                    onToggle={() => handleEditClick(driverSection.key)}
-                    setShowModal={setShowModal}
-                    editRoute={ROUTES.INSURANCE.ADD_ON}
-                  />
-                ) : (
-                  <ReviewDesktop
-                    key={driverSection.key}
-                    title={driverSection.title}
-                    description={driverSection.description}
-                    icon={driverSection.icon}
-                    data={driverSection.data}
-                    isExpanded={!!expandedSections[driverSection.key]}
-                    onToggle={() => handleEditClick(driverSection.key)}
-                    setShowModal={setShowModal}
-                    editRoute={ROUTES.INSURANCE.ADD_ON}
-                  />
-                ),
-              );
-            }
+      <div className='flex w-full flex-col md:flex-row md:gap-8'>
+        <div className='flex flex-col lg:flex-row lg:gap-8'>
+          <div className='flex-1'>
+            {sections.map((section) => {
+              if (section.key === 'driver') {
+                const drivers = getDriverSections(
+                  quote?.data.add_named_driver_info,
+                );
+                return drivers.map((driverSection) =>
+                  isMobile ? (
+                    <ReviewSection
+                      key={driverSection.key}
+                      title={driverSection.title}
+                      description={driverSection.description}
+                      icon={driverSection.icon}
+                      data={driverSection.data}
+                      isExpanded={!!expandedSections[driverSection.key]}
+                      onToggle={() => handleEditClick(driverSection.key)}
+                      setShowModal={setShowModal}
+                      editRoute={ROUTES.INSURANCE.ADD_ON}
+                    />
+                  ) : (
+                    <ReviewDesktop
+                      key={driverSection.key}
+                      title={driverSection.title}
+                      description={driverSection.description}
+                      icon={driverSection.icon}
+                      data={driverSection.data}
+                      isExpanded={!!expandedSections[driverSection.key]}
+                      onToggle={() => handleEditClick(driverSection.key)}
+                      setShowModal={setShowModal}
+                      editRoute={ROUTES.INSURANCE.ADD_ON}
+                    />
+                  ),
+                );
+              }
 
-            return isMobile ? (
-              <ReviewSection
-                key={section.key}
-                title={section.title}
-                description={section.description}
-                icon={section.icon}
-                data={sharedDataMap[section.key] || []}
-                isExpanded={!!expandedSections[section.key]}
-                onToggle={() => handleEditClick(section.key)}
-                setShowModal={setShowModal}
-                editRoute={routerBySectionKey(section.key)}
-              />
-            ) : (
-              <ReviewDesktop
-                key={section.key}
-                title={section.title}
-                description={section.description}
-                icon={section.icon}
-                data={sharedDataMap[section.key] || []}
-                isExpanded={!!expandedSections[section.key]}
-                onToggle={() => handleEditClick(section.key)}
-                setShowModal={setShowModal}
-                editRoute={routerBySectionKey(section.key)}
-              />
-            );
-          })}
+              return isMobile ? (
+                <ReviewSection
+                  key={section.key}
+                  title={section.title}
+                  description={section.description}
+                  icon={section.icon}
+                  data={sharedDataMap[section.key] || []}
+                  isExpanded={!!expandedSections[section.key]}
+                  onToggle={() => handleEditClick(section.key)}
+                  setShowModal={setShowModal}
+                  editRoute={routerBySectionKey(section.key)}
+                />
+              ) : (
+                <ReviewDesktop
+                  key={section.key}
+                  title={section.title}
+                  description={section.description}
+                  icon={section.icon}
+                  data={sharedDataMap[section.key] || []}
+                  isExpanded={!!expandedSections[section.key]}
+                  onToggle={() => handleEditClick(section.key)}
+                  setShowModal={setShowModal}
+                  editRoute={routerBySectionKey(section.key)}
+                />
+              );
+            })}
+          </div>
         </div>
+
+        {isMobile ? (
+          <div className='mt-2 md:px-44'>
+            <PricingSummary
+              fee={totalFee}
+              discount={15}
+              title='Premium breakdown'
+              textButton='Pay'
+            />
+          </div>
+        ) : (
+          _renderPremium()
+        )}
       </div>
     </div>
   );

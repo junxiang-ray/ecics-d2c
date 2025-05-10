@@ -219,14 +219,6 @@ function AddOnPage() {
     saveProposal(data);
   };
 
-  if (isLoading) {
-    return (
-      <div className='flex h-96 w-full items-center justify-center'>
-        <Spin size='large' />
-      </div>
-    );
-  }
-
   const _renderPremium = () => {
     const planFee = totalFee || 0;
     const discountRate = quoteInfo?.promo_code?.discount || 0;
@@ -299,6 +291,14 @@ function AddOnPage() {
       </div>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <div className='w-full'>
