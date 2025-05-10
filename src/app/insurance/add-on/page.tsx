@@ -19,7 +19,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { ROUTES } from '@/constants/routes';
 
-export const mapIconToTypeAddOn = [
+const mapIconToTypeAddOn = [
   {
     code: 'CAR_COM_ANW',
     icon: <KeyIcon className='text-brand-blue' />,

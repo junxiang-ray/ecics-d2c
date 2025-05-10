@@ -11,11 +11,16 @@ import ReviewDesktop from './ReviewDesktop';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { ROUTES } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
-import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/page';
+import { AddOnFormat } from '../add-on/page';
 import { Option } from '@/libs/types/quote';
 import { PricingSummary } from '../components/FeeBar';
 import { useSearchParams } from 'next/navigation';
 import { Spin } from 'antd';
+import KeyIcon from '@/components/icons/KeyIcon';
+import RepairIcon from '@/components/icons/RepairIcon';
+import RoadSideIcon from '@/components/icons/RoadSideIcon';
+import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
+import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 
 function calculateFee(
   option: Option,
@@ -31,6 +36,49 @@ function calculateFee(
   );
   return dependency?.premium_with_gst ?? 0;
 }
+
+const mapCodeTypeAddon = [
+  {
+    code: 'CAR_COM_ANW',
+    icon: <KeyIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_AJE',
+    icon: <RepairIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_AND',
+    icon: <RoadSideIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_BUN',
+    icon: <EnhancedAccidentIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_LOU',
+    icon: <PersonalAccidentIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_PAC',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_MDE',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_RSA',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_KRC',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_NOR',
+    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+  },
+];
 
 export default function Page() {
   const [expandedSections, setExpandedSections] = useState<{
@@ -283,7 +331,7 @@ export default function Page() {
 
   const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
     // map the icon to the addon
-    const iconMatched = mapIconToTypeAddOn.find(
+    const iconMatched = mapCodeTypeAddon.find(
       (item) => item.code === addon.code,
     );
 
