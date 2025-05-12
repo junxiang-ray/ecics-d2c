@@ -30,6 +30,7 @@ interface VehicleSelectionModalProps {
   setSelected: (selected: Vehicle | null) => void;
   onClose?: () => void;
   setShowChooseVehicleModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setRefreshSession?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const defaultProps = {
@@ -45,6 +46,7 @@ export const VehicleSelectionModal = ({
   setShowChooseVehicleModal,
   selected,
   setSelected,
+  setRefreshSession,
   onClose,
 }: VehicleSelectionModalProps) => {
   const { isMobile } = useDeviceDetection();
@@ -256,8 +258,11 @@ export const VehicleSelectionModal = ({
           {content}
         </Modal>
       )}
-      {showUnMatchModal && (
-        <UnMatchVehicleModal onClose={handleCloseUnMatchModal} />
+      {showUnMatchModal && setRefreshSession && (
+        <UnMatchVehicleModal
+          onClose={handleCloseUnMatchModal}
+          setRefreshSession={setRefreshSession}
+        />
       )}
       {showContactModal && (
         <UnableQuote

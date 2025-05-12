@@ -1,14 +1,17 @@
-import DeleteIcon from '@/components/icons/DeleteIcon';
-import { DatePickerField } from '@/components/ui/form/datepicker';
-import { DropdownField } from '@/components/ui/form/dropdownfield';
-import { InputField } from '@/components/ui/form/inputfield';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { PlusOutlined } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Drawer, Modal } from 'antd';
 import { useMemo, useRef, useState } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import DeleteIcon from '@/components/icons/DeleteIcon';
+import { DatePickerField } from '@/components/ui/form/datepicker';
+import { DropdownField } from '@/components/ui/form/dropdownfield';
+import { InputField } from '@/components/ui/form/inputfield';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -20,6 +23,7 @@ interface Props {
   setDataDrivers: (data: any[]) => void;
   dataDrivers: any[];
 }
+
 export const DRIVING_EXPERIENCE_OPTIONS = [
   { value: 0, text: 'Less than 1 year' },
   { value: 1, text: '1 year' },

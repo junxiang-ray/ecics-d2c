@@ -613,10 +613,14 @@ const ReviewInfoDetail = () => {
             setShowChooseVehicleModal={setShowChooseVehicleModal}
             vehicles={vehicles}
             setSelected={handleSelection}
+            setRefreshSession={setRefreshSession}
           />
         )}
         {showUnMatchModal && (
-          <UnMatchVehicleModal onClose={() => setShowUnMatchModal(false)} />
+          <UnMatchVehicleModal
+            onClose={() => setShowUnMatchModal(false)}
+            setRefreshSession={setRefreshSession}
+          />
         )}
         {showContactModal && (
           <UnableQuote onClick={handleGoBack} visible={showContactModal} />
