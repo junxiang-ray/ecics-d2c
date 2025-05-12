@@ -301,7 +301,11 @@ function AddOnPage() {
   return (
     <div className='w-full'>
       {isShowBonusDetail ? (
-        <AddOnBonusDetailManualForm />
+        <AddOnBonusDetailManualForm
+          key={quoteInfo?.data.key}
+          personal_info={quoteInfo?.data.personal_info}
+          vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
+        />
       ) : (
         <>
           <div className='mt-2 flex flex-col gap-4 px-4'>

@@ -31,6 +31,7 @@ function PlanPage() {
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
   const { data: quoteInfo, isLoading } = useGetQuote(key);
   const { mutate: saveQuote, isPending: isSaving, isSuccess } = useSaveQuote();
+
   const plans = quoteInfo?.data?.plans ?? [];
   useEffect(() => {
     if (isSuccess) {
@@ -70,7 +71,7 @@ function PlanPage() {
       selected_plan: plan?.title,
       key: key,
     };
-    saveQuote({ key, data });
+    saveQuote({ key, data, is_sending_email: false });
     setShowConfirmDeclaration(false);
   };
   if (isLoading) {

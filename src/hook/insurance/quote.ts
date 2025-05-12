@@ -45,8 +45,16 @@ export const useSaveProposal = () => {
 };
 
 export const useSaveQuote = () => {
-  const saveQuote = async ({ key, data }: { key: string; data: QuoteData }) => {
-    const res = await insurance.saveQuote(key, data);
+  const saveQuote = async ({
+    key,
+    data,
+    is_sending_email,
+  }: {
+    key: string;
+    data: any;
+    is_sending_email: boolean;
+  }) => {
+    const res = await insurance.saveQuote(key, data, is_sending_email);
     return res.data.data;
   };
   return useMutation({
