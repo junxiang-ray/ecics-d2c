@@ -54,13 +54,12 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
 
     if (data.is_sending_email) {
       const retrieveQuoteHTML = generateQuoteEmail({
-        name: newPersonalInfo.name ?? '',
         quote_key: newQuote.key ?? '',
       });
 
       sendMail({
         to: newPersonalInfo.email ?? '',
-        subject: `ECICS Limited |`,
+        subject: `ECICS Limited | Your Car Insurance Purchase Journey`,
         html: retrieveQuoteHTML,
       });
     }
