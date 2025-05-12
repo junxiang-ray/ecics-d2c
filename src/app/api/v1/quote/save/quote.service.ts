@@ -129,11 +129,10 @@ export async function saveQuote(data: saveQuoteDTO) {
 
   const retrieveQuoteHTML = generateQuoteEmail({
     quote_key: newQuote.key ?? '',
-    name: newQuote.name ?? '',
   });
   sendMail({
     to: newQuote.email ?? '',
-    subject: `ECICS Limited | Your Car Insurance Quotation <${newQuote.quote_no}>`,
+    subject: `ECICS Limited | Your Car Insurance Purchase Journey`,
     html: retrieveQuoteHTML,
   });
 
