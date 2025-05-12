@@ -22,7 +22,7 @@ export interface SavePersonalInfoPayload {
     address: string[];
     date_of_birth: string;
     year_of_registration: string;
-    driving_experience: string;
+    driving_experience: number;
     phone: string;
     email: string;
   };

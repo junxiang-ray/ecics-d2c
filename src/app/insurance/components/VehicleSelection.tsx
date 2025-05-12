@@ -103,8 +103,8 @@ export const VehicleSelectionModal = ({
           year_of_registration: updatedParsed.year_of_registration || '',
           driving_experience:
             qdlClasses.length > 0
-              ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
-              : '1 year',
+              ? calculateDrivingExperienceFromLicences(qdlClasses)
+              : 1,
           phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
           email: updatedParsed.email?.value || '',
         },

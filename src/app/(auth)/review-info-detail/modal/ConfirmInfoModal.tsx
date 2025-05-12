@@ -76,8 +76,8 @@ const ConfirmInfoModal = ({
         year_of_registration: parsed.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
-            ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
-            : '1 year',
+            ? calculateDrivingExperienceFromLicences(qdlClasses)
+            : 1,
         phone: `${parsed.mobileno?.nbr?.value || ''}`,
         email: parsed.email?.value || '',
       },

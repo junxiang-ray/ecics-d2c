@@ -1,18 +1,22 @@
+import { Tooltip } from 'antd';
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
-import { saveToSessionStorage } from '@/libs/utils/utils';
+import { parsePhoneNumber, saveToSessionStorage } from '@/libs/utils/utils';
 
+import WarningIcon from '@/components/icons/WarningIcon';
 import {
   DropdownField,
   DropdownOption,
 } from '@/components/ui/form/dropdownfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
+import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
+import { DRV_EXP_OPTIONS } from '@/app/insurance/basic-detail/options';
 import {
   ECICS_USER_INFO,
-  IS_THREE_INPUT_COMPLETE,
+  IS_FILL_INPUT_COMPLETE,
 } from '@/constants/general.constant';
 import {
   useGetVehicleMakes,
@@ -21,7 +25,7 @@ import {
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 type InfoSectionProps = {
-  title: string;
+  title?: string;
   data: { label: string; value: string | number | null }[];
   boxClass?: string;
   setIsDisabled?: (val: boolean) => void;
@@ -40,6 +44,10 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   const methods = useForm();
   const { setValue, watch } = methods;
   const selectedMakeId = watch('vehicle_make');
+  const [showContactModal, setShowContactModal] = useState(false);
+  const handleClickOK = () => {
+    setShowContactModal(false);
+  };
 
   const sessionData = JSON.parse(
     sessionStorage.getItem(ECICS_USER_INFO) || '{}',
@@ -47,10 +55,12 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   const [vehicles, setVehicles] = useState(sessionData?.vehicles || []);
 
   const updateSessionStorage = (updatedVehicles: any[]) => {
-    sessionStorage.setItem(
-      ECICS_USER_INFO,
-      JSON.stringify({ ...sessionData, vehicle_selected: updatedVehicles }),
-    );
+    saveToSessionStorage({
+      [ECICS_USER_INFO]: JSON.stringify({
+        ...sessionData,
+        vehicle_selected: updatedVehicles,
+      }),
+    });
     setVehicles(updatedVehicles);
   };
 
@@ -68,10 +78,12 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     const updatedVehicles = [...existingVehicles];
     updatedVehicles[index] = updatedVehicle;
 
-    sessionStorage.setItem(
-      ECICS_USER_INFO,
-      JSON.stringify({ ...sessionData, vehicles: updatedVehicles }),
-    );
+    saveToSessionStorage({
+      [ECICS_USER_INFO]: JSON.stringify({
+        ...sessionData,
+        vehicles: updatedVehicles,
+      }),
+    });
   };
 
   const checkInputsCompleted = (vehicle: any) => {
@@ -89,6 +101,99 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     return requiredFields.every(
       (field) => vehicle?.[field]?.value && vehicle?.[field]?.value !== null,
     );
+  };
+
+  const handleInputChangeEmailPhone = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = e.target.value.trim();
+    const inputName = e.target.name.toLowerCase();
+    const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!ecicsData) return;
+
+    const parsed = JSON.parse(ecicsData);
+    const today = new Date().toISOString().split('T')[0];
+
+    if (inputName === 'email_address') {
+      if (!parsed.email) {
+        parsed.email = {};
+      }
+      parsed.email.value = value;
+      parsed.email.lastupdated = today;
+    }
+
+    if (inputName === 'phone_number') {
+      const { prefix, areaCode, nbr } = parsePhoneNumber(value);
+
+      parsed.mobileno = {
+        prefix: { value: prefix },
+        areacode: { value: areaCode },
+        nbr: { value: nbr },
+        lastupdated: today,
+      };
+    }
+    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
+  };
+
+  const handlePersonalInfoInputChange = (
+    inputName: string,
+    value: any,
+    setShowContactModal?: (show: boolean) => void,
+  ) => {
+    if (inputName === 'qualified_driving_license') {
+      const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
+      if (!ecicsData) return;
+
+      const parsed = JSON.parse(ecicsData);
+      const today = new Date();
+
+      if (value === 0 && setShowContactModal) {
+        setShowContactModal(true);
+        // Delete data if it was there before
+        if (
+          parsed.drivinglicence &&
+          parsed.drivinglicence.qdl &&
+          parsed.drivinglicence.qdl.length > 0
+        ) {
+          delete parsed.drivinglicence.qdl[0].issuedate;
+        }
+        saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
+        return;
+      }
+
+      if (typeof value === 'number' && value > 0) {
+        const issuedDate = new Date(today);
+        issuedDate.setFullYear(today.getFullYear() - value);
+
+        const formattedDate = issuedDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+
+        if (
+          parsed.drivinglicence &&
+          parsed.drivinglicence.qdl &&
+          parsed.drivinglicence.qdl.length > 0
+        ) {
+          parsed.drivinglicence.qdl[0].issuedate = {
+            value: formattedDate,
+          };
+        } else {
+          parsed.drivinglicence = {
+            ...parsed.drivinglicence,
+            qdl: [
+              {
+                class: {
+                  value: '',
+                },
+                issuedate: {
+                  value: formattedDate,
+                },
+              },
+            ],
+          };
+        }
+        parsed.drivinglicence.lastupdated = formattedDate;
+        saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
+      }
+    }
   };
 
   const handleInputChange = (index: number, field: string, value: string) => {
@@ -145,7 +250,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
     const isInputsCompleted = checkInputsCompleted(updatedVehicles[index]);
     saveToSessionStorage({
-      [IS_THREE_INPUT_COMPLETE]: String(isInputsCompleted),
+      [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
     });
     setIsDisabled?.(!isInputsCompleted);
 
@@ -182,26 +287,64 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     for (let i = 0; i < data.length; i += 2) {
       const chunk = data.slice(i, i + 2); // Take two items at a time
       chunks.push(
-        <div key={i} className='mt-2 grid grid-cols-2 gap-4'>
+        <div
+          key={i}
+          className={
+            title === 'Enter a valid Email and Contact Number' && isMobile
+              ? 'mt-[4px]'
+              : 'mt-2 grid grid-cols-2 gap-4'
+          }
+        >
           {chunk.map((item, idx) => {
             const nameKey = item.label.toLowerCase().replace(/\s+/g, '_');
+            const isEmailAddress = nameKey === 'email_address';
+            const isPhoneNumber = nameKey === 'phone_number';
             const isVehicleMake = nameKey === 'vehicle_make';
             const isVehicleModel = nameKey === 'vehicle_model';
             const isVehicleYearRegistration =
               nameKey === 'year_of_registration';
+            const isDrivingLicence = nameKey === 'qualified_driving_license';
 
             if (
               item.value == null &&
-              (isVehicleMake || isVehicleModel || isVehicleYearRegistration)
+              (isEmailAddress ||
+                isPhoneNumber ||
+                isVehicleMake ||
+                isVehicleModel ||
+                isVehicleYearRegistration ||
+                isDrivingLicence)
             ) {
               return (
                 <FormProvider key={idx} {...methods}>
                   <div>
+                    {isEmailAddress && (
+                      <>
+                        <div className='text-sm font-bold'>Email Address</div>
+                        <input
+                          name={nameKey}
+                          type='text'
+                          className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
+                          placeholder={`Enter ${item.label} info`}
+                          onChange={handleInputChangeEmailPhone}
+                        />
+                      </>
+                    )}
+                    {isPhoneNumber && (
+                      <>
+                        <div className='text-sm font-bold'>Phone Number</div>
+                        <input
+                          name={nameKey}
+                          type='text'
+                          className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
+                          placeholder={`Enter ${item.label} info, e.g. +65 81234567`}
+                          onChange={handleInputChangeEmailPhone}
+                        />
+                      </>
+                    )}
                     {isVehicleMake && (
                       <>
-                        <div className='font-bold'>Vehicle Make</div>
+                        <div className='text-sm font-bold'>Vehicle Make</div>
                         <DropdownField
-                          className='h-[40px]'
                           name='vehicle_make'
                           placeholder='Enter vehicle make'
                           options={makeOptions}
@@ -224,9 +367,8 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                     )}
                     {isVehicleModel && (
                       <>
-                        <div className='font-bold'>Vehicle Model</div>
+                        <div className='text-sm font-bold'>Vehicle Model</div>
                         <DropdownField
-                          className='h-[40px]'
                           name='vehicle_model'
                           placeholder='Enter vehicle model'
                           disabled={!selectedMakeId}
@@ -249,9 +391,10 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                     )}
                     {isVehicleYearRegistration && (
                       <>
-                        <div className='font-bold'>Year of Registration</div>
+                        <div className='text-sm font-bold'>
+                          Year of Registration
+                        </div>
                         <DropdownField
-                          className='h-[40px]'
                           name='year_of_registration'
                           placeholder='Select year'
                           options={Array.from({ length: 21 }, (_, i) => {
@@ -268,6 +411,25 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                               value,
                             );
                           }}
+                        />
+                      </>
+                    )}
+                    {isDrivingLicence && (
+                      <>
+                        <div className='text-sm font-bold'>
+                          Driving Experience
+                        </div>
+                        <DropdownField
+                          name='qualified_driving_license'
+                          placeholder='Select driving experience year'
+                          options={DRV_EXP_OPTIONS}
+                          onChange={(value) =>
+                            handlePersonalInfoInputChange(
+                              'qualified_driving_license',
+                              value,
+                              setShowContactModal,
+                            )
+                          }
                         />
                       </>
                     )}
@@ -317,10 +479,31 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     <div
       className={`${isMobile ? '' : 'rounded-md border border-gray-300 bg-gray-100 p-4'} mt-4 ${boxClass}`}
     >
-      <div className='text-base font-bold underline underline-offset-4'>
-        {title}
+      <div className='flex items-center justify-between'>
+        {!(title === 'Enter a valid Email and Contact Number' && isMobile) && (
+          <span
+            className={`text-base font-bold ${
+              title === 'Enter a valid Email and Contact Number' && !isMobile
+                ? ''
+                : 'underline underline-offset-4'
+            }`}
+          >
+            {title}
+          </span>
+        )}
+        {title === 'Enter a valid Email and Contact Number' && !isMobile && (
+          <Tooltip title='We use this information to verify your identity and pre-fill your application with accurate government-verified data. This helps ensure a faster, more secure, and seamless submission process.'>
+            <span className='flex cursor-pointer items-center font-bold'>
+              <WarningIcon size={14} />
+              <span className='ml-1 text-[10px]'>Why do we need this?</span>
+            </span>
+          </Tooltip>
+        )}
       </div>
       {renderGrid(vehicleIndex ?? 0)}
+      {showContactModal && (
+        <UnableQuote onClick={handleClickOK} visible={showContactModal} />
+      )}
     </div>
   );
 };

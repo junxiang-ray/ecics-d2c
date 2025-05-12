@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Tooltip } from 'antd';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -22,9 +21,7 @@ import {
   saveToSessionStorage,
 } from '@/libs/utils/utils';
 
-import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
-import { InputField } from '@/components/ui/form/inputfield';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
@@ -66,8 +63,8 @@ const reviewInfoSchema = z.object({
 type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 
 interface CommonInfo {
-  email: string;
-  phone: string;
+  email: string | null;
+  phone: string | null;
   personal: Array<{ label: string; value: string }>;
   vehicle: Array<{ label: string; value: string }>;
 }
@@ -138,8 +135,8 @@ const ReviewInfoDetail = () => {
             year_of_registration: updatedParsed.year_of_registration || '',
             driving_experience:
               qdlClasses.length > 0
-                ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
-                : '1 year',
+                ? calculateDrivingExperienceFromLicences(qdlClasses)
+                : 1,
             phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
             email: updatedParsed.email?.value || '',
           },
@@ -173,8 +170,13 @@ const ReviewInfoDetail = () => {
       const parsed = JSON.parse(stored);
 
       const transformed = {
-        email: parsed.email?.value || '',
-        phone: `${parsed.mobileno?.prefix?.value || ''}${parsed.mobileno?.areacode?.value || ''} ${parsed.mobileno?.nbr?.value || ''}`,
+        email: parsed.email?.value || null,
+        phone:
+          parsed.mobileno?.prefix?.value &&
+          parsed.mobileno?.areacode?.value &&
+          parsed.mobileno?.nbr?.value
+            ? `${parsed.mobileno.prefix.value}${parsed.mobileno.areacode.value} ${parsed.mobileno.nbr.value}`
+            : null,
         personal: [
           {
             label: 'Name as per NRIC',
@@ -232,7 +234,7 @@ const ReviewInfoDetail = () => {
                     return `${cls} / ${issued}`;
                   })
                   .join(', ')
-              : '',
+              : null,
           },
         ],
         vehicle:
@@ -291,19 +293,28 @@ const ReviewInfoDetail = () => {
                 { label: 'Year of Manufacture', value: null },
               ],
       };
+
       setCommonInfo(transformed);
 
-      // Check if any vehicle field has "null"
+      // Check if any field has "null"
+      const hasMissingEmailOrPhone =
+        !transformed?.email?.trim() || !transformed?.phone?.trim();
+
+      const hasMissingQDL = transformed.personal.find(
+        (item) =>
+          item.label === 'Qualified Driving License' &&
+          (!item.value || item.value.trim() === ''),
+      );
       const hasInvalidVehicle = transformed.vehicle.some(
         (item: any) => item.value === null,
       );
-      if (hasInvalidVehicle) {
+      if (hasInvalidVehicle || hasMissingEmailOrPhone || hasMissingQDL) {
         setIsDisabled(true);
       }
 
       methods.reset({
         email: transformed.email,
-        phone: transformed.phone,
+        phone: transformed.phone ?? undefined,
       });
 
       if (parsed.vehicles?.length === 1) {
@@ -411,8 +422,8 @@ const ReviewInfoDetail = () => {
           year_of_registration: parsed.year_of_registration || '',
           driving_experience:
             qdlClasses.length > 0
-              ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
-              : '1 year',
+              ? calculateDrivingExperienceFromLicences(qdlClasses)
+              : 1,
           phone: `${parsed.mobileno?.nbr?.value || ''}`,
           email: parsed.email?.value || '',
         },
@@ -504,14 +515,13 @@ const ReviewInfoDetail = () => {
           </div>
           {isMobile ? (
             <div>
-              <div className='mt-4'>
-                <div className='text-sm font-bold'>Email Address</div>
-                <InputField name='email' />
-              </div>
-              <div className='mt-4'>
-                <div className='text-sm font-bold'>Phone Number</div>
-                <InputField name='phone' />
-              </div>
+              <InfoSection
+                title='Enter a valid Email and Contact Number'
+                data={[
+                  { label: 'Email Address', value: commonInfo?.email ?? null },
+                  { label: 'Phone Number', value: commonInfo?.phone ?? null },
+                ]}
+              />
               {commonInfo?.personal && (
                 <InfoSection title='Personal Info' data={commonInfo.personal} />
               )}
@@ -534,31 +544,13 @@ const ReviewInfoDetail = () => {
             </div>
           ) : (
             <div className='w-full justify-self-center'>
-              <div className='mt-6 items-center justify-between rounded-md border border-gray-300 bg-gray-100 p-4'>
-                <div className='flex items-center justify-between'>
-                  <div className='text-base font-bold'>
-                    Enter a valid Email and Contact Number
-                  </div>
-                  <Tooltip title='We use this information to verify your identity and pre-fill your application with accurate government-verified data. This helps ensure a faster, more secure, and seamless submission process.'>
-                    <span className='flex cursor-pointer items-center font-bold'>
-                      <WarningIcon size={14} />
-                      <span className='ml-1 text-[10px]'>
-                        Why do we need this?
-                      </span>
-                    </span>
-                  </Tooltip>
-                </div>
-                <div className='mt-4 flex gap-4'>
-                  <div className='w-[calc(50%-10px)]'>
-                    <div className='text-sm font-bold'>Email Address</div>
-                    <InputField name='email' />
-                  </div>
-                  <div className='w-[calc(50%-10px)]'>
-                    <div className='text-sm font-bold'>Phone Number</div>
-                    <InputField name='phone' />
-                  </div>
-                </div>
-              </div>
+              <InfoSection
+                title='Enter a valid Email and Contact Number'
+                data={[
+                  { label: 'Email Address', value: commonInfo?.email ?? null },
+                  { label: 'Phone Number', value: commonInfo?.phone ?? null },
+                ]}
+              />
               {commonInfo?.personal && (
                 <InfoSection
                   title='Personal Info'
