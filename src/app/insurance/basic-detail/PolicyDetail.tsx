@@ -6,7 +6,11 @@ import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
 import { Vehicle } from '@/libs/types/quote';
-import { adjustDateInDate, convertDateFormat } from '@/libs/utils/date-utils';
+import {
+  adjustDateInDate,
+  adjustDateInDayjs,
+  convertDateFormat,
+} from '@/libs/utils/date-utils';
 import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
@@ -57,31 +61,30 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
     router.push(ROUTES.INSURANCE.PLAN);
   }, [isSuccess]);
 
-  const now = new Date();
-  const startData = insuranceInfo?.start_date
-    ? new Date(insuranceInfo?.start_date)
-    : now;
-  const endDate = insuranceInfo?.end_date
-    ? new Date(insuranceInfo?.end_date)
-    : adjustDateInDate(now, 1, 0, -1);
   const dateOfBirth = userInfo?.date_of_birth
-    ? new Date(userInfo?.date_of_birth)
-    : dayjs().startOf('day').subtract(25, 'years');
+    ? dayjs(userInfo?.date_of_birth, 'DD/MM/YYYY').toDate()
+    : undefined;
+  const startData = insuranceInfo?.start_date
+    ? dayjs(insuranceInfo?.start_date, 'DD/MM/YYYY').toDate()
+    : undefined;
+  const endDate = insuranceInfo?.end_date
+    ? dayjs(insuranceInfo?.end_date, 'DD/MM/YYYY').toDate()
+    : undefined;
 
   const initialValues = {
     [MOTOR_QUOTE.promo_code]: promo_code ?? '',
     [MOTOR_QUOTE.start_date]: startData,
     [MOTOR_QUOTE.end_date]: endDate,
-    [MOTOR_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? 0,
-    [MOTOR_QUOTE.owner_no_of_claims]: insuranceInfo?.no_of_claim ?? 0,
+    [MOTOR_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? undefined,
+    [MOTOR_QUOTE.owner_no_of_claims]: insuranceInfo?.no_of_claim ?? undefined,
 
     [MOTOR_QUOTE.email]: userInfo?.email ?? '',
     [MOTOR_QUOTE.mobile]: userInfo?.phone ?? '',
     [MOTOR_QUOTE.owner_dob]: dateOfBirth,
     [MOTOR_QUOTE.owner_drv_exp]: userInfo?.driving_experience ?? undefined,
 
-    [MOTOR_QUOTE.vehicle_make]: selectedVehicle?.vehicle_make ?? '',
-    [MOTOR_QUOTE.vehicle_model]: selectedVehicle?.vehicle_model ?? '',
+    [MOTOR_QUOTE.vehicle_make]: selectedVehicle?.vehicle_make ?? undefined,
+    [MOTOR_QUOTE.vehicle_model]: selectedVehicle?.vehicle_model ?? undefined,
     [MOTOR_QUOTE.reg_yyyy]: selectedVehicle?.first_registered_year ?? undefined,
     [MOTOR_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
   };
@@ -116,7 +119,6 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
 
     const keyQuote = generateKeyAndAttachToUrl(key);
     payload = { ...data, key: keyQuote };
-
     if (isSingPassFlow && userInfo) {
       // data from Singpass
       const personal_info = {
@@ -126,7 +128,7 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
         date_of_birth: convertDateFormat(userInfo?.date_of_birth, 'DD/MM/YYYY'),
         nric: userInfo?.nric,
         address: userInfo?.address,
-        driving_experience: 4,
+        driving_experience: userInfo?.driving_experience,
         phone: userInfo?.phone,
         email: userInfo?.email,
       };
