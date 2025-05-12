@@ -24,7 +24,7 @@ export async function saveQuote(data: saveQuoteDTO) {
         quote_no: data.quote_no || existingQuote.quote_no,
         policy_id: data.policy_id || existingQuote.policy_id,
         product_id: data.product_id || existingQuote.product_id,
-        proposal_id: data.proposal_id || existingQuote.product_id,
+        proposal_id: data.proposal_id || existingQuote.proposal_id,
         is_sending_email: data.is_sending_email ?? false,
         phone: data.data.personal_info.phone || existingQuote.phone,
         email: data.data.personal_info.email || existingQuote.email,
@@ -51,7 +51,7 @@ export async function saveQuote(data: saveQuoteDTO) {
         country_nationality_id:
           data.country_nationality_id || existingQuote.country_nationality_id,
         product_type_id: data.product_type_id || existingQuote.product_type_id,
-        promo_code_id: data.promo_code_id || existingQuote.product_type_id,
+        promo_code_id: data.promo_code_id || existingQuote.promo_code_id,
       },
       include: {
         promo_code: {
