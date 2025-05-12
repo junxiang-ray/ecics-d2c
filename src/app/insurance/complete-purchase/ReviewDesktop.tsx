@@ -3,27 +3,13 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 interface Props {
   title: string;
-  description: string;
-  icon: React.ReactNode;
   data: { title: string; value: any }[];
-  isExpanded: boolean;
-  onToggle: () => void;
   setShowModal: (showModal: boolean) => void;
   editRoute?: string;
 }
 
 const ReviewDesktop = (props: Props) => {
-  const {
-    title,
-    description,
-    icon,
-    data,
-    isExpanded,
-    onToggle,
-    setShowModal,
-    editRoute,
-  } = props;
-  console.log(data, 'chinh13255');
+  const { title, data, setShowModal, editRoute } = props;
   const router = useRouterWithQuery();
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -36,7 +22,7 @@ const ReviewDesktop = (props: Props) => {
   };
 
   return (
-    <div className='mt-6 flex w-full flex-col justify-center gap-4 rounded-2xl border px-6 py-4 shadow-sm'>
+    <div className='mt-6 flex w-full flex-col justify-center gap-4 rounded-2xl border p-4 shadow-sm'>
       <div className='flex w-full flex-row items-center justify-between'>
         <p className='text-xl font-bold leading-[30px] text-[#0095CE]'>
           {title}
@@ -50,13 +36,13 @@ const ReviewDesktop = (props: Props) => {
         </div>
       </div>
 
-      <div className='grid grid-cols-4 gap-4'>
+      <div className='grid grid-cols-4 gap-2'>
         {data.map((item, index) => (
           <div key={index} className='flex flex-col gap-2'>
             <p className='text-sm font-semibold leading-6 text-[#000000]'>
               {item.title}
             </p>
-            <p className='max-w-[200px] rounded-xl bg-[#0000000D] p-2 text-center text-base font-normal leading-[26px] text-[#535353]'>
+            <p className='max-w-[200px] rounded-xl bg-[#0000000D] px-1 py-2 text-center text-base font-normal leading-[26px] text-[#535353]'>
               {item.value}
             </p>
           </div>

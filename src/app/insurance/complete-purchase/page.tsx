@@ -10,7 +10,11 @@ import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDeta
 import ReviewDesktop from './ReviewDesktop';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { ROUTES } from '@/constants/routes';
-import { useGetQuote } from '@/hook/insurance/quote';
+import {
+  useGetQuote,
+  usePayment,
+  useSaveProposalFinalize,
+} from '@/hook/insurance/quote';
 import { AddOnFormat } from '../add-on/page';
 import { Option } from '@/libs/types/quote';
 import { PricingSummary } from '../components/FeeBar';
@@ -21,6 +25,8 @@ import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
 import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
+import { SecondaryButton } from '@/components/ui/buttons';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 function calculateFee(
   option: Option,
@@ -96,7 +102,15 @@ export default function Page() {
 
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
+  const router = useRouterWithQuery();
   const { data: quote, isLoading } = useGetQuote(key);
+  const { mutate: saveProposalFinalize } = useSaveProposalFinalize();
+  const {
+    mutate: payment,
+    data: dataPayment,
+    isPending,
+    isSuccess,
+  } = usePayment();
 
   const handleEditClick = (key: string) => {
     toggleSection(key);
@@ -327,6 +341,17 @@ export default function Page() {
     setAddonsSelected(defaultAddonsSelected);
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      router.push(dataPayment.payment_url);
+    }
+  }, [isSuccess, dataPayment]);
+
+  const onPay = async () => {
+    saveProposalFinalize(key);
+    payment(key);
+  };
+
   const addons = plan?.addons ?? [];
 
   const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
@@ -398,7 +423,7 @@ export default function Page() {
 
     return (
       <div>
-        <div className='flex w-full min-w-[300px] flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
+        <div className='flex w-full flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
             Premium Breakdown
           </p>
@@ -412,7 +437,7 @@ export default function Page() {
               </div>
               <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
                 <p>Coupon Discount</p>
-                <p>-SDG {couponDiscount}</p>
+                <p>-SDG {couponDiscount.toFixed(2)}</p>
               </div>
             </div>
 
@@ -438,9 +463,13 @@ export default function Page() {
               <p>Total (including GST)</p>
             </div>
           </div>
-          <div className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'>
+          <SecondaryButton
+            onClick={onPay}
+            loading={isPending}
+            className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+          >
             Pay
-          </div>
+          </SecondaryButton>
         </div>
       </div>
     );
@@ -457,8 +486,8 @@ export default function Page() {
   return (
     <div className='px-4'>
       <h1 className='mb-4 text-xl font-bold'>Review your details</h1>
-      <div className='flex w-full flex-col md:flex-row md:gap-8'>
-        <div className='flex flex-col lg:flex-row lg:gap-8'>
+      <div className='flex w-full flex-col md:flex-row md:gap-6'>
+        <div className='flex flex-col lg:flex-row lg:gap-6'>
           <div className='flex-1'>
             {sections.map((section) => {
               if (section.key === 'driver') {
@@ -482,11 +511,7 @@ export default function Page() {
                     <ReviewDesktop
                       key={driverSection.key}
                       title={driverSection.title}
-                      description={driverSection.description}
-                      icon={driverSection.icon}
                       data={driverSection.data}
-                      isExpanded={!!expandedSections[driverSection.key]}
-                      onToggle={() => handleEditClick(driverSection.key)}
                       setShowModal={setShowModal}
                       editRoute={ROUTES.INSURANCE.ADD_ON}
                     />
@@ -510,11 +535,7 @@ export default function Page() {
                 <ReviewDesktop
                   key={section.key}
                   title={section.title}
-                  description={section.description}
-                  icon={section.icon}
                   data={sharedDataMap[section.key] || []}
-                  isExpanded={!!expandedSections[section.key]}
-                  onToggle={() => handleEditClick(section.key)}
                   setShowModal={setShowModal}
                   editRoute={routerBySectionKey(section.key)}
                 />
@@ -530,6 +551,7 @@ export default function Page() {
               discount={15}
               title='Premium breakdown'
               textButton='Pay'
+              onClick={onPay}
             />
           </div>
         ) : (
