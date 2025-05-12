@@ -37,4 +37,10 @@ export default {
   getHirePurchaseList(product_type: string) {
     return baseClient.get<any>('/companies/' + product_type);
   },
+  saveProposalFinalize(key: string) {
+    return baseClient.post<any>('/car/proposal/finalize', key);
+  },
+  payment(data: { key: string }) {
+    return baseClient.post<any>('/payment', data);
+  },
 };
