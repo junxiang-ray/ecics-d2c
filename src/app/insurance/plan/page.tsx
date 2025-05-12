@@ -5,19 +5,16 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-
 import { Plan } from '@/libs/types/quote';
-
 import { PrimaryButton } from '@/components/ui/buttons';
-
 import { ROUTES } from '@/constants/routes';
 import { useGetQuote, useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-
 import PlanCardDesktop from './components/PlanCardDesktop';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
-import HeaderPlan from './components/HeaderPlan';
+import HeaderVehicleInfo from './components/HeaderVehicleInfo';
+import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -85,8 +82,13 @@ function PlanPage() {
 
   return (
     <div className='flex w-full flex-col justify-center'>
+      <div className='py-4 md:hidden'>
+        <HeaderVehicleInfoMobile
+          vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+        />
+      </div>
       <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4'>
-        <HeaderPlan
+        <HeaderVehicleInfo
           vehicleInfo={quoteInfo?.data.vehicle_info_selected}
           insuranceAdditionalInfo={quoteInfo?.data.insurance_additional_info}
         />
