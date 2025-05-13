@@ -11,8 +11,9 @@ import { ROUTES } from '@/constants/routes';
 
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
+import { useVerifyPartnerCode } from '@/hook/insurance/common';
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
@@ -36,6 +37,8 @@ interface InsuranceLayoutProps {
 function InsuranceLayout({ children }: InsuranceLayoutProps) {
   const router = useRouterWithQuery();
   const pathName = usePathname();
+  const params = useSearchParams();
+  const partner_code = params.get('partner_code') || '';
   const childSaveRef = useRef<() => any>(() => null);
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
@@ -69,13 +72,15 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       is_sending_email: true,
     });
   };
+  const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
+
   return (
     <>
       <div className='sticky top-0 z-10 w-full bg-white'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
-            businessName='Business Partner Name'
-            companyName='Leo Management Consultancy Pte Ltd'
+            businessName={partnerInfo?.partner_name}
+            companyName={partnerInfo?.partner_company_name}
             onBackClick={handleBack}
           />
         </div>
