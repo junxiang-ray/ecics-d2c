@@ -42,7 +42,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { start } from 'repl';
 
 const sryMsg = 'Sorry, we cannot provide you a quotation online';
 
