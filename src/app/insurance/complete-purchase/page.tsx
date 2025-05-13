@@ -126,6 +126,10 @@ export default function Page() {
         return ROUTES.INSURANCE.PLAN;
       case 'driver':
         return ROUTES.INSURANCE.ADD_ON;
+      case 'vehicle':
+        return ROUTES.INSURANCE.BASIC_DETAIL;
+      case 'owner':
+        return ROUTES.INSURANCE.BASIC_DETAIL;
       default:
         return undefined;
     }
