@@ -72,11 +72,16 @@ const UnMatchVehicleModal = ({
         email: parsedData.email?.value || '',
       },
       vehicle_info_selected: {
-        chasis_number: v[0]?.vehicleno?.value || '',
-        vehicle_make: v[0]?.make?.value || '',
-        vehicle_model: v[0]?.model?.value || '',
+        vehicle_number: v[0]?.vehicleno?.value || '',
         first_registered_year:
           extractYear(v[0]?.firstregistrationdate?.value) || '',
+        vehicle_make: v[0]?.make?.value || '',
+        vehicle_model: v[0]?.model?.value || '',
+        engine_number: v[0]?.engineno?.value || '',
+        chasis_number: v[0]?.chassisno?.value || '',
+        engine_capacity: v[0]?.enginecapacity?.value || '',
+        power_rate: v[0]?.powerrate?.value || '',
+        year_of_manufacture: v[0]?.yearofmanufacture?.value || '',
       },
       vehicles:
         parsedData.vehicles?.map((v: any) => ({
