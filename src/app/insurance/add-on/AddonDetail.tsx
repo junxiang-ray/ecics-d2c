@@ -252,7 +252,8 @@ function AddOnDetail({
   const _renderPremium = () => {
     const pricePlan = totalFee || 0;
     const discountRate = quoteInfo?.promo_code?.discount || 0;
-    const feePlan = pricePlan / (1 - discountRate / 100) / 1.09;
+    const tax = 1.09;
+    const feePlan = pricePlan / (1 - discountRate / 100) / tax;
     const couponDiscount = feePlan * (discountRate / 100);
     const addonsSectionData = Object.entries(
       quoteInfo?.data.selected_addons || {},
@@ -281,7 +282,8 @@ function AddOnDetail({
     }, 0);
     const netPremium =
       pricePlan - couponDiscount + addOnTotal + selectAddOnTotal;
-    const gst = (netPremium * 9) / 100;
+    const valueCalculatedGST = 9;
+    const gst = (netPremium * valueCalculatedGST) / 100;
     return (
       <div className='flex flex-col gap-6'>
         <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
@@ -307,13 +309,13 @@ function AddOnDetail({
               {addonsSectionData.map((addon) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
                   {addon.title}:{' '}
-                  <span>SGD {(addOnTotal / 1.09).toFixed(2)}</span>
+                  <span>SGD {(addOnTotal / tax).toFixed(2)}</span>
                 </p>
               ))}
               {dataSelectedAddOn.map((addon) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
                   {addon.title}:{' '}
-                  <span>SGD {(addon.feeSelected / 1.09).toFixed(2)}</span>
+                  <span>SGD {(addon.feeSelected / tax).toFixed(2)}</span>
                 </p>
               ))}
             </div>
