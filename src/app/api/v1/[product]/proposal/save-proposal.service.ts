@@ -1,5 +1,8 @@
 import { handleApiCallToISP } from '@/app/api/configs/api.config';
-import { PLAN_ADDON_CONFIG } from '@/app/api/constants/car.insurance';
+import {
+  CAR_INSURANCE,
+  PLAN_ADDON_CONFIG,
+} from '@/app/api/constants/car.insurance';
 import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
@@ -118,7 +121,10 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
 
   logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
 
-  const resSaveProposal = await handleApiCallToISP('/b2c/proposal', payload);
+  const resSaveProposal = await handleApiCallToISP(
+    `${CAR_INSURANCE.PREFIX_ENDPOINT}/proposal`,
+    payload,
+  );
   logger.info(
     `Response from save proposal: ${JSON.stringify(resSaveProposal)}`,
   );

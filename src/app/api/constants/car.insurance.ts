@@ -1,4 +1,5 @@
 export const CAR_INSURANCE = {
+  PREFIX_ENDPOINT: 'b2c_privatecar',
   TYPE: 'car',
   PLAN_CODE: {
     COM: 'COM',
