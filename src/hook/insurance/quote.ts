@@ -87,7 +87,7 @@ export const useRequestLogCar = () => {
 
 export const useSaveProposalFinalize = () => {
   const saveProposalFinalize = async (key: string) => {
-    const res = await insurance.saveProposalFinalize(key);
+    const res = await insurance.saveProposalFinalize({ key });
     return res.data.data;
   };
   return useMutation({
