@@ -274,11 +274,11 @@ function AddOnDetail({
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between font-semibold '>
               <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
-              <p>SDG {planFee}</p>
+              <p>SGD {planFee}</p>
             </div>
             <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
               <p>Coupon Discount</p>
-              <p>-SDG {couponDiscount}</p>
+              <p>-SGD {couponDiscount}</p>
             </div>
           </div>
 
@@ -286,18 +286,18 @@ function AddOnDetail({
             <p>Add-on:</p>
             {addonsSectionData.map((addon) => (
               <p key={addon.title} className='flex flex-row justify-between'>
-                {addon.title}: <span>SDG {addOnTotal}</span>
+                {addon.title}: <span>SGD {addOnTotal}</span>
               </p>
             ))}
           </div>
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
               <p>GST</p>
-              <p>SDG {gst}</p>
+              <p>SGD {gst}</p>
             </div>
             <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
               <p>Net Premium</p>
-              <p>SDG {netPremium.toFixed(2)}</p>
+              <p>SGD {netPremium.toFixed(2)}</p>
             </div>
           </div>
         </div>
