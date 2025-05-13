@@ -119,17 +119,14 @@ export default function Page() {
   const routerBySectionKey = (key: string) => {
     switch (key) {
       case 'basic':
+      case 'vehicle':
+      case 'owner':
         return ROUTES.INSURANCE.BASIC_DETAIL;
       case 'addons':
+      case 'driver':
         return ROUTES.INSURANCE.ADD_ON;
       case 'policy':
         return ROUTES.INSURANCE.PLAN;
-      case 'driver':
-        return ROUTES.INSURANCE.ADD_ON;
-      case 'vehicle':
-        return ROUTES.INSURANCE.BASIC_DETAIL;
-      case 'owner':
-        return ROUTES.INSURANCE.BASIC_DETAIL;
       default:
         return undefined;
     }
