@@ -27,6 +27,8 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 import PolicyDetailForm from './PolicyDetailForm';
 import VehicleBar from '../components/VehicleBar';
+import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
+import HeaderVehicleInfoMobile from '../plan/components/HeaderVehicleInfoMobile';
 
 interface PolicyDetailProps {
   isSingPassFlow: boolean;
@@ -153,15 +155,21 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
     <>
       <div className='mt-4 px-4 md:px-12'>
         {isSingPassFlow && (
-          <div className='my-6 grid gap-4 lg:grid-cols-3'>
-            <div className='mx-auto w-full sm:max-w-[50%] lg:col-span-1 lg:col-start-2 lg:max-w-none'>
-              <VehicleBar
-                selected_vehicle={selectedVehicle}
-                vehicles={vehicles}
-                setSelectedVehicle={setSelectedVehicle}
+          <>
+            <div className='mb-8 hidden items-center justify-between md:flex md:flex-col md:gap-4'>
+              <HeaderVehicleInfo
+                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+                insuranceAdditionalInfo={
+                  quoteInfo?.data.insurance_additional_info
+                }
               />
             </div>
-          </div>
+            <div className='py-4 md:hidden'>
+              <HeaderVehicleInfoMobile
+                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+              />
+            </div>
+          </>
         )}
         <PolicyDetailForm
           onSubmit={onSubmit}
