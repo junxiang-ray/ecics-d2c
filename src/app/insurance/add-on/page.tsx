@@ -299,87 +299,89 @@ function AddOnPage() {
   }
 
   return (
-    <div className='w-full'>
-      {isShowBonusDetail ? (
-        <AddOnBonusDetailManualForm
-          key={quoteInfo?.data.key}
-          personal_info={quoteInfo?.data.personal_info}
-          vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
-        />
-      ) : (
-        <>
-          <div className='mt-2 flex flex-col gap-4 px-4'>
-            <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-              <HeaderVehicleInfo
-                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                insuranceAdditionalInfo={
-                  quoteInfo?.data.insurance_additional_info
-                }
-                selectPlan={quoteInfo?.data.selected_plan}
-                isShowScreen={true}
-              />
-            </div>
-            <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
-              {addonsFormatted.map((addon) => (
-                <AddOnRowDetail
-                  key={addon.code}
-                  addon={addon}
-                  addonsAdded={addonsAdded}
-                  setAddonsAdded={setAddonsAdded}
-                  addonsSelected={addonsSelected}
-                  setAddonsSelected={setAddonsSelected}
-                  drivers={drivers}
-                  setDrivers={setDrivers}
+    <div className='flex w-full flex-col items-center justify-center'>
+      <div className='max-w-[1280px]'>
+        {isShowBonusDetail ? (
+          <AddOnBonusDetailManualForm
+            key={quoteInfo?.data.key}
+            personal_info={quoteInfo?.data.personal_info}
+            vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
+          />
+        ) : (
+          <>
+            <div className='mt-2 flex flex-col gap-4 px-4'>
+              <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
+                <HeaderVehicleInfo
+                  vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+                  insuranceAdditionalInfo={
+                    quoteInfo?.data.insurance_additional_info
+                  }
+                  selectPlan={quoteInfo?.data.selected_plan}
+                  isShowScreen={true}
                 />
-              ))}
+              </div>
+              <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
+                {addonsFormatted.map((addon) => (
+                  <AddOnRowDetail
+                    key={addon.code}
+                    addon={addon}
+                    addonsAdded={addonsAdded}
+                    setAddonsAdded={setAddonsAdded}
+                    addonsSelected={addonsSelected}
+                    setAddonsSelected={setAddonsSelected}
+                    drivers={drivers}
+                    setDrivers={setDrivers}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-          <div className='mt-2 md:px-44'>
-            <PricingSummary
-              fee={totalFee}
-              discount={15}
-              title='Premium breakdown'
-              textButton='Continue'
-              onClick={() => setIsShowPopupPremium(true)}
-            />
-          </div>
 
-          <Modal
-            title='Edit Information'
-            open={isModalVisible}
-            footer={[]}
-            onCancel={() => setIsModalVisible(false)}
-          >
-            <p>Here you can edit the car info or insurance details.</p>
-          </Modal>
-
-          {isMobile.isMobile ? (
-            <Drawer
-              placement='bottom'
-              open={isShowPopupPremium}
-              onClose={() => setIsShowPopupPremium(false)}
-              closable={false}
-              height='auto'
-              className='rounded-t-xl'
-            >
-              {_renderPremium()}
-            </Drawer>
-          ) : (
             <Modal
-              open={isShowPopupPremium}
-              onCancel={() => setIsShowPopupPremium(false)}
-              closable={false}
-              maskClosable={true}
-              keyboard={true}
-              footer={null}
-              width={400}
-              centered
+              title='Edit Information'
+              open={isModalVisible}
+              footer={[]}
+              onCancel={() => setIsModalVisible(false)}
             >
-              <div>{_renderPremium()}</div>
+              <p>Here you can edit the car info or insurance details.</p>
             </Modal>
-          )}
-        </>
-      )}
+
+            {isMobile.isMobile ? (
+              <Drawer
+                placement='bottom'
+                open={isShowPopupPremium}
+                onClose={() => setIsShowPopupPremium(false)}
+                closable={false}
+                height='auto'
+                className='rounded-t-xl'
+              >
+                {_renderPremium()}
+              </Drawer>
+            ) : (
+              <Modal
+                open={isShowPopupPremium}
+                onCancel={() => setIsShowPopupPremium(false)}
+                closable={false}
+                maskClosable={true}
+                keyboard={true}
+                footer={null}
+                width={400}
+                centered
+              >
+                <div>{_renderPremium()}</div>
+              </Modal>
+            )}
+          </>
+        )}
+      </div>
+      <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+        <PricingSummary
+          fee={totalFee}
+          discount={15}
+          title='Premium breakdown'
+          textButton='Continue'
+          onClick={() => setIsShowPopupPremium(true)}
+        />
+      </div>
     </div>
   );
 }
