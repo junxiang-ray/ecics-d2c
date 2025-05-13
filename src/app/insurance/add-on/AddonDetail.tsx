@@ -118,7 +118,6 @@ function AddOnDetail({
     (plan) => quoteInfo.data?.selected_plan === plan.title,
   );
   const addons = plan?.addons ?? [];
-
   const defaultAddonsAdded = useMemo(() => {
     if (!plan?.addons.length) return {};
     const addonCodes = plan.addons.map((addon) => addon.code);
@@ -191,6 +190,18 @@ function AddOnDetail({
     };
   });
 
+  const dataSelectedAddOn = Object.entries(addonsAdded || {})
+    .filter(([, selectedValue]) => selectedValue !== 'NO')
+    .map(([code, selectedValue]) => {
+      const addon = addonsFormatted.find((a) => a.code === code);
+      const feeSelected = addon?.feeSelected || 0;
+      return {
+        title: addon?.title || code,
+        feeSelected: feeSelected,
+        selectedValue: selectedValue,
+      };
+    });
+
   const totalAdditionFee = addonsFormatted.reduce((acc, addon) => {
     const fee = addon.feeAdded ?? 0;
     return acc + fee;
@@ -239,10 +250,11 @@ function AddOnDetail({
   };
 
   const _renderPremium = () => {
-    const planFee = totalFee || 0;
+    const pricePlan = totalFee || 0;
     const discountRate = quoteInfo?.promo_code?.discount || 0;
-    const couponDiscount = planFee * (discountRate / 100);
-    const gst = 35;
+    const tax = 1.09;
+    const feePlan = pricePlan / (1 - discountRate / 100) / tax;
+    const couponDiscount = feePlan * (discountRate / 100);
     const addonsSectionData = Object.entries(
       quoteInfo?.data.selected_addons || {},
     )
@@ -263,8 +275,15 @@ function AddOnDetail({
       const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
       return acc + value;
     }, 0);
-    const netPremium = planFee - couponDiscount + addOnTotal + gst;
 
+    const selectAddOnTotal = dataSelectedAddOn.reduce((acc, addon) => {
+      const value = addon.feeSelected || 0;
+      return acc + value;
+    }, 0);
+    const netPremium =
+      pricePlan - couponDiscount + addOnTotal + selectAddOnTotal;
+    const valueCalculatedGST = 9;
+    const gst = (netPremium * valueCalculatedGST) / 100;
     return (
       <div className='flex flex-col gap-6'>
         <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
@@ -274,26 +293,37 @@ function AddOnDetail({
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between font-semibold '>
               <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
-              <p>SDG {planFee}</p>
+              <p>SGD {feePlan.toFixed(2)}</p>
             </div>
-            <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
-              <p>Coupon Discount</p>
-              <p>-SDG {couponDiscount}</p>
-            </div>
-          </div>
 
+            {quoteInfo?.promo_code && (
+              <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
+                <p>Coupon Discount</p>
+                <p>-SGD {couponDiscount.toFixed(2)}</p>
+              </div>
+            )}
+          </div>
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
             <p>Add-on:</p>
-            {addonsSectionData.map((addon) => (
-              <p key={addon.title} className='flex flex-row justify-between'>
-                {addon.title}: <span>SDG {addOnTotal}</span>
-              </p>
-            ))}
+            <div>
+              {addonsSectionData.map((addon) => (
+                <p key={addon.title} className='flex flex-row justify-between'>
+                  {addon.title}:{' '}
+                  <span>SGD {(addOnTotal / tax).toFixed(2)}</span>
+                </p>
+              ))}
+              {dataSelectedAddOn.map((addon) => (
+                <p key={addon.title} className='flex flex-row justify-between'>
+                  {addon.title}:{' '}
+                  <span>SGD {(addon.feeSelected / tax).toFixed(2)}</span>
+                </p>
+              ))}
+            </div>
           </div>
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
               <p>GST</p>
-              <p>SDG {gst}</p>
+              <p>SGD {gst.toFixed(2)}</p>
             </div>
             <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
               <p>Net Premium</p>
@@ -310,6 +340,7 @@ function AddOnDetail({
       </div>
     );
   };
+
   if (isLoading) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
@@ -355,7 +386,6 @@ function AddOnDetail({
                 ))}
               </div>
             </div>
-
             <Modal
               title='Edit Information'
               open={isModalVisible}
@@ -396,7 +426,7 @@ function AddOnDetail({
       <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
         <PricingSummary
           fee={totalFee}
-          discount={15}
+          discount={quoteInfo?.promo_code?.discount || 0}
           title='Premium breakdown'
           textButton='Continue'
           onClick={() => setIsShowPopupPremium(true)}
