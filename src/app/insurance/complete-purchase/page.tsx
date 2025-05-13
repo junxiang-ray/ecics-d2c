@@ -430,14 +430,14 @@ export default function Page() {
           <div className='flex flex-col gap-3'>
             <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
               <div className='flex flex-row justify-between text-base leading-[30px] text-[#171A1F]'>
-                <p className='font-normal'>
+                <p className='mr-5 font-normal'>
                   {quote?.data?.selected_plan ?? ''}
                 </p>
-                <p>SDG {planFee}</p>
+                <p>SGD {planFee}</p>
               </div>
               <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
                 <p>Coupon Discount</p>
-                <p>-SDG {couponDiscount.toFixed(2)}</p>
+                <p>-SGD {couponDiscount.toFixed(2)}</p>
               </div>
             </div>
 
@@ -445,18 +445,18 @@ export default function Page() {
               <p className='font-bold text-[#171A1F]'>Add-on:</p>
               {addonsSectionDataT.map((addon) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}: <span>SDG {addOnTotal}</span>
+                  {addon.title}: <span>SGD {addOnTotal}</span>
                 </p>
               ))}
             </div>
             <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
               <div className='flex flex-row justify-between'>
                 <p>Net Premium</p>
-                <p>SDG {netPremium.toFixed(2)}</p>
+                <p>SGD {netPremium.toFixed(2)}</p>
               </div>
               <div className='flex flex-row justify-between'>
                 <p>GST</p>
-                <p>SDG {gst}</p>
+                <p>SGD {gst}</p>
               </div>
             </div>
             <div className='flex flex-row justify-between font-bold'>
