@@ -42,6 +42,7 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+import { start } from 'repl';
 
 const sryMsg = 'Sorry, we cannot provide you a quotation online';
 
@@ -252,6 +253,7 @@ const PolicyDetailForm = ({
 
   // input field change
   const start_date = watch(MOTOR_QUOTE.start_date) as Date;
+  const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as number;
   const claimAmount = watch(MOTOR_QUOTE.owner_claim_amount);
@@ -300,6 +302,20 @@ const PolicyDetailForm = ({
       setShowCSModal(true);
     }
   }, [claimAmount]);
+
+  const handleChangeDob = () => {
+    methods.setValue(MOTOR_QUOTE.start_date, null as any);
+    methods.setValue(MOTOR_QUOTE.end_date, null as any);
+  };
+  const handleChangeStartDate = (date: any) => {
+    const startDate = dateToDayjs(date?.toDate());
+    const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
+    if (!defaultEndDate) {
+      methods.setValue(MOTOR_QUOTE.end_date, null as any);
+      return;
+    }
+    methods.setValue(MOTOR_QUOTE.end_date, defaultEndDate.toDate());
+  };
 
   const hire_purchase_section = (
     <div>
@@ -378,6 +394,31 @@ const PolicyDetailForm = ({
   };
 
   const isDisablePromoCode = no_claim > 0;
+
+  const minPolicyStartDate = useMemo(() => {
+    const dobDayjs = dateToDayjs(date_of_birth);
+    const minEligibleDate = adjustDateInDayjs(dobDayjs, 26, 0, 0);
+    const today = dayjs();
+    return today.isAfter(minEligibleDate) ? today : minEligibleDate;
+  }, [date_of_birth]);
+  const maxPolicyStartDate = useMemo(() => {
+    const dobDayjs = dateToDayjs(date_of_birth);
+    const maxEligibleDate = adjustDateInDayjs(dobDayjs, 71, 0, -1);
+    const today = adjustDateInDayjs(dayjs(), 0, 0, 90);
+    return today?.isBefore(maxEligibleDate) ? today : maxEligibleDate;
+  }, [date_of_birth]);
+
+  const minPolicyEndDate = useMemo(() => {
+    const startDateDayjs = dateToDayjs(start_date);
+    const minEligibleDate = adjustDateInDayjs(startDateDayjs, 0, 10, -1);
+    return minEligibleDate;
+  }, [start_date]);
+  const maxPolicyEndDate = useMemo(() => {
+    const startDateDayjs = dateToDayjs(start_date);
+    const maxEligibleDate = adjustDateInDayjs(startDateDayjs, 0, 18, -1);
+    return maxEligibleDate;
+  }, [start_date]);
+
   return (
     <>
       <FormProvider {...methods}>
@@ -431,8 +472,9 @@ const PolicyDetailForm = ({
                     <DatePickerField
                       name={MOTOR_QUOTE.owner_dob}
                       label='Date of birth'
-                      minDate={dayjs().startOf('day').subtract(70, 'years')}
-                      maxDate={dayjs().startOf('day').subtract(25, 'years')}
+                      minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
+                      maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
+                      onChange={handleChangeDob}
                     />
                   </Form.Item>
 
@@ -519,8 +561,9 @@ const PolicyDetailForm = ({
                 <DatePickerField
                   name={MOTOR_QUOTE.start_date}
                   label='Policy Start Date'
-                  minDate={dayjs()}
-                  maxDate={adjustDateInDayjs(dayjs(), 0, 3, 0)}
+                  minDate={minPolicyStartDate}
+                  maxDate={maxPolicyStartDate}
+                  onChange={handleChangeStartDate}
                 />
               </Form.Item>
 
@@ -531,18 +574,9 @@ const PolicyDetailForm = ({
                 <DatePickerField
                   label='Policy End Date'
                   name={MOTOR_QUOTE.end_date}
-                  minDate={adjustDateInDayjs(
-                    dateToDayjs(start_date),
-                    0,
-                    10,
-                    -1,
-                  )}
-                  maxDate={adjustDateInDayjs(
-                    dateToDayjs(start_date),
-                    0,
-                    18,
-                    -1,
-                  )}
+                  minDate={minPolicyEndDate}
+                  maxDate={maxPolicyEndDate}
+                  disabled={!start_date}
                 />
               </Form.Item>
 
