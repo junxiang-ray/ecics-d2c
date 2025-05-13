@@ -106,7 +106,11 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   };
 
   const checkInputsCompleted = (data: any): boolean => {
-    const vehicle = data?.vehicle_selected?.[0] || {};
+    // Check if vehicle length is 1, use vehicles array instead of vehicle_selected
+    const vehicle =
+      data?.vehicles?.length === 1
+        ? data?.vehicles[0]
+        : data?.vehicle_selected?.[0] || {};
     const personal = data || {};
 
     const vehicleRequiredFields = [
@@ -121,9 +125,15 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       'yearofmanufacture',
     ];
 
-    const isVehicleCompleted = vehicleRequiredFields.every((field) =>
-      vehicle?.[field]?.value?.trim(),
-    );
+    const isVehicleCompleted = vehicleRequiredFields.every((field) => {
+      const value = vehicle?.[field]?.value;
+      const isValid =
+        value !== undefined && value !== null && String(value).trim() !== '';
+      if (!isValid) {
+        console.warn(`Invalid or missing value for field "${field}":`, value);
+      }
+      return isValid;
+    });
 
     const isEmailValid = !!personal?.email?.value;
     const isMobileValid =
@@ -343,15 +353,18 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
     const sessionDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
     const ecicsData = sessionDataRaw ? JSON.parse(sessionDataRaw) : {};
-    const updatedData = {
-      ...ecicsData,
-      vehicle_selected: [
-        {
-          ...ecicsData.vehicle_selected?.[0],
-          [field]: { value },
-        },
-      ],
-    };
+    const updatedData =
+      vehicleLength === 1
+        ? { ...ecicsData, vehicles: updatedVehicles }
+        : {
+            ...ecicsData,
+            vehicle_selected: [
+              {
+                ...ecicsData.vehicle_selected?.[0],
+                [field]: { value },
+              },
+            ],
+          };
 
     // Check if entered is complete
     const isInputsCompleted = checkInputsCompleted(updatedData);

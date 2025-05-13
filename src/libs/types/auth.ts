@@ -40,6 +40,7 @@ export interface SavePersonalInfoPayload {
     year_of_manufacture: string;
   };
   vehicles: Vehicle[];
+  shouldRedirect?: boolean;
 }
 
 export interface Vehicle {

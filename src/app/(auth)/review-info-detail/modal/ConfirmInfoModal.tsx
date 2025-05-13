@@ -7,6 +7,7 @@ import { SavePersonalInfoPayload } from '@/libs/types/auth';
 import {
   calculateDrivingExperienceFromLicences,
   convertDateToDDMMYYYY,
+  extractYear,
 } from '@/libs/utils/date-utils';
 import { calculateAge } from '@/libs/utils/utils';
 
@@ -61,7 +62,6 @@ const ConfirmInfoModal = ({
 
     const parsed = JSON.parse(stored);
     const qdlClasses = parsed?.drivinglicence?.qdl?.classes || [];
-
     const payload: SavePersonalInfoPayload = {
       key: `${uuid()}`,
       is_sending_email: true,
@@ -87,15 +87,16 @@ const ConfirmInfoModal = ({
         email: parsed.email?.value || '',
       },
       vehicle_info_selected: {
-        vehicle_number: parsed.vehicleno?.value || '',
-        first_registered_year: parsed.year_of_registration || '',
-        vehicle_make: parsed.vehicle_make || '',
-        vehicle_model: parsed.vehicle_model || '',
-        engine_number: parsed.engine_number?.value || '',
-        chasis_number: parsed.chassisno?.value || '',
-        engine_capacity: parsed.enginecapacity?.value || '',
-        power_rate: parsed.powerrate?.value || '',
-        year_of_manufacture: parsed.yearofmanufacture?.value || '',
+        vehicle_number: parsed.vehicles[0].vehicleno?.value || '',
+        first_registered_year:
+          extractYear(parsed.vehicles[0].firstregistrationdate?.value) || '',
+        vehicle_make: parsed.vehicles[0].make?.value || '',
+        vehicle_model: parsed.vehicles[0].model?.value || '',
+        engine_number: parsed.vehicles[0].engineno?.value || '',
+        chasis_number: parsed.vehicles[0].chassisno?.value || '',
+        engine_capacity: parsed.vehicles[0].enginecapacity?.value || '',
+        power_rate: parsed.vehicles[0].powerrate?.value || '',
+        year_of_manufacture: parsed.vehicles[0].yearofmanufacture?.value || '',
       },
       vehicles:
         parsed.vehicles?.map((v: any) => ({
@@ -112,7 +113,8 @@ const ConfirmInfoModal = ({
       setShowOverAgeModal(true);
       return;
     }
-    savePersonalInfo(payload);
+
+    savePersonalInfo({ ...payload, shouldRedirect: false });
   };
 
   return (
