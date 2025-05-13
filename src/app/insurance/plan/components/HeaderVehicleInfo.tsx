@@ -20,7 +20,7 @@ const HeaderVehicleInfo = ({
   const router = useRouterWithQuery();
   const INSURANCE_PLAN = selectPlan;
 
-  const VEHICLE_INFO = [
+  const vehicleInfoList = [
     `${vehicleInfo?.vehicle_make} ${vehicleInfo?.vehicle_model}`,
     vehicleInfo?.chasis_number,
     vehicleInfo?.first_registered_year,
@@ -35,8 +35,8 @@ const HeaderVehicleInfo = ({
   const renderInfoCar = () => (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-4'>
-        {VEHICLE_INFO.map((item, index) => {
-          const isLastItem = index === VEHICLE_INFO.length - 1;
+        {vehicleInfoList.map((item, index) => {
+          const isLastItem = index === vehicleInfoList.length - 1;
           return (
             <div key={index} className='flex items-center gap-4'>
               <p className='rounded-lg bg-[#0000000D] px-4 py-2 text-base font-semibold text-[#151515]'>
