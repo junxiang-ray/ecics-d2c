@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
+import { DrivingLicenceQdl } from '@/libs/types/singpass';
 import { parsePhoneNumber, saveToSessionStorage } from '@/libs/utils/utils';
 
 import WarningIcon from '@/components/icons/WarningIcon';
@@ -55,9 +56,14 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   const [vehicles, setVehicles] = useState(sessionData?.vehicles || []);
 
   const updateSessionStorage = (updatedVehicles: any[]) => {
+    const latestSessionRaw = sessionStorage.getItem(ECICS_USER_INFO);
+    const latestSessionData = latestSessionRaw
+      ? JSON.parse(latestSessionRaw)
+      : {};
+
     saveToSessionStorage({
       [ECICS_USER_INFO]: JSON.stringify({
-        ...sessionData,
+        ...latestSessionData,
         vehicle_selected: updatedVehicles,
       }),
     });
@@ -86,8 +92,11 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     });
   };
 
-  const checkInputsCompleted = (vehicle: any) => {
-    const requiredFields = [
+  const checkInputsCompleted = (data: any): boolean => {
+    const vehicle = data?.vehicle_selected?.[0] || {};
+    const personal = data || {};
+
+    const vehicleRequiredFields = [
       'vehicleno',
       'firstregistrationdate',
       'make',
@@ -98,8 +107,28 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       'powerrate',
       'yearofmanufacture',
     ];
-    return requiredFields.every(
-      (field) => vehicle?.[field]?.value && vehicle?.[field]?.value !== null,
+
+    const isVehicleCompleted = vehicleRequiredFields.every((field) =>
+      vehicle?.[field]?.value?.trim(),
+    );
+
+    const isEmailValid = !!personal?.email?.value;
+    const isMobileValid =
+      !!personal?.mobileno?.prefix?.value?.trim() &&
+      !!personal?.mobileno?.areacode?.value?.trim() &&
+      !!personal?.mobileno?.nbr?.value?.trim();
+
+    const hasValidDrivingLicence = Array.isArray(personal?.drivinglicence?.qdl)
+      ? personal.drivinglicence.qdl.some((qdl: DrivingLicenceQdl) =>
+          qdl?.issuedate?.value?.trim?.(),
+        )
+      : false;
+
+    return (
+      isVehicleCompleted &&
+      isEmailValid &&
+      isMobileValid &&
+      hasValidDrivingLicence
     );
   };
 
@@ -133,12 +162,20 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       };
     }
     saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
+
+    // Check if inputs are completed
+    const isInputsCompleted = checkInputsCompleted(parsed);
+    saveToSessionStorage({
+      [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
+    });
+    setIsDisabled?.(!isInputsCompleted);
   };
 
   const handlePersonalInfoInputChange = (
     inputName: string,
     value: any,
     setShowContactModal?: (show: boolean) => void,
+    setIsDisabled?: (isDisabled: boolean) => void,
   ) => {
     if (inputName === 'qualified_driving_license') {
       const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
@@ -193,6 +230,13 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         parsed.drivinglicence.lastupdated = formattedDate;
         saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
       }
+
+      // Check if inputs are completed
+      const isInputsCompleted = checkInputsCompleted(parsed);
+      saveToSessionStorage({
+        [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
+      });
+      setIsDisabled?.(!isInputsCompleted);
     }
   };
 
@@ -200,23 +244,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     const updatedVehicles = [...vehicles];
     const prevVehicle = updatedVehicles[index] || {};
 
-    const vehicleData: Record<string, any> = {
-      vehicleno: prevVehicle.vehicleno?.value || '',
-      firstregistrationdate: prevVehicle.firstregistrationdate?.value
-        ? new Date(prevVehicle.firstregistrationdate.value)
-            .getFullYear()
-            .toString()
-        : '',
-      make: prevVehicle.make?.value || '',
-      model: prevVehicle.model?.value || '',
-      engineno: prevVehicle.engineno?.value || '',
-      chassisno: prevVehicle.chassisno?.value || '',
-      enginecapacity: prevVehicle.enginecapacity?.value || '',
-      powerrate: prevVehicle.powerrate?.value || '',
-      yearofmanufacture: prevVehicle.yearofmanufacture?.value || '',
-    };
-
-    const fieldMap: Record<string, keyof typeof vehicleData> = {
+    const fieldMap: Record<string, string> = {
       vehicle_number: 'vehicleno',
       year_of_registration: 'firstregistrationdate',
       vehicle_make: 'make',
@@ -228,43 +256,92 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       year_of_manufacture: 'yearofmanufacture',
     };
 
-    const targetField = fieldMap[field];
-    if (targetField) {
-      vehicleData[targetField] = value;
-    }
+    const targetKey = fieldMap[field];
+    if (!targetKey) return;
 
-    updatedVehicles[index] = {
-      ...prevVehicle,
-      vehicleno: { value: vehicleData.vehicleno },
-      firstregistrationdate: {
-        value: `${vehicleData.firstregistrationdate}-01-01`,
+    // Create new object
+    const newVehicle = {
+      vehicleno: {
+        value:
+          targetKey === 'vehicleno'
+            ? value
+            : prevVehicle.vehicleno?.value || '',
       },
-      make: { value: vehicleData.make },
-      model: { value: vehicleData.model },
-      engineno: { value: vehicleData.engineno },
-      chassisno: { value: vehicleData.chassisno },
-      enginecapacity: { value: vehicleData.enginecapacity },
-      powerrate: { value: vehicleData.powerrate },
-      yearofmanufacture: { value: vehicleData.yearofmanufacture },
+      firstregistrationdate: {
+        value:
+          targetKey === 'firstregistrationdate'
+            ? `${value}-01-01`
+            : prevVehicle.firstregistrationdate?.value || '',
+      },
+      make: {
+        value: targetKey === 'make' ? value : prevVehicle.make?.value || '',
+      },
+      model: {
+        value: targetKey === 'model' ? value : prevVehicle.model?.value || '',
+      },
+      engineno: {
+        value:
+          targetKey === 'engineno' ? value : prevVehicle.engineno?.value || '',
+      },
+      chassisno: {
+        value:
+          targetKey === 'chassisno'
+            ? value
+            : prevVehicle.chassisno?.value || '',
+      },
+      enginecapacity: {
+        value:
+          targetKey === 'enginecapacity'
+            ? value
+            : prevVehicle.enginecapacity?.value || '',
+      },
+      powerrate: {
+        value:
+          targetKey === 'powerrate'
+            ? value
+            : prevVehicle.powerrate?.value || '',
+      },
+      yearofmanufacture: {
+        value:
+          targetKey === 'yearofmanufacture'
+            ? value
+            : prevVehicle.yearofmanufacture?.value || '',
+      },
     };
 
-    const isInputsCompleted = checkInputsCompleted(updatedVehicles[index]);
-    saveToSessionStorage({
-      [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
-    });
-    setIsDisabled?.(!isInputsCompleted);
+    updatedVehicles[index] = newVehicle;
+
+    const vehicleLength = sessionData.vehicle?.length ?? 0;
 
     if (data.some((item) => item.value == null)) {
-      const vehicleLength = sessionData.vehicle?.length ?? 0;
       if (vehicleLength === 0) {
         updateSessionStorage(updatedVehicles);
       } else if (vehicleLength === 1) {
         updateSessionStorage(updatedVehicles);
-        updateVehicleOnlyInSessionStorage(updatedVehicles[index], index);
+        updateVehicleOnlyInSessionStorage(newVehicle, index);
       } else {
-        updateVehicleOnlyInSessionStorage(updatedVehicles[index], index);
+        updateVehicleOnlyInSessionStorage(newVehicle, index);
       }
     }
+
+    const sessionDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
+    const ecicsData = sessionDataRaw ? JSON.parse(sessionDataRaw) : {};
+    const updatedData = {
+      ...ecicsData,
+      vehicle_selected: [
+        {
+          ...ecicsData.vehicle_selected?.[0],
+          [field]: { value },
+        },
+      ],
+    };
+
+    // Check if entered is complete
+    const isInputsCompleted = checkInputsCompleted(updatedData);
+    saveToSessionStorage({
+      [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
+    });
+    setIsDisabled?.(!isInputsCompleted);
   };
 
   //Call API

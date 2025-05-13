@@ -14,8 +14,8 @@ import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import AddOnRowDetail from './AddOnRowDetail';
-import HeaderAddOn from './HeaderAddOn';
 import { PricingSummary } from '../components/FeeBar';
+import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 
 const mapIconToTypeAddOn = [
   {
@@ -301,18 +301,22 @@ function AddOnPage() {
   return (
     <div className='w-full'>
       {isShowBonusDetail ? (
-        <AddOnBonusDetailManualForm />
+        <AddOnBonusDetailManualForm
+          key={quoteInfo?.data.key}
+          personal_info={quoteInfo?.data.personal_info}
+          vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
+        />
       ) : (
         <>
           <div className='mt-2 flex flex-col gap-4 px-4'>
             <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-              <HeaderAddOn
-                setIsModalVisible={setIsModalVisible}
-                selectPlan={quoteInfo?.data.selected_plan}
+              <HeaderVehicleInfo
                 vehicleInfo={quoteInfo?.data.vehicle_info_selected}
                 insuranceAdditionalInfo={
-                  quoteInfo?.data.insurance_additional_info?.no_of_claim
+                  quoteInfo?.data.insurance_additional_info
                 }
+                selectPlan={quoteInfo?.data.selected_plan}
+                isShowScreen={true}
               />
             </div>
             <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>

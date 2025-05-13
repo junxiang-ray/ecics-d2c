@@ -299,7 +299,6 @@ const ReviewInfoDetail = () => {
       // Check if any field has "null"
       const hasMissingEmailOrPhone =
         !transformed?.email?.trim() || !transformed?.phone?.trim();
-
       const hasMissingQDL = transformed.personal.find(
         (item) =>
           item.label === 'Qualified Driving License' &&
@@ -521,9 +520,14 @@ const ReviewInfoDetail = () => {
                   { label: 'Email Address', value: commonInfo?.email ?? null },
                   { label: 'Phone Number', value: commonInfo?.phone ?? null },
                 ]}
+                setIsDisabled={setIsDisabled}
               />
               {commonInfo?.personal && (
-                <InfoSection title='Personal Info' data={commonInfo.personal} />
+                <InfoSection
+                  title='Personal Info'
+                  data={commonInfo.personal}
+                  setIsDisabled={setIsDisabled}
+                />
               )}
               {!showChooseVehicleModal &&
                 !showUnMatchModal &&
@@ -550,12 +554,14 @@ const ReviewInfoDetail = () => {
                   { label: 'Email Address', value: commonInfo?.email ?? null },
                   { label: 'Phone Number', value: commonInfo?.phone ?? null },
                 ]}
+                setIsDisabled={setIsDisabled}
               />
               {commonInfo?.personal && (
                 <InfoSection
                   title='Personal Info'
                   data={commonInfo.personal}
                   boxClass='mt-4'
+                  setIsDisabled={setIsDisabled}
                 />
               )}
               {!showChooseVehicleModal &&

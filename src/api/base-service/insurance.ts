@@ -21,10 +21,11 @@ export default {
   saveProposal(data: ProposalPayload) {
     return baseClient.post<any>('/car/proposal', data);
   },
-  saveQuote(key: string, data: QuoteData) {
+  saveQuote(key: string, data: any, is_sending_email: boolean) {
     const formatData = {
       data: { ...data },
       key: key,
+      is_sending_email: is_sending_email,
     };
     return baseClient.post<QuoteResponse>('/quote/save', formatData);
   },
