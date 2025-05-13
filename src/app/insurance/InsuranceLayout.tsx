@@ -56,14 +56,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   };
 
   const handleBack = () => {
-    if (currentStep === undefined) return;
-    if (currentStep === StepProcessBar.POLICY_DETAILS) {
-      router.push(ROUTES.AUTH.REVIEW_INFO_DETAIL);
-      return;
-    }
-    const previousStep = currentStep - 1;
-    setCurrentStep(+previousStep as StepProcessBar);
-    router.push(stepToRoute[previousStep as StepProcessBar]);
+    router.back();
   };
 
   const handleSave = () => {
