@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -71,8 +71,12 @@ interface CommonInfo {
 
 const ReviewInfoDetail = () => {
   const router = useRouter();
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
+  const partner_code = searchParams.get('partner_code') || '';
+  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [commonInfo, setCommonInfo] = useState<CommonInfo | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [showChooseVehicleModal, setShowChooseVehicleModal] = useState(false);
@@ -109,11 +113,16 @@ const ReviewInfoDetail = () => {
         const v = updatedParsed.vehicle_selected[0] || {};
 
         const vehicle_info_selected = {
-          chasis_number: v.vehicleno?.value || '',
-          vehicle_make: v.make?.value || '',
-          vehicle_model: v.model?.value || '',
+          vehicle_number: v.vehicleno?.value || '',
           first_registered_year:
             extractYear(v.firstregistrationdate?.value) || '',
+          vehicle_make: v.make?.value || '',
+          vehicle_model: v.model?.value || '',
+          engine_number: v.engineno?.value || '',
+          chasis_number: v.chassisno?.value || '',
+          engine_capacity: v.enginecapacity?.value || '',
+          power_rate: v.powerrate?.value || '',
+          year_of_manufacture: v.yearofmanufacture?.value || '',
         };
 
         const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
@@ -121,6 +130,8 @@ const ReviewInfoDetail = () => {
         const payload: SavePersonalInfoPayload = {
           key: `${uuid()}`,
           is_sending_email: false,
+          promo_code: promo_code,
+          partner_code: partner_code,
           personal_info: {
             name: updatedParsed.name?.value || '',
             gender: updatedParsed.sex?.desc || '',
@@ -396,17 +407,24 @@ const ReviewInfoDetail = () => {
     if (parsed.vehicles?.length === 0) {
       const v = parsed?.vehicle_selected || {};
       const vehicle_info_selected = {
-        chasis_number: v[0].vehicleno?.value || '',
-        vehicle_make: v[0].make?.value || '',
-        vehicle_model: v[0].model?.value || '',
+        vehicle_number: v[0].vehicleno?.value || '',
         first_registered_year:
           extractYear(v[0].firstregistrationdate?.value) || '',
+        vehicle_make: v[0].make?.value || '',
+        vehicle_model: v[0].model?.value || '',
+        engine_number: v[0].engineno?.value || '',
+        chasis_number: v[0].chassisno?.value || '',
+        engine_capacity: v[0].enginecapacity?.value || '',
+        power_rate: v[0].powerrate?.value || '',
+        year_of_manufacture: v[0].yearofmanufacture?.value || '',
       };
       const qdlClasses = parsed?.drivinglicence?.qdl?.classes || [];
 
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
         is_sending_email: false,
+        promo_code: promo_code,
+        partner_code: partner_code,
         personal_info: {
           name: parsed.name?.value || '',
           gender: parsed.sex?.desc || '',
