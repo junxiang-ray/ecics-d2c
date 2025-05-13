@@ -342,7 +342,7 @@ export default function Page() {
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && dataPayment.payment_url) {
       router.push(dataPayment.payment_url);
     }
   }, [isSuccess, dataPayment]);
