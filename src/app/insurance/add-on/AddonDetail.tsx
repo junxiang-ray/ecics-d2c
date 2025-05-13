@@ -274,11 +274,11 @@ function AddOnDetail({
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between font-semibold '>
               <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
-              <p>SGD {planFee}</p>
+              <p>SDG {planFee}</p>
             </div>
             <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
               <p>Coupon Discount</p>
-              <p>-SGD {couponDiscount}</p>
+              <p>-SDG {couponDiscount}</p>
             </div>
           </div>
 
@@ -286,18 +286,18 @@ function AddOnDetail({
             <p>Add-on:</p>
             {addonsSectionData.map((addon) => (
               <p key={addon.title} className='flex flex-row justify-between'>
-                {addon.title}: <span>SGD {addOnTotal}</span>
+                {addon.title}: <span>SDG {addOnTotal}</span>
               </p>
             ))}
           </div>
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
               <p>GST</p>
-              <p>SGD {gst}</p>
+              <p>SDG {gst}</p>
             </div>
             <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
               <p>Net Premium</p>
-              <p>SGD {netPremium.toFixed(2)}</p>
+              <p>SDG {netPremium.toFixed(2)}</p>
             </div>
           </div>
         </div>
@@ -310,7 +310,6 @@ function AddOnDetail({
       </div>
     );
   };
-
   if (isLoading) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
@@ -320,87 +319,89 @@ function AddOnDetail({
   }
 
   return (
-    <div className='w-full'>
-      {isShowBonusDetail ? (
-        <AddOnBonusDetailManualForm
-          key={quoteInfo?.data.key}
-          personal_info={quoteInfo?.data.personal_info}
-          vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
-        />
-      ) : (
-        <>
-          <div className='mt-2 flex flex-col gap-4 px-4'>
-            <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-              <HeaderVehicleInfo
-                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                insuranceAdditionalInfo={
-                  quoteInfo?.data.insurance_additional_info
-                }
-                selectPlan={quoteInfo?.data.selected_plan}
-                isShowScreen={true}
-              />
-            </div>
-            <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
-              {addonsFormatted.map((addon) => (
-                <AddOnRowDetail
-                  key={addon.code}
-                  addon={addon}
-                  addonsAdded={addonsAdded}
-                  setAddonsAdded={setAddonsAdded}
-                  addonsSelected={addonsSelected}
-                  setAddonsSelected={setAddonsSelected}
-                  drivers={drivers}
-                  setDrivers={setDrivers}
+    <div className='flex w-full flex-col items-center justify-center'>
+      <div className='max-w-[1280px]'>
+        {isShowBonusDetail ? (
+          <AddOnBonusDetailManualForm
+            key={quoteInfo?.data.key}
+            personal_info={quoteInfo?.data.personal_info}
+            vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
+          />
+        ) : (
+          <>
+            <div className='mt-2 flex flex-col gap-4 px-4'>
+              <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
+                <HeaderVehicleInfo
+                  vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+                  insuranceAdditionalInfo={
+                    quoteInfo?.data.insurance_additional_info
+                  }
+                  selectPlan={quoteInfo?.data.selected_plan}
+                  isShowScreen={true}
                 />
-              ))}
+              </div>
+              <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
+                {addonsFormatted.map((addon) => (
+                  <AddOnRowDetail
+                    key={addon.code}
+                    addon={addon}
+                    addonsAdded={addonsAdded}
+                    setAddonsAdded={setAddonsAdded}
+                    addonsSelected={addonsSelected}
+                    setAddonsSelected={setAddonsSelected}
+                    drivers={drivers}
+                    setDrivers={setDrivers}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-          <div className='mt-2 md:px-44'>
-            <PricingSummary
-              fee={totalFee}
-              discount={15}
-              title='Premium breakdown'
-              textButton='Continue'
-              onClick={() => setIsShowPopupPremium(true)}
-            />
-          </div>
 
-          <Modal
-            title='Edit Information'
-            open={isModalVisible}
-            footer={[]}
-            onCancel={() => setIsModalVisible(false)}
-          >
-            <p>Here you can edit the car info or insurance details.</p>
-          </Modal>
-
-          {isMobile.isMobile ? (
-            <Drawer
-              placement='bottom'
-              open={isShowPopupPremium}
-              onClose={() => setIsShowPopupPremium(false)}
-              closable={false}
-              height='auto'
-              className='rounded-t-xl'
-            >
-              {_renderPremium()}
-            </Drawer>
-          ) : (
             <Modal
-              open={isShowPopupPremium}
-              onCancel={() => setIsShowPopupPremium(false)}
-              closable={false}
-              maskClosable={true}
-              keyboard={true}
-              footer={null}
-              width={400}
-              centered
+              title='Edit Information'
+              open={isModalVisible}
+              footer={[]}
+              onCancel={() => setIsModalVisible(false)}
             >
-              <div>{_renderPremium()}</div>
+              <p>Here you can edit the car info or insurance details.</p>
             </Modal>
-          )}
-        </>
-      )}
+
+            {isMobile.isMobile ? (
+              <Drawer
+                placement='bottom'
+                open={isShowPopupPremium}
+                onClose={() => setIsShowPopupPremium(false)}
+                closable={false}
+                height='auto'
+                className='rounded-t-xl'
+              >
+                {_renderPremium()}
+              </Drawer>
+            ) : (
+              <Modal
+                open={isShowPopupPremium}
+                onCancel={() => setIsShowPopupPremium(false)}
+                closable={false}
+                maskClosable={true}
+                keyboard={true}
+                footer={null}
+                width={400}
+                centered
+              >
+                <div>{_renderPremium()}</div>
+              </Modal>
+            )}
+          </>
+        )}
+      </div>
+      <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+        <PricingSummary
+          fee={totalFee}
+          discount={15}
+          title='Premium breakdown'
+          textButton='Continue'
+          onClick={() => setIsShowPopupPremium(true)}
+        />
+      </div>
     </div>
   );
 }

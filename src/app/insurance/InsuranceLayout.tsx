@@ -105,7 +105,8 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
           </PrimaryButton>
         </div>
       </div>
-      <div className='mx-auto w-full max-w-[1280px] px-2'>
+
+      <div className='mx-auto flex w-full flex-col items-center justify-between'>
         {typeof children === 'function'
           ? children({
               onSave: (fn: () => any) => (childSaveRef.current = fn),

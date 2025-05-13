@@ -1,7 +1,5 @@
 'use client';
 
-import 'swiper/css';
-import 'swiper/css/navigation';
 import InsuranceLayout from '../InsuranceLayout';
 import PlanDetail from './PlanDetail';
 
