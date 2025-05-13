@@ -5,8 +5,7 @@ import PlanPremiumIcon from '@/components/icons/PlanPremiumIcon';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 import clsx from 'clsx';
-import { useState } from 'react';
-import { FormatPlan } from '../page';
+import { FormatPlan } from '../PlanDetail';
 
 function PlanCardDesktop({
   plans,
