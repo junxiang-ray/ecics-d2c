@@ -25,10 +25,14 @@ import HeaderVehicleInfoMobile from '../plan/components/HeaderVehicleInfoMobile'
 import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
+  onSaveRegister: (fn: () => any) => void;
   isSingPassFlow: boolean;
 }
 
-export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
+export const PolicyDetail = ({
+  isSingPassFlow = false,
+  onSaveRegister,
+}: PolicyDetailProps) => {
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
 
@@ -41,7 +45,6 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
   const { mutate: generateQuote, isSuccess, isPending } = useGenerateQuote();
 
   const userInfo = quoteInfo?.data?.personal_info;
-  const vehicles = quoteInfo?.data?.vehicles ?? [];
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
   const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
 

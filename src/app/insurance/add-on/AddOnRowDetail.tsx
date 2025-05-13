@@ -8,8 +8,8 @@ import { AddNamedDriverInfo } from '@/libs/types/quote';
 import { SecondaryButton } from '@/components/ui/buttons';
 
 import AddOnRow from './AddOnRow';
-import { AddOnFormat } from './page';
 import AdditionDriver from '../components/AdditionDriver';
+import { AddOnFormat } from './AddonDetail';
 
 const ADDON_CARS = ['CAR_COM_AND', 'CAR_TPFT_AND', 'CAR_TPO_AND'];
 

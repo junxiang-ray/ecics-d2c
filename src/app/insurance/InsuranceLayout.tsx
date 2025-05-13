@@ -1,5 +1,5 @@
 'use client';
-import { useLayoutEffect, useState } from 'react';
+import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
@@ -8,11 +8,11 @@ import ProcessBar from '@/components/ProcessBar';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
+import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import BusinessPartnerBar from './components/BusinessPartnerBar';
 import { usePathname } from 'next/navigation';
+import BusinessPartnerBar from './components/BusinessPartnerBar';
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
@@ -26,12 +26,19 @@ function getStepFromRoute(route: string): ProcessBarType {
   );
   return entry ? (entry[0] as unknown as StepProcessBar) : undefined;
 }
+// Define props so that children can either be a node or a render function that accepts a registration callback.
+interface InsuranceLayoutProps {
+  children:
+    | ReactNode
+    | ((props: { onSave: (fn: () => any) => void }) => ReactNode);
+}
 
-function InsuranceLayout({ children }: { children: React.ReactNode }) {
+function InsuranceLayout({ children }: InsuranceLayoutProps) {
   const router = useRouterWithQuery();
   const pathName = usePathname();
-  const { isMobile } = useDeviceDetection();
+  const childSaveRef = useRef<() => any>(() => null);
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
+  const { mutateAsync: saveQuote } = useSaveQuote();
 
   useLayoutEffect(() => {
     const currentStep = getStepFromRoute(pathName);
@@ -47,6 +54,7 @@ function InsuranceLayout({ children }: { children: React.ReactNode }) {
     setCurrentStep(step);
     router.push(path);
   };
+
   const handleBack = () => {
     if (currentStep === undefined) return;
     if (currentStep === StepProcessBar.POLICY_DETAILS) {
@@ -57,16 +65,27 @@ function InsuranceLayout({ children }: { children: React.ReactNode }) {
     setCurrentStep(+previousStep as StepProcessBar);
     router.push(stepToRoute[previousStep as StepProcessBar]);
   };
+
+  const handleSave = () => {
+    const childData = childSaveRef.current();
+    const { key, is_sending_email, ...data } = childData;
+    if (!key) return;
+    saveQuote({
+      key,
+      data,
+      is_sending_email: true,
+    });
+  };
   return (
     <>
       <div className='sticky top-0 z-10 w-full bg-white'>
-        {isMobile && (
+        <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
             businessName='Business Partner Name'
             companyName='Leo Management Consultancy Pte Ltd'
             onBackClick={handleBack}
           />
-        )}
+        </div>
         <div className='flex w-full justify-between p-4 px-10 pb-0'>
           <SecondaryButton
             icon={<ArrowBackIcon size={11} />}
@@ -78,13 +97,21 @@ function InsuranceLayout({ children }: { children: React.ReactNode }) {
           <div className='md:w-[520px]'>
             <ProcessBar currentStep={currentStep} onChange={handleChangeStep} />
           </div>
-          <PrimaryButton className='hidden w-32 rounded-sm md:block'>
+          <PrimaryButton
+            className='hidden w-32 rounded-sm md:block'
+            onClick={handleSave}
+          >
             Save
           </PrimaryButton>
         </div>
       </div>
+
       <div className='mx-auto flex w-full flex-col items-center justify-between'>
-        {children}
+        {typeof children === 'function'
+          ? children({
+              onSave: (fn: () => any) => (childSaveRef.current = fn),
+            })
+          : children}
       </div>
     </>
   );

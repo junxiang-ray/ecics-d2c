@@ -5,8 +5,7 @@ import PlanPremiumIcon from '@/components/icons/PlanPremiumIcon';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 import clsx from 'clsx';
-import { useState } from 'react';
-import { FormatPlan } from '../page';
+import { FormatPlan } from '../PlanDetail';
 
 function PlanCardDesktop({
   plans,
@@ -52,8 +51,8 @@ function PlanCardDesktop({
                   )}
                 </div>
                 <p
-                  className={clsx('text-2xl font-semibold', {
-                    '!font-normal text-[#1B223C]': active,
+                  className={clsx('text-2xl font-semibold text-[#1B223C]', {
+                    '!font-normal': active,
                   })}
                 >
                   {plan.title}
