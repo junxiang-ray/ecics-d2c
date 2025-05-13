@@ -15,7 +15,6 @@ import {
   usePayment,
   useSaveProposalFinalize,
 } from '@/hook/insurance/quote';
-import { AddOnFormat } from '../add-on/page';
 import { Option } from '@/libs/types/quote';
 import { PricingSummary } from '../components/FeeBar';
 import { useSearchParams } from 'next/navigation';
@@ -27,6 +26,7 @@ import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { AddOnFormat } from '../add-on/AddonDetail';
 
 function calculateFee(
   option: Option,

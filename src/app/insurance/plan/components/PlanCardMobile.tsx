@@ -2,7 +2,7 @@
 import CrossMarkIcon from '@/components/icons/CrossMark';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
 import clsx from 'clsx';
-import { FormatPlan } from '../page';
+import { FormatPlan } from '../PlanDetail';
 
 function PlanCardMobile({
   plans,

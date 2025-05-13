@@ -1,5 +1,5 @@
 'use client';
-import { ProcessBarType } from '@/app/insurance/layout';
+import { ProcessBarType } from '@/app/insurance/InsuranceLayout';
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 import type { StepsProps } from 'antd';
 import { Steps } from 'antd';
