@@ -2,15 +2,10 @@
 
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
-import { Vehicle } from '@/libs/types/quote';
-import {
-  adjustDateInDate,
-  adjustDateInDayjs,
-  convertDateFormat,
-} from '@/libs/utils/date-utils';
+import { convertDateFormat } from '@/libs/utils/date-utils';
 import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
@@ -25,10 +20,9 @@ import {
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
-import PolicyDetailForm from './PolicyDetailForm';
-import VehicleBar from '../components/VehicleBar';
 import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import HeaderVehicleInfoMobile from '../plan/components/HeaderVehicleInfoMobile';
+import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
   isSingPassFlow: boolean;
@@ -42,7 +36,6 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
   const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
   const key = searchParams.get('key') || '';
 
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
   const { data: quoteInfo } = useGetQuote(key);
   const { mutate: generateQuote, isSuccess, isPending } = useGenerateQuote();
@@ -50,13 +43,7 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
   const userInfo = quoteInfo?.data?.personal_info;
   const vehicles = quoteInfo?.data?.vehicles ?? [];
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
-
-  useEffect(() => {
-    const vehicleSelected = quoteInfo?.data?.vehicle_info_selected;
-    if (vehicleSelected) {
-      setSelectedVehicle(vehicleSelected);
-    }
-  }, [userInfo]);
+  const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
 
   useEffect(() => {
     if (!isSuccess) return;
@@ -134,14 +121,24 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
         phone: userInfo?.phone,
         email: userInfo?.email,
       };
-
+      const personalInfo = {
+        date_of_birth: personal_info.date_of_birth,
+        driving_experience: personal_info.driving_experience,
+        email: personal_info.email,
+        phone: personal_info.phone,
+      };
       const vehicle_info_selected = {
+        chasis_number: selectedVehicle?.chasis_number,
+        first_year_registered: selectedVehicle?.first_registered_year,
         vehicle_make: selectedVehicle?.vehicle_make,
         vehicle_model: selectedVehicle?.vehicle_model,
-        first_registered_year: selectedVehicle?.first_registered_year,
-        chasis_number: selectedVehicle?.chasis_number,
       };
-      payload = { ...payload, personal_info, vehicle_info_selected };
+
+      payload = {
+        ...payload,
+        personal_info: personalInfo,
+        vehicle_info_selected: vehicle_info_selected,
+      };
     }
 
     try {

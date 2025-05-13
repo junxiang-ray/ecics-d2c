@@ -85,8 +85,8 @@ export interface Vehicle {
   chasis_number: string;
   vehicle_model: string;
   first_registered_year: string;
-  chassis_no: string;
-  engine_no: string;
+  chassis_no?: string;
+  engine_no?: string;
   engine_number?: string;
 }
 
