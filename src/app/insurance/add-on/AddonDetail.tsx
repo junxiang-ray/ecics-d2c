@@ -304,11 +304,12 @@ function AddOnDetail({
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
             <p>Add-on:</p>
             <div>
-              {/* {addonsSectionData.map((addon) => (
+              {addonsSectionData.map((addon) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}: <span>SGD {(addOnTotal / 1.09).toFixed(2)}</span>
+                  {addon.title}:{' '}
+                  <span>SGD {(addOnTotal / 1.09).toFixed(2)}</span>
                 </p>
-              ))} */}
+              ))}
               {dataSelectedAddOn.map((addon) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
                   {addon.title}:{' '}
