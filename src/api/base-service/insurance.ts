@@ -5,14 +5,17 @@ import {
   QuoteResponse,
 } from '@/libs/types/quote';
 
-import { API_POST_PERSONAL_INFO_SAVE } from '@/constants/api.constant';
+import {
+  API_GET_QUOTE_BY_KEY,
+  API_POST_PERSONAL_INFO_SAVE,
+} from '@/constants/api.constant';
 
 import baseClient from './api.config';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getQuoteByKey(key: string) {
-    return baseClient.get<QuoteResponse>('/quote/' + key);
+    return baseClient.get<QuoteResponse>(`${API_GET_QUOTE_BY_KEY}` + key);
   },
   generateQuote(data: QuoteCreationPayload) {
     return baseClient.post<QuoteResponse>('/car/quote', data);
