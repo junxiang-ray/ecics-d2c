@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
@@ -28,7 +28,10 @@ const ConfirmInfoModal = ({
   onClose: () => void;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
+  const partner_code = searchParams.get('partner_code') || '';
+  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
   const {
     mutate: savePersonalInfo,
     isSuccess,
@@ -62,6 +65,8 @@ const ConfirmInfoModal = ({
     const payload: SavePersonalInfoPayload = {
       key: `${uuid()}`,
       is_sending_email: true,
+      promo_code: promo_code,
+      partner_code: partner_code,
       personal_info: {
         name: parsed.name?.value || '',
         gender: parsed.sex?.desc || '',
@@ -82,10 +87,15 @@ const ConfirmInfoModal = ({
         email: parsed.email?.value || '',
       },
       vehicle_info_selected: {
+        vehicle_number: parsed.vehicleno?.value || '',
+        first_registered_year: parsed.year_of_registration || '',
         vehicle_make: parsed.vehicle_make || '',
         vehicle_model: parsed.vehicle_model || '',
-        first_registered_year: parsed.year_of_registration || '',
+        engine_number: parsed.engine_number?.value || '',
         chasis_number: parsed.chassisno?.value || '',
+        engine_capacity: parsed.enginecapacity?.value || '',
+        power_rate: parsed.powerrate?.value || '',
+        year_of_manufacture: parsed.yearofmanufacture?.value || '',
       },
       vehicles:
         parsed.vehicles?.map((v: any) => ({
