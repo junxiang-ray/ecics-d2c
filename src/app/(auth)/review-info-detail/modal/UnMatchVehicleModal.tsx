@@ -66,8 +66,8 @@ const UnMatchVehicleModal = ({
         year_of_registration: parsedData.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
-            ? calculateDrivingExperienceFromLicences(qdlClasses)
-            : 1,
+            ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+            : '1 year',
         phone: `${parsedData.mobileno?.nbr?.value || ''}`,
         email: parsedData.email?.value || '',
       },

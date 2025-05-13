@@ -135,8 +135,8 @@ const ReviewInfoDetail = () => {
             year_of_registration: updatedParsed.year_of_registration || '',
             driving_experience:
               qdlClasses.length > 0
-                ? calculateDrivingExperienceFromLicences(qdlClasses)
-                : 1,
+                ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+                : '1 year',
             phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
             email: updatedParsed.email?.value || '',
           },
@@ -421,8 +421,8 @@ const ReviewInfoDetail = () => {
           year_of_registration: parsed.year_of_registration || '',
           driving_experience:
             qdlClasses.length > 0
-              ? calculateDrivingExperienceFromLicences(qdlClasses)
-              : 1,
+              ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+              : '1 year',
           phone: `${parsed.mobileno?.nbr?.value || ''}`,
           email: parsed.email?.value || '',
         },

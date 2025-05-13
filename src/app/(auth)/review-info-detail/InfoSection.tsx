@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
-import { DrivingLicenceQdl } from '@/libs/types/singpass';
 import { parsePhoneNumber, saveToSessionStorage } from '@/libs/utils/utils';
 
 import WarningIcon from '@/components/icons/WarningIcon';
@@ -118,9 +117,11 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       !!personal?.mobileno?.areacode?.value?.trim() &&
       !!personal?.mobileno?.nbr?.value?.trim();
 
-    const hasValidDrivingLicence = Array.isArray(personal?.drivinglicence?.qdl)
-      ? personal.drivinglicence.qdl.some((qdl: DrivingLicenceQdl) =>
-          qdl?.issuedate?.value?.trim?.(),
+    const hasValidDrivingLicence = Array.isArray(
+      personal?.drivinglicence?.qdl?.classes,
+    )
+      ? personal.drivinglicence.qdl.classes.some((item: any) =>
+          item?.issuedate?.value?.trim?.(),
         )
       : false;
 
@@ -190,9 +191,11 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         if (
           parsed.drivinglicence &&
           parsed.drivinglicence.qdl &&
-          parsed.drivinglicence.qdl.length > 0
+          parsed.drivinglicence.qdl.classes &&
+          parsed.drivinglicence.qdl.classes.length > 0
         ) {
-          delete parsed.drivinglicence.qdl[0].issuedate;
+          delete parsed.drivinglicence.qdl.classes[0].class;
+          delete parsed.drivinglicence.qdl.classes[0].issuedate;
         }
         saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
         return;
@@ -201,32 +204,32 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       if (typeof value === 'number' && value > 0) {
         const issuedDate = new Date(today);
         issuedDate.setFullYear(today.getFullYear() - value);
-
-        const formattedDate = issuedDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+        const formattedDate = issuedDate.toISOString().split('T')[0];
 
         if (
           parsed.drivinglicence &&
           parsed.drivinglicence.qdl &&
-          parsed.drivinglicence.qdl.length > 0
+          parsed.drivinglicence.qdl.classes &&
+          parsed.drivinglicence.qdl.classes.length > 0
         ) {
-          parsed.drivinglicence.qdl[0].issuedate = {
+          parsed.drivinglicence.qdl.classes[0].class = { value: '3A' };
+          parsed.drivinglicence.qdl.classes[0].issuedate = {
             value: formattedDate,
           };
         } else {
           parsed.drivinglicence = {
             ...parsed.drivinglicence,
-            qdl: [
-              {
-                class: {
-                  value: '',
+            qdl: {
+              classes: [
+                {
+                  class: { value: '3A' },
+                  issuedate: { value: formattedDate },
                 },
-                issuedate: {
-                  value: formattedDate,
-                },
-              },
-            ],
+              ],
+            },
           };
         }
+
         parsed.drivinglicence.lastupdated = formattedDate;
         saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
       }
