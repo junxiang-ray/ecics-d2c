@@ -39,7 +39,9 @@ export interface Company {
   name: string;
 }
 export interface QuoteData {
+  key?: string;
   plans?: Plan[];
+  current_step: number;
   vehicles?: Vehicle[];
   personal_info?: PersonalInfo;
   vehicle_info_selected?: Vehicle;
@@ -97,7 +99,7 @@ export interface PersonalInfo {
   nric: string;
   email: string;
   gender: string;
-  address: string;
+  address: string | string[];
   phone: string;
   date_of_birth: string;
   marital_status: string;
