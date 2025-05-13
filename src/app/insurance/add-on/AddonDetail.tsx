@@ -351,6 +351,9 @@ function AddOnDetail({
                   setAddonsSelected={setAddonsSelected}
                   drivers={drivers}
                   setDrivers={setDrivers}
+                  policyStartDate={
+                    quoteInfo?.data.insurance_additional_info?.start_date
+                  }
                 />
               ))}
             </div>

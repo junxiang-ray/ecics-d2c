@@ -25,14 +25,12 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 
-dayjs.extend(isSameOrAfter);
-dayjs.extend(isSameOrBefore);
-
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { PromoCodeField } from '../components/PromoCode';
 import { UnableQuote } from './modal/UnableQuote';
 import {
   CLAIM_AMOUNT_OPTIONS,
@@ -41,8 +39,8 @@ import {
   NO_CLAIM_OPTIONS,
   REG_YEAR_OPTIONS,
 } from './options';
-import { PromoCodeField } from '../components/PromoCode';
-import { start } from 'repl';
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 const sryMsg = 'Sorry, we cannot provide you a quotation online';
 
