@@ -25,14 +25,17 @@ import HeaderVehicleInfoMobile from '../plan/components/HeaderVehicleInfoMobile'
 import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
+  onSaveRegister: (fn: () => any) => void;
   isSingPassFlow: boolean;
 }
 
-export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
+export const PolicyDetail = ({
+  isSingPassFlow = false,
+  onSaveRegister,
+}: PolicyDetailProps) => {
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
 
-  const partner_code = searchParams.get('partner_code') || '';
   const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
   const key = searchParams.get('key') || '';
 
@@ -41,9 +44,9 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
   const { mutate: generateQuote, isSuccess, isPending } = useGenerateQuote();
 
   const userInfo = quoteInfo?.data?.personal_info;
-  const vehicles = quoteInfo?.data?.vehicles ?? [];
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
   const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
+  const savedPromoCode = quoteInfo?.promo_code;
 
   useEffect(() => {
     if (!isSuccess) return;
@@ -61,7 +64,7 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
     : undefined;
 
   const initialValues = {
-    [MOTOR_QUOTE.promo_code]: promo_code ?? '',
+    [MOTOR_QUOTE.promo_code]: savedPromoCode?.code ?? promo_code ?? '',
     [MOTOR_QUOTE.start_date]: startData,
     [MOTOR_QUOTE.end_date]: endDate,
     [MOTOR_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? undefined,
@@ -88,20 +91,6 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
         }))
       : []),
   ];
-
-  // retrieve Hire purchase List
-  const verifyPartnerCode = async () => {
-    try {
-      const resp = await fetch(`/api/v1/partner/info/${partner_code}`);
-      if (resp.ok) {
-        const response = await resp.json();
-        const apiData: { partner_code: number; partner_name: string } =
-          response.data;
-      }
-    } catch (error) {
-      console.error('Failed to fetch hire purchase list:', error);
-    }
-  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     let payload;
@@ -174,6 +163,7 @@ export const PolicyDetail = ({ isSingPassFlow = false }: PolicyDetailProps) => {
           isSingpassFlow={isSingPassFlow}
           isLoading={isPending}
           initialValues={initialValues}
+          onSaveRegister={onSaveRegister}
         />
       </div>
     </>

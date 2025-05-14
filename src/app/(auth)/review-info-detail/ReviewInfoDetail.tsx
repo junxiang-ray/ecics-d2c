@@ -1,9 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Tooltip } from 'antd';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -22,9 +21,7 @@ import {
   saveToSessionStorage,
 } from '@/libs/utils/utils';
 
-import WarningIcon from '@/components/icons/WarningIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
-import { InputField } from '@/components/ui/form/inputfield';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
@@ -66,16 +63,20 @@ const reviewInfoSchema = z.object({
 type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 
 interface CommonInfo {
-  email: string;
-  phone: string;
+  email: string | null;
+  phone: string | null;
   personal: Array<{ label: string; value: string }>;
   vehicle: Array<{ label: string; value: string }>;
 }
 
 const ReviewInfoDetail = () => {
   const router = useRouter();
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
+  const partner_code = searchParams.get('partner_code') || '';
+  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [commonInfo, setCommonInfo] = useState<CommonInfo | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [showChooseVehicleModal, setShowChooseVehicleModal] = useState(false);
@@ -112,11 +113,16 @@ const ReviewInfoDetail = () => {
         const v = updatedParsed.vehicle_selected[0] || {};
 
         const vehicle_info_selected = {
-          chasis_number: v.vehicleno?.value || '',
-          vehicle_make: v.make?.value || '',
-          vehicle_model: v.model?.value || '',
+          vehicle_number: v.vehicleno?.value || '',
           first_registered_year:
             extractYear(v.firstregistrationdate?.value) || '',
+          vehicle_make: v.make?.value || '',
+          vehicle_model: v.model?.value || '',
+          engine_number: v.engineno?.value || '',
+          chasis_number: v.chassisno?.value || '',
+          engine_capacity: v.enginecapacity?.value || '',
+          power_rate: v.powerrate?.value || '',
+          year_of_manufacture: v.yearofmanufacture?.value || '',
         };
 
         const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
@@ -124,6 +130,8 @@ const ReviewInfoDetail = () => {
         const payload: SavePersonalInfoPayload = {
           key: `${uuid()}`,
           is_sending_email: false,
+          promo_code: promo_code,
+          partner_code: partner_code,
           personal_info: {
             name: updatedParsed.name?.value || '',
             gender: updatedParsed.sex?.desc || '',
@@ -173,8 +181,13 @@ const ReviewInfoDetail = () => {
       const parsed = JSON.parse(stored);
 
       const transformed = {
-        email: parsed.email?.value || '',
-        phone: `${parsed.mobileno?.prefix?.value || ''}${parsed.mobileno?.areacode?.value || ''} ${parsed.mobileno?.nbr?.value || ''}`,
+        email: parsed.email?.value || null,
+        phone:
+          parsed.mobileno?.prefix?.value &&
+          parsed.mobileno?.areacode?.value &&
+          parsed.mobileno?.nbr?.value
+            ? `${parsed.mobileno.prefix.value}${parsed.mobileno.areacode.value} ${parsed.mobileno.nbr.value}`
+            : null,
         personal: [
           {
             label: 'Name as per NRIC',
@@ -232,7 +245,7 @@ const ReviewInfoDetail = () => {
                     return `${cls} / ${issued}`;
                   })
                   .join(', ')
-              : '',
+              : null,
           },
         ],
         vehicle:
@@ -291,19 +304,27 @@ const ReviewInfoDetail = () => {
                 { label: 'Year of Manufacture', value: null },
               ],
       };
+
       setCommonInfo(transformed);
 
-      // Check if any vehicle field has "null"
+      // Check if any field has "null"
+      const hasMissingEmailOrPhone =
+        !transformed?.email?.trim() || !transformed?.phone?.trim();
+      const hasMissingQDL = transformed.personal.find(
+        (item) =>
+          item.label === 'Qualified Driving License' &&
+          (!item.value || item.value.trim() === ''),
+      );
       const hasInvalidVehicle = transformed.vehicle.some(
         (item: any) => item.value === null,
       );
-      if (hasInvalidVehicle) {
+      if (hasInvalidVehicle || hasMissingEmailOrPhone || hasMissingQDL) {
         setIsDisabled(true);
       }
 
       methods.reset({
         email: transformed.email,
-        phone: transformed.phone,
+        phone: transformed.phone ?? undefined,
       });
 
       if (parsed.vehicles?.length === 1) {
@@ -386,17 +407,24 @@ const ReviewInfoDetail = () => {
     if (parsed.vehicles?.length === 0) {
       const v = parsed?.vehicle_selected || {};
       const vehicle_info_selected = {
-        chasis_number: v[0].vehicleno?.value || '',
-        vehicle_make: v[0].make?.value || '',
-        vehicle_model: v[0].model?.value || '',
+        vehicle_number: v[0].vehicleno?.value || '',
         first_registered_year:
           extractYear(v[0].firstregistrationdate?.value) || '',
+        vehicle_make: v[0].make?.value || '',
+        vehicle_model: v[0].model?.value || '',
+        engine_number: v[0].engineno?.value || '',
+        chasis_number: v[0].chassisno?.value || '',
+        engine_capacity: v[0].enginecapacity?.value || '',
+        power_rate: v[0].powerrate?.value || '',
+        year_of_manufacture: v[0].yearofmanufacture?.value || '',
       };
       const qdlClasses = parsed?.drivinglicence?.qdl?.classes || [];
 
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
         is_sending_email: false,
+        promo_code: promo_code,
+        partner_code: partner_code,
         personal_info: {
           name: parsed.name?.value || '',
           gender: parsed.sex?.desc || '',
@@ -504,16 +532,20 @@ const ReviewInfoDetail = () => {
           </div>
           {isMobile ? (
             <div>
-              <div className='mt-4'>
-                <div className='text-sm font-bold'>Email Address</div>
-                <InputField name='email' />
-              </div>
-              <div className='mt-4'>
-                <div className='text-sm font-bold'>Phone Number</div>
-                <InputField name='phone' />
-              </div>
+              <InfoSection
+                title='Enter a valid Email and Contact Number'
+                data={[
+                  { label: 'Email Address', value: commonInfo?.email ?? null },
+                  { label: 'Phone Number', value: commonInfo?.phone ?? null },
+                ]}
+                setIsDisabled={setIsDisabled}
+              />
               {commonInfo?.personal && (
-                <InfoSection title='Personal Info' data={commonInfo.personal} />
+                <InfoSection
+                  title='Personal Info'
+                  data={commonInfo.personal}
+                  setIsDisabled={setIsDisabled}
+                />
               )}
               {!showChooseVehicleModal &&
                 !showUnMatchModal &&
@@ -534,36 +566,20 @@ const ReviewInfoDetail = () => {
             </div>
           ) : (
             <div className='w-full justify-self-center'>
-              <div className='mt-6 items-center justify-between rounded-md border border-gray-300 bg-gray-100 p-4'>
-                <div className='flex items-center justify-between'>
-                  <div className='text-base font-bold'>
-                    Enter a valid Email and Contact Number
-                  </div>
-                  <Tooltip title='We use this information to verify your identity and pre-fill your application with accurate government-verified data. This helps ensure a faster, more secure, and seamless submission process.'>
-                    <span className='flex cursor-pointer items-center font-bold'>
-                      <WarningIcon size={14} />
-                      <span className='ml-1 text-[10px]'>
-                        Why do we need this?
-                      </span>
-                    </span>
-                  </Tooltip>
-                </div>
-                <div className='mt-4 flex gap-4'>
-                  <div className='w-[calc(50%-10px)]'>
-                    <div className='text-sm font-bold'>Email Address</div>
-                    <InputField name='email' />
-                  </div>
-                  <div className='w-[calc(50%-10px)]'>
-                    <div className='text-sm font-bold'>Phone Number</div>
-                    <InputField name='phone' />
-                  </div>
-                </div>
-              </div>
+              <InfoSection
+                title='Enter a valid Email and Contact Number'
+                data={[
+                  { label: 'Email Address', value: commonInfo?.email ?? null },
+                  { label: 'Phone Number', value: commonInfo?.phone ?? null },
+                ]}
+                setIsDisabled={setIsDisabled}
+              />
               {commonInfo?.personal && (
                 <InfoSection
                   title='Personal Info'
                   data={commonInfo.personal}
                   boxClass='mt-4'
+                  setIsDisabled={setIsDisabled}
                 />
               )}
               {!showChooseVehicleModal &&
