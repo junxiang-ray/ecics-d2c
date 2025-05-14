@@ -79,8 +79,8 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       <div className='sticky top-0 z-10 w-full bg-white'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
-            businessName={partnerInfo?.partner_name}
-            companyName={partnerInfo?.partner_company_name}
+            businessName='Business Partner Name'
+            companyName={partnerInfo?.partner_name}
             onBackClick={handleBack}
           />
         </div>
