@@ -55,3 +55,8 @@ export const PLAN_ADDON_CONFIG = {
     setDefaults: true,
   },
 };
+
+export const ADD_ON_VALUES = {
+  YES: 'Yes',
+  NO: 'No',
+};

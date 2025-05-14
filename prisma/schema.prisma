@@ -234,8 +234,6 @@ model Plan {
   key_map          String?
   premium_with_gst Float?    @default(0.0)
   premium_bef_gst  Float?    @default(0.0)
-  standard_excess  String?
-  addl_named_drivers_premium Float? @default(0.0)
   add_ons_included_in_this_plan Json @default("[]")
   benefits         Benefit[]
   addons           Addon[]
