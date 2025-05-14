@@ -64,7 +64,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
 
   const handleSave = () => {
     const childData = childSaveRef.current();
-    const { key, is_sending_email, ...data } = childData;
+    const { key, ...data } = childData;
     if (!key) return;
     saveQuote({
       key,
@@ -82,6 +82,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
             businessName={partnerInfo?.partner_name}
             companyName={partnerInfo?.partner_company_name}
             onBackClick={handleBack}
+            onSaveClick={handleSave}
           />
         </div>
         <div className='flex w-full justify-between p-4 px-10 pb-0'>

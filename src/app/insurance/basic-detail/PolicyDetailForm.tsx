@@ -216,6 +216,7 @@ type FormData = NonSingpassFlowFields | SingpassFlowFields;
 
 interface PolicyDetailProps extends FormProps {
   onSubmit: (value: any) => void;
+  onSaveRegister: (fn: () => any) => void;
   hirePurchaseOptions: DropdownOption[];
   isSingpassFlow: boolean;
   isLoading?: boolean;
@@ -223,6 +224,7 @@ interface PolicyDetailProps extends FormProps {
 
 const PolicyDetailForm = ({
   onSubmit,
+  onSaveRegister,
   hirePurchaseOptions,
   isSingpassFlow = false,
   initialValues,
@@ -233,6 +235,7 @@ const PolicyDetailForm = ({
   const searchParams = useSearchParams();
   const promoDefault =
     searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
 
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
@@ -302,6 +305,54 @@ const PolicyDetailForm = ({
       setShowCSModal(true);
     }
   }, [claimAmount]);
+
+  // Register onSave callback to collect current form values
+  useEffect(() => {
+    onSaveRegister(() => {
+      const value = methods.getValues();
+      let vehicle_info_selected;
+      let personal_info;
+
+      if (!isSingpassFlow) {
+        vehicle_info_selected = {
+          vehicle_make: value[MOTOR_QUOTE.vehicle_make],
+          vehicle_model: value[MOTOR_QUOTE.vehicle_model],
+          first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
+          chasis_number: 'SBA123A', // to chg
+        };
+
+        personal_info = {
+          date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
+            'DD/MM/YYYY',
+          ),
+          driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
+          phone: value[MOTOR_QUOTE.mobile],
+          email: value[MOTOR_QUOTE.email],
+        };
+      }
+
+      const payload = {
+        key: key,
+        partner_code: partnerCode,
+        promo_code: applyPromoCode,
+        company_id: value[MOTOR_QUOTE.hire_purchase],
+        personal_info: personal_info,
+        vehicle_info_selected: vehicle_info_selected,
+        insurance_additional_info: {
+          no_claim_discount: value[MOTOR_QUOTE.owner_ncd],
+          no_of_claim: value[MOTOR_QUOTE.owner_no_of_claims],
+          start_date: dayjs(value[MOTOR_QUOTE.start_date] as Date).format(
+            'DD/MM/YYYY',
+          ),
+          end_date: dayjs(value[MOTOR_QUOTE.end_date] as Date).format(
+            'DD/MM/YYYY',
+          ),
+          last_claim_amount: value[MOTOR_QUOTE.owner_claim_amount],
+        },
+      };
+      return payload;
+    });
+  }, [methods, onSaveRegister]);
 
   const handleChangeDob = () => {
     methods.setValue(MOTOR_QUOTE.start_date, null as any);
@@ -373,7 +424,7 @@ const PolicyDetailForm = ({
 
     const payload = {
       key: key,
-      partner_code: '',
+      partner_code: partnerCode,
       promo_code: applyPromoCode,
       company_id: value[MOTOR_QUOTE.hire_purchase],
       personal_info: personal_info,

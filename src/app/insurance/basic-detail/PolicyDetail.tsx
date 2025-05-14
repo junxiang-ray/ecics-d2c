@@ -36,7 +36,6 @@ export const PolicyDetail = ({
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
 
-  const partner_code = searchParams.get('partner_code') || '';
   const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
   const key = searchParams.get('key') || '';
 
@@ -91,20 +90,6 @@ export const PolicyDetail = ({
         }))
       : []),
   ];
-
-  // retrieve Hire purchase List
-  const verifyPartnerCode = async () => {
-    try {
-      const resp = await fetch(`/api/v1/partner/info/${partner_code}`);
-      if (resp.ok) {
-        const response = await resp.json();
-        const apiData: { partner_code: number; partner_name: string } =
-          response.data;
-      }
-    } catch (error) {
-      console.error('Failed to fetch hire purchase list:', error);
-    }
-  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     let payload;
@@ -177,6 +162,7 @@ export const PolicyDetail = ({
           isSingpassFlow={isSingPassFlow}
           isLoading={isPending}
           initialValues={initialValues}
+          onSaveRegister={onSaveRegister}
         />
       </div>
     </>
