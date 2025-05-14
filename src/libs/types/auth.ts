@@ -48,6 +48,7 @@ export interface Vehicle {
   vehicle_make: string;
   vehicle_model: string;
   first_registered_year: string;
+  vehicle_number: string;
 }
 
 export interface VehicleSingPassResponse {

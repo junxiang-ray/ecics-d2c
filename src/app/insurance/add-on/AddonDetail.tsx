@@ -1,6 +1,6 @@
 'use client';
 
-import { Drawer, Modal, Spin } from 'antd';
+import { Modal, Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
@@ -11,12 +11,12 @@ import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
 import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import AddOnRowDetail from './AddOnRowDetail';
 import { PricingSummary } from '../components/FeeBar';
 import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import { UserStep } from '@/libs/enums/processBarEnums';
+import ModalPremium from './ModalPremium';
 
 const mapIconToTypeAddOn = [
   {
@@ -109,10 +109,9 @@ function AddOnDetail({
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
-  const isMobile = useDeviceDetection();
 
   const { data: quoteInfo, isLoading } = useGetQuote(key);
-  const { mutateAsync: saveProposal } = useSaveProposal();
+  const { mutateAsync: saveProposal, isPending } = useSaveProposal();
 
   const plan = quoteInfo?.data?.plans?.find(
     (plan) => quoteInfo.data?.selected_plan === plan.title,
@@ -249,98 +248,6 @@ function AddOnDetail({
     });
   };
 
-  const _renderPremium = () => {
-    const pricePlan = totalFee || 0;
-    const discountRate = quoteInfo?.promo_code?.discount || 0;
-    const tax = 1.09;
-    const feePlan = pricePlan / (1 - discountRate / 100) / tax;
-    const couponDiscount = feePlan * (discountRate / 100);
-    const addonsSectionData = Object.entries(
-      quoteInfo?.data.selected_addons || {},
-    )
-      .filter(([, selectedValue]) => selectedValue !== 'NO')
-      .map(([code, selectedValue]) => {
-        const addon = addonsFormatted.find((a) => a.code === code);
-        const value =
-          addon?.options?.find((opt: any) => opt.value === selectedValue)
-            ?.value || selectedValue;
-
-        return {
-          title: addon?.title || code,
-          value: value,
-        };
-      });
-
-    const addOnTotal = addonsSectionData.reduce((acc, addon) => {
-      const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
-      return acc + value;
-    }, 0);
-
-    const selectAddOnTotal = dataSelectedAddOn.reduce((acc, addon) => {
-      const value = addon.feeSelected || 0;
-      return acc + value;
-    }, 0);
-    const netPremium =
-      pricePlan - couponDiscount + addOnTotal + selectAddOnTotal;
-    const valueCalculatedGST = 9;
-    const gst = (netPremium * valueCalculatedGST) / 100;
-    return (
-      <div className='flex flex-col gap-6'>
-        <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
-          Premium Breakdown
-        </p>
-        <div className='flex flex-col gap-6'>
-          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
-            <div className='flex flex-row justify-between font-semibold '>
-              <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
-              <p>SGD {feePlan.toFixed(2)}</p>
-            </div>
-
-            {quoteInfo?.promo_code && (
-              <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
-                <p>Coupon Discount</p>
-                <p>-SGD {couponDiscount.toFixed(2)}</p>
-              </div>
-            )}
-          </div>
-          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
-            <p>Add-on:</p>
-            <div>
-              {addonsSectionData.map((addon) => (
-                <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}:{' '}
-                  <span>SGD {(addOnTotal / tax).toFixed(2)}</span>
-                </p>
-              ))}
-              {dataSelectedAddOn.map((addon) => (
-                <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}:{' '}
-                  <span>SGD {(addon.feeSelected / tax).toFixed(2)}</span>
-                </p>
-              ))}
-            </div>
-          </div>
-          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
-            <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
-              <p>GST</p>
-              <p>SGD {gst.toFixed(2)}</p>
-            </div>
-            <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
-              <p>Net Premium</p>
-              <p>SDG {netPremium.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-        <div
-          className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
-          onClick={() => handleOkay()}
-        >
-          Okay
-        </div>
-      </div>
-    );
-  };
-
   if (isLoading) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
@@ -398,31 +305,16 @@ function AddOnDetail({
               <p>Here you can edit the car info or insurance details.</p>
             </Modal>
 
-            {isMobile.isMobile ? (
-              <Drawer
-                placement='bottom'
-                open={isShowPopupPremium}
-                onClose={() => setIsShowPopupPremium(false)}
-                closable={false}
-                height='auto'
-                className='rounded-t-xl'
-              >
-                {_renderPremium()}
-              </Drawer>
-            ) : (
-              <Modal
-                open={isShowPopupPremium}
-                onCancel={() => setIsShowPopupPremium(false)}
-                closable={false}
-                maskClosable={true}
-                keyboard={true}
-                footer={null}
-                width={400}
-                centered
-              >
-                <div>{_renderPremium()}</div>
-              </Modal>
-            )}
+            <ModalPremium
+              isShowPopupPremium={isShowPopupPremium}
+              setIsShowPopupPremium={setIsShowPopupPremium}
+              quoteInfo={quoteInfo}
+              totalFee={totalFee}
+              addonsFormatted={addonsFormatted}
+              dataSelectedAddOn={dataSelectedAddOn}
+              handleOkay={handleOkay}
+              isPending={isPending}
+            />
           </>
         )}
       </div>
