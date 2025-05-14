@@ -46,6 +46,7 @@ export const PolicyDetail = ({
   const userInfo = quoteInfo?.data?.personal_info;
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
   const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
+  const savedPromoCode = quoteInfo?.promo_code;
 
   useEffect(() => {
     if (!isSuccess) return;
@@ -63,7 +64,7 @@ export const PolicyDetail = ({
     : undefined;
 
   const initialValues = {
-    [MOTOR_QUOTE.promo_code]: promo_code ?? '',
+    [MOTOR_QUOTE.promo_code]: savedPromoCode?.code ?? promo_code ?? '',
     [MOTOR_QUOTE.start_date]: startData,
     [MOTOR_QUOTE.end_date]: endDate,
     [MOTOR_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? undefined,

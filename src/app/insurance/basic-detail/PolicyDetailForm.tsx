@@ -235,10 +235,12 @@ const PolicyDetailForm = ({
     searchParams.get('promo_code')?.toUpperCase().trim() || '';
   const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
+  const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
   const [showCSModal, setShowCSModal] = useState(false);
-  const [applyPromoCode, setApplyPromoCode] = useState(promoDefault);
+  const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
+
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
@@ -284,6 +286,10 @@ const PolicyDetailForm = ({
       value: item.name,
     }));
   }, [modelOptions]);
+
+  useEffect(() => {
+    setApplyPromoCode(initPromoCode);
+  }, [initPromoCode]);
 
   // to open Customer Service Modal - Unable to provide quote online
   useEffect(() => {
