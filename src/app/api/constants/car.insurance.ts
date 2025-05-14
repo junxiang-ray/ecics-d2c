@@ -1,4 +1,5 @@
 export const CAR_INSURANCE = {
+  PREFIX_ENDPOINT: 'b2c_privatecar',
   TYPE: 'car',
   PLAN_CODE: {
     COM: 'COM',
@@ -53,4 +54,9 @@ export const PLAN_ADDON_CONFIG = {
     applyLouAndCc: true,
     setDefaults: true,
   },
+};
+
+export const ADD_ON_VALUES = {
+  YES: 'Yes',
+  NO: 'No',
 };
