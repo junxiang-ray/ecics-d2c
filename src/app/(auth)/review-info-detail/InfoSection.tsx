@@ -1,6 +1,8 @@
-import { Tooltip } from 'antd';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Spin, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { ZodType } from 'zod';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { parsePhoneNumber, saveToSessionStorage } from '@/libs/utils/utils';
@@ -10,6 +12,7 @@ import {
   DropdownField,
   DropdownOption,
 } from '@/components/ui/form/dropdownfield';
+import { InputField } from '@/components/ui/form/inputfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
@@ -30,6 +33,7 @@ type InfoSectionProps = {
   boxClass?: string;
   setIsDisabled?: (val: boolean) => void;
   vehicleIndex?: number;
+  validationSchema: ZodType<any>;
 };
 const isReadOnly = true;
 
@@ -39,9 +43,12 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   boxClass = '',
   setIsDisabled,
   vehicleIndex,
+  validationSchema,
 }) => {
   const { isMobile } = useDeviceDetection();
-  const methods = useForm();
+  const methods = useForm({
+    resolver: zodResolver(validationSchema),
+  });
   const { setValue, watch } = methods;
   const selectedMakeId = watch('vehicle_make');
   const [showContactModal, setShowContactModal] = useState(false);
@@ -149,12 +156,17 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         )
       : false;
 
-    return (
+    const allCompleted =
       isVehicleCompleted &&
       isEmailValid &&
       isMobileValid &&
-      hasValidDrivingLicence
-    );
+      hasValidDrivingLicence;
+
+    if (allCompleted === true) {
+      setIsDisabled?.(false);
+    }
+
+    return allCompleted;
   };
 
   const handleInputChangeEmailPhone = (
@@ -193,14 +205,12 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     saveToSessionStorage({
       [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
     });
-    setIsDisabled?.(!isInputsCompleted);
   };
 
   const handlePersonalInfoInputChange = (
     inputName: string,
     value: any,
     setShowContactModal?: (show: boolean) => void,
-    setIsDisabled?: (isDisabled: boolean) => void,
   ) => {
     if (inputName === 'qualified_driving_license') {
       const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
@@ -263,7 +273,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       saveToSessionStorage({
         [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
       });
-      setIsDisabled?.(!isInputsCompleted);
     }
   };
 
@@ -338,7 +347,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
     updatedVehicles[index] = newVehicle;
 
-    const vehicleLength = sessionData.vehicle?.length ?? 0;
+    const vehicleLength = sessionData.vehicles?.length ?? 0;
 
     if (data.some((item) => item.value == null)) {
       if (vehicleLength === 0) {
@@ -371,7 +380,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     saveToSessionStorage({
       [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
     });
-    setIsDisabled?.(!isInputsCompleted);
   };
 
   //Call API
@@ -382,7 +390,8 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       text: item.name,
     })) || [];
 
-  const { data: modelOptionsData } = useGetVehicleModels(selectedMakeId || '');
+  const { data: modelOptionsData, isLoading: isLoadingModelOptions } =
+    useGetVehicleModels(selectedMakeId || '');
   const modelOptions: DropdownOption[] =
     modelOptionsData?.map((item: VehicleResponse) => ({
       value: item.id,
@@ -422,12 +431,12 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 isDrivingLicence)
             ) {
               return (
-                <FormProvider key={idx} {...methods}>
+                <div key={idx}>
                   <div>
                     {isEmailAddress && (
                       <>
                         <div className='text-sm font-bold'>Email Address</div>
-                        <input
+                        <InputField
                           name={nameKey}
                           type='text'
                           className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
@@ -439,7 +448,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                     {isPhoneNumber && (
                       <>
                         <div className='text-sm font-bold'>Phone Number</div>
-                        <input
+                        <InputField
                           name={nameKey}
                           type='text'
                           className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
@@ -469,6 +478,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                               makeText,
                             );
                           }}
+                          showSearch
                         />
                       </>
                     )}
@@ -493,6 +503,14 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                               modelText,
                             );
                           }}
+                          notFoundContent={
+                            isLoadingModelOptions ? (
+                              <Spin size='small' />
+                            ) : (
+                              'No results found'
+                            )
+                          }
+                          showSearch
                         />
                       </>
                     )}
@@ -541,7 +559,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                       </>
                     )}
                   </div>
-                </FormProvider>
+                </div>
               );
             }
 
@@ -550,7 +568,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 <div className='text-sm font-bold'>{item.label}</div>
                 <div className='text-sm'>
                   {item.value == null ? (
-                    <input
+                    <InputField
                       name={nameKey}
                       type='text'
                       className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
