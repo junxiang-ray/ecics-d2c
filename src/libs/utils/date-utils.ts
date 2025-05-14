@@ -188,7 +188,7 @@ export const extractYear = (dateString?: string): string | null => {
   return isNaN(date.getTime()) ? null : date.getFullYear().toString();
 };
 
-const parseCustomDate = (dateStr: string): Date | null => {
+export const parseCustomDate = (dateStr: string): Date | null => {
   const ddMmYyyyRegex = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
   if (ddMmYyyyRegex.test(dateStr)) {
     const [dayStr, monthStr, yearStr] = dateStr.split('/');
@@ -207,6 +207,16 @@ const parseCustomDate = (dateStr: string): Date | null => {
 
   const isoDate = new Date(dateStr);
   return isNaN(isoDate.getTime()) ? null : isoDate;
+};
+
+export const formatDateToEnGb = (dateStr: string): string => {
+  const date = parseCustomDate(dateStr);
+  if (!date) return '';
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
 };
 
 export const calculateDrivingExperienceFromLicences = (

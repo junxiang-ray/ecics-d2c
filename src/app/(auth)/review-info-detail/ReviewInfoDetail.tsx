@@ -15,6 +15,7 @@ import {
   calculateDrivingExperienceFromLicences,
   convertDateToDDMMYYYY,
   extractYear,
+  formatDateToEnGb,
 } from '@/libs/utils/date-utils';
 import {
   calculateAge,
@@ -280,13 +281,7 @@ const ReviewInfoDetail = () => {
                   .map((c: any) => {
                     const cls = c.class?.value || '';
                     const issued = c.issuedate?.value
-                      ? new Date(c.issuedate.value)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                          })
-                          .replace(/ /g, ' ')
+                      ? formatDateToEnGb(c.issuedate.value)
                       : '';
                     return `${cls} / ${issued}`;
                   })
