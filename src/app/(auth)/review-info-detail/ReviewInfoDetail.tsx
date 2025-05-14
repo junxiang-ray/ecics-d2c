@@ -676,7 +676,7 @@ const ReviewInfoDetail = () => {
               Cancel
             </SecondaryButton>
             <PrimaryButton
-              onClick={methods.handleSubmit(handleContinue)}
+              onClick={handleContinue}
               className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
               disabled={isDisabled}
             >

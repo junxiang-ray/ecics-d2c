@@ -166,8 +166,47 @@ export const convertDateToDDMMYYYY = (date: string) => {
 //get only year
 export const extractYear = (dateString?: string): string | null => {
   if (!dateString) return null;
-  const date = new Date(dateString);
+
+  let date: Date;
+
+  // Check format DD/MM/YYYY or DD/MM/YY
+  const ddMmYyyyRegex = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
+  if (ddMmYyyyRegex.test(dateString)) {
+    const [dayStr, monthStr, yearStr] = dateString.split('/');
+    const day = parseInt(dayStr, 10);
+    const month = parseInt(monthStr, 10) - 1;
+    let year = parseInt(yearStr, 10);
+
+    if (yearStr.length === 2) {
+      year += 2000;
+    }
+
+    date = new Date(year, month, day);
+  } else {
+    date = new Date(dateString);
+  }
   return isNaN(date.getTime()) ? null : date.getFullYear().toString();
+};
+
+const parseCustomDate = (dateStr: string): Date | null => {
+  const ddMmYyyyRegex = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
+  if (ddMmYyyyRegex.test(dateStr)) {
+    const [dayStr, monthStr, yearStr] = dateStr.split('/');
+    const day = parseInt(dayStr, 10);
+    const month = parseInt(monthStr, 10) - 1;
+    let year = parseInt(yearStr, 10);
+
+    // Year digit 2: is defined as 19xx or 20xx
+    if (yearStr.length === 2) {
+      year += year < 50 ? 2000 : 1900;
+    }
+
+    const date = new Date(year, month, day);
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  const isoDate = new Date(dateStr);
+  return isNaN(isoDate.getTime()) ? null : isoDate;
 };
 
 export const calculateDrivingExperienceFromLicences = (
@@ -187,9 +226,9 @@ export const calculateDrivingExperienceFromLicences = (
     const issuedateStr = c.issuedate?.value;
 
     if (classValue && targetClasses.includes(classValue) && issuedateStr) {
-      const date = new Date(issuedateStr);
-      if (!isNaN(date.getTime())) {
-        qdlDates.push(date);
+      const parsedDate = parseCustomDate(issuedateStr);
+      if (parsedDate) {
+        qdlDates.push(parsedDate);
       }
     }
   }
