@@ -17,7 +17,7 @@ export function PricingSummary({
   const totalFee = fee / (1 - discount / 100);
   return (
     <div className='w-full border border-[#DEE1E6] md:flex md:flex-row md:justify-center'>
-      <div className='fixed bottom-0 left-1/2 z-10 mt-2 flex w-full -translate-x-1/2 transform flex-row items-center justify-between border border-[#DEE1E6] bg-[#FFFEFF] px-4 py-3 md:static md:bottom-auto md:left-0 md:z-auto md:max-w-[800px] md:translate-x-0 md:rounded-md md:border-none'>
+      <div className='fixed bottom-0 left-1/2 mt-2 flex w-full -translate-x-1/2 transform flex-row items-center justify-between border border-[#DEE1E6] bg-[#FFFEFF] px-4 py-3 md:static md:bottom-auto md:left-0 md:z-auto md:max-w-[800px] md:translate-x-0 md:rounded-md md:border-none'>
         <div className='flex flex-col gap-1'>
           <p className='text-[18px] font-semibold leading-6 text-[#323743] md:text-[28px] md:font-bold md:text-[#1B223C] '>
             S$ {fee.toFixed(2)}{' '}
