@@ -339,7 +339,7 @@ export default function Page() {
   }, [plan]);
 
   useEffect(() => {
-    // setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
+    // setDrivers(quote?.data?.add_named_driver_info ?? []);
     setAddonsAdded(defaultAddonsAdded);
     setAddonsSelected(defaultAddonsSelected);
   }, [defaultAddonsAdded, defaultAddonsSelected]);
@@ -398,12 +398,98 @@ export default function Page() {
 
   const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
 
+  // const _renderPremium = () => {
+  //   const planFee = totalFee || 0;
+  //   const discountRate = quote?.promo_code?.discount || 0;
+  //   const couponDiscount = planFee * (discountRate / 100);
+  //   const gst = 35;
+  //   const addonsSectionDataT = Object.entries(quote?.data.selected_addons || {})
+  //     .filter(([, selectedValue]) => selectedValue !== 'NO')
+  //     .map(([code, selectedValue]) => {
+  //       const addon = addonsFormatted.find((a) => a.code === code);
+  //       const value =
+  //         addon?.options?.find((opt: any) => opt.value === selectedValue)
+  //           ?.value || selectedValue;
+
+  //       return {
+  //         title: addon?.title || code,
+  //         value: value,
+  //       };
+  //     });
+
+  //   const addOnTotal = addonsSectionData.reduce((acc, addon) => {
+  //     const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
+  //     return acc + value;
+  //   }, 0);
+
+  //   const netPremium = planFee - couponDiscount + addOnTotal + gst;
+
+  //   return (
+  //     <div>
+  //       <div className='flex justify-end'>
+  //         <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
+  //           Save
+  //         </div>
+  //       </div>
+  //       <div className='mt-6 flex w-full flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
+  //         <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
+  //           Premium Breakdown
+  //         </p>
+  //         <div className='flex flex-col gap-3'>
+  //           <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
+  //             <div className='flex flex-row justify-between text-base leading-[30px] text-[#171A1F]'>
+  //               <p className='mr-5 font-normal'>
+  //                 {quote?.data?.selected_plan ?? ''}
+  //               </p>
+  //               <p>SGD {planFee}</p>
+  //             </div>
+  //             <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
+  //               <p>Coupon Discount</p>
+  //               <p>-SGD {couponDiscount.toFixed(2)}</p>
+  //             </div>
+  //           </div>
+
+  //           <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
+  //             <p className='font-bold text-[#171A1F]'>Add-on:</p>
+  //             {addonsSectionDataT.map((addon) => (
+  //               <p key={addon.title} className='flex flex-row justify-between'>
+  //                 {addon.title}: <span>SGD {addOnTotal}</span>
+  //               </p>
+  //             ))}
+  //           </div>
+  //           <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
+  //             <div className='flex flex-row justify-between'>
+  //               <p>Net Premium</p>
+  //               <p>SGD {netPremium.toFixed(2)}</p>
+  //             </div>
+  //             <div className='flex flex-row justify-between'>
+  //               <p>GST</p>
+  //               <p>SGD {gst}</p>
+  //             </div>
+  //           </div>
+  //           <div className='flex flex-row justify-between font-bold'>
+  //             <p>Total (including GST)</p>
+  //           </div>
+  //         </div>
+  //         <SecondaryButton
+  //           onClick={onPay}
+  //           loading={isPending}
+  //           className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+  //         >
+  //           Pay
+  //         </SecondaryButton>
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
   const _renderPremium = () => {
-    const planFee = totalFee || 0;
+    const pricePlan = totalFee || 0;
     const discountRate = quote?.promo_code?.discount || 0;
-    const couponDiscount = planFee * (discountRate / 100);
-    const gst = 35;
-    const addonsSectionDataT = Object.entries(quote?.data.selected_addons || {})
+    const tax = 1.09;
+    const feePlan = pricePlan / (1 - discountRate / 100) / tax;
+    const couponDiscount = feePlan * (discountRate / 100);
+    const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
       .filter(([, selectedValue]) => selectedValue !== 'NO')
       .map(([code, selectedValue]) => {
         const addon = addonsFormatted.find((a) => a.code === code);
@@ -416,69 +502,70 @@ export default function Page() {
           value: value,
         };
       });
-
     const addOnTotal = addonsSectionData.reduce((acc, addon) => {
       const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
       return acc + value;
     }, 0);
 
-    const netPremium = planFee - couponDiscount + addOnTotal + gst;
+    const netPremium = feePlan - couponDiscount + addOnTotal / tax;
+    const valueCalculatedGST = 9;
+    const gst = (netPremium * valueCalculatedGST) / 100;
 
     return (
-      <div>
-        <div className='flex justify-end'>
-          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
-            Save
-          </div>
-        </div>
-        <div className='mt-6 flex w-full flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
-          <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
-            Premium Breakdown
-          </p>
-          <div className='flex flex-col gap-3'>
-            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
-              <div className='flex flex-row justify-between text-base leading-[30px] text-[#171A1F]'>
-                <p className='mr-5 font-normal'>
-                  {quote?.data?.selected_plan ?? ''}
-                </p>
-                <p>SGD {planFee}</p>
-              </div>
-              <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
+      <div className='flex flex-col gap-6'>
+        <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
+          Premium Breakdown
+        </p>
+        <div className='flex flex-col gap-6'>
+          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
+            <div className='flex flex-row justify-between font-semibold '>
+              <p>{quote?.data?.selected_plan ?? ''}</p>
+              <p>SGD {feePlan.toFixed(2)}</p>
+            </div>
+
+            {quote?.promo_code && (
+              <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
                 <p>Coupon Discount</p>
                 <p>-SGD {couponDiscount.toFixed(2)}</p>
               </div>
-            </div>
-
-            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
-              <p className='font-bold text-[#171A1F]'>Add-on:</p>
-              {addonsSectionDataT.map((addon) => (
-                <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}: <span>SGD {addOnTotal}</span>
-                </p>
-              ))}
-            </div>
-            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
-              <div className='flex flex-row justify-between'>
-                <p>Net Premium</p>
-                <p>SGD {netPremium.toFixed(2)}</p>
-              </div>
-              <div className='flex flex-row justify-between'>
-                <p>GST</p>
-                <p>SGD {gst}</p>
-              </div>
-            </div>
-            <div className='flex flex-row justify-between font-bold'>
-              <p>Total (including GST)</p>
+            )}
+          </div>
+          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
+            <p>Add-on:</p>
+            <div>
+              {addonsSectionData.map((addon) => {
+                const addonValue =
+                  parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
+                return (
+                  <p
+                    key={addon.title}
+                    className='flex flex-row justify-between'
+                  >
+                    {addon.title}:{' '}
+                    <span>SGD {(addonValue / tax).toFixed(2)}</span>
+                  </p>
+                );
+              })}
             </div>
           </div>
-          <SecondaryButton
-            onClick={onPay}
-            loading={isPending}
-            className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
-          >
-            Pay
-          </SecondaryButton>
+          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
+            <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
+              <p>GST</p>
+              <p>SGD {gst.toFixed(2)}</p>
+            </div>
+            <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
+              <p>Net Premium</p>
+              <p>SGD {netPremium.toFixed(2)}</p>
+            </div>
+          </div>
         </div>
+        <SecondaryButton
+          onClick={onPay}
+          loading={isPending}
+          className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+        >
+          Pay
+        </SecondaryButton>
       </div>
     );
   };

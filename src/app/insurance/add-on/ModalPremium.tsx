@@ -50,7 +50,6 @@ const ModalPremium = (props: Props) => {
           value: value,
         };
       });
-
     const addOnTotal = addonsSectionData.reduce((acc, addon) => {
       const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
       return acc + value;
@@ -63,8 +62,9 @@ const ModalPremium = (props: Props) => {
       },
       0,
     );
+
     const netPremium =
-      pricePlan - couponDiscount + addOnTotal + selectAddOnTotal;
+      feePlan - couponDiscount + addOnTotal / tax + selectAddOnTotal / tax;
     const valueCalculatedGST = 9;
     const gst = (netPremium * valueCalculatedGST) / 100;
 
@@ -90,12 +90,19 @@ const ModalPremium = (props: Props) => {
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
             <p>Add-on:</p>
             <div>
-              {addonsSectionData.map((addon) => (
-                <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}:{' '}
-                  <span>SGD {(addOnTotal / tax).toFixed(2)}</span>
-                </p>
-              ))}
+              {addonsSectionData.map((addon) => {
+                const addonValue =
+                  parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
+                return (
+                  <p
+                    key={addon.title}
+                    className='flex flex-row justify-between'
+                  >
+                    {addon.title}:{' '}
+                    <span>SGD {(addonValue / tax).toFixed(2)}</span>
+                  </p>
+                );
+              })}
               {dataSelectedAddOn.map((addon: any) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
                   {addon.title}:{' '}
@@ -111,7 +118,7 @@ const ModalPremium = (props: Props) => {
             </div>
             <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
               <p>Net Premium</p>
-              <p>SDG {netPremium.toFixed(2)}</p>
+              <p>SGD {netPremium.toFixed(2)}</p>
             </div>
           </div>
         </div>
