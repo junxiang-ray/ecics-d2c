@@ -38,6 +38,8 @@ const UnMatchVehicleModal = ({
   const { isMobile } = useDeviceDetection();
   const { setValue, watch } = methods;
   const selectedMakeId = watch('vehicle_make');
+  const selectedModelId = watch('vehicle_model');
+  const isSubmitDisabled = !selectedMakeId || !selectedModelId;
 
   const { mutate: savePersonalInfo } = usePostPersonalInfo();
 
@@ -226,7 +228,11 @@ const UnMatchVehicleModal = ({
           </div>
 
           <div className='flex justify-center gap-4 bg-white pt-4'>
-            <PrimaryButton onClick={handleSubmit} className='w-full'>
+            <PrimaryButton
+              onClick={handleSubmit}
+              className='w-full'
+              disabled={isSubmitDisabled}
+            >
               Submit
             </PrimaryButton>
           </div>
