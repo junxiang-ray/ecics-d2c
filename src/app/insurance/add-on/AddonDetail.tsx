@@ -257,8 +257,8 @@ function AddOnDetail({
   }
 
   return (
-    <div className='flex w-full flex-col items-center justify-center'>
-      <div className='max-w-[1280px]'>
+    <div className='flex w-full max-w-[1280px] flex-col items-center justify-center'>
+      <div className='w-full'>
         {isShowBonusDetail ? (
           <AddOnBonusDetailManualForm
             key={quoteInfo?.data.key}
