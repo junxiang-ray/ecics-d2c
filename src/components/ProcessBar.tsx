@@ -44,7 +44,7 @@ export default function ProcessBar({ currentStep, onChange }: ProcessBarProps) {
         </p>
       ),
       status: stepStatus,
-      // disabled: stepStatus === 'wait',
+      disabled: stepStatus === 'wait',
       icon:
         stepStatus === 'wait' ? (
           <div className='custom-step-wait'></div>

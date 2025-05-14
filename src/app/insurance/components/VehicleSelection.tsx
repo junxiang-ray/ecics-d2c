@@ -1,6 +1,7 @@
 'use client';
 
 import { Drawer, Modal, Radio, Space, Typography } from 'antd';
+import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
@@ -50,9 +51,13 @@ export const VehicleSelectionModal = ({
   onClose,
 }: VehicleSelectionModalProps) => {
   const { isMobile } = useDeviceDetection();
+  const searchParams = useSearchParams();
   const [selectedChasisNumber, setSelectedChasisNumber] = useState(
     selected?.chasis_number,
   );
+  const partner_code = searchParams.get('partner_code') || '';
+  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+
   const [showContactModal, setShowContactModal] = useState(false);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
 
@@ -78,17 +83,24 @@ export const VehicleSelectionModal = ({
       const v = updatedParsed.vehicle_selected || {};
 
       const vehicle_info_selected = {
-        chasis_number: v.vehicleno?.value || '',
-        vehicle_make: v.make?.value || '',
-        vehicle_model: v.model?.value || '',
+        vehicle_number: v.vehicleno?.value || '',
         first_registered_year:
           extractYear(v.firstregistrationdate?.value) || '',
+        vehicle_make: v.make?.value || '',
+        vehicle_model: v.model?.value || '',
+        engine_number: v.engineno?.value || '',
+        chasis_number: v.chassisno?.value || '',
+        engine_capacity: v.enginecapacity?.value || '',
+        power_rate: v.powerrate?.value || '',
+        year_of_manufacture: v.yearofmanufacture?.value || '',
       };
 
       const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
         is_sending_email: false,
+        promo_code: promo_code,
+        partner_code: partner_code,
         personal_info: {
           name: updatedParsed.name?.value || '',
           gender: updatedParsed.sex?.desc || '',

@@ -11,8 +11,9 @@ import { ROUTES } from '@/constants/routes';
 
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
+import { useVerifyPartnerCode } from '@/hook/insurance/common';
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
@@ -36,6 +37,8 @@ interface InsuranceLayoutProps {
 function InsuranceLayout({ children }: InsuranceLayoutProps) {
   const router = useRouterWithQuery();
   const pathName = usePathname();
+  const params = useSearchParams();
+  const partner_code = params.get('partner_code') || '';
   const childSaveRef = useRef<() => any>(() => null);
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
@@ -56,14 +59,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   };
 
   const handleBack = () => {
-    if (currentStep === undefined) return;
-    if (currentStep === StepProcessBar.POLICY_DETAILS) {
-      router.push(ROUTES.AUTH.REVIEW_INFO_DETAIL);
-      return;
-    }
-    const previousStep = currentStep - 1;
-    setCurrentStep(+previousStep as StepProcessBar);
-    router.push(stepToRoute[previousStep as StepProcessBar]);
+    router.back();
   };
 
   const handleSave = () => {
@@ -76,13 +72,15 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       is_sending_email: true,
     });
   };
+  const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
+
   return (
     <>
       <div className='sticky top-0 z-10 w-full bg-white'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
             businessName='Business Partner Name'
-            companyName='Leo Management Consultancy Pte Ltd'
+            companyName={partnerInfo?.partner_name}
             onBackClick={handleBack}
           />
         </div>
@@ -105,7 +103,8 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
           </PrimaryButton>
         </div>
       </div>
-      <div className='mx-auto w-full max-w-[1280px] px-2'>
+
+      <div className='mx-auto flex w-full flex-col items-center justify-between'>
         {typeof children === 'function'
           ? children({
               onSave: (fn: () => any) => (childSaveRef.current = fn),

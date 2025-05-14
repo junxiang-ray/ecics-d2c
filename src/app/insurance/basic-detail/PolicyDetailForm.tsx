@@ -612,7 +612,7 @@ const PolicyDetailForm = ({
                     name={MOTOR_QUOTE.owner_claim_amount}
                     label='Last Claim Amount?'
                     options={CLAIM_AMOUNT_OPTIONS}
-                  ></RadioField>
+                  />
                 </Form.Item>
               ) : null}
 

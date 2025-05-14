@@ -11,6 +11,7 @@ import AddOnRow from './AddOnRow';
 import AdditionDriver from '../components/AdditionDriver';
 import { AddOnFormat } from './AddonDetail';
 import dayjs from 'dayjs';
+import { set } from 'zod';
 
 const ADDON_CARS = ['CAR_COM_AND', 'CAR_TPFT_AND', 'CAR_TPO_AND'];
 
@@ -65,6 +66,12 @@ function AddOnRowDetail({
       ...prev,
       [addon.code]: selectedOption,
     }));
+  };
+  const handleRemoveAdditionalDriver = (driver: AddNamedDriverInfo) => {
+    const updatedDrivers = drivers.filter(
+      (d) => d.nric_or_fin !== driver.nric_or_fin,
+    );
+    setDrivers(updatedDrivers);
   };
   useEffect(() => {
     if (!isAddonCars) return;
@@ -187,7 +194,7 @@ function AddOnRowDetail({
                   <SecondaryButton
                     className='black h-8 w-28 rounded-md'
                     onClick={() => {
-                      handleAddAddonWithDriver(addon);
+                      // handleAddAddonWithDriver(addon);
                       setIsShowAdditionDriver(true);
                     }}
                   >
@@ -200,7 +207,10 @@ function AddOnRowDetail({
                     setIsShowAdditionDriver={setIsShowAdditionDriver}
                     setDataDrivers={setDrivers}
                     dataDrivers={drivers}
-                    policyStartDate={dayjs(policyStartDate).toDate()}
+                    policyStartDate={dayjs(
+                      policyStartDate,
+                      'DD/MM/YYYY',
+                    ).toDate()}
                   />
                 )}
               </div>
@@ -216,7 +226,7 @@ function AddOnRowDetail({
                       </p>
                       <PrimaryButton
                         className='black h-8 w-28 rounded-md bg-red-400'
-                        onClick={() => setIsShowAdditionDriver(true)}
+                        onClick={() => handleRemoveAdditionalDriver(driver)}
                       >
                         Remove
                       </PrimaryButton>

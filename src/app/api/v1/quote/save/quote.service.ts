@@ -26,9 +26,9 @@ export async function saveQuote(data: saveQuoteDTO) {
         product_id: data.product_id || existingQuote.product_id,
         proposal_id: data.proposal_id || existingQuote.proposal_id,
         is_sending_email: data.is_sending_email ?? false,
-        phone: data.data.personal_info.phone || existingQuote.phone,
-        email: data.data.personal_info.email || existingQuote.email,
-        name: data.data.personal_info.name || existingQuote.name,
+        phone: data?.data?.personal_info?.phone || existingQuote.phone,
+        email: data?.data?.personal_info?.email || existingQuote.email,
+        name: data?.data?.personal_info?.name || existingQuote.name,
         data: {
           ...(typeof existingQuote.data === 'object' &&
           existingQuote.data !== null
