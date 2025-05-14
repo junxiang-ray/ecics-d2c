@@ -167,6 +167,7 @@ function PlanDetail({
       <SelfDeclarationConfirmModal
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}
+        onCancel={() => setShowConfirmDeclaration(false)}
       />
     </div>
   );
