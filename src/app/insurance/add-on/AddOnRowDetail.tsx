@@ -139,6 +139,7 @@ function AddOnRowDetail({
   if (addon.is_display === false) {
     return null;
   }
+
   return (
     <AddOnRow
       isRecommended={addon.is_recommended}
