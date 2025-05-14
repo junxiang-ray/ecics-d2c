@@ -132,6 +132,7 @@ function AddOnRowDetail({
   if (addon.is_display === false) {
     return null;
   }
+
   return (
     <AddOnRow
       isRecommended={addon.is_recommended}
@@ -187,7 +188,7 @@ function AddOnRowDetail({
                   <SecondaryButton
                     className='black h-8 w-28 rounded-md'
                     onClick={() => {
-                      handleAddAddonWithDriver(addon);
+                      // handleAddAddonWithDriver(addon);
                       setIsShowAdditionDriver(true);
                     }}
                   >
@@ -200,7 +201,10 @@ function AddOnRowDetail({
                     setIsShowAdditionDriver={setIsShowAdditionDriver}
                     setDataDrivers={setDrivers}
                     dataDrivers={drivers}
-                    policyStartDate={dayjs(policyStartDate).toDate()}
+                    policyStartDate={dayjs(
+                      policyStartDate,
+                      'DD/MM/YYYY',
+                    ).toDate()}
                   />
                 )}
               </div>

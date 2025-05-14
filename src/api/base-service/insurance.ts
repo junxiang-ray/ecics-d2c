@@ -2,7 +2,6 @@ import { SavePersonalInfoPayload } from '@/libs/types/auth';
 import {
   ProposalPayload,
   QuoteCreationPayload,
-  QuoteData,
   QuoteResponse,
 } from '@/libs/types/quote';
 

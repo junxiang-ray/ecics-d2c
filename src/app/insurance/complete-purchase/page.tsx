@@ -27,6 +27,7 @@ import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { AddOnFormat } from '../add-on/AddonDetail';
+import ImportantNoticeModal from './review-your-detail/modal/ImportantNoticeModal';
 
 function calculateFee(
   option: Option,
@@ -92,6 +93,7 @@ export default function Page() {
   }>({});
   const [showModal, setShowModal] = useState(false);
   const { isMobile } = useDeviceDetection();
+  const [isShowRecalculation, setIsShowRecalculation] = useState(false);
 
   const toggleSection = (key: string) => {
     setExpandedSections((prev) => ({
@@ -119,13 +121,14 @@ export default function Page() {
   const routerBySectionKey = (key: string) => {
     switch (key) {
       case 'basic':
+      case 'vehicle':
+      case 'owner':
         return ROUTES.INSURANCE.BASIC_DETAIL;
       case 'addons':
+      case 'driver':
         return ROUTES.INSURANCE.ADD_ON;
       case 'policy':
         return ROUTES.INSURANCE.PLAN;
-      case 'driver':
-        return ROUTES.INSURANCE.ADD_ON;
       default:
         return undefined;
     }
@@ -348,6 +351,10 @@ export default function Page() {
   }, [isSuccess, dataPayment]);
 
   const onPay = async () => {
+    setIsShowRecalculation(true);
+  };
+
+  const handlePay = () => {
     saveProposalFinalize(key);
     payment(key);
   };
@@ -543,7 +550,14 @@ export default function Page() {
             })}
           </div>
         </div>
-
+        {isShowRecalculation && (
+          <ImportantNoticeModal
+            onSave={handlePay}
+            IsShowRecalculation={isShowRecalculation}
+            setIsShowRecalculation={setIsShowRecalculation}
+            isPending={isPending}
+          />
+        )}
         {isMobile ? (
           <div className='mt-2 md:px-44'>
             <PricingSummary

@@ -23,6 +23,7 @@ import {
 import { validateNRIC } from '@/libs/utils/validation-utils';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import dayjs from 'dayjs';
+import RadioField from '@/components/ui/form/radiofield';
 
 interface Props {
   isShowAdditionDriver: boolean;
@@ -84,6 +85,14 @@ const createSchema = (policyStartDate: Date) =>
             .refine((val) => val > 1, {
               message:
                 'Driver must have at least 2 years of driving experience.',
+            }),
+          is_claim_in_3_years: z
+            .string({
+              required_error: 'Claim status is required',
+              invalid_type_error: 'Claim status is required',
+            })
+            .refine((val) => val !== 'true', {
+              message: 'Driver must have no claims in the past 3 years.',
             }),
         }),
       )
@@ -236,6 +245,14 @@ const AdditionDriver = ({
               label='Driving Experience'
               placeholder='Select driving experience'
               options={DRV_EXP_OPTIONS}
+            />
+            <RadioField
+              name={`drivers.${index}.is_claim_in_3_years`}
+              label='Do you have a claim in the past 3 years?'
+              options={[
+                { value: 'true', text: 'Yes' },
+                { value: 'false', text: 'No' },
+              ]}
             />
           </div>
         ))}
