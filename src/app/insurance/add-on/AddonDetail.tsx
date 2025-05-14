@@ -318,15 +318,17 @@ function AddOnDetail({
           </>
         )}
       </div>
-      <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
-        <PricingSummary
-          fee={totalFee}
-          discount={quoteInfo?.promo_code?.discount || 0}
-          title='Premium breakdown'
-          textButton='Continue'
-          onClick={() => setIsShowPopupPremium(true)}
-        />
-      </div>
+      {!isShowBonusDetail && (
+        <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+          <PricingSummary
+            fee={totalFee}
+            discount={quoteInfo?.promo_code?.discount || 0}
+            title='Premium breakdown'
+            textButton='Continue'
+            onClick={() => setIsShowPopupPremium(true)}
+          />
+        </div>
+      )}
     </div>
   );
 }

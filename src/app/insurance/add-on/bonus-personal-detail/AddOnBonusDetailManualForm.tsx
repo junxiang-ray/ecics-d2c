@@ -58,8 +58,8 @@ const createSchema = () =>
       .max(50, 'Chasis must be at most 50 characters'),
     engineNumber: z
       .string()
-      .nonempty('Engine is required')
-      .max(50, 'Engine must be at most 50 characters'),
+      .max(50, 'Engine must be at most 50 characters')
+      .optional(),
     vehicleNumber: z
       .string()
       .min(1, 'Vehicle number is required')
@@ -256,6 +256,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='engineNumber'
                 label='Engine Number'
                 placeholder='Enter Engine Number'
+                required={false}
               />
             </Form.Item>
 
@@ -272,7 +273,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           </div>
         </div>
 
-        <div className='mt-4 flex w-full flex-row justify-center gap-6 border-t border-[#F7F7F9] py-4'>
+        <div className='mt-8 flex w-full flex-row justify-center gap-6 border-t border-[#F7F7F9] py-4'>
           <SecondaryButton
             className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
             onClick={() => {
