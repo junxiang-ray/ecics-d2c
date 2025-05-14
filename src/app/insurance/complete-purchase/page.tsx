@@ -351,10 +351,6 @@ export default function Page() {
   }, [isSuccess, dataPayment]);
 
   const onPay = async () => {
-    setIsShowRecalculation(true);
-  };
-
-  const handlePay = () => {
     saveProposalFinalize(key);
     payment(key);
   };
@@ -430,7 +426,12 @@ export default function Page() {
 
     return (
       <div>
-        <div className='flex w-full flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
+        <div className='flex justify-end'>
+          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
+            Save
+          </div>
+        </div>
+        <div className='mt-6 flex w-full flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
             Premium Breakdown
           </p>
@@ -491,11 +492,13 @@ export default function Page() {
   }
 
   return (
-    <div className='px-4'>
-      <h1 className='mb-4 text-xl font-bold'>Review your details</h1>
-      <div className='flex w-full flex-col md:flex-row md:gap-6'>
-        <div className='flex flex-col lg:flex-row lg:gap-6'>
+    <div className='px-4 py-4 md:py-16 '>
+      <div className='flex w-full flex-col justify-center md:flex-row md:gap-6'>
+        <div className='lg:gap-600 flex flex-col lg:flex-row'>
           <div className='flex-1'>
+            <h1 className='text-center text-xl font-semibold text-[#080808] md:text-[32px] md:font-bold md:leading-[48px] md:text-[#171A1F]'>
+              Review your details
+            </h1>
             {sections.map((section) => {
               if (section.key === 'driver') {
                 const drivers = getDriverSections(
@@ -550,14 +553,6 @@ export default function Page() {
             })}
           </div>
         </div>
-        {isShowRecalculation && (
-          <ImportantNoticeModal
-            onSave={handlePay}
-            IsShowRecalculation={isShowRecalculation}
-            setIsShowRecalculation={setIsShowRecalculation}
-            isPending={isPending}
-          />
-        )}
         {isMobile ? (
           <div className='mt-2 md:px-44'>
             <PricingSummary
