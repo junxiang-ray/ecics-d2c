@@ -45,6 +45,7 @@ function PlanDetail({
   useEffect(() => {
     onSaveRegister(() => {
       const data = {
+        ...quoteInfo?.data,
         current_step: UserStep.SELECT_PLAN,
         selected_plan: selectedPlan?.title,
         key: key,
@@ -81,11 +82,11 @@ function PlanDetail({
 
   const choicePlan = (plan: FormatPlan | null) => {
     const data = {
+      ...quoteInfo?.data,
       selected_plan: plan?.title,
       key: key,
     };
     saveQuote({ key, data, is_sending_email: false }).then((res) => {
-      console.log('res :>> ', res);
       router.push(ROUTES.INSURANCE.ADD_ON);
     });
     setShowConfirmDeclaration(false);
@@ -167,6 +168,7 @@ function PlanDetail({
       <SelfDeclarationConfirmModal
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}
+        onCancel={() => setShowConfirmDeclaration(false)}
       />
     </div>
   );

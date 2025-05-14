@@ -87,7 +87,7 @@ function SelfDeclarationConfirmModal({
       <Drawer
         placement='bottom'
         open={visible}
-        onClose={onOk}
+        onClose={onCancel}
         closable={false}
         height='auto'
         className='rounded-t-xl'
@@ -101,7 +101,7 @@ function SelfDeclarationConfirmModal({
     <Modal
       open={visible}
       onOk={onOk}
-      onCancel={onOk}
+      onCancel={onCancel}
       closable={true}
       maskClosable={true}
       keyboard={true}

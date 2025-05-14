@@ -156,12 +156,17 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         )
       : false;
 
-    return (
+    const allCompleted =
       isVehicleCompleted &&
       isEmailValid &&
       isMobileValid &&
-      hasValidDrivingLicence
-    );
+      hasValidDrivingLicence;
+
+    if (allCompleted === true) {
+      setIsDisabled?.(false);
+    }
+
+    return allCompleted;
   };
 
   const handleInputChangeEmailPhone = (
@@ -200,14 +205,12 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     saveToSessionStorage({
       [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
     });
-    setIsDisabled?.(!isInputsCompleted);
   };
 
   const handlePersonalInfoInputChange = (
     inputName: string,
     value: any,
     setShowContactModal?: (show: boolean) => void,
-    setIsDisabled?: (isDisabled: boolean) => void,
   ) => {
     if (inputName === 'qualified_driving_license') {
       const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
@@ -270,7 +273,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       saveToSessionStorage({
         [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
       });
-      setIsDisabled?.(!isInputsCompleted);
     }
   };
 
@@ -378,7 +380,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     saveToSessionStorage({
       [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
     });
-    setIsDisabled?.(!isInputsCompleted);
   };
 
   //Call API

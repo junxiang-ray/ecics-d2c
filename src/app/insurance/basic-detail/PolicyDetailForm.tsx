@@ -6,6 +6,10 @@ import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 
@@ -25,14 +29,6 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 
-dayjs.extend(isSameOrAfter);
-dayjs.extend(isSameOrBefore);
-
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { z } from 'zod';
-
 import { UnableQuote } from './modal/UnableQuote';
 import {
   CLAIM_AMOUNT_OPTIONS,
@@ -42,6 +38,8 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 const sryMsg = 'Sorry, we cannot provide you a quotation online';
 
@@ -613,7 +611,7 @@ const PolicyDetailForm = ({
                     name={MOTOR_QUOTE.owner_claim_amount}
                     label='Last Claim Amount?'
                     options={CLAIM_AMOUNT_OPTIONS}
-                  ></RadioField>
+                  />
                 </Form.Item>
               ) : null}
 
