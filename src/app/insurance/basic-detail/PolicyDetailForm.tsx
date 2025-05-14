@@ -18,7 +18,6 @@ import {
   DropdownField,
   DropdownOption,
 } from '@/components/ui//form/dropdownfield';
-import RadioField from '@/components/ui//form/radiofield';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
@@ -31,10 +30,11 @@ import {
 
 import { UnableQuote } from './modal/UnableQuote';
 import {
-  CLAIM_AMOUNT_OPTIONS,
   DRV_EXP_OPTIONS,
   NCD_OPTIONS,
   NO_CLAIM_OPTIONS,
+  NumberClaim,
+  NumberDriverExperience,
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
@@ -68,13 +68,12 @@ const singpassFlowFields = {
     required_error: 'This field is required',
   }),
   [MOTOR_QUOTE.owner_no_of_claims]: z
-    .number({
+    .string({
       required_error: 'This field is required',
     })
-    .refine((val) => !isNaN(Number(val)) && Number(val) < 2, {
+    .refine((val) => val !== NumberClaim.TWO_MANY_CLAIMS, {
       message: sryMsg,
     }),
-  [MOTOR_QUOTE.owner_claim_amount]: z.string().optional(),
   [MOTOR_QUOTE.promo_code]: z.string().optional(),
 };
 
@@ -98,10 +97,10 @@ const nonSingpassFlowFields = {
     required_error: 'This field is required',
   }),
   [MOTOR_QUOTE.owner_drv_exp]: z
-    .number({
+    .string({
       required_error: 'This field is required',
     })
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 2, {
+    .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
       message: sryMsg,
     }),
   [MOTOR_QUOTE.vehicle_make]: z
@@ -125,42 +124,6 @@ const createSchema = (isSingpassFlow: boolean) => {
   );
 
   return baseSchema
-    .refine(
-      (data) => {
-        return !(
-          data[MOTOR_QUOTE.owner_no_of_claims] === 1 &&
-          !data[MOTOR_QUOTE.owner_claim_amount]
-        );
-      },
-      {
-        message: 'This field is required',
-        path: [MOTOR_QUOTE.owner_claim_amount],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data[MOTOR_QUOTE.owner_claim_amount] === '>20000') {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: sryMsg,
-        path: [MOTOR_QUOTE.owner_claim_amount],
-      },
-    )
-    .refine(
-      (data) => {
-        if (data[MOTOR_QUOTE.owner_claim_amount] === '>20000') {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: sryMsg,
-        path: [MOTOR_QUOTE.owner_claim_amount],
-      },
-    )
     .refine(
       (data) => {
         const startDate = data[MOTOR_QUOTE.start_date];
@@ -257,9 +220,8 @@ const PolicyDetailForm = ({
   const start_date = watch(MOTOR_QUOTE.start_date) as Date;
   const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
-  const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as number;
-  const claimAmount = watch(MOTOR_QUOTE.owner_claim_amount);
-  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
+  const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
+  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as string;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
 
   const { data: makeOptions } = useGetVehicleMakes();
@@ -292,22 +254,16 @@ const PolicyDetailForm = ({
 
   // to open Customer Service Modal - Unable to provide quote online
   useEffect(() => {
-    if (drvExp < 2) {
+    if (drvExp === NumberDriverExperience.LESS_THAN_2_YEARS) {
       setShowCSModal(true);
     }
   }, [drvExp]);
 
   useEffect(() => {
-    if (no_claim >= 2) {
+    if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
       setShowCSModal(true);
     }
   }, [no_claim]);
-
-  useEffect(() => {
-    if (claimAmount === '>20000') {
-      setShowCSModal(true);
-    }
-  }, [claimAmount]);
 
   // Register onSave callback to collect current form values
   useEffect(() => {
@@ -321,7 +277,6 @@ const PolicyDetailForm = ({
           vehicle_make: value[MOTOR_QUOTE.vehicle_make],
           vehicle_model: value[MOTOR_QUOTE.vehicle_model],
           first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
-          chasis_number: 'SBA123A', // to chg
         };
 
         personal_info = {
@@ -441,13 +396,12 @@ const PolicyDetailForm = ({
         end_date: dayjs(value[MOTOR_QUOTE.end_date] as Date).format(
           'DD/MM/YYYY',
         ),
-        last_claim_amount: value[MOTOR_QUOTE.owner_claim_amount],
       },
     };
     onSubmit(payload);
   };
 
-  const isDisablePromoCode = no_claim > 0;
+  const isDisablePromoCode = no_claim !== NumberClaim.NEVER;
 
   const minPolicyStartDate = useMemo(() => {
     const dobDayjs = dateToDayjs(date_of_birth);
@@ -656,21 +610,6 @@ const PolicyDetailForm = ({
                   options={NO_CLAIM_OPTIONS}
                 />
               </Form.Item>
-
-              {no_claim === 1 ? (
-                <Form.Item
-                  name={MOTOR_QUOTE.owner_claim_amount}
-                  validateStatus={
-                    errors[MOTOR_QUOTE.owner_claim_amount] ? 'error' : ''
-                  }
-                >
-                  <RadioField
-                    name={MOTOR_QUOTE.owner_claim_amount}
-                    label='Last Claim Amount?'
-                    options={CLAIM_AMOUNT_OPTIONS}
-                  />
-                </Form.Item>
-              ) : null}
 
               {isSingpassFlow ? hire_purchase_section : null}
             </div>
