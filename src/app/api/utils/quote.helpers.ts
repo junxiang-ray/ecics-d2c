@@ -267,6 +267,17 @@ export const addonForCarMapTPO: Record<string, string> = {
   CAR_TPO_BUN: 'quick_proposal_bun',
 };
 
+export const addonForCarMapFNCD: Record<string, string> = {
+  CAR_FNCD_ANW: 'quick_proposal_any_workshop',
+  CAR_FNCD_AJE: 'quick_proposal_excess',
+  CAR_FNCD_BUN: 'quick_proposal_bun',
+  CAR_FNCD_RSA: 'quick_proposal_ra24',
+  CAR_FNCD_NOR: 'quick_proposal_new_for_old',
+  CAR_FNCD_PAC: 'quick_proposal_pa_plus',
+  CAR_FNCD_MDE: 'quick_proposal_me',
+  CAR_FNCD_KRC: 'quick_proposal_krc',
+};
+
 export function mappingAddonByPlan(
   selected_plan: string,
 ): Record<string, string> {
@@ -277,6 +288,8 @@ export function mappingAddonByPlan(
       return addonForCarMapTPFT;
     case CAR_INSURANCE.PLAN_NAME.TPO:
       return addonForCarMapTPO;
+    case CAR_INSURANCE.PLAN_NAME.FNCD:
+      return addonForCarMapFNCD;
     default:
       return {};
   }
