@@ -257,8 +257,8 @@ function AddOnDetail({
   }
 
   return (
-    <>
-      <div className='flex w-full max-w-[1280px] flex-col items-center justify-center'>
+    <div className='flex w-full flex-col items-center'>
+      <div className='flex max-w-[1280px] flex-col items-center justify-center'>
         <div className='w-full'>
           {isShowBonusDetail ? (
             <AddOnBonusDetailManualForm
@@ -320,6 +320,7 @@ function AddOnDetail({
           )}
         </div>
       </div>
+
       {!isShowBonusDetail && (
         <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
@@ -331,7 +332,7 @@ function AddOnDetail({
           />
         </div>
       )}
-    </>
+    </div>
   );
 }
 
