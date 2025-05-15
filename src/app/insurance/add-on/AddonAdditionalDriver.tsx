@@ -23,13 +23,11 @@ function AddonAdditionalDriver({
   drivers,
   setDrivers,
   policyStartDate,
-  isRequired = false,
 }: {
   addon: Addon;
   drivers: AddNamedDriverInfo[];
   setDrivers: (drivers: AddNamedDriverInfo[]) => void;
   policyStartDate: string;
-  isRequired?: boolean;
 }) {
   const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
 
@@ -50,10 +48,12 @@ function AddonAdditionalDriver({
   }
   const baseFee = addon.options?.[0].premium_with_gst ?? 0;
   const totalFee = drivers.length ? baseFee * (drivers.length - 1) : 0;
+  // addon with code: CAR_FNCD_AJE is required additional driver
+  const isRequired = addon.code === 'CAR_FNCD_AJE';
 
   return (
     <AddOnRow
-      isRecommended={addon.is_recommended}
+      isRequired={isRequired}
       title={addon.title}
       icon={<RoadSideIcon className='text-brand-blue' />}
       status={status}

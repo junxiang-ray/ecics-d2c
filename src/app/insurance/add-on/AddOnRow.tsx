@@ -14,12 +14,14 @@ export default function AddOnRow({
   icon,
   status,
   isRecommended = false,
+  isRequired = false,
   children,
 }: {
   title: string | null;
   icon: React.ReactNode;
   status: Status;
   isRecommended?: boolean;
+  isRequired?: boolean;
   children?: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,6 +47,11 @@ export default function AddOnRow({
       {isRecommended && status === 'new' && (
         <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1'>
           <span className='text-white'>Recommended</span>
+        </div>
+      )}
+      {isRequired && status === 'new' && (
+        <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1'>
+          <span className='text-white'>Required</span>
         </div>
       )}
       <div className='flex w-full items-center justify-between gap-4'>

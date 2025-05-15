@@ -1,9 +1,5 @@
 'use client';
 
-import { Modal, Spin } from 'antd';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
 import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
 import KeyIcon from '@/components/icons/KeyIcon';
 import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
@@ -11,66 +7,60 @@ import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
 import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
-import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
-import AddOnRowDetail from './AddOnRowDetail';
+import { UserStep } from '@/libs/enums/processBarEnums';
+import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
+import { Modal, Spin } from 'antd';
+import dayjs from 'dayjs';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import { PricingSummary } from '../components/FeeBar';
 import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
-import { UserStep } from '@/libs/enums/processBarEnums';
-import ModalPremium from './ModalPremium';
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
-import dayjs from 'dayjs';
+import AddOnRowDetail from './AddOnRowDetail';
+import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
+import ModalPremium from './ModalPremium';
 
 const mapIconToTypeAddOn = [
   {
     code: 'CAR_COM_ANW',
     icon: <KeyIcon className='text-brand-blue' />,
     isRecommended: true,
-    title: 'Key Replacement Cover',
   },
   {
     code: 'CAR_COM_AJE',
     icon: <RepairIcon className='text-brand-blue' />,
-    title: 'Repair at Any Workshop',
   },
   {
     code: 'CAR_COM_AND',
     icon: <RoadSideIcon className='text-brand-blue' />,
-    title: '24/7 Road side assistance',
   },
   {
     code: 'CAR_COM_BUN',
     icon: <EnhancedAccidentIcon className='text-brand-blue' />,
-    title: 'Enhanced Accident Coverage',
   },
   {
     code: 'CAR_COM_LOU',
     icon: <PersonalAccidentIcon className='text-brand-blue' />,
-    title: 'Personal Accident +',
   },
   {
     code: 'CAR_COM_PAC',
     icon: <NewOldReplacementIcon className='text-brand-blue' />,
-    title: 'New for Old Replacement',
   },
   {
     code: 'CAR_COM_MDE',
     icon: <NewOldReplacementIcon className='text-brand-blue' />,
-    title: 'New for Old Replacement',
   },
   {
     code: 'CAR_COM_RSA',
     icon: <NewOldReplacementIcon className='text-brand-blue' />,
-    title: 'New for Old Replacement',
   },
   {
     code: 'CAR_COM_KRC',
     icon: <NewOldReplacementIcon className='text-brand-blue' />,
-    title: 'New for Old Replacement',
   },
   {
     code: 'CAR_COM_NOR',
     icon: <NewOldReplacementIcon className='text-brand-blue' />,
-    title: 'New for Old Replacement',
   },
 ];
 
@@ -87,9 +77,15 @@ function calculateFee(
   option: Option,
   addonsAdded: Record<string, string>,
 ): number {
-  if (!option?.dependencies || option.dependencies.length === 0) {
+  if (
+    !option?.dependencies ||
+    option.dependencies.length === 0 ||
+    !addonsAdded ||
+    Object.keys(addonsAdded).length === 0
+  ) {
     return option.premium_with_gst ?? 0;
   }
+
   const dependency = option.dependencies.find((dep) =>
     dep.conditions.every(
       (condition) => addonsAdded[condition.addon.code] === condition.value,
@@ -125,17 +121,20 @@ function AddOnDetail({
     return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
   }, [plan]);
 
-  const addons = useMemo(() => {
+  const normalAddons = useMemo(() => {
     return (
       plan?.addons.filter((addon) => !ADDON_CARS.includes(addon.code)) ?? []
     );
   }, [plan]);
 
   const defaultAddonsAdded = useMemo(() => {
-    if (!plan?.addons.length) return {};
-    const addonCodes = plan.addons.map((addon) => addon.code);
+    if (!normalAddons.length) return {};
+    if (quoteInfo?.data?.selected_addons) {
+      return quoteInfo?.data?.selected_addons;
+    }
+    const addonCodes = normalAddons.map((addon) => addon.code);
     return Object.fromEntries(addonCodes.map((code) => [code, 'NO']));
-  }, [plan]);
+  }, [normalAddons, quoteInfo]);
 
   const defaultAddonsSelected = useMemo(() => {
     if (!plan?.addons.length) return {};
@@ -161,15 +160,15 @@ function AddOnDetail({
       },
       {} as Record<string, string>,
     );
-  }, [plan]);
+  }, [plan, quoteInfo]);
 
   useEffect(() => {
-    // setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
+    setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
     setAddonsAdded(defaultAddonsAdded);
     setAddonsSelected(defaultAddonsSelected);
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
-  const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
+  const addonsFormatted: AddOnFormat[] = normalAddons.map((addon) => {
     // map the icon to the addon
     const iconMatched = mapIconToTypeAddOn.find(
       (item) => item.code === addon.code,
@@ -214,11 +213,20 @@ function AddOnDetail({
         selectedValue: selectedValue,
       };
     });
+
   useEffect(() => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
     if (plan?.code === 'COM' || plan?.code === 'FNCD') {
       addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
     }
+    //
+    if (addonAdditionalDriver?.code) {
+      const isExistDriver = drivers.every((driver) => driver.nric_or_fin);
+      addonsAdd[addonAdditionalDriver.code] = isExistDriver
+        ? 'drivers_age_from_27_to_70'
+        : 'NO';
+    }
+
     const data = {
       key: key,
       selected_plan: quoteInfo?.data?.selected_plan ?? '',
@@ -239,8 +247,10 @@ function AddOnDetail({
     }
     //
     if (addonAdditionalDriver?.code) {
-      addonsAdd[addonAdditionalDriver.code] =
-        drivers.length === 0 ? 'drivers_age_from_27_to_70' : 'NO';
+      const isExistDriver = drivers.every((driver) => driver.nric_or_fin);
+      addonsAdd[addonAdditionalDriver.code] = isExistDriver
+        ? 'drivers_age_from_27_to_70'
+        : 'NO';
     }
 
     const data: ProposalPayload = {
@@ -265,7 +275,7 @@ function AddOnDetail({
     ? baseFeeAdditionalDriver * (drivers.length - 1)
     : 0;
   const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
-  const totalFee = (plan?.premium_with_gst ?? 0) + totalAddonFee;
+  const premiumWithGst = plan?.premium_with_gst ?? 0;
 
   if (isLoading) {
     return (
@@ -337,11 +347,11 @@ function AddOnDetail({
                 isShowPopupPremium={isShowPopupPremium}
                 setIsShowPopupPremium={setIsShowPopupPremium}
                 quoteInfo={quoteInfo}
-                totalFee={totalFee}
                 addonsFormatted={addonsFormatted}
                 dataSelectedAddOn={dataSelectedAddOn}
                 handleOkay={handleOkay}
                 isPending={isPending}
+                premiumWithGst={premiumWithGst}
               />
             </>
           )}
@@ -351,7 +361,7 @@ function AddOnDetail({
       {!isShowBonusDetail && (
         <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
-            planFee={plan?.premium_with_gst ?? 0}
+            planFee={premiumWithGst}
             addonFee={totalAddonFee}
             discount={quoteInfo?.promo_code?.discount || 0}
             title='Premium breakdown'
