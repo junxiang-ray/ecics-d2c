@@ -17,6 +17,8 @@ import { PricingSummary } from '../components/FeeBar';
 import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import { UserStep } from '@/libs/enums/processBarEnums';
 import ModalPremium from './ModalPremium';
+import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
+import dayjs from 'dayjs';
 
 const mapIconToTypeAddOn = [
   {
@@ -113,10 +115,22 @@ function AddOnDetail({
   const { data: quoteInfo, isLoading } = useGetQuote(key);
   const { mutateAsync: saveProposal, isPending } = useSaveProposal();
 
-  const plan = quoteInfo?.data?.plans?.find(
-    (plan) => quoteInfo.data?.selected_plan === plan.title,
-  );
-  const addons = plan?.addons ?? [];
+  const plan = useMemo(() => {
+    return quoteInfo?.data?.plans?.find(
+      (plan) => quoteInfo.data?.selected_plan === plan.title,
+    );
+  }, [quoteInfo]);
+
+  const addonAdditionalDriver = useMemo(() => {
+    return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
+  }, [plan]);
+
+  const addons = useMemo(() => {
+    return (
+      plan?.addons.filter((addon) => !ADDON_CARS.includes(addon.code)) ?? []
+    );
+  }, [plan]);
+
   const defaultAddonsAdded = useMemo(() => {
     if (!plan?.addons.length) return {};
     const addonCodes = plan.addons.map((addon) => addon.code);
@@ -200,20 +214,10 @@ function AddOnDetail({
         selectedValue: selectedValue,
       };
     });
-
-  const totalAdditionFee = addonsFormatted.reduce((acc, addon) => {
-    const fee = addon.feeAdded ?? 0;
-    return acc + fee;
-  }, 0);
-  const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
-
   useEffect(() => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    if (addonsAdd?.['CAR_COM_AJE'] === 'NO') {
+    if (plan?.code === 'COM' || plan?.code === 'FNCD') {
       addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
-    }
-    if (addonsAdd?.['CAR_COM_AJE'] === 'YES') {
-      addonsAdd['CAR_COM_AJE'] = 'SGD 1,500.00';
     }
     const data = {
       key: key,
@@ -229,13 +233,16 @@ function AddOnDetail({
 
   const handleOkay = () => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    //CAR_COM_AJE: "SGD 750.00" (CAR_COM_ANW: NO), or "SGD 1,500.00" (CAR_COM_ANW: YES):
-    if (addonsAdd?.['CAR_COM_AJE'] === 'NO') {
+    //For plan codes [COM, FNCD], the default value of CAR_COM_AJE is 'SGD 750.00'.
+    if (plan?.code === 'COM' || plan?.code === 'FNCD') {
       addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
     }
-    if (addonsAdd?.['CAR_COM_AJE'] === 'YES') {
-      addonsAdd['CAR_COM_AJE'] = 'SGD 1,500.00';
+    //
+    if (addonAdditionalDriver?.code) {
+      addonsAdd[addonAdditionalDriver.code] =
+        drivers.length === 0 ? 'drivers_age_from_27_to_70' : 'NO';
     }
+
     const data: ProposalPayload = {
       key: key,
       selected_plan: quoteInfo?.data?.selected_plan ?? '',
@@ -247,6 +254,18 @@ function AddOnDetail({
       setIsShowBonusDetail(true);
     });
   };
+
+  const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
+    const fee = addon.feeAdded ?? 0;
+    return acc + fee;
+  }, 0);
+  const baseFeeAdditionalDriver =
+    addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
+  const additionalDriverFee = drivers.length
+    ? baseFeeAdditionalDriver * (drivers.length - 1)
+    : 0;
+  const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
+  const totalFee = (plan?.premium_with_gst ?? 0) + totalAddonFee;
 
   if (isLoading) {
     return (
@@ -279,21 +298,29 @@ function AddOnDetail({
                 />
               </div>
               <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
-                {addonsFormatted.map((addon) => (
-                  <AddOnRowDetail
-                    key={addon.code}
-                    addon={addon}
-                    addonsAdded={addonsAdded}
-                    setAddonsAdded={setAddonsAdded}
-                    addonsSelected={addonsSelected}
-                    setAddonsSelected={setAddonsSelected}
+                {addonAdditionalDriver && (
+                  <AddonAdditionalDriver
+                    addon={addonAdditionalDriver}
                     drivers={drivers}
                     setDrivers={setDrivers}
                     policyStartDate={
-                      quoteInfo?.data.insurance_additional_info?.start_date
+                      quoteInfo?.data.insurance_additional_info?.start_date ??
+                      dayjs().format('DD/MM/YYYY')
                     }
                   />
-                ))}
+                )}
+                {addonsFormatted.map((addon) => {
+                  return (
+                    <AddOnRowDetail
+                      key={addon.code}
+                      addon={addon}
+                      addonsAdded={addonsAdded}
+                      setAddonsAdded={setAddonsAdded}
+                      addonsSelected={addonsSelected}
+                      setAddonsSelected={setAddonsSelected}
+                    />
+                  );
+                })}
               </div>
             </div>
             <Modal
@@ -321,7 +348,8 @@ function AddOnDetail({
       {!isShowBonusDetail && (
         <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
-            fee={totalFee}
+            planFee={plan?.premium_with_gst ?? 0}
+            addonFee={totalAddonFee}
             discount={quoteInfo?.promo_code?.discount || 0}
             title='Premium breakdown'
             textButton='Continue'

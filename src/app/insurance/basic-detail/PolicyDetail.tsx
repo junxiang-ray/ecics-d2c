@@ -103,18 +103,12 @@ export const PolicyDetail = ({
         name: userInfo?.name,
         gender: userInfo?.gender,
         maritalStatus: userInfo?.marital_status,
-        date_of_birth: convertDateFormat(userInfo?.date_of_birth, 'DD/MM/YYYY'),
+        date_of_birth: userInfo?.date_of_birth,
         nric: userInfo?.nric,
         address: userInfo?.address,
         driving_experience: userInfo?.driving_experience,
         phone: userInfo?.phone,
         email: userInfo?.email,
-      };
-      const personalInfo = {
-        date_of_birth: personal_info.date_of_birth,
-        driving_experience: personal_info.driving_experience,
-        email: personal_info.email,
-        phone: personal_info.phone,
       };
       const vehicle_info_selected = {
         chasis_number: selectedVehicle?.chasis_number,
@@ -125,7 +119,7 @@ export const PolicyDetail = ({
 
       payload = {
         ...payload,
-        personal_info: personalInfo,
+        personal_info: personal_info,
         vehicle_info_selected: vehicle_info_selected,
       };
     }

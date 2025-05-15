@@ -19,6 +19,7 @@ import {
   DRV_EXP_OPTIONS,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
+  NumberDriverExperience,
 } from '../basic-detail/options';
 import { validateNRIC } from '@/libs/utils/validation-utils';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
@@ -78,13 +79,12 @@ const createSchema = (policyStartDate: Date) =>
             invalid_type_error: 'Marital status is required',
           }),
           driving_experience: z
-            .number({
-              invalid_type_error: 'Driving experience is required',
-              required_error: 'Driving experience is required',
+            .string({
+              required_error: 'This field is required',
             })
-            .refine((val) => val > 1, {
+            .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
               message:
-                'Driver must have at least 2 years of driving experience.',
+                'Driver must have at least 2 years of driving experience',
             }),
           is_claim_in_3_years: z
             .string({
@@ -133,16 +133,16 @@ const AdditionDriver = ({
   dataDrivers,
   policyStartDate,
 }: Props) => {
-  const dob = adjustDateInDayjs(
+  const initDob = adjustDateInDayjs(
     dateToDayjs(policyStartDate as Date),
     -27,
     0,
     0,
   )?.toDate();
-  const defaultDriver = {
+  const initDriver = {
     name: '',
     nric_or_fin: '',
-    date_of_birth: dob,
+    date_of_birth: initDob,
     gender: null,
     marital_status: null,
     driving_experience: null,
@@ -153,7 +153,7 @@ const AdditionDriver = ({
   );
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const initDrivers = dataDrivers.length === 0 ? [defaultDriver] : dataDrivers;
+  const initDrivers = dataDrivers.length === 0 ? [initDriver] : dataDrivers;
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -175,12 +175,17 @@ const AdditionDriver = ({
   const { isMobile } = useDeviceDetection();
 
   const handleAddDriver = () => {
-    if (fields.length < 3) {
-      append({} as any);
-      setTimeout(() => {
-        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 100);
-    }
+    methods.handleSubmit(() => {
+      if (fields.length < 3) {
+        append(initDriver as any);
+        setTimeout(() => {
+          scrollRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+          });
+        }, 100);
+      }
+    })();
   };
 
   const handleRemoveDriver = (index: number) => {

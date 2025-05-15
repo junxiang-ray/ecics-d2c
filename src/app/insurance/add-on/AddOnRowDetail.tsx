@@ -3,15 +3,10 @@
 import { Select } from 'antd';
 import { memo, useEffect, useMemo, useState } from 'react';
 
-import { AddNamedDriverInfo } from '@/libs/types/quote';
+import { SecondaryButton } from '@/components/ui/buttons';
 
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
-
-import AddOnRow from './AddOnRow';
-import AdditionDriver from '../components/AdditionDriver';
 import { AddOnFormat } from './AddonDetail';
-import dayjs from 'dayjs';
-import { set } from 'zod';
+import AddOnRow from './AddOnRow';
 
 const ADDON_CARS = ['CAR_COM_AND', 'CAR_TPFT_AND', 'CAR_TPO_AND'];
 
@@ -21,24 +16,14 @@ function AddOnRowDetail({
   setAddonsAdded,
   addonsSelected,
   setAddonsSelected,
-  drivers,
-  setDrivers,
-  policyStartDate,
 }: {
   addon: AddOnFormat;
   addonsAdded: any;
   setAddonsAdded: (addonSelected: any) => void;
   addonsSelected: any;
   setAddonsSelected: (feeAdditions: any) => void;
-  drivers: AddNamedDriverInfo[];
-  setDrivers: (drivers: AddNamedDriverInfo[]) => void;
-  policyStartDate?: string;
 }) {
-  const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
   const [selectedOption, setSelectedOption] = useState<any>(null);
-  const isAddonCars = useMemo(() => {
-    return ADDON_CARS.includes(addon.code);
-  }, [addon.code]);
 
   // addon: type = select && code != CAR_COM_AND
   useEffect(() => {
@@ -59,61 +44,6 @@ function AddOnRowDetail({
     }));
   };
   //end of addon: type = select && code != CAR_COM_AND
-
-  // addon: type = select && code = CAR_COM_AND
-  const handleAddAddonWithDriver = (addon: AddOnFormat) => {
-    setAddonsAdded((prev: any) => ({
-      ...prev,
-      [addon.code]: selectedOption,
-    }));
-  };
-  const handleRemoveAdditionalDriver = (driver: AddNamedDriverInfo) => {
-    const updatedDrivers = drivers.filter(
-      (d) => d.nric_or_fin !== driver.nric_or_fin,
-    );
-    setDrivers(updatedDrivers);
-  };
-  useEffect(() => {
-    if (!isAddonCars) return;
-    if (!drivers.length) {
-      setAddonsSelected((prev: any) => ({
-        ...prev,
-        [addon.code]: 'NO',
-      }));
-      return;
-    }
-    // "Drivers of all age or driving experience including Young (<26 years old), Elderly (>65 years old)
-    //  or Inexperienced (<2 years driving experience) drivers."
-    const MIN_AGE = 26;
-    const MAX_AGE = 65;
-    const isValidAge = drivers.every((driver) => {
-      const birthDate = new Date(driver.date_of_birth);
-      const age = new Date().getFullYear() - birthDate.getFullYear();
-      const isBirthdayPassed =
-        new Date().setFullYear(new Date().getFullYear()) >=
-        birthDate.setFullYear(new Date().getFullYear());
-      return (
-        (isBirthdayPassed ? age : age - 1) >= MIN_AGE &&
-        (isBirthdayPassed ? age : age - 1) <= MAX_AGE
-      );
-    });
-    const isValidDrivingExperience = drivers.every(
-      (driver) => driver.driving_experience >= 2,
-    );
-    const isMatchCondition = isValidAge && isValidDrivingExperience;
-    if (!isMatchCondition) {
-      setAddonsSelected((prev: any) => ({
-        ...prev,
-        [addon.code]: 'all_drivers',
-      }));
-    } else {
-      setAddonsSelected((prev: any) => ({
-        ...prev,
-        [addon.code]: 'drivers_age_from_27_to_70',
-      }));
-    }
-  }, [drivers, isShowAdditionDriver]);
-  //end of addon: type = select && code = CAR_COM_AND
 
   // addon: type = checkbox
   const handleAddAddonCheckbox = (addon: AddOnFormat) => {
@@ -154,7 +84,7 @@ function AddOnRowDetail({
           </p>
           <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
 
-          {addon.type === 'select' && !isAddonCars && (
+          {addon.type === 'select' && (
             <>
               <div className='flex items-center justify-between text-[14px]'>
                 <p className='font-semibold leading-[20px] text-[#525252]'>
@@ -179,63 +109,6 @@ function AddOnRowDetail({
                 </SecondaryButton>
               </div>
             </>
-          )}
-          {addon.type === 'select' && isAddonCars && (
-            <div className='flex flex-col gap-2'>
-              <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
-                <p className='text-[#525252]'>SGD {addon.feeSelected ?? 0}</p>
-                {drivers.length > 0 ? (
-                  <SecondaryButton
-                    className='black h-8 w-28 rounded-md '
-                    onClick={() => setIsShowAdditionDriver(true)}
-                  >
-                    Edit Driver
-                  </SecondaryButton>
-                ) : (
-                  <SecondaryButton
-                    className='black h-8 w-28 rounded-md'
-                    onClick={() => {
-                      // handleAddAddonWithDriver(addon);
-                      setIsShowAdditionDriver(true);
-                    }}
-                  >
-                    Add
-                  </SecondaryButton>
-                )}
-                {isShowAdditionDriver && (
-                  <AdditionDriver
-                    isShowAdditionDriver={isShowAdditionDriver}
-                    setIsShowAdditionDriver={setIsShowAdditionDriver}
-                    setDataDrivers={setDrivers}
-                    dataDrivers={drivers}
-                    policyStartDate={dayjs(
-                      policyStartDate,
-                      'DD/MM/YYYY',
-                    ).toDate()}
-                  />
-                )}
-              </div>
-              {drivers.length > 0 && (
-                <>
-                  {drivers.map((driver, index) => (
-                    <div
-                      className='flex items-center justify-between text-[14px]'
-                      key={index}
-                    >
-                      <p className='font-semibold leading-[20px] text-[#525252]'>
-                        Additional Driver: {driver.name}
-                      </p>
-                      <PrimaryButton
-                        className='black h-8 w-28 rounded-md bg-red-400'
-                        onClick={() => handleRemoveAdditionalDriver(driver)}
-                      >
-                        Remove
-                      </PrimaryButton>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
           )}
           {addon.type === 'checkbox' && (
             <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
