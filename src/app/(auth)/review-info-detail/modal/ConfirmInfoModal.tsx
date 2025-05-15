@@ -62,6 +62,8 @@ const ConfirmInfoModal = ({
 
     const parsed = JSON.parse(stored);
     const qdlClasses = parsed?.drivinglicence?.qdl?.classes || [];
+    const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
+
     const payload: SavePersonalInfoPayload = {
       key: `${uuid()}`,
       is_sending_email: true,
@@ -81,7 +83,9 @@ const ConfirmInfoModal = ({
         year_of_registration: parsed.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
-            ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+            ? drivingYears >= 6
+              ? '6 years and above'
+              : `${drivingYears} years`
             : '1 year',
         phone: `${parsed.mobileno?.nbr?.value || ''}`,
         email: parsed.email?.value || '',

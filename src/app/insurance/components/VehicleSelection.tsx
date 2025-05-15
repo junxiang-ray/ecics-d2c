@@ -96,6 +96,8 @@ export const VehicleSelectionModal = ({
       };
 
       const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
+      const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
+
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
         is_sending_email: false,
@@ -115,7 +117,9 @@ export const VehicleSelectionModal = ({
           year_of_registration: updatedParsed.year_of_registration || '',
           driving_experience:
             qdlClasses.length > 0
-              ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+              ? drivingYears >= 6
+                ? '6 years and above'
+                : `${drivingYears} years`
               : '1 year',
           phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
           email: updatedParsed.email?.value || '',

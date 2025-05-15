@@ -31,6 +31,15 @@ export const DRV_EXP_OPTIONS: DropdownOption[] = [
   { value: NumberDriverExperience.SIX_YEARS, text: '6 years and above' },
 ];
 
+export const DRIVE_EXP_OPTIONS: DropdownOption[] = [
+  { value: 0, text: 'Less than 2 years' },
+  { value: 2, text: '2 years' },
+  { value: 3, text: '3 years' },
+  { value: 4, text: '4 years' },
+  { value: 5, text: '5 years' },
+  { value: 6, text: '6 years and above' },
+];
+
 const generateYearOptions = (): DropdownOption[] => {
   const currentYear = new Date().getFullYear();
   const years: DropdownOption[] = [];

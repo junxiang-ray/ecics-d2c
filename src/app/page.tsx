@@ -1,5 +1,6 @@
 'use client';
 
+import { Spin } from 'antd';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -29,7 +30,13 @@ export default function Home() {
     }
   }, [quoteInfo, isLoading, router]);
 
-  if (isLoading) return <div>Loading data...</div>;
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return null;
 }

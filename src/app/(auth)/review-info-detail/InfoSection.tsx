@@ -1,7 +1,6 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Spin, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { ZodType } from 'zod';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
@@ -16,7 +15,7 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
-import { DRV_EXP_OPTIONS } from '@/app/insurance/basic-detail/options';
+import { DRIVE_EXP_OPTIONS } from '@/app/insurance/basic-detail/options';
 import {
   ECICS_USER_INFO,
   IS_FILL_INPUT_COMPLETE,
@@ -43,12 +42,9 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   boxClass = '',
   setIsDisabled,
   vehicleIndex,
-  validationSchema,
 }) => {
   const { isMobile } = useDeviceDetection();
-  const methods = useForm({
-    resolver: zodResolver(validationSchema),
-  });
+  const methods = useForm();
   const { setValue, watch } = methods;
   const selectedMakeId = watch('vehicle_make');
   const [showContactModal, setShowContactModal] = useState(false);
@@ -431,7 +427,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 isDrivingLicence)
             ) {
               return (
-                <div key={idx}>
+                <FormProvider key={idx} {...methods}>
                   <div>
                     {isEmailAddress && (
                       <>
@@ -547,7 +543,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                         <DropdownField
                           name='qualified_driving_license'
                           placeholder='Select driving experience year'
-                          options={DRV_EXP_OPTIONS}
+                          options={DRIVE_EXP_OPTIONS}
                           onChange={(value) =>
                             handlePersonalInfoInputChange(
                               'qualified_driving_license',
@@ -559,7 +555,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                       </>
                     )}
                   </div>
-                </div>
+                </FormProvider>
               );
             }
 

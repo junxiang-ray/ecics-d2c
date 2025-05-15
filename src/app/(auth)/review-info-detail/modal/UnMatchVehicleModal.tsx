@@ -50,6 +50,7 @@ const UnMatchVehicleModal = ({
   const createPayload = (parsedData: any): SavePersonalInfoPayload => {
     const v = parsedData?.vehicle_selected || [];
     const qdlClasses = parsedData?.drivinglicence?.qdl?.classes || [];
+    const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
     return {
       key: `${uuid()}`,
@@ -68,7 +69,9 @@ const UnMatchVehicleModal = ({
         year_of_registration: parsedData.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
-            ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+            ? drivingYears >= 6
+              ? '6 years and above'
+              : `${drivingYears} years`
             : '1 year',
         phone: `${parsedData.mobileno?.nbr?.value || ''}`,
         email: parsedData.email?.value || '',
