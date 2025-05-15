@@ -1,4 +1,5 @@
 import { PrimaryButton } from '@/components/ui/buttons';
+import { formatCurrency } from '@/libs/utils/utils';
 
 export function PricingSummary({
   planFee,
@@ -22,7 +23,7 @@ export function PricingSummary({
       <div className='fixed bottom-0 left-1/2 mt-2 flex w-full -translate-x-1/2 transform flex-row items-center justify-between border border-[#DEE1E6] bg-[#FFFEFF] px-4 py-3 md:static md:bottom-auto md:left-0 md:z-auto md:max-w-[800px] md:translate-x-0 md:rounded-md md:border-none'>
         <div className='flex flex-col gap-1'>
           <p className='text-[18px] font-semibold leading-6 text-[#323743] md:text-[28px] md:font-bold md:text-[#1B223C] '>
-            S$ {discountFee.toFixed(2)}{' '}
+            {discountFee ? formatCurrency(Number(discountFee.toFixed(2))) : ''}{' '}
             {discount > 0 && (
               <span className='text-[15px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
                 ${notDiscountFee.toFixed(2)}

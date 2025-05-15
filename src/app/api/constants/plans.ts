@@ -13,7 +13,7 @@ export const CAR_INSURANCE_PLANS = {
     title: 'Third Party Fire and Theft',
     benefits: [
       {
-        name: 'Up to S$10,000 Personal Accident Coverage',
+        name: 'Up to SGD 10,000 Personal Accident Coverage',
         is_active: true,
       },
       {
@@ -31,7 +31,7 @@ export const CAR_INSURANCE_PLANS = {
     title: 'Third Party Only',
     benefits: [
       {
-        name: 'Up to S$10,000 Personal Accident Coverage',
+        name: 'Up to SGD 10,000 Personal Accident Coverage',
         is_active: true,
       },
       {
