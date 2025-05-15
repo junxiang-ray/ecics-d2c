@@ -104,3 +104,7 @@ export const parsePhoneNumber = (raw: string) => {
 
   return { prefix, areaCode, nbr };
 };
+
+export const formatCurrency = (value: number) => {
+  return `SGD ${value.toFixed(2)}`;
+};

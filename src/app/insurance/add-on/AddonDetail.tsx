@@ -206,6 +206,7 @@ function AddOnDetail({
     return acc + fee;
   }, 0);
   const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
+  const premiumWithGst = plan?.premium_with_gst || 0;
 
   useEffect(() => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
@@ -309,11 +310,11 @@ function AddOnDetail({
               isShowPopupPremium={isShowPopupPremium}
               setIsShowPopupPremium={setIsShowPopupPremium}
               quoteInfo={quoteInfo}
-              totalFee={totalFee}
               addonsFormatted={addonsFormatted}
               dataSelectedAddOn={dataSelectedAddOn}
               handleOkay={handleOkay}
               isPending={isPending}
+              premiumWithGst={premiumWithGst}
             />
           </>
         )}
