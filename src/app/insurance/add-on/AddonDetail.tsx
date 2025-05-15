@@ -130,11 +130,13 @@ function AddOnDetail({
 
   const defaultAddonsAdded = useMemo(() => {
     if (!normalAddons.length) return {};
-    if (quoteInfo?.data?.selected_addons) {
-      return quoteInfo?.data?.selected_addons;
-    }
     const addonCodes = normalAddons.map((addon) => addon.code);
-    return Object.fromEntries(addonCodes.map((code) => [code, 'NO']));
+    return Object.fromEntries(
+      addonCodes.map((code) => [
+        code,
+        quoteInfo?.data?.selected_addons?.[code] ?? 'NO',
+      ]),
+    );
   }, [normalAddons, quoteInfo]);
 
   const defaultAddonsSelected = useMemo(() => {
@@ -248,7 +250,8 @@ function AddOnDetail({
     }
     //
     if (addonAdditionalDriver?.code) {
-      const isExistDriver = drivers.every((driver) => driver.nric_or_fin);
+      const isExistDriver =
+        drivers.every((driver) => driver.nric_or_fin) && drivers.length;
       addonsAdd[addonAdditionalDriver.code] = isExistDriver
         ? 'drivers_age_from_27_to_70'
         : 'NO';
