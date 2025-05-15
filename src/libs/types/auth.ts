@@ -1,3 +1,5 @@
+import { DataFromSingpass } from '@/libs/types/quote';
+
 export interface LoginResponse {
   state: string;
   nonce: string;
@@ -40,6 +42,7 @@ export interface SavePersonalInfoPayload {
     year_of_manufacture: string;
   };
   vehicles: Vehicle[];
+  data_from_singpass?: DataFromSingpass;
   shouldRedirect?: boolean;
 }
 

@@ -1,4 +1,5 @@
 'use client';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
@@ -8,12 +9,12 @@ import ProcessBar from '@/components/ProcessBar';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
-
+import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { usePathname, useSearchParams } from 'next/navigation';
+
 import BusinessPartnerBar from './components/BusinessPartnerBar';
-import { useVerifyPartnerCode } from '@/hook/insurance/common';
+
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
@@ -21,12 +22,14 @@ const stepToRoute: Record<StepProcessBar, string> = {
   [StepProcessBar.SELECT_ADD_ON]: ROUTES.INSURANCE.ADD_ON,
   [StepProcessBar.COMPLETE_PURCHASE]: ROUTES.INSURANCE.COMPLETE_PURCHASE,
 };
+
 function getStepFromRoute(route: string): ProcessBarType {
   const entry = Object.entries(stepToRoute).find(
     ([_, value]) => value === route,
   );
   return entry ? (entry[0] as unknown as StepProcessBar) : undefined;
 }
+
 // Define props so that children can either be a node or a render function that accepts a registration callback.
 interface InsuranceLayoutProps {
   children:
@@ -79,7 +82,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       <div className='sticky top-0 z-10 w-full bg-white'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
-            businessName='Business Partner Name'
+            businessName={partnerInfo ? 'Business Partner Name' : ''}
             companyName={partnerInfo?.partner_name}
             onBackClick={handleBack}
             onSaveClick={handleSave}

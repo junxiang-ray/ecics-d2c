@@ -1,7 +1,6 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Spin, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { ZodType } from 'zod';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
@@ -16,7 +15,11 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
-import { DRV_EXP_OPTIONS } from '@/app/insurance/basic-detail/options';
+import {
+  DRIVE_EXP_OPTIONS,
+  MARITAL_STATUS_OPTIONS,
+  NumberDriverExperience,
+} from '@/app/insurance/basic-detail/options';
 import {
   ECICS_USER_INFO,
   IS_FILL_INPUT_COMPLETE,
@@ -43,12 +46,9 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   boxClass = '',
   setIsDisabled,
   vehicleIndex,
-  validationSchema,
 }) => {
   const { isMobile } = useDeviceDetection();
-  const methods = useForm({
-    resolver: zodResolver(validationSchema),
-  });
+  const methods = useForm();
   const { setValue, watch } = methods;
   const selectedMakeId = watch('vehicle_make');
   const [showContactModal, setShowContactModal] = useState(false);
@@ -212,6 +212,26 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     value: any,
     setShowContactModal?: (show: boolean) => void,
   ) => {
+    if (inputName === 'marital_status') {
+      const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
+      if (!ecicsData) return;
+      const parsed = JSON.parse(ecicsData);
+      const today = new Date().toISOString().split('T')[0];
+
+      if (parsed.marital) {
+        parsed.marital.desc = value;
+        parsed.marital.lastupdated = today;
+      }
+
+      saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
+
+      // Check if inputs are completed
+      const isInputsCompleted = checkInputsCompleted(parsed);
+      saveToSessionStorage({
+        [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
+      });
+    }
+
     if (inputName === 'qualified_driving_license') {
       const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
       if (!ecicsData) return;
@@ -222,14 +242,10 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       if (value === 0 && setShowContactModal) {
         setShowContactModal(true);
         // Delete data if it was there before
-        if (
-          parsed.drivinglicence &&
-          parsed.drivinglicence.qdl &&
-          parsed.drivinglicence.qdl.classes &&
-          parsed.drivinglicence.qdl.classes.length > 0
-        ) {
-          delete parsed.drivinglicence.qdl.classes[0].class;
-          delete parsed.drivinglicence.qdl.classes[0].issuedate;
+        const firstClass = parsed?.drivinglicence?.qdl?.classes?.[0];
+        if (firstClass) {
+          delete firstClass.class;
+          delete firstClass.issuedate;
         }
         saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
         return;
@@ -420,7 +436,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
             const isVehicleYearRegistration =
               nameKey === 'year_of_registration';
             const isDrivingLicence = nameKey === 'qualified_driving_license';
-
+            const isMaritalStatus = nameKey === 'marital_status';
             if (
               item.value == null &&
               (isEmailAddress ||
@@ -428,10 +444,11 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 isVehicleMake ||
                 isVehicleModel ||
                 isVehicleYearRegistration ||
-                isDrivingLicence)
+                isDrivingLicence ||
+                isMaritalStatus)
             ) {
               return (
-                <div key={idx}>
+                <FormProvider key={idx} {...methods}>
                   <div>
                     {isEmailAddress && (
                       <>
@@ -547,7 +564,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                         <DropdownField
                           name='qualified_driving_license'
                           placeholder='Select driving experience year'
-                          options={DRV_EXP_OPTIONS}
+                          options={DRIVE_EXP_OPTIONS}
                           onChange={(value) =>
                             handlePersonalInfoInputChange(
                               'qualified_driving_license',
@@ -558,8 +575,24 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                         />
                       </>
                     )}
+                    {isMaritalStatus && (
+                      <>
+                        <div className='text-sm font-bold'>Marital Status</div>
+                        <DropdownField
+                          name={nameKey}
+                          placeholder='Select Marital Status'
+                          options={MARITAL_STATUS_OPTIONS}
+                          onChange={(value) =>
+                            handlePersonalInfoInputChange(
+                              'marital_status',
+                              value,
+                            )
+                          }
+                        />
+                      </>
+                    )}
                   </div>
-                </div>
+                </FormProvider>
               );
             }
 

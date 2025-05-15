@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from 'next/server';
 
-import { requestHandler } from "@/app/api/middleware/requestHandler";
-import { successRes } from "@/app/api/core/success.response";
-import { saveQuoteDTOSchema } from "./quote.dto";
-import { saveQuote } from "./quote.service";
+import { successRes } from '@/app/api/core/success.response';
+import { requestHandler } from '@/app/api/middleware/requestHandler';
+
+import { saveQuoteDTOSchema } from './quote.dto';
+import { saveQuote } from './quote.service';
 
 export const POST = requestHandler(async (req: NextRequest) => {
   const body = await req.json();

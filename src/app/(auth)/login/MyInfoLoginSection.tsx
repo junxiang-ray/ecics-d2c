@@ -12,7 +12,11 @@ import { useRequestLogin } from '@/hook/auth/login';
 import { useRequestLogCar } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
-const MyInfoLoginSection = () => {
+interface MyInfoLoginSectionProps {
+  promoCode?: string;
+}
+
+const MyInfoLoginSection = ({ promoCode }: MyInfoLoginSectionProps) => {
   const router = useRouter();
   const { isMobile } = useDeviceDetection();
   const [isUserActive, setIsUserActive] = useState(false);
@@ -29,7 +33,10 @@ const MyInfoLoginSection = () => {
   const handleContinueWithoutMyinfo = () => {
     setIsUserActive(true);
     requestLogCar();
-    router.push(ROUTES.INSURANCE.BASIC_DETAIL_MANUAL);
+
+    const basePath = ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
+    const queryString = promoCode ? `&promo_code=${promoCode}` : '';
+    router.push(`${basePath}${queryString}`);
   };
 
   return (

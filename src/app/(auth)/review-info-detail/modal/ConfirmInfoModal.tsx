@@ -14,7 +14,10 @@ import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import {
+  DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -55,13 +58,16 @@ const ConfirmInfoModal = ({
 
   const handleSave = async () => {
     const stored = sessionStorage.getItem(ECICS_USER_INFO);
-    if (!stored) {
-      toast.error('Missing user info in session.');
-      return;
-    }
+    const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
+
+    if (!stored || !singpassDataRaw) return;
 
     const parsed = JSON.parse(stored);
+    const parsedSingpass = JSON.parse(singpassDataRaw);
+
     const qdlClasses = parsed?.drivinglicence?.qdl?.classes || [];
+    const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
+
     const payload: SavePersonalInfoPayload = {
       key: `${uuid()}`,
       is_sending_email: true,
@@ -81,7 +87,9 @@ const ConfirmInfoModal = ({
         year_of_registration: parsed.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
-            ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+            ? drivingYears >= 6
+              ? '6 years and above'
+              : `${drivingYears} years`
             : '1 year',
         phone: `${parsed.mobileno?.nbr?.value || ''}`,
         email: parsed.email?.value || '',
@@ -105,6 +113,7 @@ const ConfirmInfoModal = ({
           vehicle_model: v.model?.value || '',
           first_registered_year: v.year_of_registration || '',
         })) || [],
+      data_from_singpass: parsedSingpass,
     };
 
     //Check age
