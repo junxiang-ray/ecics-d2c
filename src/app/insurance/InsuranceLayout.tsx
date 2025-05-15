@@ -96,12 +96,13 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
           <div className='md:w-[520px]'>
             <ProcessBar currentStep={currentStep} onChange={handleChangeStep} />
           </div>
-          <PrimaryButton
+          {/* Reopen in Day 1.5 */}
+          {/* <PrimaryButton
             className='hidden w-32 rounded-sm md:block'
             onClick={handleSave}
           >
             Save
-          </PrimaryButton>
+          </PrimaryButton> */}
         </div>
       </div>
 
