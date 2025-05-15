@@ -2,7 +2,7 @@
 
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
 import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
@@ -38,17 +38,14 @@ export const PolicyDetail = ({
   const searchParams = useSearchParams();
 
   const promo_code = formatPromoCode(searchParams.get('promo_code'));
-  const key = searchParams.get('key') || '';
+  const initKey = searchParams.get('key') || '';
 
   const [showCSModal, setShowCSModal] = useState(false);
-  console.log('showCSModal :>> ', showCSModal);
+  const [key, setKey] = useState(initKey);
+
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
-  const { data: quoteInfo } = useGetQuote(key);
-  const {
-    mutateAsync: generateQuote,
-    isSuccess,
-    isPending,
-  } = useGenerateQuote();
+  const { data: quoteInfo } = useGetQuote(initKey);
+  const { mutateAsync: generateQuote, isPending } = useGenerateQuote();
   const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
 
   const userInfo = quoteInfo?.data?.personal_info;
@@ -95,10 +92,14 @@ export const PolicyDetail = ({
       : []),
   ];
 
+  useEffect(() => {
+    const keyQuote = generateKeyAndAttachToUrl(initKey);
+    setKey(keyQuote);
+  }, []);
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     let payload: any;
-    const keyQuote = generateKeyAndAttachToUrl(key);
-    payload = { ...data, key: keyQuote };
+    payload = { ...data, key: key };
 
     if (isSingPassFlow && userInfo) {
       // data from Singpass
