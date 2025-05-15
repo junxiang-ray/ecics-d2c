@@ -17,28 +17,52 @@ export enum NumberDriverExperience {
   SIX_YEARS = '6 years and above',
 }
 
-export const DEFAULT_PROMO_CODE = { code: 'ECICS5', desc: '15' };
-
-export const DRV_EXP_OPTIONS: DropdownOption[] = [
+const DRIVER_EXP_BASE = [
   {
-    value: NumberDriverExperience.LESS_THAN_2_YEARS,
+    valueEnum: NumberDriverExperience.LESS_THAN_2_YEARS,
+    valueNumber: 0,
     text: 'Less than 2 years',
   },
-  { value: NumberDriverExperience.TWO_YEARS, text: '2 years' },
-  { value: NumberDriverExperience.THREE_YEARS, text: '3 years' },
-  { value: NumberDriverExperience.FOUR_YEARS, text: '4 years' },
-  { value: NumberDriverExperience.FIVE_YEARS, text: '5 years' },
-  { value: NumberDriverExperience.SIX_YEARS, text: '6 years and above' },
+  {
+    valueEnum: NumberDriverExperience.TWO_YEARS,
+    valueNumber: 2,
+    text: '2 years',
+  },
+  {
+    valueEnum: NumberDriverExperience.THREE_YEARS,
+    valueNumber: 3,
+    text: '3 years',
+  },
+  {
+    valueEnum: NumberDriverExperience.FOUR_YEARS,
+    valueNumber: 4,
+    text: '4 years',
+  },
+  {
+    valueEnum: NumberDriverExperience.FIVE_YEARS,
+    valueNumber: 5,
+    text: '5 years',
+  },
+  {
+    valueEnum: NumberDriverExperience.SIX_YEARS,
+    valueNumber: 6,
+    text: '6 years and above',
+  },
 ];
 
-export const DRIVE_EXP_OPTIONS: DropdownOption[] = [
-  { value: 0, text: 'Less than 2 years' },
-  { value: 2, text: '2 years' },
-  { value: 3, text: '3 years' },
-  { value: 4, text: '4 years' },
-  { value: 5, text: '5 years' },
-  { value: 6, text: '6 years and above' },
-];
+export const DRV_EXP_OPTIONS: DropdownOption[] = DRIVER_EXP_BASE.map(
+  (item) => ({
+    value: item.valueEnum,
+    text: item.text,
+  }),
+);
+
+export const DRIVE_EXP_OPTIONS: DropdownOption[] = DRIVER_EXP_BASE.map(
+  (item) => ({
+    value: item.valueNumber,
+    text: item.text,
+  }),
+);
 
 const generateYearOptions = (): DropdownOption[] => {
   const currentYear = new Date().getFullYear();

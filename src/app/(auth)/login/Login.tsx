@@ -7,12 +7,12 @@ import LimitedPeriodOffer from '@/app/(auth)/login/LimitedPeriodOffer';
 import MyInfoLoginSection from '@/app/(auth)/login/MyInfoLoginSection';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 const Login = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
-  const promoCodeDefault =
-    searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
 
   const { mutate: verifyPromoCode, data: promoCodeData } = useVerifyPromoCode();
 

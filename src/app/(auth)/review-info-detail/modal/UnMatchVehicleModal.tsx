@@ -150,7 +150,6 @@ const UnMatchVehicleModal = ({
 
         const updatedParsed = {
           ...sessionData,
-          vehicles: updatedVehicles,
           vehicle_selected: [updatedVehicles[0]],
         };
 

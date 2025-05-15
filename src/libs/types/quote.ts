@@ -168,6 +168,7 @@ export interface Plan {
   is_recommended: boolean;
   premium_bef_gst: number;
   premium_with_gst: number;
+  add_ons_included_in_this_plan?: AddOnIncludedInPlan[];
 }
 export interface Benefit {
   id: number;
@@ -255,6 +256,11 @@ export interface Addon {
   premium_bef_gst: number;
   premium_with_gst: number;
   default_option_id: number | null;
+}
+export interface AddOnIncludedInPlan {
+  add_on_id: string;
+  add_on_desc: string;
+  add_on_name: string;
 }
 export interface Option {
   id: number;

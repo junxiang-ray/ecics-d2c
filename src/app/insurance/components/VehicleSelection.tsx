@@ -12,7 +12,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { saveToSessionStorage } from '@/libs/utils/utils';
+import { formatPromoCode, saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
@@ -59,7 +59,7 @@ export const VehicleSelectionModal = ({
     selected?.chasis_number,
   );
   const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promo_code = formatPromoCode(searchParams.get('promo_code'));
 
   const [showContactModal, setShowContactModal] = useState(false);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);

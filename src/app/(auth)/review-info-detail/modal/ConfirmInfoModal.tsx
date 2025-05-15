@@ -9,7 +9,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { calculateAge } from '@/libs/utils/utils';
+import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
 
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
@@ -35,7 +35,7 @@ const ConfirmInfoModal = ({
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promo_code = formatPromoCode(searchParams.get('promo_code'));
   const {
     mutate: savePersonalInfo,
     isSuccess,

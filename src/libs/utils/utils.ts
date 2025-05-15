@@ -108,3 +108,7 @@ export const parsePhoneNumber = (raw: string) => {
 export const formatCurrency = (value: number) => {
   return `SGD ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
+
+export const formatPromoCode = (code: string | null): string => {
+  return code ? code.trim().toUpperCase() : '';
+};
