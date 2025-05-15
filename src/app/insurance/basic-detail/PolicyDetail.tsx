@@ -2,10 +2,9 @@
 
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
-import { convertDateFormat } from '@/libs/utils/date-utils';
 import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
@@ -20,8 +19,10 @@ import {
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
+import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import HeaderVehicleInfoMobile from '../plan/components/HeaderVehicleInfoMobile';
+import { UnableQuote } from './modal/UnableQuote';
 import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
@@ -39,19 +40,21 @@ export const PolicyDetail = ({
   const promo_code = formatPromoCode(searchParams.get('promo_code'));
   const key = searchParams.get('key') || '';
 
+  const [showCSModal, setShowCSModal] = useState(false);
+  console.log('showCSModal :>> ', showCSModal);
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
   const { data: quoteInfo } = useGetQuote(key);
-  const { mutate: generateQuote, isSuccess, isPending } = useGenerateQuote();
+  const {
+    mutateAsync: generateQuote,
+    isSuccess,
+    isPending,
+  } = useGenerateQuote();
+  const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
 
   const userInfo = quoteInfo?.data?.personal_info;
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
   const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
   const savedPromoCode = quoteInfo?.promo_code;
-
-  useEffect(() => {
-    if (!isSuccess) return;
-    router.push(ROUTES.INSURANCE.PLAN);
-  }, [isSuccess]);
 
   const dateOfBirth = userInfo?.date_of_birth
     ? dayjs(userInfo?.date_of_birth, 'DD/MM/YYYY').toDate()
@@ -93,10 +96,10 @@ export const PolicyDetail = ({
   ];
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    let payload;
-
+    let payload: any;
     const keyQuote = generateKeyAndAttachToUrl(key);
     payload = { ...data, key: keyQuote };
+
     if (isSingPassFlow && userInfo) {
       // data from Singpass
       const personal_info = {
@@ -110,24 +113,28 @@ export const PolicyDetail = ({
         phone: userInfo?.phone,
         email: userInfo?.email,
       };
-      const vehicle_info_selected = {
-        chasis_number: selectedVehicle?.chasis_number,
-        first_year_registered: selectedVehicle?.first_registered_year,
-        vehicle_make: selectedVehicle?.vehicle_make,
-        vehicle_model: selectedVehicle?.vehicle_model,
-      };
 
       payload = {
         ...payload,
         personal_info: personal_info,
-        vehicle_info_selected: vehicle_info_selected,
+        vehicle_info_selected: selectedVehicle,
       };
-    }
-
-    try {
-      generateQuote(payload);
-    } catch (error) {
-      console.error('Submission error:', error);
+      verifyRestrictedUser({
+        vehicle_registration_number: selectedVehicle?.vehicle_number,
+        national_identity_no: userInfo?.nric,
+      })
+        .then((res) => {
+          generateQuote(payload).then(() => {
+            router.push(ROUTES.INSURANCE.PLAN);
+          });
+        })
+        .catch((err) => {
+          setShowCSModal(true);
+        });
+    } else {
+      generateQuote(payload).then(() => {
+        router.push(ROUTES.INSURANCE.PLAN);
+      });
     }
   };
 
@@ -160,6 +167,12 @@ export const PolicyDetail = ({
           onSaveRegister={onSaveRegister}
         />
       </div>
+      {showCSModal && (
+        <UnableQuote
+          onClick={() => setShowCSModal(false)}
+          visible={showCSModal}
+        />
+      )}
     </>
   );
 };

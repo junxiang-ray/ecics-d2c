@@ -2,30 +2,29 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import AddOnPricingSummary from '@/app/insurance/add-on/AddOnPricingSummary';
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from '@/app/insurance/basic-detail/options';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { ROUTES } from '@/constants/routes';
+import { useVerifyRestrictedUser } from '@/hook/cms/verify';
+import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import {
   sgCarRegNoValidator,
   validateNRIC,
 } from '@/libs/utils/validation-utils';
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useSearchParams } from 'next/navigation';
-import { useSaveQuote } from '@/hook/insurance/quote';
-import { QuoteData } from '@/libs/types/quote';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
-import { isPending } from '@reduxjs/toolkit';
+import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
 
 const createSchema = () =>
   z.object({
@@ -80,12 +79,16 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const { personal_info, vehicle_info_selected } = props;
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
-  const { mutate: saveQuote, isPending: isPending, isSuccess } = useSaveQuote();
   const router = useRouterWithQuery();
 
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
   const schema = useMemo(() => createSchema(), []);
+  const [showCSModal, setShowCSModal] = React.useState(false);
+
+  const { mutateAsync: saveQuote, isPending: isPending } = useSaveQuote();
+  const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
+
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onSubmit',
@@ -94,12 +97,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const {
     formState: { errors },
   } = methods;
-
-  useEffect(() => {
-    if (isSuccess) {
-      router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
-    }
-  }, [isSuccess]);
 
   const handleSubmit = (data: FormData) => {
     const transformedData: any = {
@@ -119,7 +116,23 @@ const AddOnBonusDetailManualForm = (props: Props) => {
       },
     };
 
-    saveQuote({ key, data: transformedData, is_sending_email: false });
+    verifyRestrictedUser({
+      vehicle_registration_number: data?.vehicleNumber ?? '',
+      national_identity_no: data?.nric,
+    })
+      .then(() => {
+        const dataQuote = {
+          key,
+          data: transformedData,
+          is_sending_email: false,
+        };
+        saveQuote(dataQuote).then(() => {
+          router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
+        });
+      })
+      .catch((err) => {
+        setShowCSModal(true);
+      });
   };
 
   return (
@@ -291,6 +304,12 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           </PrimaryButton>
         </div>
       </Form>
+      {showCSModal && (
+        <UnableQuote
+          onClick={() => setShowCSModal(false)}
+          visible={showCSModal}
+        />
+      )}
     </FormProvider>
   );
 };
