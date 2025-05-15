@@ -20,6 +20,7 @@ import {
 import {
   calculateAge,
   capitalizeWords,
+  formatPromoCode,
   saveToSessionStorage,
 } from '@/libs/utils/utils';
 
@@ -121,7 +122,7 @@ const ReviewInfoDetail = () => {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promo_code = formatPromoCode(searchParams.get('promo_code'));
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [commonInfo, setCommonInfo] = useState<CommonInfo | null>(null);

@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
 import { convertDateFormat } from '@/libs/utils/date-utils';
-import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
+import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
@@ -36,7 +36,7 @@ export const PolicyDetail = ({
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
 
-  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promo_code = formatPromoCode(searchParams.get('promo_code'));
   const key = searchParams.get('key') || '';
 
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);

@@ -38,6 +38,7 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+import { formatPromoCode } from '@/libs/utils/utils';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
@@ -193,8 +194,7 @@ const PolicyDetailForm = ({
 }: PolicyDetailProps) => {
   const [form] = Form.useForm();
   const searchParams = useSearchParams();
-  const promoDefault =
-    searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
@@ -367,7 +367,6 @@ const PolicyDetailForm = ({
         vehicle_make: value[MOTOR_QUOTE.vehicle_make],
         vehicle_model: value[MOTOR_QUOTE.vehicle_model],
         first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
-        chasis_number: 'SBA123A', // to chg
       };
 
       personal_info = {
@@ -383,7 +382,7 @@ const PolicyDetailForm = ({
     const payload = {
       key: key,
       partner_code: partnerCode,
-      promo_code: applyPromoCode,
+      promo_code: formatPromoCode(applyPromoCode),
       company_id: value[MOTOR_QUOTE.hire_purchase],
       personal_info: personal_info,
       vehicle_info_selected: vehicle_info_selected,
@@ -401,7 +400,7 @@ const PolicyDetailForm = ({
     onSubmit(payload);
   };
 
-  const isDisablePromoCode = no_claim !== NumberClaim.NEVER;
+  const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
   const minPolicyStartDate = useMemo(() => {
     const dobDayjs = dateToDayjs(date_of_birth);
@@ -625,7 +624,7 @@ const PolicyDetailForm = ({
                 placeholder='Enter promo code'
                 applyPromoCode={applyPromoCode}
                 setApplyPromoCode={setApplyPromoCode}
-                isDisablePromoCode={isDisablePromoCode}
+                isDisablePromoCode={!isEnablePromoCode}
               />
             </div>
           </div>
