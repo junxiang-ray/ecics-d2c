@@ -17,7 +17,10 @@ import {
 } from '@/components/ui/form/dropdownfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import {
+  DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
+} from '@/constants/general.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import {
   useGetVehicleMakes,
@@ -51,6 +54,9 @@ const UnMatchVehicleModal = ({
     const v = parsedData?.vehicle_selected || [];
     const qdlClasses = parsedData?.drivinglicence?.qdl?.classes || [];
     const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
+
+    const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
+    const parsedSingpass = singpassDataRaw ? JSON.parse(singpassDataRaw) : {};
 
     return {
       key: `${uuid()}`,
@@ -96,6 +102,7 @@ const UnMatchVehicleModal = ({
           first_registered_year:
             extractYear(v.firstregistrationdate?.value) || '',
         })) || [],
+      data_from_singpass: parsedSingpass,
     };
   };
 

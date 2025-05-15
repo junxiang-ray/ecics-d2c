@@ -44,12 +44,107 @@ export interface QuoteData {
   current_step: number;
   vehicles?: Vehicle[];
   personal_info?: PersonalInfo;
+  data_from_singpass?: DataFromSingpass;
   vehicle_info_selected?: Vehicle;
   insurance_additional_info?: InsuranceAdditionalInfo;
   selected_plan?: string;
   selected_addons?: Record<string, string>;
   add_named_driver_info?: AddNamedDriverInfo[];
 }
+export interface DataFromSingpass {
+  aud: string;
+  dob: {
+    value: string;
+    source: string;
+    lastupdated: string;
+    classification: string;
+  };
+  iat: number;
+  iss: string;
+  sex: {
+    code: string;
+    desc: string;
+    source: string;
+    lastupdated: string;
+    classification: string;
+  };
+  sub: string;
+  name: {
+    value: string;
+    source: string;
+    lastupdated: string;
+    classification: string;
+  };
+  email: {
+    value: string;
+    source: string;
+    lastupdated: string;
+    classification: string;
+  };
+  regadd: {
+    type: string;
+    unit: { value: string };
+    block: { value: string };
+    floor: { value: string };
+    postal: { value: string };
+    source: string;
+    street: { value: string };
+    country: {
+      code: string;
+      desc: string;
+    };
+    building: { value: string };
+    lastupdated: string;
+    classification: string;
+  };
+  uinfin: {
+    value: string;
+    source: string;
+    lastupdated: string;
+    classification: string;
+  };
+  marital: {
+    code: string;
+    desc: string;
+    source: string;
+    lastupdated: string;
+    classification: string;
+  };
+  mobileno: {
+    nbr: { value: string };
+    prefix: { value: string };
+    source: string;
+    areacode: { value: string };
+    lastupdated: string;
+    classification: string;
+  };
+  vehicles: {
+    make: { value: string };
+    model: { value: string };
+    source: string;
+    engineno: { value: string };
+    chassisno: { value: string };
+    powerrate: { value: number };
+    vehicleno: { value: string };
+    lastupdated: string;
+    classification: string;
+    enginecapacity: { value: number };
+    yearofmanufacture: { value: string };
+    firstregistrationdate: { value: string };
+  }[];
+  drivinglicence: {
+    qdl: {
+      classes: {
+        class: { value: string };
+        issuedate: { value: string };
+      }[];
+    };
+    source: string;
+    lastupdated: string;
+    classification: string;
+  };
+}
+
 export interface AddNamedDriverInfo {
   name: string;
   gender: GenderType;

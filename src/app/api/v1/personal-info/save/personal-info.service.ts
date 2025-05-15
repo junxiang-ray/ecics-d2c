@@ -45,6 +45,7 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
         personal_info: data.personal_info,
         vehicle_info_selected: data.vehicle_info_selected,
         vehicles: data.vehicles,
+        data_from_singpass: data.data_from_singpass,
         current_step: 0,
       },
       is_sending_email: data.is_sending_email ? true : false,

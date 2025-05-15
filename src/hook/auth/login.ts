@@ -5,7 +5,10 @@ import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import insurance from '@/api/base-service/insurance';
 import auth from '@/api/singpass-service/auth';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import {
+  DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 
 export const useRequestLogin = () => {
@@ -41,6 +44,7 @@ export const usePostUserInfo = ({
   const postUserInfo = async () => {
     const res = await auth.postUserInfo({ params, payload });
     saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data) });
+    saveToSessionStorage({ [DATA_FROM_SINGPASS]: JSON.stringify(res.data) });
     return res.data;
   };
   return useQuery({
@@ -66,8 +70,17 @@ export const usePostPersonalInfo = () => {
       if (variables.shouldRedirect === false) return;
       const queryParams = new URLSearchParams({
         key: variables.key,
-      }).toString();
-      window.location.href = `${ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS}&${queryParams}`;
+      });
+
+      if (variables.partner_code) {
+        queryParams.append('partner_code', variables.partner_code);
+      }
+
+      if (variables.promo_code) {
+        queryParams.append('promo_code', variables.promo_code);
+      }
+
+      window.location.href = `${ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS}&${queryParams.toString()}`;
     },
   });
 };

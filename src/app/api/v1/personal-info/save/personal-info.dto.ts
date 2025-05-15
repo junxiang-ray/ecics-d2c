@@ -19,6 +19,7 @@ export const savePersonalInfoDTOSchema = z.object({
   is_sending_email: z.boolean().optional(),
   promo_code: z.string().nullable().optional(),
   partner_code: z.string().nullable().optional(),
+  data_from_singpass: z.any().optional(),
 });
 
 export type savePersonalInfoDTO = z.infer<typeof savePersonalInfoDTOSchema>;
