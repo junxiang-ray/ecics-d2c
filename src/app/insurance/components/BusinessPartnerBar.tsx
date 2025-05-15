@@ -31,6 +31,7 @@ export default function BusinessPartnerBar({
           {companyName && <p className='font-bold'>{companyName}</p>}
         </div>
       </div>
+      <div></div>
       {/* Reopen in Day 1.5 */}
       {/* <SecondaryButton
         size='small'
