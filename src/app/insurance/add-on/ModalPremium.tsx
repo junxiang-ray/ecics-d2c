@@ -4,12 +4,13 @@ import { Quote } from '@/libs/types/quote';
 import { Drawer, Modal } from 'antd';
 import { AddOnFormat } from './AddonDetail';
 import { SecondaryButton } from '@/components/ui/buttons';
+import { formatCurrency } from '@/libs/utils/utils';
 
 interface Props {
   isShowPopupPremium: boolean;
   setIsShowPopupPremium: (isShowPopupPremium: boolean) => void;
   quoteInfo?: Quote;
-  totalFee: number;
+  premiumWithGst: number;
   addonsFormatted: AddOnFormat[];
   dataSelectedAddOn: any;
   handleOkay: () => void;
@@ -21,20 +22,20 @@ const ModalPremium = (props: Props) => {
     isShowPopupPremium,
     setIsShowPopupPremium,
     quoteInfo,
-    totalFee,
     addonsFormatted,
     dataSelectedAddOn,
     handleOkay,
     isPending,
+    premiumWithGst,
   } = props;
   const isMobile = useDeviceDetection();
 
   const _renderPremium = () => {
-    const pricePlan = totalFee || 0;
     const discountRate = quoteInfo?.promo_code?.discount || 0;
     const tax = 1.09;
-    const feePlan = pricePlan / (1 - discountRate / 100) / tax;
-    const couponDiscount = feePlan * (discountRate / 100);
+    const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
+    const couponDiscount = pricePlanMain * (discountRate / 100);
+
     const addonsSectionData = Object.entries(
       quoteInfo?.data.selected_addons || {},
     )
@@ -63,8 +64,12 @@ const ModalPremium = (props: Props) => {
       },
       0,
     );
+
     const netPremium =
-      pricePlan - couponDiscount + addOnTotal + selectAddOnTotal;
+      pricePlanMain -
+      couponDiscount +
+      addOnTotal / tax +
+      selectAddOnTotal / tax;
     const valueCalculatedGST = 9;
     const gst = (netPremium * valueCalculatedGST) / 100;
 
@@ -77,29 +82,36 @@ const ModalPremium = (props: Props) => {
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between font-semibold '>
               <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
-              <p>SGD {feePlan.toFixed(2)}</p>
+              <p>{formatCurrency(pricePlanMain)}</p>
             </div>
 
             {quoteInfo?.promo_code && (
               <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
                 <p>Coupon Discount</p>
-                <p>-SGD {couponDiscount.toFixed(2)}</p>
+                <p>-{formatCurrency(couponDiscount)}</p>
               </div>
             )}
           </div>
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
             <p>Add-on:</p>
             <div>
-              {addonsSectionData.map((addon) => (
-                <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}:{' '}
-                  <span>SGD {(addOnTotal / tax).toFixed(2)}</span>
-                </p>
-              ))}
+              {addonsSectionData.map((addon) => {
+                const addonValue =
+                  parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
+                return (
+                  <p
+                    key={addon.title}
+                    className='flex flex-row justify-between'
+                  >
+                    {addon.title}:{' '}
+                    <span>{formatCurrency(addonValue / tax)}</span>
+                  </p>
+                );
+              })}
               {dataSelectedAddOn.map((addon: any) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
                   {addon.title}:{' '}
-                  <span>SGD {(addon.feeSelected / tax).toFixed(2)}</span>
+                  <span>{formatCurrency(addon.feeSelected / tax)}</span>
                 </p>
               ))}
             </div>
@@ -107,11 +119,11 @@ const ModalPremium = (props: Props) => {
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
             <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
               <p>GST</p>
-              <p>SGD {gst.toFixed(2)}</p>
+              <p>{formatCurrency(gst)}</p>
             </div>
             <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
               <p>Net Premium</p>
-              <p>SDG {netPremium.toFixed(2)}</p>
+              <p>{formatCurrency(netPremium)}</p>
             </div>
           </div>
         </div>

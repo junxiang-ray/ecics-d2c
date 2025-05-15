@@ -27,6 +27,7 @@ import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { AddOnFormat } from '../add-on/AddonDetail';
+import { formatCurrency } from '@/libs/utils/utils';
 
 function calculateFee(
   option: Option,
@@ -400,12 +401,15 @@ export default function CompletePurchaseDetail({
 
   const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
 
+  const premiumWithGst = plan?.premium_with_gst || 0;
+
   const _renderPremium = () => {
-    const planFee = totalFee || 0;
     const discountRate = quote?.promo_code?.discount || 0;
-    const couponDiscount = planFee * (discountRate / 100);
-    const gst = 35;
-    const addonsSectionDataT = Object.entries(quote?.data.selected_addons || {})
+    const tax = 1.09;
+    const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
+    const couponDiscount = pricePlanMain * (discountRate / 100);
+
+    const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
       .filter(([, selectedValue]) => selectedValue !== 'NO')
       .map(([code, selectedValue]) => {
         const addon = addonsFormatted.find((a) => a.code === code);
@@ -424,62 +428,76 @@ export default function CompletePurchaseDetail({
       return acc + value;
     }, 0);
 
-    const netPremium = planFee - couponDiscount + addOnTotal + gst;
+    const netPremium = pricePlanMain - couponDiscount + addOnTotal / tax;
+    const valueCalculatedGST = 9;
+    const gst = (netPremium * valueCalculatedGST) / 100;
 
     return (
-      <div>
+      <div className='min-w-[400px]'>
         <div className='flex justify-end'>
           <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
             Save
           </div>
         </div>
-        <div className='mt-6 flex w-full flex-col gap-6 rounded-lg border border-[#E4E4E4] p-4'>
+        <div className='mt-6 flex w-full flex-col gap-3 rounded-lg border border-[#E4E4E4] p-4'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
             Premium Breakdown
           </p>
-          <div className='flex flex-col gap-3'>
-            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
+          <div className='flex w-full flex-col gap-4'>
+            <div className='flex flex-col gap-4 border-b border-[#E4E4E4] px-4 py-2'>
               <div className='flex flex-row justify-between text-base leading-[30px] text-[#171A1F]'>
-                <p className='mr-5 font-normal'>
+                <p className=' font-normal'>
                   {quote?.data?.selected_plan ?? ''}
                 </p>
-                <p>SGD {planFee}</p>
+                <p>{pricePlanMain ? formatCurrency(pricePlanMain) : ''}</p>
               </div>
-              <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
-                <p>Coupon Discount</p>
-                <p>-SGD {couponDiscount.toFixed(2)}</p>
+              {quote?.promo_code && (
+                <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
+                  <p>Coupon Discount</p>
+                  <p>-{formatCurrency(couponDiscount)}</p>
+                </div>
+              )}
+
+              <div className='flex flex-col gap-2 border-b border-[#E4E4E4] py-2'>
+                <p className='font-bold text-[#171A1F]'>Add-on:</p>
+                {addonsSectionData.map((addon) => {
+                  const addonValue =
+                    parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
+                  return (
+                    <p
+                      key={addon.title}
+                      className='flex flex-row justify-between'
+                    >
+                      {addon.title}:{' '}
+                      <span>{formatCurrency(addonValue / tax)}</span>
+                    </p>
+                  );
+                })}
+              </div>
+
+              <div className='flex flex-col gap-2 border-b border-[#E4E4E4] py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
+                <div className='flex flex-row justify-between'>
+                  <p>Net Premium</p>
+                  <p>{formatCurrency(netPremium)}</p>
+                </div>
+                <div className='flex flex-row justify-between'>
+                  <p>GST</p>
+                  <p>{formatCurrency(gst)}</p>
+                </div>
+              </div>
+              <div className='flex flex-row justify-between font-bold'>
+                <p>Total (including GST)</p>
               </div>
             </div>
 
-            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2'>
-              <p className='font-bold text-[#171A1F]'>Add-on:</p>
-              {addonsSectionDataT.map((addon) => (
-                <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}: <span>SGD {addOnTotal}</span>
-                </p>
-              ))}
-            </div>
-            <div className='flex flex-col gap-2 border-b border-[#E4E4E4] px-4 py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
-              <div className='flex flex-row justify-between'>
-                <p>Net Premium</p>
-                <p>SGD {netPremium.toFixed(2)}</p>
-              </div>
-              <div className='flex flex-row justify-between'>
-                <p>GST</p>
-                <p>SGD {gst}</p>
-              </div>
-            </div>
-            <div className='flex flex-row justify-between font-bold'>
-              <p>Total (including GST)</p>
-            </div>
+            <SecondaryButton
+              onClick={onPay}
+              loading={isPending}
+              className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+            >
+              Pay
+            </SecondaryButton>
           </div>
-          <SecondaryButton
-            onClick={onPay}
-            loading={isPending}
-            className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
-          >
-            Pay
-          </SecondaryButton>
         </div>
       </div>
     );
@@ -494,8 +512,8 @@ export default function CompletePurchaseDetail({
   }
 
   return (
-    <div className='px-4 py-4 md:py-16'>
-      <div className='flex w-full flex-col justify-center md:flex-row md:gap-6'>
+    <div className='w-full px-4 py-4 md:py-16'>
+      <div className='flex w-full flex-col justify-center md:flex-row md:gap-10'>
         <div className='flex flex-col lg:flex-row'>
           <div className='flex-1'>
             <h1 className='text-xl font-semibold text-[#080808] md:text-center md:text-[32px] md:font-bold md:leading-[48px] md:text-[#171A1F]'>

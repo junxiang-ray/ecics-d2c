@@ -12,6 +12,7 @@ import AdditionDriver from '../components/AdditionDriver';
 import { AddOnFormat } from './AddonDetail';
 import dayjs from 'dayjs';
 import { set } from 'zod';
+import { formatCurrency } from '@/libs/utils/utils';
 
 const ADDON_CARS = ['CAR_COM_AND', 'CAR_TPFT_AND', 'CAR_TPO_AND'];
 
@@ -170,7 +171,9 @@ function AddOnRowDetail({
                 />
               </div>
               <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
-                <p className='text-[#525252]'>SGD {addon.feeSelected ?? 0}</p>
+                <p className='text-[#525252]'>
+                  {formatCurrency(addon.feeSelected ?? 0)}
+                </p>
                 <SecondaryButton
                   className='black h-8 w-28 rounded-md !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
                   onClick={() => handleAddAddonSelect(addon)}
@@ -183,7 +186,9 @@ function AddOnRowDetail({
           {addon.type === 'select' && isAddonCars && (
             <div className='flex flex-col gap-2'>
               <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
-                <p className='text-[#525252]'>SGD {addon.feeSelected ?? 0}</p>
+                <p className='text-[#525252]'>
+                  {formatCurrency(addon.feeSelected ?? 0)}
+                </p>
                 {drivers.length > 0 ? (
                   <SecondaryButton
                     className='black h-8 w-28 rounded-md '
@@ -239,7 +244,9 @@ function AddOnRowDetail({
           )}
           {addon.type === 'checkbox' && (
             <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
-              <p className='text-[#525252]'>SGD {addon.feeSelected ?? 0}</p>
+              <p className='text-[#525252]'>
+                {formatCurrency(addon.feeSelected ?? 0)}
+              </p>
               <SecondaryButton
                 className='black h-8 w-28 rounded-md'
                 onClick={() => handleAddAddonCheckbox(addon)}
@@ -258,7 +265,7 @@ function AddOnRowDetail({
           <div className=' my-2 border-t border-dashed border-[#00ADEFB2]' />
           <div className='flex items-center justify-between pt-2 text-[14px]'>
             <p className='font-semibold leading-[20px] text-[#333333]'>
-              <span>SGD {addon.feeAdded}</span>
+              <span>{formatCurrency(addon.feeAdded)}</span>
             </p>
             <SecondaryButton
               className='h-8 w-28 rounded-md py-0 leading-4 text-red-500'
