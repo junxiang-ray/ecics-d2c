@@ -19,6 +19,7 @@ import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRowDetail from './AddOnRowDetail';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import ModalPremium from './ModalPremium';
+import AddOnRow from './AddOnRow';
 
 const mapIconToTypeAddOn = [
   {
@@ -270,7 +271,7 @@ function AddOnDetail({
     return acc + fee;
   }, 0);
   const baseFeeAdditionalDriver =
-    addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
+    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
   const additionalDriverFee = drivers.length
     ? baseFeeAdditionalDriver * (drivers.length - 1)
     : 0;
@@ -320,6 +321,20 @@ function AddOnDetail({
                       }
                     />
                   )}
+                  {plan?.add_ons_included_in_this_plan?.map((addon) => (
+                    <AddOnRow
+                      key={addon.add_on_id}
+                      title={addon.add_on_name}
+                      icon={<RoadSideIcon className='text-brand-blue' />}
+                      status='completed'
+                    >
+                      <p className='text-[13px] font-semibold leading-[19px] text-[#535353]'>
+                        {addon.add_on_desc}
+                      </p>
+                      <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />
+                      <p>Included in Plan</p>
+                    </AddOnRow>
+                  ))}
                   {addonsFormatted.map((addon) => {
                     return (
                       <AddOnRowDetail
