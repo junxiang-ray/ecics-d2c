@@ -127,7 +127,7 @@ function PlanDetail({
           </div>
 
           {/* UI for Desktop */}
-          <div className='hidden pt-4 md:block '>
+          <div className='hidden py-4 md:block '>
             <PlanCardDesktop
               plans={plansFormatted}
               selectedPlan={selectedPlan}

@@ -443,115 +443,119 @@ const PolicyDetailForm = ({
           {/* Manual Flow detail */}
           {!isSingpassFlow && (
             <>
-              <div className='text-xl font-bold'>Enter Your Policy Details</div>
-              <div className='w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm'>
-                <div className='my-3 text-lg font-bold'>
-                  Personal Information
+              <div className='w-full'>
+                <div className='text-xl font-bold'>
+                  Enter Your Policy Details
                 </div>
-                <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                  <Form.Item
-                    name={MOTOR_QUOTE.email}
-                    validateStatus={errors[MOTOR_QUOTE.email] ? 'error' : ''}
-                  >
-                    <InputField
+                <div className='w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm'>
+                  <div className='my-3 text-lg font-bold'>
+                    Personal Information
+                  </div>
+                  <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+                    <Form.Item
                       name={MOTOR_QUOTE.email}
-                      label='Email ID'
-                      placeholder='Enter your email address'
-                    />
-                  </Form.Item>
+                      validateStatus={errors[MOTOR_QUOTE.email] ? 'error' : ''}
+                    >
+                      <InputField
+                        name={MOTOR_QUOTE.email}
+                        label='Email ID'
+                        placeholder='Enter your email address'
+                      />
+                    </Form.Item>
 
-                  <Form.Item
-                    name={MOTOR_QUOTE.mobile}
-                    validateStatus={errors[MOTOR_QUOTE.mobile] ? 'error' : ''}
-                  >
-                    <InputField
+                    <Form.Item
                       name={MOTOR_QUOTE.mobile}
-                      label='Phone Number'
-                      placeholder='Enter your phone number'
-                    />
-                  </Form.Item>
+                      validateStatus={errors[MOTOR_QUOTE.mobile] ? 'error' : ''}
+                    >
+                      <InputField
+                        name={MOTOR_QUOTE.mobile}
+                        label='Phone Number'
+                        placeholder='Enter your phone number'
+                      />
+                    </Form.Item>
 
-                  <Form.Item
-                    name={MOTOR_QUOTE.owner_dob}
-                    validateStatus={
-                      errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
-                    }
-                  >
-                    <DatePickerField
+                    <Form.Item
                       name={MOTOR_QUOTE.owner_dob}
-                      label='Date of birth'
-                      minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
-                      maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
-                      onChange={handleChangeDob}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name={MOTOR_QUOTE.owner_drv_exp}
-                    validateStatus={
-                      errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''
-                    }
-                  >
-                    <DropdownField
-                      name={MOTOR_QUOTE.owner_drv_exp}
-                      label='Years of Driving Experience'
-                      placeholder="Select your driver's experience (Years)"
-                      options={DRV_EXP_OPTIONS}
-                    />
-                  </Form.Item>
-                </div>
-              </div>
-
-              <div className='my-6 w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm'>
-                <div className='my-3 text-lg font-bold'>
-                  Vehicle Information
-                </div>
-                <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                  <Form.Item name={MOTOR_QUOTE.vehicle_make}>
-                    <DropdownField
-                      name={MOTOR_QUOTE.vehicle_make}
-                      label='Vehicle Make'
-                      placeholder='Select vehicle make'
-                      options={makeOptionsFormatted}
-                      onChange={() => {
-                        // Reset model when make changes
-                        methods.setValue(
-                          MOTOR_QUOTE.vehicle_model,
-                          null as any,
-                        );
-                      }}
-                      showSearch
-                    />
-                  </Form.Item>
-
-                  <Form.Item name={MOTOR_QUOTE.vehicle_model}>
-                    <DropdownField
-                      name={MOTOR_QUOTE.vehicle_model}
-                      label='Vehicle Model'
-                      placeholder='Select vehicle model'
-                      options={modelOptionsFormatted}
-                      disabled={!vehicle_make}
-                      notFoundContent={
-                        isLoadingModelOptions ? (
-                          <Spin size='small' />
-                        ) : (
-                          'No results found'
-                        )
+                      validateStatus={
+                        errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
                       }
-                      showSearch
-                    />
-                  </Form.Item>
+                    >
+                      <DatePickerField
+                        name={MOTOR_QUOTE.owner_dob}
+                        label='Date of birth'
+                        minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
+                        maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
+                        onChange={handleChangeDob}
+                      />
+                    </Form.Item>
 
-                  <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
-                    <DropdownField
-                      name={MOTOR_QUOTE.reg_yyyy}
-                      label="Vehicle's Year of Registration"
-                      placeholder='Select registration year'
-                      options={REG_YEAR_OPTIONS}
-                    />
-                  </Form.Item>
+                    <Form.Item
+                      name={MOTOR_QUOTE.owner_drv_exp}
+                      validateStatus={
+                        errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''
+                      }
+                    >
+                      <DropdownField
+                        name={MOTOR_QUOTE.owner_drv_exp}
+                        label='Years of Driving Experience'
+                        placeholder="Select your driver's experience (Years)"
+                        options={DRV_EXP_OPTIONS}
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
 
-                  {!isSingpassFlow ? hire_purchase_section : null}
+                <div className='my-6 w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm'>
+                  <div className='my-3 text-lg font-bold'>
+                    Vehicle Information
+                  </div>
+                  <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+                    <Form.Item name={MOTOR_QUOTE.vehicle_make}>
+                      <DropdownField
+                        name={MOTOR_QUOTE.vehicle_make}
+                        label='Vehicle Make'
+                        placeholder='Select vehicle make'
+                        options={makeOptionsFormatted}
+                        onChange={() => {
+                          // Reset model when make changes
+                          methods.setValue(
+                            MOTOR_QUOTE.vehicle_model,
+                            null as any,
+                          );
+                        }}
+                        showSearch
+                      />
+                    </Form.Item>
+
+                    <Form.Item name={MOTOR_QUOTE.vehicle_model}>
+                      <DropdownField
+                        name={MOTOR_QUOTE.vehicle_model}
+                        label='Vehicle Model'
+                        placeholder='Select vehicle model'
+                        options={modelOptionsFormatted}
+                        disabled={!vehicle_make}
+                        notFoundContent={
+                          isLoadingModelOptions ? (
+                            <Spin size='small' />
+                          ) : (
+                            'No results found'
+                          )
+                        }
+                        showSearch
+                      />
+                    </Form.Item>
+
+                    <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
+                      <DropdownField
+                        name={MOTOR_QUOTE.reg_yyyy}
+                        label="Vehicle's Year of Registration"
+                        placeholder='Select registration year'
+                        options={REG_YEAR_OPTIONS}
+                      />
+                    </Form.Item>
+
+                    {!isSingpassFlow ? hire_purchase_section : null}
+                  </div>
                 </div>
               </div>
             </>

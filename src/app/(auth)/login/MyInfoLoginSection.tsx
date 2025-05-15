@@ -15,7 +15,6 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 const MyInfoLoginSection = () => {
   const router = useRouter();
   const { isMobile } = useDeviceDetection();
-  const [isDegreedWithDisclaimer, setIsDegreedWithDisclaimer] = useState(false);
   const [isUserActive, setIsUserActive] = useState(false);
 
   const { mutate: requestLogin } = useRequestLogin();
@@ -23,14 +22,12 @@ const MyInfoLoginSection = () => {
 
   const handleLogin = () => {
     setIsUserActive(true);
-    if (!isDegreedWithDisclaimer) return;
     requestLogin();
     requestLogCar();
   };
 
   const handleContinueWithoutMyinfo = () => {
     setIsUserActive(true);
-    if (!isDegreedWithDisclaimer) return;
     requestLogCar();
     router.push(ROUTES.INSURANCE.BASIC_DETAIL_MANUAL);
   };
@@ -62,26 +59,29 @@ const MyInfoLoginSection = () => {
       </div>
 
       <div
-        className={`mt-4 flex flex-wrap items-center justify-center gap-1 text-center ${isMobile ? 'text-[12px] font-normal' : 'text-sm'}`}
+        className={`mt-4 flex flex-wrap items-center justify-center gap-1 text-center ${isMobile ? 'text-xs font-normal' : 'text-xs'}`}
       >
-        <Checkbox
-          className='custom-checkbox'
-          checked={isDegreedWithDisclaimer}
-          onChange={(e) => setIsDegreedWithDisclaimer(e.target.checked)}
-        />
-        <span>By using this platform, you agree to our</span>
-        <LinkButton
-          type='link'
-          className={`pl-0 ${isMobile ? 'text-[12px] font-normal leading-[100%]' : ''}`}
-        >
-          Disclaimer
-        </LinkButton>
+        <span>
+          By proceeding you agree to our <br className='block md:hidden' />
+          <LinkButton
+            type='link'
+            className='h-0 text-wrap px-0 text-xs'
+            href='https://www.ecics.com/privacy-policy'
+            target='_blank'
+          >
+            Terms of Use
+          </LinkButton>
+          {' and '}
+          <LinkButton
+            type='link'
+            className='h-0 text-wrap px-0 text-xs'
+            href='https://www.ecics.com/documents/website-use-terms-and-conditions.pdf'
+            target='_blank'
+          >
+            Privacy Policy
+          </LinkButton>
+        </span>
       </div>
-      {!isDegreedWithDisclaimer && isUserActive && (
-        <p className='text-center text-xs text-red-500'>
-          Please read and agree with disclaimer term before continues
-        </p>
-      )}
     </div>
   );
 };

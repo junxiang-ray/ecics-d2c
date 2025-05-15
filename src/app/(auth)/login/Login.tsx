@@ -54,25 +54,22 @@ const Login = () => {
 
   return (
     <div className='relative flex h-screen w-full flex-row bg-white'>
-      <div className='flex w-1/2 bg-white'>
+      <div className='flex w-2/3 bg-white'>
         <img
           className='h-auto w-full object-cover'
           src='/login_bg_top.svg'
           alt='Background Top'
         />
       </div>
-      <div className='relative z-10 flex w-1/2'>
-        <div className='absolute bottom-0 w-full'>
-          <img
-            src='/login_bg_desktop.svg'
-            alt='Background Bottom'
-            className='w-full object-cover'
-          />
-        </div>
+      <div className='relative z-10 flex w-1/3'>
+        <div className='absolute bottom-0 w-full'></div>
         <div className='relative z-10 mx-auto max-w-md content-center px-4'>
-          <div className='mt-4 text-center text-2xl font-semibold text-primaryBlue'>
-            Get an instant quote with <br />
-            <span className='text-red-logo'>Myinfo</span> login
+          <div className='flex w-full justify-center'>
+            <img src='ecics.svg' />
+          </div>
+          <div className='mt-4 text-center text-lg font-semibold text-[#00adef]'>
+            Get an instant quote with
+            <span className='text-red-logo'> Myinfo</span> login
           </div>
           <div className='mt-4 text-center'>
             <span>
