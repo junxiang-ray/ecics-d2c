@@ -259,7 +259,7 @@ function AddOnDetail({
 
   return (
     <div className='flex w-full flex-col items-center'>
-      <div className='flex max-w-[1280px] flex-col items-center justify-center'>
+      <div className='flex w-full max-w-[1280px] flex-col items-center justify-center'>
         <div className='w-full'>
           {isShowBonusDetail ? (
             <AddOnBonusDetailManualForm
