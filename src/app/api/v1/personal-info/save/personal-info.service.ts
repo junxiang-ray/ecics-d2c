@@ -31,6 +31,7 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
         date_of_birth: data.personal_info.date_of_birth,
         address: data.personal_info.address,
         year_of_registration: data.vehicle_info_selected.year_of_registration,
+        driving_experience: data.personal_info.driving_experience,
         vehicles: data.vehicles ?? [],
       },
     });

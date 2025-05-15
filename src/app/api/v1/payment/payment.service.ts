@@ -33,7 +33,7 @@ export async function handlePayment(data: paymentDTO) {
     };
 
     const resPayment = await handleApiCallToISP(
-      `${CAR_INSURANCE.PREFIX_ENDPOINT}/payment`,
+      `/${CAR_INSURANCE.PREFIX_ENDPOINT}/payment`,
       payloadData,
     );
     logger.info(`Response from payment: ${JSON.stringify(resPayment)}`);

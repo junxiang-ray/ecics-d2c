@@ -138,6 +138,7 @@ model PersonalInfo {
   vehicle_info_selected Json?
   year_of_registration String?  @map("year_of_registration")
   vehicles             Json
+  driving_experience   String?  @map("driving_experience")
   created_at           DateTime @default(now())
   updated_at           DateTime @default(now()) @updatedAt
   quotes               Quote[]
@@ -235,6 +236,7 @@ model Plan {
   premium_with_gst Float?    @default(0.0)
   premium_bef_gst  Float?    @default(0.0)
   add_ons_included_in_this_plan Json @default("[]")
+  order            Int?
   benefits         Benefit[]
   addons           Addon[]
   created_at       DateTime  @default(now())

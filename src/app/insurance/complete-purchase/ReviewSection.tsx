@@ -3,8 +3,8 @@
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
 import ArrowUpIcon from '@/components/icons/ArrowUpIcon';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
+import ModalImportant from './ModalImportant';
 
 interface ReviewSectionProps {
   title: string;
@@ -28,9 +28,13 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   editRoute,
 }) => {
   const router = useRouterWithQuery();
+  const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
 
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleEditClick = () => {
+    setIsShowPopupImportant(true);
+  };
+
+  const handleRedirect = () => {
     if (editRoute) {
       router.push(editRoute);
     } else {
@@ -39,33 +43,35 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   };
 
   return (
-    <div className='mt-4 flex flex-col gap-2 rounded-lg border shadow-sm'>
-      <div
-        className={`border ${isExpanded ? 'rounded-t-lg border-[#00ADEF] bg-[#F4FBFD]' : 'rounded-lg border-[#EDEDED]'}`}
-      >
-        <div className='flex w-full flex-row justify-between px-4 py-2'>
-          <div className='flex w-full flex-row justify-between'>
-            <div className='flex flex-row items-center gap-2'>
-              <div className='flex items-center justify-center rounded-lg bg-[#00ADEF] p-2 font-bold'>
-                {icon}
-              </div>
-              <div className='flex flex-col'>
-                <p className='text-base font-semibold'>{title}</p>
-                <p className='text-[14px] font-normal'>{description}</p>
-              </div>
-            </div>
-
-            <div onClick={onToggle} className='cursor-pointer'>
-              {isExpanded ? (
-                <div className='gap flex flex-row items-center'>
-                  <p className='mr-2 font-bold' onClick={handleEditClick}>
-                    Edit
-                  </p>
-                  <ArrowUpIcon className='text-[#00ADEF]' size={15} />
+    <div className='mt-4 flex w-full flex-col gap-2 rounded-lg border shadow-sm'>
+      <div className='w-full min-w-[335px] '>
+        <div
+          className={`border px-2 ${isExpanded ? 'w-full rounded-t-lg border-[#00ADEF] bg-[#F4FBFD]' : 'rounded-lg border-[#EDEDED]'}`}
+        >
+          <div className='flex w-full flex-row justify-between py-2'>
+            <div className='flex w-full flex-row justify-between'>
+              <div className='flex flex-row items-center gap-2'>
+                <div className='flex items-center justify-center rounded-lg bg-[#00ADEF] p-2 font-bold'>
+                  {icon}
                 </div>
-              ) : (
-                <ArrowDownIcon className='text-[#00ADEF]' size={15} />
-              )}
+                <div className='flex flex-col'>
+                  <p className='text-base font-semibold'>{title}</p>
+                  <p className='text-[14px] font-normal'>{description}</p>
+                </div>
+              </div>
+
+              <div onClick={onToggle} className='cursor-pointer'>
+                {isExpanded ? (
+                  <div className='gap flex flex-row items-center'>
+                    <p className='mr-2 font-bold' onClick={handleEditClick}>
+                      Edit
+                    </p>
+                    <ArrowUpIcon className='text-[#00ADEF]' size={15} />
+                  </div>
+                ) : (
+                  <ArrowDownIcon className='text-[#00ADEF]' size={15} />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -87,7 +93,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           )}
         </div>
       )}
+
+      <ModalImportant
+        isShowPopupImportant={isShowPopupImportant}
+        handleRedirect={handleRedirect}
+        setIsShowPopupImportant={setIsShowPopupImportant}
+      />
     </div>
   );
 };
+
 export default ReviewSection;
