@@ -109,13 +109,8 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
   const { data: quote, isLoading } = useGetQuote(key);
-  const { mutate: saveProposalFinalize } = useSaveProposalFinalize();
-  const {
-    mutate: payment,
-    data: dataPayment,
-    isPending,
-    isSuccess,
-  } = usePayment();
+  const { mutate: saveProposalFinalize, isSuccess } = useSaveProposalFinalize();
+  const { mutate: payment, data: dataPayment, isPending } = usePayment();
 
   const handleEditClick = (key: string) => {
     toggleSection(key);
@@ -348,14 +343,19 @@ export default function CompletePurchaseDetail({
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
   useEffect(() => {
-    if (isSuccess && dataPayment.payment_url) {
+    if (isSuccess) {
+      payment(key);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (dataPayment?.payment_url) {
       router.push(dataPayment.payment_url);
     }
-  }, [isSuccess, dataPayment]);
+  }, [dataPayment]);
 
   const onPay = async () => {
     saveProposalFinalize(key);
-    payment(key);
   };
 
   const addons = plan?.addons ?? [];

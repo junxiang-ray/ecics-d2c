@@ -21,11 +21,10 @@ import {
 } from '@/libs/utils/validation-utils';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useSearchParams } from 'next/navigation';
-import { useSaveQuote } from '@/hook/insurance/quote';
-import { QuoteData } from '@/libs/types/quote';
+import { useSaveProposal, useSaveQuote } from '@/hook/insurance/quote';
+import { ProposalPayload, QuoteData } from '@/libs/types/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { ROUTES } from '@/constants/routes';
-import { isPending } from '@reduxjs/toolkit';
 
 const createSchema = () =>
   z.object({
@@ -74,15 +73,16 @@ type FormData = z.infer<ReturnType<typeof createSchema>>;
 interface Props {
   personal_info: any;
   vehicle_info_selected?: any;
+  dataSaveQuote?: ProposalPayload;
 }
 
 const AddOnBonusDetailManualForm = (props: Props) => {
-  const { personal_info, vehicle_info_selected } = props;
+  const { personal_info, vehicle_info_selected, dataSaveQuote } = props;
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
-  const { mutate: saveQuote, isPending: isPending, isSuccess } = useSaveQuote();
+  const { mutate: saveQuote, isSuccess: isSaveQuoteSuccess } = useSaveQuote();
+  const { mutateAsync: saveProposal, isPending: isPending } = useSaveProposal();
   const router = useRouterWithQuery();
-
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
   const schema = useMemo(() => createSchema(), []);
@@ -96,10 +96,14 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   } = methods;
 
   useEffect(() => {
-    if (isSuccess) {
-      router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
+    if (isSaveQuoteSuccess && dataSaveQuote) {
+      saveProposal(dataSaveQuote)
+        .then(() => {
+          router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
+        })
+        .catch();
     }
-  }, [isSuccess]);
+  }, [isSaveQuoteSuccess]);
 
   const handleSubmit = (data: FormData) => {
     const transformedData: any = {
@@ -110,6 +114,12 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         phone: personal_info?.phone ?? '',
         date_of_birth: personal_info?.date_of_birth ?? '',
         driving_experience: personal_info?.driving_experience ?? 0,
+        name: data.name,
+        nric: data.nric,
+        gender: data.gender,
+        marital_status: data.maritalStatus,
+        address: [data.address],
+        post_code: data.pinCode,
       },
       vehicle_info_selected: {
         ...vehicle_info_selected,
@@ -118,7 +128,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         chasis_number: data.chasisNumber,
       },
     };
-
     saveQuote({ key, data: transformedData, is_sending_email: false });
   };
 
@@ -131,7 +140,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           block: 'center',
         }}
         onFinish={methods.handleSubmit(handleSubmit)}
-        className='w-full'
+        className='w-full px-4'
       >
         {/* MyInfo block */}
         {/*<div*/}

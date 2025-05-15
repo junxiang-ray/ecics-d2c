@@ -107,6 +107,7 @@ function AddOnDetail({
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
+  const [dataSaveQuote, setDataSaveQuote] = useState<ProposalPayload>();
 
   const { data: quoteInfo, isLoading } = useGetQuote(key);
   const { mutateAsync: saveProposal, isPending } = useSaveProposal();
@@ -259,10 +260,9 @@ function AddOnDetail({
       selected_addons: addonsAdd,
       add_named_driver_info: drivers,
     };
-    saveProposal(data).then(() => {
-      setIsShowPopupPremium(false);
-      setIsShowBonusDetail(true);
-    });
+    setDataSaveQuote(data);
+    setIsShowPopupPremium(false);
+    setIsShowBonusDetail(true);
   };
 
   const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
@@ -294,6 +294,7 @@ function AddOnDetail({
               key={quoteInfo?.data.key}
               personal_info={quoteInfo?.data.personal_info}
               vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
+              dataSaveQuote={dataSaveQuote}
             />
           ) : (
             <>
