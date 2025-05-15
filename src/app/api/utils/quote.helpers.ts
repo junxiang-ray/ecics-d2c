@@ -131,6 +131,18 @@ export function mappedAddonPremiums(quoteData: any): Record<string, number> {
     fncd_new_for_old_replacement_if_selected:
       quoteData?.comp_fncd_plan?.add_ons?.nfr
         ?.addl_prem_for_new_for_old_replacement?.if_selected ?? 0,
+    fncd_medical_expenses_1700_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $1700)_if_selected'
+      ] ?? 0,
+    fncd_medical_expenses_700_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $700)_if_selected'
+      ] ?? 0,
+    fncd_medical_expenses_200_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $200)_if_selected'
+      ] ?? 0,
   };
 }
 
