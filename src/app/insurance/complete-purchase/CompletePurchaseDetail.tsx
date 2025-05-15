@@ -580,7 +580,8 @@ export default function CompletePurchaseDetail({
       {isMobile && (
         <div className='mt-16 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
-            fee={totalFee}
+            planFee={premiumWithGst}
+            addonFee={totalAdditionFee}
             discount={15}
             title='Premium breakdown'
             textButton='Pay'
