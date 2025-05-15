@@ -5,11 +5,13 @@ export const CAR_INSURANCE = {
     COM: 'COM',
     TPFT: 'TPFT',
     TPO: 'TPO',
+    FNCD: 'FNCD',
   },
   PLAN_NAME: {
     COM: 'Comprehensive',
     TPFT: 'Third Party, Fire & Theft',
     TPO: 'Third Party Only',
+    FNCD: 'Comprehensive - Family NCD Builder',
   },
 
   ADD_ONS: {

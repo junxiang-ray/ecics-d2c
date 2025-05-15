@@ -17,7 +17,7 @@ function PlanCardDesktop({
   setSelectedPlan: (plan: FormatPlan | null) => void;
 }) {
   return (
-    <div className='flex  w-full justify-center gap-6 lg:gap-10'>
+    <div className='flex  w-full justify-center gap-6 lg:gap-5'>
       {plans?.map((plan, index) => {
         const isRecommended = plan.is_recommended;
         const activeFeatures = plan.benefits
@@ -32,7 +32,7 @@ function PlanCardDesktop({
           <div
             key={index}
             className={clsx(
-              'relative h-[620px] rounded-2xl border-[1px] border-gray-100 bg-white px-4 py-6 shadow-md transition-all duration-500',
+              'relative rounded-2xl border-[1px] border-gray-100 bg-white px-4 py-6 shadow-md transition-all duration-500',
               {
                 'bg-[url(/card-background.svg)] bg-cover bg-no-repeat': active,
                 'border-sky-500': active,
@@ -95,9 +95,12 @@ function PlanCardDesktop({
                 ))}
               </div>
               <PrimaryButton
-                className={clsx('w-full py-2 transition-colors duration-500', {
-                  'bg-black hover:opacity-80': active,
-                })}
+                className={clsx(
+                  'mt-4 w-full py-2 transition-colors duration-500',
+                  {
+                    'bg-black hover:opacity-80': active,
+                  },
+                )}
                 onClick={() => setSelectedPlan(plan)}
               >
                 Select

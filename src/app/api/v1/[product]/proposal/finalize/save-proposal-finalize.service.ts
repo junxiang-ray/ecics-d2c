@@ -26,8 +26,12 @@ export async function saveProposalFinalizeForCar(data: { key: string }) {
 
   const { quote_id, proposal_id } = quoteInfo;
 
+  logger.info(
+    `Saving proposal for car with quote_id: ${quote_id}, proposal_id: ${proposal_id}`,
+  );
+
   const resSaveProposalFinalize = await handleApiCallToISP(
-    `${CAR_INSURANCE.PREFIX_ENDPOINT}/proposal`,
+    `/${CAR_INSURANCE.PREFIX_ENDPOINT}/proposal`,
     {
       proposal_id,
       quote_id,
