@@ -127,7 +127,8 @@ export const PolicyDetail = ({
   return (
     <>
       <div className='mt-4 w-full max-w-[1280px] px-4 md:px-12'>
-        {isSingPassFlow && (
+        {/* turn on Day 1.5 */}
+        {/* {isSingPassFlow && (
           <>
             <div className='mb-8 hidden items-center justify-between md:flex md:flex-col md:gap-4'>
               <HeaderVehicleInfo
@@ -143,7 +144,7 @@ export const PolicyDetail = ({
               />
             </div>
           </>
-        )}
+        )} */}
         <PolicyDetailForm
           onSubmit={onSubmit}
           hirePurchaseOptions={hirePurchaseListFormatted}
