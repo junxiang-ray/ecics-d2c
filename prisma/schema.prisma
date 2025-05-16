@@ -84,6 +84,7 @@ model Quote {
   is_finalized       Boolean   @default(false) @map("is_finalized")
   is_paid            Boolean   @default(false) @map("is_paid")
   is_sending_email     Boolean   @default(false)
+  is_electric_model      Boolean   @default(false)
   expiration_date    DateTime? @map("expiration_date")
   key                String
 
