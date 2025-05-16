@@ -21,3 +21,15 @@
   color: #94959a !important;
   font-size: 16px;
 }
+
+.ant-select-item-option-content {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+.ant-select-selection-item {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  width: calc(100vw - 200px);
+}

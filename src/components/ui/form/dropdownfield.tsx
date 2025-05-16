@@ -15,6 +15,17 @@ export interface DropdownOption {
   text: string;
 }
 
+interface OptionType {
+  value: string;
+  label: JSX.Element;
+}
+
+interface AddOnDropDownFieldProps {
+  options: OptionType[];
+  selectedOption: string;
+  handleSelectOption: (value: string) => void;
+}
+
 export const DropdownField = ({
   name,
   label,
@@ -55,6 +66,14 @@ export const DropdownField = ({
                   }
                 />
               }
+              placement='bottomRight'
+              dropdownStyle={{
+                maxWidth: '100vw',
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+              }}
+              virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
+              // https://github.com/ant-design/ant-design/issues/26480
             >
               {options.map((option: DropdownOption) => (
                 <Select.Option key={option.value} value={option.value}>
@@ -71,5 +90,30 @@ export const DropdownField = ({
         )}
       />
     </>
+  );
+};
+
+export const AddOnDropDownField = ({
+  options,
+  selectedOption,
+  handleSelectOption,
+}: AddOnDropDownFieldProps) => {
+  return (
+    <Select
+      style={{ width: 120 }}
+      className='[&_.ant-select-selector]:border-0.5 w-28 [&_.ant-select-selector]:border-[#00ADEF]'
+      options={options}
+      value={selectedOption}
+      placeholder='Select'
+      onChange={(value) => handleSelectOption(value)}
+      placement='bottomRight'
+      dropdownStyle={{
+        minWidth: 112,
+        width: 'fit-content',
+        maxWidth: '100vw',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+      }}
+    />
   );
 };

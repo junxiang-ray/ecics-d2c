@@ -1,6 +1,5 @@
 'use client';
 
-import { Select } from 'antd';
 import { memo, useEffect, useState } from 'react';
 
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -8,6 +7,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { formatCurrency } from '@/libs/utils/utils';
 import { AddOnFormat } from './AddonDetail';
 import AddOnRow from './AddOnRow';
+import { AddOnDropDownField } from '@/components/ui/form/dropdownfield';
 
 function AddOnRowDetail({
   addon,
@@ -89,13 +89,10 @@ function AddOnRowDetail({
                 <p className='font-semibold leading-[20px] text-[#525252]'>
                   Select Coverage Amount
                 </p>
-                <Select
-                  style={{ width: 120 }}
-                  className='[&_.ant-select-selector]:border-0.5 w-28 [&_.ant-select-selector]:border-[#00ADEF]'
+                <AddOnDropDownField
                   options={options}
-                  value={selectedOption}
-                  placeholder='Select'
-                  onChange={(value) => handleSelectOption(value)}
+                  selectedOption={selectedOption}
+                  handleSelectOption={(value) => handleSelectOption(value)}
                 />
               </div>
               <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
