@@ -3,16 +3,27 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
+import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
+
 import LimitedPeriodOffer from '@/app/(auth)/login/LimitedPeriodOffer';
 import MyInfoLoginSection from '@/app/(auth)/login/MyInfoLoginSection';
+import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { formatPromoCode } from '@/libs/utils/utils';
 
 const Login = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
+  const partnerCode = searchParams.get('partner_code') || '';
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
+  useEffect(() => {
+    if (partnerCode) {
+      saveToLocalStorage({ [PARTNER_CODE]: partnerCode });
+    }
+    if (promoCodeDefault) {
+      saveToLocalStorage({ [PROMO_CODE]: promoCodeDefault });
+    }
+  }, [partnerCode, promoCodeDefault]);
 
   const { mutate: verifyPromoCode, data: promoCodeData } = useVerifyPromoCode();
 

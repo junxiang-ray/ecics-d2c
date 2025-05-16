@@ -19,6 +19,8 @@ import {
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
+  PARTNER_CODE,
+  PROMO_CODE,
 } from '@/constants/general.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import {
@@ -38,6 +40,10 @@ const UnMatchVehicleModal = ({
   setRefreshSession,
 }: UnMatchVehicleModalProps) => {
   const methods = useForm();
+
+  const partnerCode = localStorage.getItem(PARTNER_CODE);
+  const promoCode = localStorage.getItem(PROMO_CODE);
+
   const { isMobile } = useDeviceDetection();
   const { setValue, watch } = methods;
   const selectedMakeId = watch('vehicle_make');
@@ -61,6 +67,8 @@ const UnMatchVehicleModal = ({
     return {
       key: `${uuid()}`,
       is_sending_email: false,
+      promo_code: promoCode ?? '',
+      partner_code: partnerCode ?? '',
       personal_info: {
         name: parsedData.name?.value || '',
         gender: parsedData.sex?.desc || '',

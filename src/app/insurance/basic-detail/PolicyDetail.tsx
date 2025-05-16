@@ -104,7 +104,7 @@ export const PolicyDetail = ({
       const personal_info = {
         name: userInfo?.name,
         gender: userInfo?.gender,
-        maritalStatus: userInfo?.marital_status,
+        marital_status: userInfo?.marital_status,
         date_of_birth: userInfo?.date_of_birth,
         nric: userInfo?.nric,
         address: userInfo?.address,

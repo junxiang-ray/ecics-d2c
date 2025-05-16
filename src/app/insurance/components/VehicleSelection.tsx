@@ -1,7 +1,6 @@
 'use client';
 
 import { Drawer, Modal, Radio, Space, Typography } from 'antd';
-import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
@@ -12,7 +11,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { formatPromoCode, saveToSessionStorage } from '@/libs/utils/utils';
+import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
@@ -21,6 +20,8 @@ import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
+  PARTNER_CODE,
+  PROMO_CODE,
 } from '@/constants/general.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
@@ -54,12 +55,11 @@ export const VehicleSelectionModal = ({
   onClose,
 }: VehicleSelectionModalProps) => {
   const { isMobile } = useDeviceDetection();
-  const searchParams = useSearchParams();
   const [selectedChasisNumber, setSelectedChasisNumber] = useState(
     selected?.chasis_number,
   );
-  const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = formatPromoCode(searchParams.get('promo_code'));
+  const partner_code = localStorage.getItem(PARTNER_CODE);
+  const promo_code = localStorage.getItem(PROMO_CODE);
 
   const [showContactModal, setShowContactModal] = useState(false);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
@@ -108,8 +108,8 @@ export const VehicleSelectionModal = ({
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
         is_sending_email: false,
-        promo_code: promo_code,
-        partner_code: partner_code,
+        promo_code: promo_code || '',
+        partner_code: partner_code || '',
         personal_info: {
           name: updatedParsed.name?.value || '',
           gender: updatedParsed.sex?.desc || '',

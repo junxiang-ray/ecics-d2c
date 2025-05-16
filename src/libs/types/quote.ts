@@ -308,7 +308,7 @@ export interface DependencyAddon {
 export interface PersonalPayload {
   name?: string;
   gender?: string;
-  maritalStatus?: string;
+  marital_status?: string;
   date_of_birth?: string;
   nric?: string;
   address?: string;
