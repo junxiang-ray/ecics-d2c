@@ -131,24 +131,12 @@ export default function CompletePurchaseDetail({
     }
   };
 
-  const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
-    .filter(([code, selectedValue]) => {
-      const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
-      return !isHidden && selectedValue !== 'NO';
-    })
-    .map(([code, selectedValue]) => {
-      const addon = quote?.data.plans?.[0]?.addons?.find(
-        (a: any) => a.code === code,
-      );
-      const label =
-        addon?.options?.find((opt: any) => opt.value === selectedValue)
-          ?.label || selectedValue;
-
-      return {
-        title: addon?.title || code,
-        value: label,
-      };
-    });
+  const addonsSectionData = (
+    quote?.data?.review_info_premium?.data_section_add_ons || []
+  ).map((addon: any) => ({
+    title: addon.title,
+    value: formatCurrency(addon.feeSelected / 1.09),
+  }));
 
   const getAdditionalDriverData = (drivers: any[] = []) => {
     return drivers.flatMap((driver, index) => [
