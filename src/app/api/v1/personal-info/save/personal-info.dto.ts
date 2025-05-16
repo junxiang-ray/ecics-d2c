@@ -12,6 +12,7 @@ export const savePersonalInfoDTOSchema = z.object({
     phone: z.string().optional(),
     email: z.string().min(1, 'Email is required'),
     driving_experience: z.string().optional(),
+    post_code: z.string().optional(),
   }),
   vehicle_info_selected: z.any().optional(),
   vehicles: z.array(z.any()).optional(),

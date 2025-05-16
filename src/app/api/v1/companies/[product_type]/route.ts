@@ -18,7 +18,6 @@ export const GET = async (
   }
 
   const result = await getAllCompanies(productTypeName);
-  logger.info(`Received data to get all companies for product type: ${result}`);
 
   return successRes({
     data: result,
