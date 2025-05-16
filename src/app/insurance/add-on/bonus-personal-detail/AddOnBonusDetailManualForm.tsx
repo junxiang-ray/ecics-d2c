@@ -5,11 +5,8 @@ import { Form } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
-
-import AddOnPricingSummary from '@/app/insurance/add-on/AddOnPricingSummary';
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -22,7 +19,7 @@ import {
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useSearchParams } from 'next/navigation';
 import { useSaveProposal, useSaveQuote } from '@/hook/insurance/quote';
-import { ProposalPayload, QuoteData } from '@/libs/types/quote';
+import { ProposalPayload, Quote, QuoteData } from '@/libs/types/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { ROUTES } from '@/constants/routes';
 
@@ -73,15 +70,13 @@ type FormData = z.infer<ReturnType<typeof createSchema>>;
 interface Props {
   personal_info: any;
   vehicle_info_selected?: any;
-  dataSaveQuote?: ProposalPayload;
 }
 
 const AddOnBonusDetailManualForm = (props: Props) => {
-  const { personal_info, vehicle_info_selected, dataSaveQuote } = props;
+  const { personal_info, vehicle_info_selected } = props;
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
-  const { mutate: saveQuote, isSuccess: isSaveQuoteSuccess } = useSaveQuote();
-  const { mutateAsync: saveProposal, isPending: isPending } = useSaveProposal();
+  const { mutate: saveQuote, isPending, isSuccess } = useSaveQuote();
   const router = useRouterWithQuery();
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
@@ -96,14 +91,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   } = methods;
 
   useEffect(() => {
-    if (isSaveQuoteSuccess && dataSaveQuote) {
-      saveProposal(dataSaveQuote)
-        .then(() => {
-          router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
-        })
-        .catch();
+    if (isSuccess) {
+      router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
     }
-  }, [isSaveQuoteSuccess]);
+  }, [isSuccess]);
 
   const handleSubmit = (data: FormData) => {
     const transformedData: any = {

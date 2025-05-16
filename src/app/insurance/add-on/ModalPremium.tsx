@@ -1,6 +1,6 @@
 'use client';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { Quote } from '@/libs/types/quote';
+import { Addon, Quote } from '@/libs/types/quote';
 import { Drawer, Modal } from 'antd';
 import { AddOnFormat } from './AddonDetail';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -15,6 +15,8 @@ interface Props {
   dataSelectedAddOn: any;
   handleOkay: () => void;
   isPending: boolean;
+  drivers: any[];
+  addonAdditionalDriver?: Addon;
 }
 
 const ModalPremium = (props: Props) => {
@@ -27,10 +29,14 @@ const ModalPremium = (props: Props) => {
     handleOkay,
     isPending,
     premiumWithGst,
+    drivers,
+    addonAdditionalDriver,
   } = props;
   const isMobile = useDeviceDetection();
 
   const _renderPremium = () => {
+    const baseFee = addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
+    const totalFeeDriver = drivers.length ? baseFee * (drivers.length - 1) : 0;
     const discountRate = quoteInfo?.promo_code?.discount || 0;
     const tax = 1.09;
     const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
@@ -39,7 +45,10 @@ const ModalPremium = (props: Props) => {
     const addonsSectionData = Object.entries(
       quoteInfo?.data.selected_addons || {},
     )
-      .filter(([, selectedValue]) => selectedValue !== 'NO')
+      .filter(([code, selectedValue]) => {
+        const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
+        return !isHidden && selectedValue !== 'NO';
+      })
       .map(([code, selectedValue]) => {
         const addon = addonsFormatted.find((a) => a.code === code);
         const value =
@@ -68,8 +77,8 @@ const ModalPremium = (props: Props) => {
     const netPremium =
       pricePlanMain -
       couponDiscount +
-      addOnTotal / tax +
-      selectAddOnTotal / tax;
+      selectAddOnTotal / tax +
+      totalFeeDriver / tax;
     const valueCalculatedGST = 9;
     const gst = (netPremium * valueCalculatedGST) / 100;
 
@@ -95,25 +104,38 @@ const ModalPremium = (props: Props) => {
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
             <p>Add-on:</p>
             <div>
-              {addonsSectionData.map((addon) => {
-                const addonValue =
-                  parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
-                return (
-                  <p
-                    key={addon.title}
-                    className='flex flex-row justify-between'
-                  >
-                    {addon.title}:{' '}
-                    <span>{formatCurrency(addonValue / tax)}</span>
-                  </p>
-                );
-              })}
               {dataSelectedAddOn.map((addon: any) => (
                 <p key={addon.title} className='flex flex-row justify-between'>
                   {addon.title}:{' '}
                   <span>{formatCurrency(addon.feeSelected / tax)}</span>
                 </p>
               ))}
+              {drivers && drivers.length > 0 && (
+                <div className='mt-4'>
+                  <p className='text-sm font-semibold text-[#303030]'>
+                    Additional Named Driver
+                  </p>
+                  {drivers.map((driver, index) => (
+                    <div
+                      key={index}
+                      className='flex flex-row items-center justify-between text-sm text-[#636262]'
+                    >
+                      <p>{driver.name}</p>
+                      <p>
+                        {index === 0
+                          ? 'Free'
+                          : addonAdditionalDriver?.options?.[0]
+                                ?.premium_with_gst
+                            ? formatCurrency(
+                                addonAdditionalDriver.options[0]
+                                  .premium_with_gst / 1.09,
+                              )
+                            : ''}{' '}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>

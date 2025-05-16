@@ -6,7 +6,11 @@ import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
-import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
+import {
+  useGetQuote,
+  useSaveProposal,
+  useSaveQuote,
+} from '@/hook/insurance/quote';
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
 import { Modal, Spin } from 'antd';
@@ -107,10 +111,8 @@ function AddOnDetail({
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
-  const [dataSaveQuote, setDataSaveQuote] = useState<ProposalPayload>();
-
   const { data: quoteInfo, isLoading } = useGetQuote(key);
-  const { mutateAsync: saveProposal, isPending } = useSaveProposal();
+  const { mutateAsync: saveQuote, isPending } = useSaveQuote();
 
   const plan = useMemo(() => {
     return quoteInfo?.data?.plans?.find(
@@ -204,7 +206,10 @@ function AddOnDetail({
   });
 
   const dataSelectedAddOn = Object.entries(addonsAdded || {})
-    .filter(([, selectedValue]) => selectedValue !== 'NO')
+    .filter(([code, selectedValue]) => {
+      const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
+      return !isHidden && selectedValue !== 'NO';
+    })
     .map(([code, selectedValue]) => {
       const addon = addonsFormatted.find((a) => a.code === code);
       const feeSelected = addon?.feeSelected || 0;
@@ -254,15 +259,20 @@ function AddOnDetail({
         : 'NO';
     }
 
-    const data: ProposalPayload = {
+    const data: any = {
       key: key,
-      selected_plan: quoteInfo?.data?.selected_plan ?? '',
       selected_addons: addonsAdd,
       add_named_driver_info: drivers,
     };
-    setDataSaveQuote(data);
-    setIsShowPopupPremium(false);
-    setIsShowBonusDetail(true);
+
+    saveQuote({
+      key: key,
+      data: data,
+      is_sending_email: false,
+    }).then(() => {
+      setIsShowPopupPremium(false);
+      setIsShowBonusDetail(true);
+    });
   };
 
   const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
@@ -294,7 +304,6 @@ function AddOnDetail({
               key={quoteInfo?.data.key}
               personal_info={quoteInfo?.data.personal_info}
               vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
-              dataSaveQuote={dataSaveQuote}
             />
           ) : (
             <>
@@ -353,6 +362,8 @@ function AddOnDetail({
                 handleOkay={handleOkay}
                 isPending={isPending}
                 premiumWithGst={premiumWithGst}
+                drivers={drivers}
+                addonAdditionalDriver={addonAdditionalDriver}
               />
             </>
           )}

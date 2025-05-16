@@ -13,6 +13,7 @@ import { ROUTES } from '@/constants/routes';
 import {
   useGetQuote,
   usePayment,
+  useSaveProposal,
   useSaveProposalFinalize,
 } from '@/hook/insurance/quote';
 import { Option } from '@/libs/types/quote';
@@ -109,8 +110,12 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
   const { data: quote, isLoading } = useGetQuote(key);
-  const { mutate: saveProposalFinalize, isSuccess } = useSaveProposalFinalize();
   const { mutate: payment, data: dataPayment, isPending } = usePayment();
+  const {
+    mutateAsync: saveProposal,
+    isPending: isPendingProposal,
+    isSuccess,
+  } = useSaveProposal();
 
   const handleEditClick = (key: string) => {
     toggleSection(key);
@@ -133,7 +138,10 @@ export default function CompletePurchaseDetail({
   };
 
   const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
-    .filter(([, selectedValue]) => selectedValue !== 'NO')
+    .filter(([code, selectedValue]) => {
+      const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
+      return !isHidden && selectedValue !== 'NO';
+    })
     .map(([code, selectedValue]) => {
       const addon = quote?.data.plans?.[0]?.addons?.find(
         (a: any) => a.code === code,
@@ -355,7 +363,13 @@ export default function CompletePurchaseDetail({
   }, [dataPayment]);
 
   const onPay = async () => {
-    saveProposalFinalize(key);
+    const data: any = {
+      key: key,
+      selected_plan: quote?.data.selected_plan,
+      selected_addons: quote?.data.selected_addons,
+      add_named_driver_info: quote?.data.add_named_driver_info,
+    };
+    saveProposal(data);
   };
 
   const addons = plan?.addons ?? [];
@@ -410,7 +424,10 @@ export default function CompletePurchaseDetail({
     const couponDiscount = pricePlanMain * (discountRate / 100);
 
     const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
-      .filter(([, selectedValue]) => selectedValue !== 'NO')
+      .filter(([code, selectedValue]) => {
+        const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
+        return !isHidden && selectedValue !== 'NO';
+      })
       .map(([code, selectedValue]) => {
         const addon = addonsFormatted.find((a) => a.code === code);
         const value =
@@ -431,6 +448,7 @@ export default function CompletePurchaseDetail({
     const netPremium = pricePlanMain - couponDiscount + addOnTotal / tax;
     const valueCalculatedGST = 9;
     const gst = (netPremium * valueCalculatedGST) / 100;
+    const totalFinalPrice = netPremium + gst;
 
     return (
       <div className='min-w-[400px]'>
@@ -487,6 +505,7 @@ export default function CompletePurchaseDetail({
               </div>
               <div className='flex flex-row justify-between font-bold'>
                 <p>Total (including GST)</p>
+                <p>{formatCurrency(totalFinalPrice)}</p>
               </div>
             </div>
 
