@@ -244,6 +244,12 @@ const AdditionDriver = ({
                 0,
                 0,
               )}
+              pickerValue={adjustDateInDayjs(
+                dateToDayjs(policyStartDate as Date),
+                -26,
+                0,
+                0,
+              )}
             />
             <DropdownField
               name={`drivers.${index}.gender`}
