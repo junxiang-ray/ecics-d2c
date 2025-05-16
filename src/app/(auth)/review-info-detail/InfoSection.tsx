@@ -112,11 +112,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   };
 
   const checkInputsCompleted = (data: any): boolean => {
-    // Check if vehicle length is 1, use vehicles array instead of vehicle_selected
-    const vehicle =
-      data?.vehicles?.length === 1
-        ? data?.vehicles[0]
-        : data?.vehicle_selected?.[0] || {};
     const personal = data || {};
 
     const vehicleRequiredFields = [
@@ -130,17 +125,33 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       'powerrate',
       'yearofmanufacture',
     ];
+    // Check if vehicle length is 1, use vehicles array instead of vehicle_selected
+    const vehiclesToCheck =
+      Array.isArray(data?.vehicles) && data.vehicles.length > 0
+        ? data.vehicles
+        : Array.isArray(data?.vehicle_selected)
+          ? data.vehicle_selected
+          : [];
 
-    const isVehicleCompleted = vehicleRequiredFields.every((field) => {
-      const value = vehicle?.[field]?.value;
-      const isValid =
-        value !== undefined && value !== null && String(value).trim() !== '';
-      if (!isValid) {
-        console.warn(`Invalid or missing value for field "${field}":`, value);
-      }
-      return isValid;
-    });
+    const isVehicleCompleted = vehiclesToCheck.every(
+      (vehicle: any, i: number) => {
+        return vehicleRequiredFields.every((field) => {
+          const value = vehicle?.[field]?.value;
 
+          const isValid =
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== '';
+          if (!isValid) {
+            console.warn(
+              `Invalid or missing value for field "${field}" in vehicle index ${i}:`,
+              value,
+            );
+          }
+          return isValid;
+        });
+      },
+    );
     const isEmailValid = !!personal?.email?.value;
     const isMobileValid =
       !!personal?.mobileno?.prefix?.value?.trim() &&
@@ -259,34 +270,22 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         issuedDate.setFullYear(today.getFullYear() - value);
         const formattedDate = issuedDate.toISOString().split('T')[0];
 
-        if (
-          parsed.drivinglicence &&
-          parsed.drivinglicence.qdl &&
-          parsed.drivinglicence.qdl.classes &&
-          parsed.drivinglicence.qdl.classes.length > 0
-        ) {
-          parsed.drivinglicence.qdl.classes[0].class = { value: '3A' };
-          parsed.drivinglicence.qdl.classes[0].issuedate = {
-            value: formattedDate,
-          };
+        const drivingLicenceClass = {
+          class: { value: '3A' },
+          issuedate: { value: formattedDate },
+        };
+
+        if (parsed.drivinglicence?.qdl?.classes?.length > 0) {
+          parsed.drivinglicence.qdl.classes[0] = drivingLicenceClass;
         } else {
           parsed.drivinglicence = {
             ...parsed.drivinglicence,
-            qdl: {
-              classes: [
-                {
-                  class: { value: '3A' },
-                  issuedate: { value: formattedDate },
-                },
-              ],
-            },
+            qdl: { classes: [drivingLicenceClass] },
           };
         }
-
         parsed.drivinglicence.lastupdated = formattedDate;
         saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
       }
-
       // Check if inputs are completed
       const isInputsCompleted = checkInputsCompleted(parsed);
       saveToSessionStorage({
@@ -546,7 +545,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                         <DropdownField
                           name='year_of_registration'
                           placeholder='Select year'
-                          options={Array.from({ length: 21 }, (_, i) => {
+                          options={Array.from({ length: 16 }, (_, i) => {
                             const year = new Date().getFullYear() - i;
                             return {
                               value: year.toString(),
@@ -609,7 +608,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 <div className='text-sm'>
                   {item.value == null ? (
                     <InputField
-                      name={nameKey}
+                      name={`${vehicleIndex}-${nameKey}`}
                       type='text'
                       className='h-10 w-full rounded-[6px] border border-gray-300 p-2'
                       placeholder={`Enter ${item.label} info`}

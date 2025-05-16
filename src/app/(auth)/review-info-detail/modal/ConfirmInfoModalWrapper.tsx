@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
+import ConfirmInfoFailedModal from '@/app/(auth)/review-info-detail/modal/ConfirmInfoFailedModal';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import ConfirmInfoCompletedModal from './ConfirmInfoCompletedModal';
 import ConfirmInfoModal from './ConfirmInfoModal';
-import ConfirmInfoFailedModal from '@/app/(auth)/review-info-detail/modal/ConfirmInfoFailedModal';
 
 interface ConfirmInfoModalWrapperProps {
   showConfirmModal: boolean;
