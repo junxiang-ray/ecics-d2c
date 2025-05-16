@@ -78,7 +78,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       </div>
 
       {isExpanded && (
-        <div className='flex flex-col gap-2 px-4 pb-2'>
+        <div className='flex min-h-1 flex-col gap-2 px-4 pb-2'>
           {data.map((item, index) =>
             item.value === '' ? (
               <div key={index} className='font-semibold'>

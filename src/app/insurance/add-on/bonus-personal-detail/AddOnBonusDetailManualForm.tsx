@@ -72,10 +72,11 @@ type FormData = z.infer<ReturnType<typeof createSchema>>;
 interface Props {
   personal_info: any;
   vehicle_info_selected?: any;
+  onClose?: () => void;
 }
 
 const AddOnBonusDetailManualForm = (props: Props) => {
-  const { personal_info, vehicle_info_selected } = props;
+  const { personal_info, vehicle_info_selected, onClose } = props;
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
@@ -299,9 +300,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         <div className='mt-8 flex w-full flex-row justify-center gap-6 border-t border-[#F7F7F9] py-4'>
           <SecondaryButton
             className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
-            onClick={() => {
-              router.push(ROUTES.INSURANCE.ADD_ON);
-            }}
+            onClick={onClose}
           >
             Cancel
           </SecondaryButton>
