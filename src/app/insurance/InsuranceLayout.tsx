@@ -88,7 +88,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
             onSaveClick={handleSave}
           />
         </div>
-        <div className='flex w-full justify-between p-4 px-10 pb-0'>
+        <div className='mx-auto flex w-full max-w-[1280px] justify-between p-4 px-10 pb-0'>
           <SecondaryButton
             icon={<ArrowBackIcon size={11} />}
             className='hidden w-32 rounded-sm md:block'
