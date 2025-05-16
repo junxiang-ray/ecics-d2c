@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -25,6 +25,7 @@ import {
 } from '@/libs/utils/validation-utils';
 import { useSearchParams } from 'next/navigation';
 import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
+import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
 
 const createSchema = () =>
   z.object({
@@ -84,7 +85,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
   const schema = useMemo(() => createSchema(), []);
-  const [showCSModal, setShowCSModal] = React.useState(false);
+  const [showCSModal, setShowCSModal] = useState(false);
+  const [showRenewalModal, setShowRenewalModal] = useState(false);
 
   const { mutateAsync: saveQuote, isPending: isPending } = useSaveQuote();
   const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
@@ -120,7 +122,15 @@ const AddOnBonusDetailManualForm = (props: Props) => {
       vehicle_registration_number: data?.vehicleNumber ?? '',
       national_identity_no: data?.nric,
     })
-      .then(() => {
+      .then((res) => {
+        if (res?.isAllowNewBiz === false) {
+          setShowCSModal(true);
+        }
+        if (res?.isAllowNewBiz === true && res?.isAllowRenewal === true) {
+          setShowRenewalModal(true);
+        }
+      })
+      .catch((err) => {
         const dataQuote = {
           key,
           data: transformedData,
@@ -129,9 +139,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         saveQuote(dataQuote).then(() => {
           router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
         });
-      })
-      .catch((err) => {
-        setShowCSModal(true);
       });
   };
 
@@ -308,6 +315,13 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         <UnableQuote
           onClick={() => setShowCSModal(false)}
           visible={showCSModal}
+        />
+      )}
+      {showRenewalModal && (
+        <RenewalModal
+          onCancel={() => setShowRenewalModal(false)}
+          onRenew={() => setShowRenewalModal(false)}
+          visible={showRenewalModal}
         />
       )}
     </FormProvider>

@@ -19,10 +19,8 @@ import {
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
-import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import HeaderVehicleInfoMobile from '../plan/components/HeaderVehicleInfoMobile';
-import { UnableQuote } from './modal/UnableQuote';
 import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
@@ -40,13 +38,11 @@ export const PolicyDetail = ({
   const promo_code = formatPromoCode(searchParams.get('promo_code'));
   const initKey = searchParams.get('key') || '';
 
-  const [showCSModal, setShowCSModal] = useState(false);
   const [key, setKey] = useState(initKey);
 
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
   const { data: quoteInfo } = useGetQuote(initKey);
   const { mutateAsync: generateQuote, isPending } = useGenerateQuote();
-  const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
 
   const userInfo = quoteInfo?.data?.personal_info;
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
@@ -120,23 +116,10 @@ export const PolicyDetail = ({
         personal_info: personal_info,
         vehicle_info_selected: selectedVehicle,
       };
-      verifyRestrictedUser({
-        vehicle_registration_number: selectedVehicle?.vehicle_number,
-        national_identity_no: userInfo?.nric,
-      })
-        .then((res) => {
-          generateQuote(payload).then(() => {
-            router.push(ROUTES.INSURANCE.PLAN);
-          });
-        })
-        .catch((err) => {
-          setShowCSModal(true);
-        });
-    } else {
-      generateQuote(payload).then(() => {
-        router.push(ROUTES.INSURANCE.PLAN);
-      });
     }
+    generateQuote(payload).then(() => {
+      router.push(ROUTES.INSURANCE.PLAN);
+    });
   };
 
   return (
@@ -168,12 +151,6 @@ export const PolicyDetail = ({
           onSaveRegister={onSaveRegister}
         />
       </div>
-      {showCSModal && (
-        <UnableQuote
-          onClick={() => setShowCSModal(false)}
-          visible={showCSModal}
-        />
-      )}
     </>
   );
 };
