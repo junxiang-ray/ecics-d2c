@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { PricingSummary } from '../components/FeeBar';
-import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
+// import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRowDetail from './AddOnRowDetail';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
@@ -291,7 +291,7 @@ function AddOnDetail({
   }
 
   return (
-    <div className='flex w-full flex-col items-center'>
+    <div className='flex w-[full] flex-col items-center'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center'>
         <div className='w-full'>
           {isShowBonusDetail ? (

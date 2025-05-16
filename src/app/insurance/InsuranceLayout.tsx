@@ -79,7 +79,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
 
   return (
     <>
-      <div className='sticky top-0 z-10 w-full bg-white'>
+      <div className='sticky top-0 z-10 mx-auto w-full items-center justify-center bg-white lg:w-[1200px]'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
             businessName={partnerInfo ? 'Business Partner Name' : ''}
@@ -88,10 +88,13 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
             onSaveClick={handleSave}
           />
         </div>
-        <div className='mx-auto flex w-full max-w-[1280px] justify-between p-4 px-10 pb-0'>
+        {/* for save button exist */}
+        {/* <div className='flex w-full justify-between p-4 px-10 pb-0'>  */}
+        <div className='relative flex w-full justify-center p-4 px-10 pb-0 lg:w-[1200px]'>
           <SecondaryButton
             icon={<ArrowBackIcon size={11} />}
-            className='hidden w-32 rounded-sm md:block'
+            // className='hidden w-32 rounded-sm md:block' //for save button exist
+            className='absolute left-10 top-4 hidden w-32 rounded-sm md:block'
             onClick={handleBack}
           >
             Back
@@ -110,7 +113,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
         </div>
       </div>
 
-      <div className='mx-auto flex w-full flex-col items-center justify-between'>
+      <div className='mx-auto flex w-full flex-col items-center justify-between lg:w-[1200px]'>
         {typeof children === 'function'
           ? children({
               onSave: (fn: () => any) => (childSaveRef.current = fn),
