@@ -294,6 +294,7 @@ const PolicyDetailForm = ({
         partner_code: partnerCode,
         promo_code: applyPromoCode,
         company_id: value[MOTOR_QUOTE.hire_purchase],
+        company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
         personal_info: personal_info,
         vehicle_info_selected: vehicle_info_selected,
         insurance_additional_info: {
@@ -384,6 +385,7 @@ const PolicyDetailForm = ({
       partner_code: partnerCode,
       promo_code: formatPromoCode(applyPromoCode),
       company_id: value[MOTOR_QUOTE.hire_purchase],
+      company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
       personal_info: personal_info,
       vehicle_info_selected: vehicle_info_selected,
       insurance_additional_info: {

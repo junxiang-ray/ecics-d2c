@@ -58,7 +58,12 @@ export const DropdownField = ({
             >
               {options.map((option: DropdownOption) => (
                 <Select.Option key={option.value} value={option.value}>
-                  {option.text}
+                  <div
+                    className='max-w-[300px] truncate md:max-w-full'
+                    title={option.text}
+                  >
+                    {option.text}
+                  </div>
                 </Select.Option>
               ))}
             </Select>

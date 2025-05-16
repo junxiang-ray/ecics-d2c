@@ -24,6 +24,7 @@ export interface SavePersonalInfoPayload {
     marital_status: string;
     nric?: string;
     address: string[];
+    post_code?: string;
     date_of_birth: string;
     year_of_registration: string;
     driving_experience: string;

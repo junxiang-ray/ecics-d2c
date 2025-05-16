@@ -195,6 +195,7 @@ const ReviewInfoDetail = () => {
             address: [
               `${updatedParsed.regadd?.block?.value || ''} ${updatedParsed.regadd?.street?.value || ''} #${updatedParsed.regadd?.floor?.value || ''}-${updatedParsed.regadd?.unit?.value || ''}, ${updatedParsed.regadd?.postal?.value || ''}, ${updatedParsed.regadd?.country?.desc || ''}`,
             ].filter(Boolean),
+            post_code: updatedParsed.regadd?.postal?.value || '',
             date_of_birth: updatedParsed.dob?.value
               ? convertDateToDDMMYYYY(updatedParsed.dob.value)
               : '',
@@ -486,6 +487,7 @@ const ReviewInfoDetail = () => {
           address: [
             `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
           ].filter(Boolean),
+          post_code: parsed.regadd?.postal?.value || '',
           date_of_birth: parsed.dob?.value
             ? convertDateToDDMMYYYY(parsed.dob.value)
             : '',
