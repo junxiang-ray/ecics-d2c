@@ -14,7 +14,7 @@ const AddOnPricingSummary: React.FC<AddOnPricingSummaryProps> = ({
       <div className='mt-2 flex w-full flex-row items-center justify-between rounded-t-md border border-[#DEE1E6] px-4 py-3 shadow-lg'>
         <div className='flex flex-col gap-2'>
           <p className='text-[18px] font-semibold leading-6 md:text-[28px] md:font-bold'>
-            S$ 2700{' '}
+            SGD 2700{' '}
             <span className='text-[15px] text-[#FF0004] line-through md:text-[20px] md:font-normal'>
               $3200
             </span>
