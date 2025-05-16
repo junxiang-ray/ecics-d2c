@@ -26,6 +26,7 @@ export const DatePickerField = ({
             <span className='text-base font-semibold'>{label}</span>
             <DatePicker
               {...props}
+              {...field}
               format={format}
               value={field.value ? dayjs(field.value) : null}
               onChange={(date) => {

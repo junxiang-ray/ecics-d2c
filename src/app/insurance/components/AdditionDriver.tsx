@@ -55,7 +55,10 @@ const createSchema = (policyStartDate: Date) =>
               message: 'Please enter a valid NRIC/FIN.',
             }),
           date_of_birth: z
-            .date({ required_error: 'Date of birth is required' })
+            .date({
+              required_error: 'Date of birth is required',
+              invalid_type_error: 'Date of birth is required',
+            })
             .refine(
               (dob) => {
                 const minDob = adjustDateInDayjs(
@@ -67,7 +70,7 @@ const createSchema = (policyStartDate: Date) =>
                 return dayjs(dob as Date).isSameOrBefore(minDob);
               },
               {
-                message: 'Driver must be older than 26 years.',
+                message: 'Invalid age. Driver must be older than 26 years.',
               },
             ),
           gender: z.string({
@@ -84,7 +87,7 @@ const createSchema = (policyStartDate: Date) =>
             })
             .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
               message:
-                'Driver must have at least 2 years of driving experience',
+                'Invalid driving experience. Driver must have at least 2 years of driving experience.',
             }),
           is_claim_in_3_years: z
             .string({
@@ -138,11 +141,11 @@ const AdditionDriver = ({
     -27,
     0,
     0,
-  )?.toDate();
+  );
   const initDriver = {
     name: '',
     nric_or_fin: '',
-    date_of_birth: initDob,
+    date_of_birth: null,
     gender: null,
     marital_status: null,
     driving_experience: null,
@@ -167,7 +170,6 @@ const AdditionDriver = ({
     handleSubmit,
     formState: { errors },
   } = methods;
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'drivers',
@@ -230,8 +232,19 @@ const AdditionDriver = ({
             <DatePickerField
               name={`drivers.${index}.date_of_birth`}
               label='Date of Birth'
-              minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
-              maxDate={adjustDateInDayjs(dayjs(), -18, 0, 0)}
+              minDate={adjustDateInDayjs(
+                dateToDayjs(policyStartDate as Date),
+                -71,
+                0,
+                1,
+              )}
+              maxDate={adjustDateInDayjs(
+                dateToDayjs(policyStartDate as Date),
+                -18,
+                0,
+                0,
+              )}
+              defaultPickerValue={initDob}
             />
             <DropdownField
               name={`drivers.${index}.gender`}

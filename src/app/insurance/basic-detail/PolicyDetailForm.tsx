@@ -100,6 +100,7 @@ const nonSingpassFlowFields = {
   [MOTOR_QUOTE.owner_drv_exp]: z
     .string({
       required_error: 'This field is required',
+      invalid_type_error: 'This field is required',
     })
     .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
       message: sryMsg,
@@ -107,11 +108,13 @@ const nonSingpassFlowFields = {
   [MOTOR_QUOTE.vehicle_make]: z
     .string({
       required_error: 'This field is required',
+      invalid_type_error: 'This field is required',
     })
     .nonempty('This field is required'),
   [MOTOR_QUOTE.vehicle_model]: z
     .string({
       required_error: 'This field is required',
+      invalid_type_error: 'This field is required',
     })
     .nonempty('This field is required'),
   [MOTOR_QUOTE.reg_yyyy]: z.string({
@@ -378,11 +381,13 @@ const PolicyDetailForm = ({
         email: value[MOTOR_QUOTE.email],
       };
     }
-
+    const noOfClaim = value[MOTOR_QUOTE.owner_no_of_claims];
+    const promoCode =
+      noOfClaim === NumberClaim.NEVER ? formatPromoCode(applyPromoCode) : '';
     const payload = {
       key: key,
       partner_code: partnerCode,
-      promo_code: formatPromoCode(applyPromoCode),
+      promo_code: promoCode,
       company_id: value[MOTOR_QUOTE.hire_purchase],
       personal_info: personal_info,
       vehicle_info_selected: vehicle_info_selected,
@@ -436,6 +441,7 @@ const PolicyDetailForm = ({
             block: 'center',
           }}
           onFinish={methods.handleSubmit(handleSubmit)}
+          disabled={isLoading}
           className='w-full'
           {...props}
         >
@@ -532,7 +538,7 @@ const PolicyDetailForm = ({
                         label='Vehicle Model'
                         placeholder='Select vehicle model'
                         options={modelOptionsFormatted}
-                        disabled={!vehicle_make}
+                        disabled={!vehicle_make || isLoading}
                         notFoundContent={
                           isLoadingModelOptions ? (
                             <Spin size='small' />
@@ -587,7 +593,7 @@ const PolicyDetailForm = ({
                   name={MOTOR_QUOTE.end_date}
                   minDate={minPolicyEndDate}
                   maxDate={maxPolicyEndDate}
-                  disabled={!start_date}
+                  disabled={!start_date || isLoading}
                 />
               </Form.Item>
 
