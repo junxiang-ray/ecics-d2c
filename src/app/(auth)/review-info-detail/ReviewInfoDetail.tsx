@@ -19,7 +19,6 @@ import {
 import {
   calculateAge,
   capitalizeWords,
-  formatPromoCode,
   saveToSessionStorage,
 } from '@/libs/utils/utils';
 
@@ -32,6 +31,8 @@ import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelecti
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
+  PARTNER_CODE,
+  PROMO_CODE,
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -121,10 +122,10 @@ interface CommonInfo {
 const ReviewInfoDetail = () => {
   const router = useRouter();
   const [form] = Form.useForm();
-  const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
-  const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = formatPromoCode(searchParams.get('promo_code'));
+
+  const partner_code = localStorage.getItem(PARTNER_CODE);
+  const promo_code = localStorage.getItem(PROMO_CODE);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [commonInfo, setCommonInfo] = useState<CommonInfo | null>(null);
@@ -185,8 +186,8 @@ const ReviewInfoDetail = () => {
         const payload: SavePersonalInfoPayload = {
           key: `${uuid()}`,
           is_sending_email: false,
-          promo_code: promo_code,
-          partner_code: partner_code,
+          promo_code: promo_code || '',
+          partner_code: partner_code || '',
           personal_info: {
             name: updatedParsed.name?.value || '',
             gender: updatedParsed.sex?.desc || '',
@@ -487,8 +488,8 @@ const ReviewInfoDetail = () => {
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
         is_sending_email: false,
-        promo_code: promo_code,
-        partner_code: partner_code,
+        promo_code: promo_code || '',
+        partner_code: partner_code || '',
         personal_info: {
           name: parsed.name?.value || '',
           gender: parsed.sex?.desc || '',

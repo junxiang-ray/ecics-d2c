@@ -1,6 +1,5 @@
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
 
 import { SavePersonalInfoPayload } from '@/libs/types/auth';
@@ -9,7 +8,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
+import { calculateAge } from '@/libs/utils/utils';
 
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
@@ -17,6 +16,8 @@ import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
+  PARTNER_CODE,
+  PROMO_CODE,
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { usePostPersonalInfo } from '@/hook/auth/login';
@@ -32,10 +33,10 @@ const ConfirmInfoModal = ({
   onClose: () => void;
 }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
-  const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = formatPromoCode(searchParams.get('promo_code'));
+  const partner_code = localStorage.getItem(PARTNER_CODE);
+  const promo_code = localStorage.getItem(PROMO_CODE);
+
   const {
     mutate: savePersonalInfo,
     isSuccess,
@@ -71,8 +72,8 @@ const ConfirmInfoModal = ({
     const payload: SavePersonalInfoPayload = {
       key: `${uuid()}`,
       is_sending_email: true,
-      promo_code: promo_code,
-      partner_code: partner_code,
+      promo_code: promo_code || '',
+      partner_code: partner_code || '',
       personal_info: {
         name: parsed.name?.value || '',
         gender: parsed.sex?.desc || '',

@@ -1,10 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import {
-  ProposalPayload,
-  QuoteCreationPayload,
-  QuoteData,
-} from '@/libs/types/quote';
+import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
 
 import insurance from '@/api/base-service/insurance';
 
