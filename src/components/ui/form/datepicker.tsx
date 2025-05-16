@@ -36,7 +36,7 @@ export const DatePickerField = ({
               status={fieldState.invalid ? 'error' : undefined}
               suffixIcon={
                 <CalendarIcon
-                  size={18}
+                  size={24}
                   className={
                     props.disabled
                       ? 'text-[rgba(0,0,0,0.25)]'
@@ -44,7 +44,7 @@ export const DatePickerField = ({
                   }
                 />
               }
-              className={`w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
+              className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
             />
             {fieldState.error && (
               <span className='block text-sm text-red-500'>
