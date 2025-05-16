@@ -361,15 +361,26 @@ const ReviewInfoDetail = () => {
       // Check if any field has "null"
       const hasMissingEmailOrPhone =
         !transformed?.email?.trim() || !transformed?.phone?.trim();
+      const hasMissingMaritalStatus = transformed.personal.some(
+        (item) =>
+          item.label === 'Marital Status' &&
+          (item.value == null || item.value.trim() === ''),
+      );
+
       const hasMissingQDL = transformed.personal.find(
         (item) =>
           item.label === 'Qualified Driving License' &&
-          (!item.value || item.value.trim() === ''),
+          (item.value == null || item.value.trim() === ''),
       );
       const hasInvalidVehicle = transformed.vehicle.some(
         (item: any) => item.value === null,
       );
-      if (hasInvalidVehicle || hasMissingEmailOrPhone || hasMissingQDL) {
+      if (
+        hasInvalidVehicle ||
+        hasMissingEmailOrPhone ||
+        hasMissingQDL ||
+        hasMissingMaritalStatus
+      ) {
         setIsDisabled(true);
       }
 

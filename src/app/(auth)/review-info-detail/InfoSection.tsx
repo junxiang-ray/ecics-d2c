@@ -18,7 +18,6 @@ import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import {
   DRIVE_EXP_OPTIONS,
   MARITAL_STATUS_OPTIONS,
-  NumberDriverExperience,
 } from '@/app/insurance/basic-detail/options';
 import {
   ECICS_USER_INFO,
@@ -437,11 +436,39 @@ const InfoSection: React.FC<InfoSectionProps> = ({
               nameKey === 'year_of_registration';
             const isDrivingLicence = nameKey === 'qualified_driving_license';
             const isMaritalStatus = nameKey === 'marital_status';
+
+            if (
+              item.value != null &&
+              (nameKey === 'email_address' || nameKey === 'phone_number')
+            ) {
+              setValue(nameKey, item.value);
+            }
+
+            if (isEmailAddress || isPhoneNumber) {
+              return (
+                <FormProvider key={idx} {...methods}>
+                  <div>
+                    <div className='text-sm font-bold'>
+                      {isEmailAddress ? 'Email Address' : 'Phone Number'}
+                    </div>
+                    <InputField
+                      name={nameKey}
+                      type='text'
+                      className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
+                      placeholder={
+                        isEmailAddress
+                          ? `Enter ${item.label} info`
+                          : `Enter ${item.label} info, e.g. +65 81234567`
+                      }
+                      onChange={handleInputChangeEmailPhone}
+                    />
+                  </div>
+                </FormProvider>
+              );
+            }
             if (
               item.value == null &&
-              (isEmailAddress ||
-                isPhoneNumber ||
-                isVehicleMake ||
+              (isVehicleMake ||
                 isVehicleModel ||
                 isVehicleYearRegistration ||
                 isDrivingLicence ||
@@ -450,30 +477,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({
               return (
                 <FormProvider key={idx} {...methods}>
                   <div>
-                    {isEmailAddress && (
-                      <>
-                        <div className='text-sm font-bold'>Email Address</div>
-                        <InputField
-                          name={nameKey}
-                          type='text'
-                          className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
-                          placeholder={`Enter ${item.label} info`}
-                          onChange={handleInputChangeEmailPhone}
-                        />
-                      </>
-                    )}
-                    {isPhoneNumber && (
-                      <>
-                        <div className='text-sm font-bold'>Phone Number</div>
-                        <InputField
-                          name={nameKey}
-                          type='text'
-                          className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
-                          placeholder={`Enter ${item.label} info, e.g. +65 81234567`}
-                          onChange={handleInputChangeEmailPhone}
-                        />
-                      </>
-                    )}
                     {isVehicleMake && (
                       <>
                         <div className='text-sm font-bold'>Vehicle Make</div>

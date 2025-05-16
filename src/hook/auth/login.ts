@@ -8,6 +8,8 @@ import auth from '@/api/singpass-service/auth';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
+  PARTNER_CODE,
+  PROMO_CODE,
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 
@@ -68,16 +70,20 @@ export const usePostPersonalInfo = () => {
     mutationKey: ['personal-info'],
     onSuccess: (_data, variables) => {
       if (variables.shouldRedirect === false) return;
+
       const queryParams = new URLSearchParams({
         key: variables.key,
       });
 
-      if (variables.partner_code) {
-        queryParams.append('partner_code', variables.partner_code);
+      const partnerCode = localStorage.getItem(PARTNER_CODE);
+      const promoCode = localStorage.getItem(PROMO_CODE);
+
+      if (partnerCode) {
+        queryParams.append('partner_code', partnerCode);
       }
 
-      if (variables.promo_code) {
-        queryParams.append('promo_code', variables.promo_code);
+      if (promoCode) {
+        queryParams.append('promo_code', promoCode);
       }
 
       window.location.href = `${ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS}&${queryParams.toString()}`;

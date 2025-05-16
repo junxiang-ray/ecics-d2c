@@ -18,6 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     sessionStorage.clear();
+    localStorage.clear();
   }, []);
 
   useEffect(() => {
