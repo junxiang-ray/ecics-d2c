@@ -17,7 +17,7 @@ function PlanCardDesktop({
   setSelectedPlan: (plan: FormatPlan | null) => void;
 }) {
   return (
-    <div className='flex  w-full justify-center gap-6 lg:gap-5'>
+    <div className='flex w-full justify-evenly gap-6 lg:gap-5'>
       {plans?.map((plan, index) => {
         const isRecommended = plan.is_recommended;
         console.log('Plan', plan);
@@ -33,7 +33,7 @@ function PlanCardDesktop({
           <div
             key={index}
             className={clsx(
-              'relative rounded-2xl border-[1px] border-gray-100 bg-gray-100 px-2 py-6 shadow-md transition-all duration-500',
+              'relative min-w-52 flex-1 rounded-2xl border-[1px] border-gray-100 bg-gray-100 px-2 py-6 shadow-md transition-all duration-500',
               {
                 'bg-[url(/card-background.svg)] bg-cover bg-no-repeat': active,
                 'border-sky-500': active,
@@ -41,7 +41,7 @@ function PlanCardDesktop({
             )}
           >
             <div className='flex h-full flex-col justify-between px-4'>
-              <div className='w-52'>
+              <div className=''>
                 <div className='flex justify-between py-3 pt-2'>
                   {isRecommended ? <PlanPremiumIcon /> : <PlanNormalIcon />}
 

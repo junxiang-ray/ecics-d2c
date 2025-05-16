@@ -64,11 +64,15 @@ function SelfDeclarationConfirmModal({
           className='custom-checkbox'
           checked={isChecked}
           onChange={handleCheckboxChange}
+          id='self-declaration-checkbox'
         />
-        <span className='text-justify font-semibold'>
+        <label
+          className='cursor-pointer text-justify font-semibold'
+          htmlFor='self-declaration-checkbox'
+        >
           I confirm that I have read and meet all the above eligibility
           criteria.
-        </span>
+        </label>
       </div>
       <div className='mt-6 flex justify-center'>
         <PrimaryButton

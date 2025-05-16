@@ -1227,7 +1227,7 @@ function PlanDetail({
         />
       </div> */}
       <div className='flex flex-col items-center justify-center'>
-        <div className='max-w-[1280px]'>
+        <div className='w-full max-w-[1280px]'>
           {/* hidden for now */}
           {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4'>
             <HeaderVehicleInfo
@@ -1247,7 +1247,7 @@ function PlanDetail({
           </div>
 
           {/* UI for Desktop */}
-          <div className='hidden py-4 lg:block'>
+          <div className='hidden w-full py-4 md:px-4 lg:block lg:px-8'>
             <PlanCardDesktop
               plans={plansFormatted}
               selectedPlan={selectedPlan}
