@@ -13,9 +13,13 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface MyInfoLoginSectionProps {
   promoCode?: string;
+  partnerCode?: string;
 }
 
-const MyInfoLoginSection = ({ promoCode }: MyInfoLoginSectionProps) => {
+const MyInfoLoginSection = ({
+  promoCode,
+  partnerCode,
+}: MyInfoLoginSectionProps) => {
   const router = useRouter();
   const { isMobile } = useDeviceDetection();
   const [isUserActive, setIsUserActive] = useState(false);
@@ -34,8 +38,13 @@ const MyInfoLoginSection = ({ promoCode }: MyInfoLoginSectionProps) => {
     requestLogCar();
 
     const basePath = ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
-    const queryString = promoCode ? `&promo_code=${promoCode}` : '';
-    router.push(`${basePath}${queryString}`);
+
+    const queryParams = new URLSearchParams();
+    if (promoCode) queryParams.append('promo_code', promoCode);
+    if (partnerCode) queryParams.append('partner_code', partnerCode);
+
+    const queryString = queryParams.toString();
+    router.push(`${basePath}${queryString ? `&${queryString}` : ''}`);
   };
 
   return (

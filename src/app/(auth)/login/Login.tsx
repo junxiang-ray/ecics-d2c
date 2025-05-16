@@ -47,7 +47,10 @@ const Login = () => {
         <div className='text-center text-[18px] font-semibold leading-[100%] text-[#007AFF]'>
           Get an instant quote with Myinfo login
         </div>
-        <MyInfoLoginSection promoCode={promoCodeDefault} />
+        <MyInfoLoginSection
+          promoCode={promoCodeDefault}
+          partnerCode={partnerCode}
+        />
         {showPromo && (
           <LimitedPeriodOffer
             promoCode={promoCodeDefault}
@@ -88,7 +91,10 @@ const Login = () => {
               directly from Myinfo
             </span>
           </div>
-          <MyInfoLoginSection promoCode={promoCodeDefault} />
+          <MyInfoLoginSection
+            promoCode={promoCodeDefault}
+            partnerCode={partnerCode}
+          />
           {showPromo && (
             <LimitedPeriodOffer
               promoCode={promoCodeDefault}
