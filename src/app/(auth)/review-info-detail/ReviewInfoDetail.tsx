@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
@@ -26,6 +26,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
+import { RenewalModal } from '@/app/insurance/basic-detail/modal/RenewalModal';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
 import {
@@ -41,12 +42,11 @@ import {
   vehicleNumberRegex,
 } from '@/constants/validation.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
+import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-import { RenewalModal } from '@/app/insurance/basic-detail/modal/RenewalModal';
-import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 
 const reviewInfoSchema = z.object({
   email_address: z
@@ -258,7 +258,7 @@ const ReviewInfoDetail = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       const isInvalidSingleVehicle =
-        parsed.vehicles?.length === 1 &&
+        parsed.vehicles?.length >= 1 &&
         (!parsed.vehicles[0]?.make?.value?.trim() ||
           !parsed.vehicles[0]?.model?.value?.trim());
 

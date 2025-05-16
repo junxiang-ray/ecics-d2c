@@ -155,11 +155,15 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         )
       : false;
 
+    const hasValidMaritalStatus =
+      !!personal?.marital?.desc && personal.marital.desc.trim() !== '';
+
     const allCompleted =
       isVehicleCompleted &&
       isEmailValid &&
       isMobileValid &&
-      hasValidDrivingLicence;
+      hasValidDrivingLicence &&
+      hasValidMaritalStatus;
 
     if (allCompleted === true) {
       setIsDisabled?.(false);
