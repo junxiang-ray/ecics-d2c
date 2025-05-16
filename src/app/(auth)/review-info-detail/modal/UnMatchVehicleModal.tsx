@@ -16,7 +16,6 @@ import {
   DropdownOption,
 } from '@/components/ui/form/dropdownfield';
 
-import { VehicleResponse } from '@/api/base-service/verify';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
@@ -133,9 +132,8 @@ const UnMatchVehicleModal = ({
         saveToSessionStorage({
           [ECICS_USER_INFO]: JSON.stringify(updatedParsed),
         });
-
-        savePersonalInfo(createPayload(updatedParsed));
         onClose();
+        savePersonalInfo(createPayload(updatedParsed));
       } else if (sessionData.vehicles.length === 1) {
         const updatedVehicles = sessionData.vehicles.map(
           (vehicle: any, index: number) => {
@@ -159,8 +157,8 @@ const UnMatchVehicleModal = ({
           [ECICS_USER_INFO]: JSON.stringify(updatedParsed),
         });
         setRefreshSession((prev) => !prev);
-        savePersonalInfo(createPayload(updatedParsed));
         onClose();
+        savePersonalInfo(createPayload(updatedParsed));
       }
     }
   });

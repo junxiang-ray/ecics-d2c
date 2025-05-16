@@ -25,6 +25,7 @@ export interface Quote {
   update_at: string; // ISO string date
   personal_info_id: string | null;
   company_id: number;
+  company_name_other?: string;
   payment_result_id: string | null;
   country_nationality_id: string | null;
   product_type_id: string | null;

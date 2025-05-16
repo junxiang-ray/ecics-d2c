@@ -8,6 +8,7 @@ interface DropdownFieldProps extends SelectProps {
   options: DropdownOption[];
   label?: string;
   className?: string;
+  renderOption?: (option: DropdownOption) => React.ReactNode;
 }
 
 export interface DropdownOption {
@@ -21,6 +22,7 @@ export const DropdownField = ({
   options,
   disabled,
   className,
+  renderOption,
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
@@ -58,12 +60,7 @@ export const DropdownField = ({
             >
               {options.map((option: DropdownOption) => (
                 <Select.Option key={option.value} value={option.value}>
-                  <div
-                    className='max-w-[300px] truncate md:max-w-full'
-                    title={option.text}
-                  >
-                    {option.text}
-                  </div>
+                  {renderOption ? renderOption(option) : option.text}
                 </Select.Option>
               ))}
             </Select>

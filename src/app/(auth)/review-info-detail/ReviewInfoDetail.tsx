@@ -237,6 +237,10 @@ const ReviewInfoDetail = () => {
     const stored = sessionStorage.getItem(ECICS_USER_INFO);
     if (stored) {
       const parsed = JSON.parse(stored);
+      const isInvalidSingleVehicle =
+        parsed.vehicles?.length === 1 &&
+        (!parsed.vehicles[0]?.make?.value?.trim() ||
+          !parsed.vehicles[0]?.model?.value?.trim());
 
       const transformed = {
         email: parsed.email?.value || null,
@@ -287,7 +291,9 @@ const ReviewInfoDetail = () => {
           },
           {
             label: 'Qualified Driving License',
-            value: parsed.drivinglicence?.qdl?.classes?.length
+            value: parsed.drivinglicence?.qdl?.classes?.some(
+              (c: any) => c.class?.value === '3' || c.class?.value === '3A',
+            )
               ? parsed.drivinglicence.qdl.classes
                   .map((c: any) => {
                     const cls = c.class?.value || '';
@@ -301,49 +307,57 @@ const ReviewInfoDetail = () => {
           },
         ],
         vehicle:
-          parsed.vehicles?.length > 0
+          Array.isArray(parsed.vehicles) && parsed.vehicles.length > 0
             ? parsed.vehicles
-                .map((v: any) => [
-                  {
-                    label: 'Vehicle Number',
-                    value: v.vehicleno?.value || null,
-                  },
-                  {
-                    label: 'Year of Registration',
-                    value: extractYear(v.firstregistrationdate?.value) || null,
-                  },
-                  {
-                    label: 'Vehicle Make',
-                    value:
-                      capitalizeWords(`${v.make?.value || ''} `).trim() || null,
-                  },
-                  {
-                    label: 'Vehicle Model',
-                    value:
-                      capitalizeWords(`${v.model?.value || ''}`).trim() || null,
-                  },
-                  {
-                    label: 'Engine Number',
-                    value: v.engineno?.value || null,
-                  },
-                  {
-                    label: 'Chassis Number',
-                    value: v.chassisno?.value || null,
-                  },
-                  {
-                    label: 'Engine Capacity',
-                    value: v.enginecapacity?.value || null,
-                  },
-                  {
-                    label: 'Power Rate',
-                    value: v.powerrate?.value || null,
-                  },
-                  {
-                    label: 'Year of Manufacture',
-                    value: v.yearofmanufacture?.value || null,
-                  },
-                ])
-                .flat() || []
+                .map((v: any, index: number) => {
+                  const isTarget = isInvalidSingleVehicle && index === 0;
+                  return [
+                    {
+                      label: 'Vehicle Number',
+                      value: v.vehicleno?.value || null,
+                    },
+                    {
+                      label: 'Year of Registration',
+                      value:
+                        extractYear(v.firstregistrationdate?.value) || null,
+                    },
+                    {
+                      label: 'Vehicle Make',
+                      value: isTarget
+                        ? null
+                        : capitalizeWords(`${v.make?.value || ''}`).trim() ||
+                          null,
+                    },
+                    {
+                      label: 'Vehicle Model',
+                      value: isTarget
+                        ? null
+                        : capitalizeWords(`${v.model?.value || ''}`).trim() ||
+                          null,
+                    },
+                    {
+                      label: 'Engine Number',
+                      value: v.engineno?.value || null,
+                    },
+                    {
+                      label: 'Chassis Number',
+                      value: v.chassisno?.value || null,
+                    },
+                    {
+                      label: 'Engine Capacity',
+                      value: v.enginecapacity?.value || null,
+                    },
+                    {
+                      label: 'Power Rate',
+                      value: v.powerrate?.value || null,
+                    },
+                    {
+                      label: 'Year of Manufacture',
+                      value: v.yearofmanufacture?.value || null,
+                    },
+                  ];
+                })
+                .flat()
             : [
                 { label: 'Vehicle Number', value: null },
                 { label: 'Year of Registration', value: null },
@@ -378,24 +392,6 @@ const ReviewInfoDetail = () => {
         email_address: transformed.email,
         phone_number: transformed.phone ?? undefined,
       });
-
-      if (parsed.vehicles?.length === 1) {
-        const vehicle = parsed.vehicles[0];
-        const make = vehicle?.make?.value?.trim();
-        const model = vehicle?.model?.value?.trim();
-        if (!make || !model) {
-          setShowUnMatchModal(true);
-        }
-
-        const registrationYearStr = extractYear(
-          vehicle.firstregistrationdate?.value,
-        );
-        const registrationYear = Number(registrationYearStr);
-        const currentYear = new Date().getFullYear();
-        if (!registrationYear || registrationYear < currentYear - 20) {
-          setShowContactModal(true);
-        }
-      }
     }
   }, [methods, refreshSession]);
 
@@ -517,6 +513,16 @@ const ReviewInfoDetail = () => {
 
     // Case 1 vehicle
     if (parsed.vehicles?.length === 1) {
+      const vehicle = parsed.vehicles[0];
+      const registrationYearStr = extractYear(
+        vehicle.firstregistrationdate?.value,
+      );
+      const registrationYear = Number(registrationYearStr);
+      const currentYear = new Date().getFullYear();
+      if (!registrationYear || registrationYear < currentYear - 20) {
+        setShowContactModal(true);
+      }
+
       const singleVehicle = parsed.vehicles[0];
       postCheckVehicle({
         vehicle_make: singleVehicle.make?.value,

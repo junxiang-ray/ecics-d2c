@@ -39,6 +39,7 @@ import {
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
 import { formatPromoCode } from '@/libs/utils/utils';
+
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
@@ -338,6 +339,14 @@ const PolicyDetailForm = ({
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
           placeholder='Select name of finance company'
+          renderOption={(option) => (
+            <div
+              className='max-w-[300px] truncate md:max-w-full'
+              title={option.text}
+            >
+              {option.text}
+            </div>
+          )}
           options={hirePurchaseOptions}
           showSearch
         />

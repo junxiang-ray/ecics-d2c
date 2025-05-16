@@ -79,6 +79,8 @@ export const PolicyDetail = ({
     [MOTOR_QUOTE.vehicle_model]: selectedVehicle?.vehicle_model ?? undefined,
     [MOTOR_QUOTE.reg_yyyy]: selectedVehicle?.first_registered_year ?? undefined,
     [MOTOR_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
+    [MOTOR_QUOTE.other_hire_purchase]:
+      quoteInfo?.company_name_other ?? undefined,
   };
 
   // Options for Dropdown
