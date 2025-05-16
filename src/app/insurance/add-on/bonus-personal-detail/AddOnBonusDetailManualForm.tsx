@@ -90,7 +90,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
-    mode: 'onSubmit',
+    mode: 'onChange',
   });
 
   const {
