@@ -248,6 +248,38 @@ function AddOnDetail({
     }));
   }, [addonsAdded]);
 
+  const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
+    const fee = addon.feeAdded ?? 0;
+    return acc + fee;
+  }, 0);
+  const baseFeeAdditionalDriver =
+    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
+  const additionalDriverFee = drivers.length
+    ? baseFeeAdditionalDriver * (drivers.length - 1)
+    : 0;
+  const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
+  const premiumWithGst = plan?.premium_with_gst ?? 0;
+  const baseFee = addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
+  const totalFeeDriver = drivers.length ? baseFee * (drivers.length - 1) : 0;
+  const discountRate = quoteInfo?.promo_code?.discount || 0;
+  const tax = 1.09;
+  const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
+  const couponDiscount = pricePlanMain * (discountRate / 100);
+
+  const selectAddOnTotal = dataSelectedAddOn.reduce((acc: any, addon: any) => {
+    const value = addon.feeSelected || 0;
+    return acc + value;
+  }, 0);
+
+  const netPremium =
+    pricePlanMain -
+    couponDiscount +
+    selectAddOnTotal / tax +
+    totalFeeDriver / tax;
+  const valueCalculatedGST = 9;
+  const gst = (netPremium * valueCalculatedGST) / 100;
+  const totalFinalPrice = netPremium + gst;
+
   const handleOkay = () => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
     //For plan codes [COM, FNCD], the default value of CAR_COM_AJE is 'SGD 750.00'.
@@ -267,6 +299,16 @@ function AddOnDetail({
       key: key,
       selected_addons: addonsAdd,
       add_named_driver_info: drivers,
+      review_info_premium: {
+        price_plan: pricePlanMain,
+        coupon_discount: couponDiscount,
+        data_section_add_ons: dataSelectedAddOn,
+        net_premium: netPremium,
+        gst: gst,
+        total_final_price: totalFinalPrice,
+        drivers: drivers,
+        addon_additional_driver: addonAdditionalDriver,
+      },
     };
 
     saveQuote({
@@ -278,18 +320,6 @@ function AddOnDetail({
       setIsShowBonusDetail(true);
     });
   };
-
-  const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
-    const fee = addon.feeAdded ?? 0;
-    return acc + fee;
-  }, 0);
-  const baseFeeAdditionalDriver =
-    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
-  const additionalDriverFee = drivers.length
-    ? baseFeeAdditionalDriver * (drivers.length - 1)
-    : 0;
-  const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
-  const premiumWithGst = plan?.premium_with_gst ?? 0;
 
   if (isLoading) {
     return (
@@ -375,13 +405,16 @@ function AddOnDetail({
                 isShowPopupPremium={isShowPopupPremium}
                 setIsShowPopupPremium={setIsShowPopupPremium}
                 quoteInfo={quoteInfo}
-                addonsFormatted={addonsFormatted}
                 dataSelectedAddOn={dataSelectedAddOn}
                 handleOkay={handleOkay}
                 isPending={isPending}
-                premiumWithGst={premiumWithGst}
                 drivers={drivers}
                 addonAdditionalDriver={addonAdditionalDriver}
+                pricePlanMain={pricePlanMain}
+                couponDiscount={couponDiscount}
+                tax={tax}
+                gst={gst}
+                netPremium={netPremium}
               />
             </>
           )}

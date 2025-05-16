@@ -38,6 +38,18 @@ export interface Company {
   id: number;
   name: string;
 }
+
+export interface ReviewInfo {
+  price_plan: number | null;
+  coupon_discount: number;
+  data_section_add_ons: any;
+  net_premium: number;
+  gst: number;
+  total_final_price: number;
+  drivers: any[];
+  addon_additional_driver: any;
+}
+
 export interface QuoteData {
   key?: string;
   plans?: Plan[];
@@ -50,6 +62,7 @@ export interface QuoteData {
   selected_plan?: string;
   selected_addons?: Record<string, string>;
   add_named_driver_info?: AddNamedDriverInfo[];
+  review_info_premium?: ReviewInfo;
 }
 export interface DataFromSingpass {
   aud: string;

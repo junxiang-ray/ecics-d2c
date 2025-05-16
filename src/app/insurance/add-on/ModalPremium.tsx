@@ -2,7 +2,6 @@
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { Addon, Quote } from '@/libs/types/quote';
 import { Drawer, Modal } from 'antd';
-import { AddOnFormat } from './AddonDetail';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { formatCurrency } from '@/libs/utils/utils';
 
@@ -10,13 +9,16 @@ interface Props {
   isShowPopupPremium: boolean;
   setIsShowPopupPremium: (isShowPopupPremium: boolean) => void;
   quoteInfo?: Quote;
-  premiumWithGst: number;
-  addonsFormatted: AddOnFormat[];
   dataSelectedAddOn: any;
   handleOkay: () => void;
   isPending: boolean;
   drivers: any[];
   addonAdditionalDriver?: Addon;
+  pricePlanMain: number;
+  couponDiscount: number;
+  tax: number;
+  gst: number;
+  netPremium: number;
 }
 
 const ModalPremium = (props: Props) => {
@@ -24,64 +26,20 @@ const ModalPremium = (props: Props) => {
     isShowPopupPremium,
     setIsShowPopupPremium,
     quoteInfo,
-    addonsFormatted,
     dataSelectedAddOn,
     handleOkay,
     isPending,
-    premiumWithGst,
     drivers,
     addonAdditionalDriver,
+    pricePlanMain,
+    couponDiscount,
+    tax,
+    gst,
+    netPremium,
   } = props;
   const isMobile = useDeviceDetection();
 
   const _renderPremium = () => {
-    const baseFee = addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
-    const totalFeeDriver = drivers.length ? baseFee * (drivers.length - 1) : 0;
-    const discountRate = quoteInfo?.promo_code?.discount || 0;
-    const tax = 1.09;
-    const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
-    const couponDiscount = pricePlanMain * (discountRate / 100);
-
-    const addonsSectionData = Object.entries(
-      quoteInfo?.data.selected_addons || {},
-    )
-      .filter(([code, selectedValue]) => {
-        const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
-        return !isHidden && selectedValue !== 'NO';
-      })
-      .map(([code, selectedValue]) => {
-        const addon = addonsFormatted.find((a) => a.code === code);
-        const value =
-          addon?.options?.find((opt: any) => opt.value === selectedValue)
-            ?.value || selectedValue;
-
-        return {
-          title: addon?.title || code,
-          value: value,
-        };
-      });
-
-    const addOnTotal = addonsSectionData.reduce((acc, addon) => {
-      const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
-      return acc + value;
-    }, 0);
-
-    const selectAddOnTotal = dataSelectedAddOn.reduce(
-      (acc: any, addon: any) => {
-        const value = addon.feeSelected || 0;
-        return acc + value;
-      },
-      0,
-    );
-
-    const netPremium =
-      pricePlanMain -
-      couponDiscount +
-      selectAddOnTotal / tax +
-      totalFeeDriver / tax;
-    const valueCalculatedGST = 9;
-    const gst = (netPremium * valueCalculatedGST) / 100;
-
     return (
       <div className='flex flex-col gap-6'>
         <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
