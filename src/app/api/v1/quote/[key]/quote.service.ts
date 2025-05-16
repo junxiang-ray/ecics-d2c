@@ -59,6 +59,7 @@ export async function getQuoteByKey(key: string) {
       },
       omit: {
         quote_res_from_ISP: true,
+        quote_finalize_from_ISP: true,
       },
     });
 

@@ -25,6 +25,10 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
       }
     }
 
+    const productType = await prisma.productType.findFirst({
+      where: { name: 'car' },
+    });
+
     const payloadData = {
       product_id: PRODUCT_ID.CAR,
       quick_quote_make: data.vehicle_info_selected.vehicle_make,
@@ -82,7 +86,14 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
             ? quoteFound.data
             : {}),
           plans: planData,
-          personal_info: data.personal_info,
+          personal_info: {
+            ...(typeof quoteFound?.data === 'object' &&
+            quoteFound?.data !== null &&
+            'personal_info' in quoteFound.data
+              ? (quoteFound.data as { personal_info?: any }).personal_info
+              : {}),
+            ...data.personal_info,
+          },
           vehicle_info_selected: data.vehicle_info_selected,
           insurance_additional_info: data.insurance_additional_info,
         },
@@ -92,6 +103,7 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
         promo_code_id: promoCodeData?.id || null,
         company_id: data?.company_id || null,
         is_electric_model: quoteResInfo?.ev_model === 'YES' ? true : false,
+        product_type_id: productType?.id || null,
       };
 
       if (quoteFound) {
@@ -100,6 +112,7 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
           data: quoteData,
           omit: {
             quote_res_from_ISP: true,
+            quote_finalize_from_ISP: true,
           },
         });
       } else {
@@ -107,6 +120,7 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
           data: quoteData,
           omit: {
             quote_res_from_ISP: true,
+            quote_finalize_from_ISP: true,
           },
         });
       }

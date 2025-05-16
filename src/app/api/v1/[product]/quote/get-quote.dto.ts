@@ -24,6 +24,7 @@ export const generateQuoteSchema = z.object({
     driving_experience: z.number(),
     phone: z.string().regex(REGEX_VALUES.PHONE_NUMBER, 'Phone number invalid'),
     email: z.string().regex(REGEX_VALUES.PHONE_NUMBER, 'Phone number invalid'),
+    post_code: z.string().optional(),
   }),
   vehicle_info_selected: z.any().optional(),
   insurance_additional_info: z.object({

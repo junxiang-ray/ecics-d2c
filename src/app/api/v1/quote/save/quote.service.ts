@@ -103,6 +103,7 @@ export async function saveQuote(data: saveQuoteDTO) {
       },
       omit: {
         quote_res_from_ISP: true,
+        quote_finalize_from_ISP: true,
       },
     });
 
@@ -154,6 +155,7 @@ export async function saveQuote(data: saveQuoteDTO) {
     },
     omit: {
       quote_res_from_ISP: true,
+      quote_finalize_from_ISP: true,
     },
   });
 

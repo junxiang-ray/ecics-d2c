@@ -104,15 +104,16 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
     vehicle_info_selected: {
       chasis_number?: string;
       chassis_no?: string;
-      engine_no?: string;
+      engine_number?: string;
       vehicle_number?: string;
     };
   };
 
   payload.quick_proposal_veh_reg_no =
     vehicle_info_selected?.vehicle_number || '';
-  payload.quick_proposal_chassis_no = vehicle_info_selected?.chassis_no || '';
-  payload.quick_proposal_engine_no = vehicle_info_selected?.engine_no || '';
+  payload.quick_proposal_chassis_no =
+    vehicle_info_selected?.chasis_number || '';
+  payload.quick_proposal_engine_no = vehicle_info_selected?.engine_number || '';
   payload.quick_proposal_hire_purchase = quoteInfo.company?.name || '';
   payload.quick_proposal_proposer_name = personal_info?.name || '';
   payload.quick_proposal_proposer_nric = personal_info?.nric || '';
