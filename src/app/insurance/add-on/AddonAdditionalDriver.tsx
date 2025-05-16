@@ -15,7 +15,7 @@ export const ADDON_CARS = [
   'CAR_COM_AND',
   'CAR_TPFT_AND',
   'CAR_TPO_AND',
-  'CAR_FNCD_AJE',
+  'CAR_FNCD_AND',
 ];
 
 function AddonAdditionalDriver({
@@ -49,7 +49,7 @@ function AddonAdditionalDriver({
   const baseFee = addon.options?.[0].premium_with_gst ?? 0;
   const totalFee = drivers.length ? baseFee * (drivers.length - 1) : 0;
   // addon with code: CAR_FNCD_AJE is required additional driver
-  const isRequired = addon.code === 'CAR_FNCD_AJE';
+  const isRequired = addon.code === 'CAR_FNCD_AND';
 
   return (
     <AddOnRow

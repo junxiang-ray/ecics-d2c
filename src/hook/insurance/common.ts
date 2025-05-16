@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { VehicleCheckResponse } from '@/libs/types/auth';
 
 import verify from '@/api/base-service/verify';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 interface CheckVehiclePayload {
   vehicle_make: string;
@@ -24,8 +25,9 @@ export const useVerifyPartnerCode = (partner_code: string) => {
 
 export const useVerifyPromoCode = () => {
   const fetchQuote = async (promo_code: string) => {
+    const formattedPromoCode = formatPromoCode(promo_code);
     const res = await verify.verifyPromoCode({
-      promo_code,
+      promo_code: formattedPromoCode,
       product_type: 'car',
     });
     return res.data;

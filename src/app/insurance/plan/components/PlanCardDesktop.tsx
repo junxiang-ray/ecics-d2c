@@ -20,6 +20,7 @@ function PlanCardDesktop({
     <div className='flex  w-full justify-center gap-6 lg:gap-5'>
       {plans?.map((plan, index) => {
         const isRecommended = plan.is_recommended;
+        console.log('Plan', plan);
         const activeFeatures = plan.benefits
           .filter((feature) => feature.is_active)
           .sort((a, b) => a.order - b.order);
@@ -32,7 +33,7 @@ function PlanCardDesktop({
           <div
             key={index}
             className={clsx(
-              'relative rounded-2xl border-[1px] border-gray-100 bg-white px-4 py-6 shadow-md transition-all duration-500',
+              'relative rounded-2xl border-[1px] border-gray-100 bg-gray-100 px-2 py-6 shadow-md transition-all duration-500',
               {
                 'bg-[url(/card-background.svg)] bg-cover bg-no-repeat': active,
                 'border-sky-500': active,
@@ -40,8 +41,8 @@ function PlanCardDesktop({
             )}
           >
             <div className='flex h-full flex-col justify-between px-4'>
-              <div className='relative'>
-                <div className='flex justify-between py-6 pt-2'>
+              <div className='w-52'>
+                <div className='flex justify-between py-3 pt-2'>
                   {isRecommended ? <PlanPremiumIcon /> : <PlanNormalIcon />}
 
                   {isRecommended && (
@@ -51,7 +52,7 @@ function PlanCardDesktop({
                   )}
                 </div>
                 <p
-                  className={clsx('text-2xl font-semibold text-[#1B223C]', {
+                  className={clsx('text-lg font-semibold text-[#1B223C]', {
                     '!font-normal': active,
                   })}
                 >
@@ -62,27 +63,32 @@ function PlanCardDesktop({
                     {plan.subtitle}
                   </p>
                 )}
-                <div className='flex max-w-80 items-center justify-between pb-5 pt-3'>
-                  <p className='text-xl font-bold text-[#1B223C]'>
-                    S$ {plan.premium_with_gst.toFixed(2)}
+                <div className='max-w-80 pt-3'>
+                  <p className='text-lg font-bold text-[#1B223C]'>
+                    SGD {plan.premium_with_gst.toFixed(2)}
                   </p>
                   {!!plan.discount && (
-                    <>
-                      <p className='text-lg font-normal text-[#00ADEF] line-through decoration-1'>
-                        S$ {plan.currentPrice.toFixed(2)}
+                    <div className='mt-1'>
+                      <p className='text-md font-normal text-[#FF0004] line-through decoration-1'>
+                        SGD {plan.currentPrice.toFixed(2)}
                       </p>
-                      <p className='text-xs font-light text-[#797878]'>{`(${plan.discount}% off applied)`}</p>
-                    </>
+                      <p className='text-xs font-light text-[#797878]'>
+                        ({plan.discount}% off applied)
+                      </p>
+                    </div>
                   )}
                 </div>
                 {activeFeatures.map((feature, index) => (
-                  <div className='mt-4 flex items-start gap-4' key={index}>
+                  <div
+                    className='mt-2 flex items-start gap-2 text-sm'
+                    key={index}
+                  >
                     <TickCircleIcon size={12} className='mt-[6px]' />
                     <div dangerouslySetInnerHTML={{ __html: feature.name }} />
                   </div>
                 ))}
                 {inactiveFeatures.map((feature, index) => (
-                  <div className='mt-4 flex items-start gap-2' key={index}>
+                  <div className='mt-2 flex items-start' key={index}>
                     <CrossMarkIcon
                       size={20}
                       className='mt-[6px] text-sky-700'

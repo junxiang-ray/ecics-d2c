@@ -17,7 +17,10 @@ import {
 } from '@/components/ui/form/dropdownfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import {
+  DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
+} from '@/constants/general.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import {
   useGetVehicleMakes,
@@ -50,6 +53,10 @@ const UnMatchVehicleModal = ({
   const createPayload = (parsedData: any): SavePersonalInfoPayload => {
     const v = parsedData?.vehicle_selected || [];
     const qdlClasses = parsedData?.drivinglicence?.qdl?.classes || [];
+    const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
+
+    const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
+    const parsedSingpass = singpassDataRaw ? JSON.parse(singpassDataRaw) : {};
 
     return {
       key: `${uuid()}`,
@@ -68,7 +75,9 @@ const UnMatchVehicleModal = ({
         year_of_registration: parsedData.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
-            ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+            ? drivingYears >= 6
+              ? '6 years and above'
+              : `${drivingYears} years`
             : '1 year',
         phone: `${parsedData.mobileno?.nbr?.value || ''}`,
         email: parsedData.email?.value || '',
@@ -93,6 +102,7 @@ const UnMatchVehicleModal = ({
           first_registered_year:
             extractYear(v.firstregistrationdate?.value) || '',
         })) || [],
+      data_from_singpass: parsedSingpass,
     };
   };
 
@@ -140,7 +150,6 @@ const UnMatchVehicleModal = ({
 
         const updatedParsed = {
           ...sessionData,
-          vehicles: updatedVehicles,
           vehicle_selected: [updatedVehicles[0]],
         };
 

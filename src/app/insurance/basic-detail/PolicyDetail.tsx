@@ -2,11 +2,10 @@
 
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
-import { convertDateFormat } from '@/libs/utils/date-utils';
-import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
+import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
@@ -36,22 +35,19 @@ export const PolicyDetail = ({
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
 
-  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
-  const key = searchParams.get('key') || '';
+  const promo_code = formatPromoCode(searchParams.get('promo_code'));
+  const initKey = searchParams.get('key') || '';
+
+  const [key, setKey] = useState(initKey);
 
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
-  const { data: quoteInfo } = useGetQuote(key);
-  const { mutate: generateQuote, isSuccess, isPending } = useGenerateQuote();
+  const { data: quoteInfo } = useGetQuote(initKey);
+  const { mutateAsync: generateQuote, isPending } = useGenerateQuote();
 
   const userInfo = quoteInfo?.data?.personal_info;
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
   const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
   const savedPromoCode = quoteInfo?.promo_code;
-
-  useEffect(() => {
-    if (!isSuccess) return;
-    router.push(ROUTES.INSURANCE.PLAN);
-  }, [isSuccess]);
 
   const dateOfBirth = userInfo?.date_of_birth
     ? dayjs(userInfo?.date_of_birth, 'DD/MM/YYYY').toDate()
@@ -92,11 +88,15 @@ export const PolicyDetail = ({
       : []),
   ];
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    let payload;
+  useEffect(() => {
+    const keyQuote = generateKeyAndAttachToUrl(initKey);
+    setKey(keyQuote);
+  }, []);
 
-    const keyQuote = generateKeyAndAttachToUrl(key);
-    payload = { ...data, key: keyQuote };
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    let payload: any;
+    payload = { ...data, key: key };
+
     if (isSingPassFlow && userInfo) {
       // data from Singpass
       const personal_info = {
@@ -110,25 +110,16 @@ export const PolicyDetail = ({
         phone: userInfo?.phone,
         email: userInfo?.email,
       };
-      const vehicle_info_selected = {
-        chasis_number: selectedVehicle?.chasis_number,
-        first_year_registered: selectedVehicle?.first_registered_year,
-        vehicle_make: selectedVehicle?.vehicle_make,
-        vehicle_model: selectedVehicle?.vehicle_model,
-      };
 
       payload = {
         ...payload,
         personal_info: personal_info,
-        vehicle_info_selected: vehicle_info_selected,
+        vehicle_info_selected: selectedVehicle,
       };
     }
-
-    try {
-      generateQuote(payload);
-    } catch (error) {
-      console.error('Submission error:', error);
-    }
+    generateQuote(payload).then(() => {
+      router.push(ROUTES.INSURANCE.PLAN);
+    });
   };
 
   return (

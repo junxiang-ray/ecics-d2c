@@ -1,5 +1,6 @@
 'use client';
 
+import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 
 import ReviewInfoDetail from '@/app/(auth)/review-info-detail/ReviewInfoDetail';
@@ -34,7 +35,11 @@ export default function ReviewInfoDetailPage() {
   });
 
   if (!clientReady || isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
   }
 
   return (

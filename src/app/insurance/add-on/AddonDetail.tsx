@@ -23,6 +23,7 @@ import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRowDetail from './AddOnRowDetail';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import ModalPremium from './ModalPremium';
+import AddOnRow from './AddOnRow';
 
 const mapIconToTypeAddOn = [
   {
@@ -132,11 +133,13 @@ function AddOnDetail({
 
   const defaultAddonsAdded = useMemo(() => {
     if (!normalAddons.length) return {};
-    if (quoteInfo?.data?.selected_addons) {
-      return quoteInfo?.data?.selected_addons;
-    }
     const addonCodes = normalAddons.map((addon) => addon.code);
-    return Object.fromEntries(addonCodes.map((code) => [code, 'NO']));
+    return Object.fromEntries(
+      addonCodes.map((code) => [
+        code,
+        quoteInfo?.data?.selected_addons?.[code] ?? 'NO',
+      ]),
+    );
   }, [normalAddons, quoteInfo]);
 
   const defaultAddonsSelected = useMemo(() => {
@@ -253,7 +256,8 @@ function AddOnDetail({
     }
     //
     if (addonAdditionalDriver?.code) {
-      const isExistDriver = drivers.every((driver) => driver.nric_or_fin);
+      const isExistDriver =
+        drivers.every((driver) => driver.nric_or_fin) && drivers.length;
       addonsAdd[addonAdditionalDriver.code] = isExistDriver
         ? 'drivers_age_from_27_to_70'
         : 'NO';
@@ -280,7 +284,7 @@ function AddOnDetail({
     return acc + fee;
   }, 0);
   const baseFeeAdditionalDriver =
-    addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
+    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
   const additionalDriverFee = drivers.length
     ? baseFeeAdditionalDriver * (drivers.length - 1)
     : 0;
@@ -330,6 +334,20 @@ function AddOnDetail({
                       }
                     />
                   )}
+                  {plan?.add_ons_included_in_this_plan?.map((addon) => (
+                    <AddOnRow
+                      key={addon.add_on_id}
+                      title={addon.add_on_name}
+                      icon={<RoadSideIcon className='text-brand-blue' />}
+                      status='completed'
+                    >
+                      <p className='text-[13px] font-semibold leading-[19px] text-[#535353]'>
+                        {addon.add_on_desc}
+                      </p>
+                      <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />
+                      <p>Included in Plan</p>
+                    </AddOnRow>
+                  ))}
                   {addonsFormatted.map((addon) => {
                     return (
                       <AddOnRowDetail

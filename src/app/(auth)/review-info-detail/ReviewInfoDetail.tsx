@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 
@@ -20,6 +19,7 @@ import {
 import {
   calculateAge,
   capitalizeWords,
+  formatPromoCode,
   saveToSessionStorage,
 } from '@/libs/utils/utils';
 
@@ -29,7 +29,10 @@ import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/Confi
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import {
+  DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import {
   emailRegex,
@@ -41,6 +44,8 @@ import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
+import { RenewalModal } from '@/app/insurance/basic-detail/modal/RenewalModal';
+import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 
 const reviewInfoSchema = z.object({
   email_address: z
@@ -121,7 +126,7 @@ const ReviewInfoDetail = () => {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promo_code = formatPromoCode(searchParams.get('promo_code'));
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [commonInfo, setCommonInfo] = useState<CommonInfo | null>(null);
@@ -129,6 +134,7 @@ const ReviewInfoDetail = () => {
   const [showChooseVehicleModal, setShowChooseVehicleModal] = useState(false);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showRenewalModal, setShowRenewalModal] = useState(false);
   const [refreshSession, setRefreshSession] = useState(false);
 
   const handleGoBack = () => {
@@ -140,13 +146,18 @@ const ReviewInfoDetail = () => {
   const { mutate: postCheckVehicle, isSuccess } = usePostCheckVehicle(() => {
     setShowUnMatchModal(true);
   });
+  const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
 
   useEffect(() => {
     if (isSuccess) {
       const sessionDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
-      if (!sessionDataRaw) return;
+      const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
+
+      if (!sessionDataRaw || !singpassDataRaw) return;
 
       const parsed = JSON.parse(sessionDataRaw);
+      const parsedSingpass = JSON.parse(singpassDataRaw);
+
       if (Array.isArray(parsed.vehicles) && parsed.vehicles.length === 1) {
         const vehicleSelected = [...parsed.vehicles];
         const updatedParsed = {
@@ -173,6 +184,7 @@ const ReviewInfoDetail = () => {
         };
 
         const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
+        const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
         const payload: SavePersonalInfoPayload = {
           key: `${uuid()}`,
@@ -193,7 +205,9 @@ const ReviewInfoDetail = () => {
             year_of_registration: updatedParsed.year_of_registration || '',
             driving_experience:
               qdlClasses.length > 0
-                ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+                ? drivingYears >= 6
+                  ? '6 years and above'
+                  : `${drivingYears} years`
                 : '1 year',
             phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
             email: updatedParsed.email?.value || '',
@@ -207,9 +221,24 @@ const ReviewInfoDetail = () => {
               first_registered_year:
                 extractYear(v.firstregistrationdate?.value) || '',
             })) || [],
+          data_from_singpass: parsedSingpass,
         };
 
-        savePersonalInfo(payload);
+        verifyRestrictedUser({
+          vehicle_registration_number: vehicle_info_selected?.vehicle_number,
+          national_identity_no: updatedParsed.uinfin?.value,
+        })
+          .then((res) => {
+            if (res?.isAllowNewBiz === false) {
+              setShowContactModal(true);
+            }
+            if (res?.isAllowNewBiz === true && res?.isAllowRenewal === true) {
+              setShowRenewalModal(true);
+            }
+          })
+          .catch((err) => {
+            savePersonalInfo(payload);
+          });
       }
     }
   }, [isSuccess]);
@@ -250,7 +279,7 @@ const ReviewInfoDetail = () => {
           },
           {
             label: 'Marital Status',
-            value: capitalizeWords(parsed.marital?.desc) || '',
+            value: capitalizeWords(parsed.marital?.desc) || null,
           },
           {
             label: 'Date of Birth',
@@ -428,11 +457,12 @@ const ReviewInfoDetail = () => {
 
   const handleContinue = () => {
     const stored = sessionStorage.getItem(ECICS_USER_INFO);
-    if (!stored) {
-      toast.error('Missing user info in session.');
-      return;
-    }
+    const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
+
+    if (!stored || !singpassDataRaw) return;
+
     const parsed = JSON.parse(stored);
+    const parsedSingpass = JSON.parse(singpassDataRaw);
 
     // Requirement: Check age (between 26 and 70) or (>= 2 years)
     const age = calculateAge(parsed?.dob.value);
@@ -460,6 +490,7 @@ const ReviewInfoDetail = () => {
         year_of_manufacture: v[0].yearofmanufacture?.value || '',
       };
       const qdlClasses = parsed?.drivinglicence?.qdl?.classes || [];
+      const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
@@ -480,7 +511,9 @@ const ReviewInfoDetail = () => {
           year_of_registration: parsed.year_of_registration || '',
           driving_experience:
             qdlClasses.length > 0
-              ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+              ? drivingYears >= 6
+                ? '6 years and above'
+                : `${drivingYears} years`
               : '1 year',
           phone: `${parsed.mobileno?.nbr?.value || ''}`,
           email: parsed.email?.value || '',
@@ -494,6 +527,7 @@ const ReviewInfoDetail = () => {
             first_registered_year:
               extractYear(v.firstregistrationdate?.value) || '',
           })) || [],
+        data_from_singpass: parsedSingpass,
       };
       savePersonalInfo(payload);
     }
@@ -702,6 +736,13 @@ const ReviewInfoDetail = () => {
           )}
           {showContactModal && (
             <UnableQuote onClick={handleGoBack} visible={showContactModal} />
+          )}
+          {showRenewalModal && (
+            <RenewalModal
+              onCancel={() => setShowRenewalModal(false)}
+              onRenew={() => setShowRenewalModal(false)}
+              visible={showRenewalModal}
+            />
           )}
         </div>
       </Form>

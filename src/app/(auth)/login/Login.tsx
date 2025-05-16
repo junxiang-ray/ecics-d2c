@@ -7,12 +7,12 @@ import LimitedPeriodOffer from '@/app/(auth)/login/LimitedPeriodOffer';
 import MyInfoLoginSection from '@/app/(auth)/login/MyInfoLoginSection';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 const Login = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
-  const promoCodeDefault =
-    searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
 
   const { mutate: verifyPromoCode, data: promoCodeData } = useVerifyPromoCode();
 
@@ -36,7 +36,7 @@ const Login = () => {
         <div className='text-center text-[18px] font-semibold leading-[100%] text-[#007AFF]'>
           Get an instant quote with Myinfo login
         </div>
-        <MyInfoLoginSection />
+        <MyInfoLoginSection promoCode={promoCodeDefault} />
         {showPromo && (
           <LimitedPeriodOffer
             promoCode={promoCodeDefault}
@@ -77,7 +77,7 @@ const Login = () => {
               directly from Myinfo
             </span>
           </div>
-          <MyInfoLoginSection />
+          <MyInfoLoginSection promoCode={promoCodeDefault} />
           {showPromo && (
             <LimitedPeriodOffer
               promoCode={promoCodeDefault}

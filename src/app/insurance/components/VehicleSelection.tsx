@@ -12,13 +12,16 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { saveToSessionStorage } from '@/libs/utils/utils';
+import { formatPromoCode, saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
+import {
+  DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
+} from '@/constants/general.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -56,7 +59,7 @@ export const VehicleSelectionModal = ({
     selected?.chasis_number,
   );
   const partner_code = searchParams.get('partner_code') || '';
-  const promo_code = searchParams.get('promo_code')?.toUpperCase().trim() || '';
+  const promo_code = formatPromoCode(searchParams.get('promo_code'));
 
   const [showContactModal, setShowContactModal] = useState(false);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
@@ -77,9 +80,13 @@ export const VehicleSelectionModal = ({
   useEffect(() => {
     if (isSuccess) {
       const sessionDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
-      if (!sessionDataRaw) return;
+      const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
+
+      if (!sessionDataRaw || !singpassDataRaw) return;
 
       const updatedParsed = JSON.parse(sessionDataRaw);
+      const parsedSingpass = JSON.parse(singpassDataRaw);
+
       const v = updatedParsed.vehicle_selected || {};
 
       const vehicle_info_selected = {
@@ -96,6 +103,8 @@ export const VehicleSelectionModal = ({
       };
 
       const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
+      const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
+
       const payload: SavePersonalInfoPayload = {
         key: `${uuid()}`,
         is_sending_email: false,
@@ -115,7 +124,9 @@ export const VehicleSelectionModal = ({
           year_of_registration: updatedParsed.year_of_registration || '',
           driving_experience:
             qdlClasses.length > 0
-              ? `${calculateDrivingExperienceFromLicences(qdlClasses)} years`
+              ? drivingYears >= 6
+                ? '6 years and above'
+                : `${drivingYears} years`
               : '1 year',
           phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
           email: updatedParsed.email?.value || '',
@@ -129,6 +140,7 @@ export const VehicleSelectionModal = ({
             first_registered_year:
               extractYear(v.firstregistrationdate?.value) || '',
           })) || [],
+        data_from_singpass: parsedSingpass,
       };
       savePersonalInfo(payload);
     }

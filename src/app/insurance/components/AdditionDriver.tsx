@@ -193,7 +193,11 @@ const AdditionDriver = ({
   };
 
   const onSubmit = (data: FormData) => {
-    setDataDrivers(data.drivers);
+    const formattedDrivers = data.drivers.map((driver) => ({
+      ...driver,
+      date_of_birth: dayjs(driver.date_of_birth).format('DD/MM/YYYY'),
+    }));
+    setDataDrivers(formattedDrivers);
     setIsShowAdditionDriver(false);
   };
 

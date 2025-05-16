@@ -90,9 +90,7 @@ export async function formatCarQuoteInfo(
     omit: {
       product_type_id: true,
     },
-    orderBy: {
-      id: 'asc',
-    },
+    orderBy: [{ is_recommended: 'desc' }, { id: 'asc' }],
   });
 
   plans.forEach((plan) => {

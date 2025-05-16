@@ -27,17 +27,19 @@ export default function BusinessPartnerBar({
           onClick={onBackClick}
         />
         <div className='text-xs'>
-          <p>{businessName}</p>
-          <p className='font-bold'>{companyName}</p>
+          {businessName && <p>{businessName}</p>}
+          {companyName && <p className='font-bold'>{companyName}</p>}
         </div>
       </div>
-      <SecondaryButton
+      <div></div>
+      {/* Reopen in Day 1.5 */}
+      {/* <SecondaryButton
         size='small'
         className='rounded-sm px-2'
         onClick={onSaveClick}
       >
         Save
-      </SecondaryButton>
+      </SecondaryButton> */}
     </div>
   );
 }
