@@ -20,7 +20,6 @@ function PlanCardDesktop({
     <div className='flex w-full justify-evenly gap-6 lg:gap-5'>
       {plans?.map((plan, index) => {
         const isRecommended = plan.is_recommended;
-        console.log('Plan', plan);
         const activeFeatures = plan.benefits
           .filter((feature) => feature.is_active)
           .sort((a, b) => a.order - b.order);

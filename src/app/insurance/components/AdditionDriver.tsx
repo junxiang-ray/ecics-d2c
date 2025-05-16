@@ -196,7 +196,7 @@ const AdditionDriver = ({
     setDataDrivers(formattedDrivers);
     setIsShowAdditionDriver(false);
   };
-
+  const formValues = methods.watch();
   const _renderFormInput = () => {
     return (
       <>
@@ -210,10 +210,12 @@ const AdditionDriver = ({
                 Additional Driver {index + 1}
               </p>
               <div className='mt-3'>
-                <DeleteIcon
-                  className='cursor-pointer text-red-500'
-                  onClick={() => handleRemoveDriver(index)}
-                />
+                {formValues.drivers.length > 1 && (
+                  <DeleteIcon
+                    className='cursor-pointer text-red-500'
+                    onClick={() => handleRemoveDriver(index)}
+                  />
+                )}
               </div>
             </div>
 
