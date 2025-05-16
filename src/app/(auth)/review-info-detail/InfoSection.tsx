@@ -607,7 +607,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                     <InputField
                       name={nameKey}
                       type='text'
-                      className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
+                      className='h-10 w-full rounded-[6px] border border-gray-300 p-2'
                       placeholder={`Enter ${item.label} info`}
                       onChange={(e) =>
                         handleInputChange(vehicleIndex, nameKey, e.target.value)
@@ -620,7 +620,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                       name={nameKey}
                       defaultValue={item.value}
                       type='text'
-                      className={`h-[30px] w-full rounded-[6px] border border-gray-300 bg-gray-200 p-2 ${
+                      className={`h-10 w-full rounded-[6px] border border-gray-300 bg-gray-200 p-2 ${
                         isReadOnly ? 'cursor-not-allowed' : ''
                       }`}
                       disabled={isReadOnly}
