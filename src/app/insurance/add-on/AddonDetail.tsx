@@ -25,6 +25,8 @@ import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetail
 import ModalPremium from './ModalPremium';
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
+import { ROUTES } from '@/constants/routes';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 const mapIconToTypeAddOn = [
   {
@@ -106,7 +108,9 @@ function AddOnDetail({
   onSaveRegister: (fn: () => any) => void;
 }) {
   const searchParams = useSearchParams();
+  const router = useRouterWithQuery();
   const key = searchParams.get('key') || '';
+  const isManual = searchParams.get('manual') === 'true';
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [drivers, setDrivers] = useState<any[]>([]);
   const [addonsAdded, setAddonsAdded] = useState<any>(null);
@@ -318,7 +322,11 @@ function AddOnDetail({
       is_sending_email: false,
     }).then(() => {
       setIsShowPopupPremium(false);
-      setIsShowBonusDetail(true);
+      if (isManual) {
+        setIsShowBonusDetail(true);
+      } else {
+        router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
+      }
     });
   };
 
@@ -339,6 +347,7 @@ function AddOnDetail({
               key={quoteInfo?.data.key}
               personal_info={quoteInfo?.data.personal_info}
               vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
+              onClose={() => setIsShowBonusDetail(false)}
             />
           ) : (
             <>

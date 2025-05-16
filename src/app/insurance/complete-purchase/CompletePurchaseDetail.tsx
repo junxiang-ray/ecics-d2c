@@ -255,7 +255,7 @@ export default function CompletePurchaseDetail({
     owner: [
       { title: 'Owner Name', value: `${quote?.data.personal_info?.name} ` },
       {
-        title: 'Chasis number',
+        title: 'Vehicle number',
         value: `${quote?.data.vehicle_info_selected?.chasis_number} `,
       },
     ],
@@ -417,10 +417,10 @@ export default function CompletePurchaseDetail({
 
     return (
       <div className='min-w-[400px]'>
-        <div className='flex justify-end'>
-          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
+        <div className='flex h-[50px] justify-end'>
+          {/* <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
             Save
-          </div>
+          </div> */}
         </div>
         <div className='mt-6 flex w-full flex-col gap-3 rounded-lg border border-[#E4E4E4] p-4'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
@@ -609,7 +609,7 @@ export default function CompletePurchaseDetail({
         {!isMobile && _renderPremium()}
       </div>
       {isMobile && (
-        <div className='mt-16 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+        <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
             planFee={premiumWithGst}
             addonFee={totalAdditionFee}
