@@ -46,9 +46,9 @@ const createSchema = () =>
       .max(60, 'Address must be at most 60 characters'),
     pinCode: z
       .string()
-      .nonempty('PinCode is required')
+      .nonempty('Postal Code is required')
       .refine((val) => /^\d{6}$/.test(val), {
-        message: 'Pin code must be exactly 6 digits',
+        message: 'Postal code must be exactly 6 digits',
       }),
     chasisNumber: z
       .string()

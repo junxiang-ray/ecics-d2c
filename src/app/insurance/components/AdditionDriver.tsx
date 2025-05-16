@@ -136,12 +136,6 @@ const AdditionDriver = ({
   dataDrivers,
   policyStartDate,
 }: Props) => {
-  const initDob = adjustDateInDayjs(
-    dateToDayjs(policyStartDate as Date),
-    -27,
-    0,
-    0,
-  );
   const initDriver = {
     name: '',
     nric_or_fin: '',
@@ -248,7 +242,6 @@ const AdditionDriver = ({
                 0,
                 0,
               )}
-              defaultPickerValue={initDob}
             />
             <DropdownField
               name={`drivers.${index}.gender`}
