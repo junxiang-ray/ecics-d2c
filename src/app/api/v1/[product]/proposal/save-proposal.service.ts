@@ -43,7 +43,7 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
     quote_id,
     proposal_id,
     quick_proposal_plan: selected_plan,
-    __finalize: 0,
+    __finalize: 1,
     redirect_url: `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_WEBSITE}?key=${key}`,
     return_baseurl: process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL,
   };
@@ -150,6 +150,9 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
         selected_addons: selected_addons,
         add_named_driver_info: add_named_driver_info,
       },
+      quote_finalize_from_ISP: resSaveProposal,
+      is_finalized: true,
+      payment_id: resSaveProposal.data?.payment_id || '',
     },
   });
 

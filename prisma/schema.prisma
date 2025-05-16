@@ -79,6 +79,7 @@ model Quote {
   name               String?
   data               Json?
   quote_res_from_ISP Json?
+  quote_finalize_from_ISP Json?
   partner_code       String?   @map("partner_code")
   is_finalized       Boolean   @default(false) @map("is_finalized")
   is_paid            Boolean   @default(false) @map("is_paid")
