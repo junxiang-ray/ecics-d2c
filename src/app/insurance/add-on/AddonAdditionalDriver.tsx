@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import AdditionDriver from '../components/AdditionDriver';
 import AddOnRow from './AddOnRow';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
+import TruncateText from './TruncateText ';
 
 export const ADDON_CARS = [
   'CAR_COM_AND',
@@ -58,9 +59,7 @@ function AddonAdditionalDriver({
       icon={<RoadSideIcon className='text-brand-blue' />}
       status={status}
     >
-      <p className='text-[13px] font-semibold leading-[19px] text-[#535353]'>
-        {addon.description}
-      </p>
+      <TruncateText text={addon.description} />
       <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
       <div className='flex flex-col gap-2'>
         <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>

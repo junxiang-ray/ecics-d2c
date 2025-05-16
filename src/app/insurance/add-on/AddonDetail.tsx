@@ -20,6 +20,7 @@ import AddOnRowDetail from './AddOnRowDetail';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import ModalPremium from './ModalPremium';
 import AddOnRow from './AddOnRow';
+import TruncateText from './TruncateText ';
 
 const mapIconToTypeAddOn = [
   {
@@ -302,7 +303,8 @@ function AddOnDetail({
           ) : (
             <>
               <div className='mt-2 flex flex-col gap-4 px-4'>
-                <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
+                {/* Edit bar - hide for now */}
+                {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
                   <HeaderVehicleInfo
                     vehicleInfo={quoteInfo?.data.vehicle_info_selected}
                     insuranceAdditionalInfo={
@@ -311,7 +313,7 @@ function AddOnDetail({
                     selectPlan={quoteInfo?.data.selected_plan}
                     isShowScreen={true}
                   />
-                </div>
+                </div> */}
                 <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
                   {addonAdditionalDriver && (
                     <AddonAdditionalDriver
@@ -331,9 +333,7 @@ function AddOnDetail({
                       icon={<RoadSideIcon className='text-brand-blue' />}
                       status='completed'
                     >
-                      <p className='text-[13px] font-semibold leading-[19px] text-[#535353]'>
-                        {addon.add_on_desc}
-                      </p>
+                      <TruncateText text={addon.add_on_desc} />
                       <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />
                       <p>Included in Plan</p>
                     </AddOnRow>

@@ -7,6 +7,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { formatCurrency } from '@/libs/utils/utils';
 import { AddOnFormat } from './AddonDetail';
 import AddOnRow from './AddOnRow';
+import TruncateText from './TruncateText ';
 import { AddOnDropDownField } from '@/components/ui/form/dropdownfield';
 
 function AddOnRowDetail({
@@ -78,9 +79,7 @@ function AddOnRowDetail({
     >
       {status === 'new' && (
         <>
-          <p className='text-[13px] font-semibold leading-[19px] text-[#535353]'>
-            {addon.description}
-          </p>
+          <TruncateText text={addon.description} />
           <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
 
           {addon.type === 'select' && (
@@ -125,9 +124,7 @@ function AddOnRowDetail({
       )}
       {status === 'completed' && (
         <>
-          <p className='font-semibold leading-5 text-[#333333]'>
-            {addon.description}
-          </p>
+          <TruncateText text={addon.description} />
           <div className=' my-2 border-t border-dashed border-[#00ADEFB2]' />
           <div className='flex items-center justify-between pt-2 text-[14px]'>
             <p className='font-semibold leading-[20px] text-[#333333]'>

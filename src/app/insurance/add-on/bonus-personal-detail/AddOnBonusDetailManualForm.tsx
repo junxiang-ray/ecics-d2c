@@ -241,8 +241,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
             >
               <InputField
                 name='pinCode'
-                label='Pin Code'
-                placeholder='Enter Pin Code'
+                label='Postal Code'
+                placeholder='Enter Postal Code'
                 type='number'
               />
             </Form.Item>
