@@ -41,13 +41,16 @@ const Login = () => {
       <div className='relative min-h-[100svh]'>
         <img
           className='h-full w-full object-cover'
-          src='/login_bg_top.svg'
+          src='/login_bg_singpass.png'
           alt='Background Image'
         />
         <div className='text-center text-[18px] font-semibold leading-[100%] text-[#007AFF]'>
           Get an instant quote with Myinfo login
         </div>
-        <MyInfoLoginSection promoCode={promoCodeDefault} />
+        <MyInfoLoginSection
+          promoCode={promoCodeDefault}
+          partnerCode={partnerCode}
+        />
         {showPromo && (
           <LimitedPeriodOffer
             promoCode={promoCodeDefault}
@@ -88,7 +91,10 @@ const Login = () => {
               directly from Myinfo
             </span>
           </div>
-          <MyInfoLoginSection promoCode={promoCodeDefault} />
+          <MyInfoLoginSection
+            promoCode={promoCodeDefault}
+            partnerCode={partnerCode}
+          />
           {showPromo && (
             <LimitedPeriodOffer
               promoCode={promoCodeDefault}

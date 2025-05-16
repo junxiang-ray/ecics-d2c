@@ -1,30 +1,60 @@
 export function validateNRIC(params: any[]): boolean {
   if (!params || !params[0] || typeof params[0] !== 'string') return false;
-  const nric = params[0].toUpperCase();
-  if (nric.length !== 9 || !/^[STFGM]\d{7}[A-Z]$/.test(nric)) return false;
+  const nricInput = params[0].toUpperCase();
+  if (!nricInput) return true;
+  if (nricInput.length === 1) return false;
+  if (nricInput.includes(' ')) return false;
+  if (nricInput.length !== 9 || !/^[ST]\d{7}[A-Z]$/.test(nricInput))
+    return false;
 
-  const weights = [2, 7, 6, 5, 4, 3, 2];
-  const checksumLetters: Record<string, string> = {
-    S: 'JZIHGFEDCBA',
-    T: 'GFEDCBAZHIJ',
-    F: 'XWUTRQPNMLK',
-    G: 'XWUTRQPNMLK',
-    M: 'XWUTRQPNMLK',
-  };
+  const chars = nricInput.split('');
+  const first = chars.shift();
+  const last = chars.pop();
 
-  const firstChar = nric.charAt(0) as keyof typeof checksumLetters;
-  const lastChar = nric.charAt(8);
-  const digits = nric.slice(1, 8);
+  // Ensure first and last are defined
+  if (!first || !last) return false;
 
-  let sum = 0;
-  for (let i = 0; i < 7; i++) {
-    sum += parseInt(digits[i]) * weights[i];
+  // Multiply each digit in the remaining characters
+  const multipliedDigits = [
+    Number(chars[0]) * 2,
+    Number(chars[1]) * 7,
+    Number(chars[2]) * 6,
+    Number(chars[3]) * 5,
+    Number(chars[4]) * 4,
+    Number(chars[5]) * 3,
+    Number(chars[6]) * 2,
+  ];
+
+  // Sum up the multiplied digits
+  const sum = multipliedDigits.reduce((a, v) => a + v, 0);
+
+  // Calculate offset and checksum index
+  const offset = first === 'T' || first === 'G' ? 4 : first === 'M' ? 3 : 0;
+  let index = (offset + sum) % 11;
+  if (first === 'M') index = 10 - index;
+
+  let checksum;
+  const st = ['J', 'Z', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'];
+  const fg = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
+  const m = ['K', 'L', 'J', 'N', 'P', 'Q', 'R', 'T', 'U', 'W', 'X'];
+
+  switch (first) {
+    case 'S':
+    case 'T':
+      checksum = st[index];
+      break;
+    case 'F':
+    case 'G':
+      checksum = fg[index];
+      break;
+    case 'M':
+      checksum = m[index];
+      break;
+    default:
+      // This should never happen, log variables
+      console.error('Invalid checksum');
   }
-
-  if (firstChar === 'T' || firstChar === 'G') sum += 4;
-  const checksum = checksumLetters[firstChar][sum % 11];
-
-  return checksum === lastChar;
+  return last === checksum;
 }
 
 export function sgCarRegNoValidator(carRegNoInput: string | null): boolean {

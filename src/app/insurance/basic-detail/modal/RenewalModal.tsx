@@ -30,8 +30,10 @@ export const RenewalModal = ({
           your current policy
         </div>
       </div>
-      <div className='flex gap-3'>
-        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
+      <div className='flex gap-3 md:gap-6'>
+        <SecondaryButton onClick={onCancel} className='w-full'>
+          Cancel
+        </SecondaryButton>
         <PrimaryButton onClick={onRenew} className='w-full'>
           Renew
         </PrimaryButton>
