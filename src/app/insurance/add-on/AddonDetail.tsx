@@ -27,6 +27,7 @@ import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { RequiredModal } from '../basic-detail/modal/RequireModal';
 
 const mapIconToTypeAddOn = [
   {
@@ -117,6 +118,8 @@ function AddOnDetail({
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
+  const [isShowRequireModal, setIsShowRequireModal] = useState(false);
+
   const { data: quoteInfo, isLoading } = useGetQuote(key);
   const { mutateAsync: saveQuote, isPending } = useSaveQuote();
 
@@ -230,8 +233,11 @@ function AddOnDetail({
 
   useEffect(() => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    if (plan?.code === 'COM' || plan?.code === 'FNCD') {
+    if (plan?.code === 'COM') {
       addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
+    }
+    if (plan?.code === 'FNCD') {
+      addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
     }
     //
     if (addonAdditionalDriver?.code) {
@@ -287,11 +293,15 @@ function AddOnDetail({
 
   const handleOkay = () => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    //For plan codes [COM, FNCD], the default value of CAR_COM_AJE is 'SGD 750.00'.
-    if (plan?.code === 'COM' || plan?.code === 'FNCD') {
+    //For plan codes COM the default value of CAR_COM_AJE is 'SGD 750.00'.
+    if (plan?.code === 'COM') {
       addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
     }
-    //
+    //For plan codes FNCD the default value of CAR_FNCD_AJE is 'SGD 750.00'.
+    if (plan?.code === 'FNCD') {
+      addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
+    }
+
     if (addonAdditionalDriver?.code) {
       const isExistDriver =
         drivers.every((driver) => driver.nric_or_fin) && drivers.length;
@@ -328,6 +338,18 @@ function AddOnDetail({
         router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
       }
     });
+  };
+  const handleContinue = () => {
+    // plan with code FNCD it requires at least one additional driver
+    if (plan?.code === 'FNCD') {
+      const isExistDriver =
+        drivers.every((driver) => driver.nric_or_fin) && drivers.length;
+      if (!isExistDriver) {
+        setIsShowRequireModal(true);
+        return;
+      }
+    }
+    setIsShowPopupPremium(true);
   };
 
   if (isLoading) {
@@ -438,9 +460,17 @@ function AddOnDetail({
             discount={quoteInfo?.promo_code?.discount || 0}
             title='Premium breakdown'
             textButton='Continue'
-            onClick={() => setIsShowPopupPremium(true)}
+            onClick={handleContinue}
           />
         </div>
+      )}
+      {isShowRequireModal && (
+        <RequiredModal
+          visible={isShowRequireModal}
+          onOk={() => {
+            setIsShowRequireModal(false);
+          }}
+        />
       )}
     </div>
   );
