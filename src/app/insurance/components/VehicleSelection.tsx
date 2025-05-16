@@ -118,6 +118,7 @@ export const VehicleSelectionModal = ({
           address: [
             `${updatedParsed.regadd?.block?.value || ''} ${updatedParsed.regadd?.street?.value || ''} #${updatedParsed.regadd?.floor?.value || ''}-${updatedParsed.regadd?.unit?.value || ''}, ${updatedParsed.regadd?.postal?.value || ''}, ${updatedParsed.regadd?.country?.desc || ''}`,
           ].filter(Boolean),
+          post_code: updatedParsed.regadd?.postal?.value || '',
           date_of_birth: updatedParsed.dob?.value
             ? convertDateToDDMMYYYY(updatedParsed.dob.value)
             : '',

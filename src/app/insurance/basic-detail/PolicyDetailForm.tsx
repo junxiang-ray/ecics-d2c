@@ -39,6 +39,7 @@ import {
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
 import { formatPromoCode } from '@/libs/utils/utils';
+
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
@@ -297,6 +298,7 @@ const PolicyDetailForm = ({
         partner_code: partnerCode,
         promo_code: applyPromoCode,
         company_id: value[MOTOR_QUOTE.hire_purchase],
+        company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
         personal_info: personal_info,
         vehicle_info_selected: vehicle_info_selected,
         insurance_additional_info: {
@@ -340,6 +342,14 @@ const PolicyDetailForm = ({
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
           placeholder='Select name of finance company'
+          renderOption={(option) => (
+            <div
+              className='max-w-[300px] truncate md:max-w-full'
+              title={option.text}
+            >
+              {option.text}
+            </div>
+          )}
           options={hirePurchaseOptions}
           showSearch
         />
@@ -389,6 +399,7 @@ const PolicyDetailForm = ({
       partner_code: partnerCode,
       promo_code: promoCode,
       company_id: value[MOTOR_QUOTE.hire_purchase],
+      company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
       personal_info: personal_info,
       vehicle_info_selected: vehicle_info_selected,
       insurance_additional_info: {

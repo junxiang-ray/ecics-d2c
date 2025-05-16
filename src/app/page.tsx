@@ -21,7 +21,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (isLoading || !quoteInfo?.data) return;
+    if (isLoading) return;
+
+    if (!quoteInfo?.data) {
+      router.push('/login');
+      return;
+    }
 
     const currentStep = quoteInfo.data.current_step;
     const targetRoute = STEP_TO_ROUTE[currentStep];

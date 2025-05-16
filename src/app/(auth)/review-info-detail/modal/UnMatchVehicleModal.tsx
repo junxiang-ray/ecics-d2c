@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
 
@@ -16,7 +16,6 @@ import {
   DropdownOption,
 } from '@/components/ui/form/dropdownfield';
 
-import { VehicleResponse } from '@/api/base-service/verify';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
@@ -27,6 +26,7 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { Spin } from 'antd';
 
 interface UnMatchVehicleModalProps {
   onClose: () => void;
@@ -69,6 +69,7 @@ const UnMatchVehicleModal = ({
         address: [
           `${parsedData.regadd?.block?.value || ''} ${parsedData.regadd?.street?.value || ''} #${parsedData.regadd?.floor?.value || ''}-${parsedData.regadd?.unit?.value || ''}, ${parsedData.regadd?.postal?.value || ''}, ${parsedData.regadd?.country?.desc || ''}`,
         ].filter(Boolean),
+        post_code: parsedData.regadd?.postal?.value || '',
         date_of_birth: parsedData.dob?.value
           ? convertDateToDDMMYYYY(parsedData.dob.value)
           : '',
@@ -131,9 +132,8 @@ const UnMatchVehicleModal = ({
         saveToSessionStorage({
           [ECICS_USER_INFO]: JSON.stringify(updatedParsed),
         });
-
-        savePersonalInfo(createPayload(updatedParsed));
         onClose();
+        savePersonalInfo(createPayload(updatedParsed));
       } else if (sessionData.vehicles.length === 1) {
         const updatedVehicles = sessionData.vehicles.map(
           (vehicle: any, index: number) => {
@@ -157,25 +157,30 @@ const UnMatchVehicleModal = ({
           [ECICS_USER_INFO]: JSON.stringify(updatedParsed),
         });
         setRefreshSession((prev) => !prev);
-        savePersonalInfo(createPayload(updatedParsed));
         onClose();
+        savePersonalInfo(createPayload(updatedParsed));
       }
     }
   });
 
   const { data } = useGetVehicleMakes();
-  const makeOptions: DropdownOption[] =
-    data?.map((item: VehicleResponse) => ({
+  const makeOptions: DropdownOption[] = useMemo(() => {
+    if (!data) return [];
+    return data?.map((item: any) => ({
       value: item.id,
       text: item.name,
-    })) || [];
+    }));
+  }, [data]);
 
-  const { data: modelOptionsData } = useGetVehicleModels(selectedMakeId || '');
-  const modelOptions: DropdownOption[] =
-    modelOptionsData?.map((item: VehicleResponse) => ({
+  const { data: modelOptionsData, isLoading: isLoadingModelOptions } =
+    useGetVehicleModels(selectedMakeId || '');
+  const modelOptions: DropdownOption[] = useMemo(() => {
+    if (!modelOptionsData) return [];
+    return modelOptionsData?.map((item: any) => ({
       value: item.id,
       text: item.name,
-    })) || [];
+    }));
+  }, [modelOptionsData]);
 
   return (
     <div
@@ -202,7 +207,7 @@ const UnMatchVehicleModal = ({
                 options={makeOptions}
                 onChange={() => {
                   // Reset model when make changes
-                  setValue('vehicle_model', undefined);
+                  setValue('vehicle_model', null);
                 }}
               />
             </div>
@@ -214,6 +219,13 @@ const UnMatchVehicleModal = ({
                 placeholder='Enter vehicle model'
                 disabled={!selectedMakeId}
                 options={modelOptions}
+                notFoundContent={
+                  isLoadingModelOptions ? (
+                    <Spin size='small' />
+                  ) : (
+                    'No results found'
+                  )
+                }
               />
             </div>
           </FormProvider>

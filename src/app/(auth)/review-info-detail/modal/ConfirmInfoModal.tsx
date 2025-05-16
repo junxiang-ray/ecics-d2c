@@ -81,6 +81,7 @@ const ConfirmInfoModal = ({
         address: [
           `${parsed.regadd?.block?.value || ''} ${parsed.regadd?.street?.value || ''} #${parsed.regadd?.floor?.value || ''}-${parsed.regadd?.unit?.value || ''}, ${parsed.regadd?.postal?.value || ''}, ${parsed.regadd?.country?.desc || ''}`,
         ].filter(Boolean),
+        post_code: parsed.regadd?.postal?.value || '',
         date_of_birth: parsed.dob?.value
           ? convertDateToDDMMYYYY(parsed.dob.value)
           : '',

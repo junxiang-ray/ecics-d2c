@@ -488,7 +488,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                             const makeText = selectedMake
                               ? selectedMake.text
                               : '';
-                            setValue('vehicle_model', undefined);
+                            setValue('vehicle_model', null);
                             handleInputChange(
                               vehicleIndex,
                               'vehicle_make',
