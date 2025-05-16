@@ -6,7 +6,11 @@ import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
 import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
 import RepairIcon from '@/components/icons/RepairIcon';
 import RoadSideIcon from '@/components/icons/RoadSideIcon';
-import { useGetQuote, useSaveProposal } from '@/hook/insurance/quote';
+import {
+  useGetQuote,
+  useSaveProposal,
+  useSaveQuote,
+} from '@/hook/insurance/quote';
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
 import { Modal, Spin } from 'antd';
@@ -109,9 +113,8 @@ function AddOnDetail({
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
-
   const { data: quoteInfo, isLoading } = useGetQuote(key);
-  const { mutateAsync: saveProposal, isPending } = useSaveProposal();
+  const { mutateAsync: saveQuote, isPending } = useSaveQuote();
 
   const plan = useMemo(() => {
     return quoteInfo?.data?.plans?.find(
@@ -207,7 +210,10 @@ function AddOnDetail({
   });
 
   const dataSelectedAddOn = Object.entries(addonsAdded || {})
-    .filter(([, selectedValue]) => selectedValue !== 'NO')
+    .filter(([code, selectedValue]) => {
+      const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
+      return !isHidden && selectedValue !== 'NO';
+    })
     .map(([code, selectedValue]) => {
       const addon = addonsFormatted.find((a) => a.code === code);
       const feeSelected = addon?.feeSelected || 0;
@@ -243,6 +249,38 @@ function AddOnDetail({
     }));
   }, [addonsAdded]);
 
+  const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
+    const fee = addon.feeAdded ?? 0;
+    return acc + fee;
+  }, 0);
+  const baseFeeAdditionalDriver =
+    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
+  const additionalDriverFee = drivers.length
+    ? baseFeeAdditionalDriver * (drivers.length - 1)
+    : 0;
+  const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
+  const premiumWithGst = plan?.premium_with_gst ?? 0;
+  const baseFee = addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
+  const totalFeeDriver = drivers.length ? baseFee * (drivers.length - 1) : 0;
+  const discountRate = quoteInfo?.promo_code?.discount || 0;
+  const tax = 1.09;
+  const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
+  const couponDiscount = pricePlanMain * (discountRate / 100);
+
+  const selectAddOnTotal = dataSelectedAddOn.reduce((acc: any, addon: any) => {
+    const value = addon.feeSelected || 0;
+    return acc + value;
+  }, 0);
+
+  const netPremium =
+    pricePlanMain -
+    couponDiscount +
+    selectAddOnTotal / tax +
+    totalFeeDriver / tax;
+  const valueCalculatedGST = 9;
+  const gst = (netPremium * valueCalculatedGST) / 100;
+  const totalFinalPrice = netPremium + gst;
+
   const handleOkay = () => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
     //For plan codes [COM, FNCD], the default value of CAR_COM_AJE is 'SGD 750.00'.
@@ -258,29 +296,31 @@ function AddOnDetail({
         : 'NO';
     }
 
-    const data: ProposalPayload = {
+    const data: any = {
       key: key,
-      selected_plan: quoteInfo?.data?.selected_plan ?? '',
       selected_addons: addonsAdd,
       add_named_driver_info: drivers,
+      review_info_premium: {
+        price_plan: pricePlanMain,
+        coupon_discount: couponDiscount,
+        data_section_add_ons: dataSelectedAddOn,
+        net_premium: netPremium,
+        gst: gst,
+        total_final_price: totalFinalPrice,
+        drivers: drivers,
+        addon_additional_driver: addonAdditionalDriver,
+      },
     };
-    saveProposal(data).then(() => {
+
+    saveQuote({
+      key: key,
+      data: data,
+      is_sending_email: false,
+    }).then(() => {
       setIsShowPopupPremium(false);
       setIsShowBonusDetail(true);
     });
   };
-
-  const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
-    const fee = addon.feeAdded ?? 0;
-    return acc + fee;
-  }, 0);
-  const baseFeeAdditionalDriver =
-    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
-  const additionalDriverFee = drivers.length
-    ? baseFeeAdditionalDriver * (drivers.length - 1)
-    : 0;
-  const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
-  const premiumWithGst = plan?.premium_with_gst ?? 0;
 
   if (isLoading) {
     return (
@@ -365,11 +405,16 @@ function AddOnDetail({
                 isShowPopupPremium={isShowPopupPremium}
                 setIsShowPopupPremium={setIsShowPopupPremium}
                 quoteInfo={quoteInfo}
-                addonsFormatted={addonsFormatted}
                 dataSelectedAddOn={dataSelectedAddOn}
                 handleOkay={handleOkay}
                 isPending={isPending}
-                premiumWithGst={premiumWithGst}
+                drivers={drivers}
+                addonAdditionalDriver={addonAdditionalDriver}
+                pricePlanMain={pricePlanMain}
+                couponDiscount={couponDiscount}
+                tax={tax}
+                gst={gst}
+                netPremium={netPremium}
               />
             </>
           )}

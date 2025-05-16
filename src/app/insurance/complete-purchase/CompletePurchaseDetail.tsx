@@ -13,7 +13,7 @@ import { ROUTES } from '@/constants/routes';
 import {
   useGetQuote,
   usePayment,
-  useSaveProposalFinalize,
+  useSaveProposal,
 } from '@/hook/insurance/quote';
 import { Option } from '@/libs/types/quote';
 import { PricingSummary } from '../components/FeeBar';
@@ -109,14 +109,8 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
   const { data: quote, isLoading } = useGetQuote(key);
-  const { mutate: saveProposalFinalize } = useSaveProposalFinalize();
-  const {
-    mutate: payment,
-    data: dataPayment,
-    isPending,
-    isSuccess,
-  } = usePayment();
-
+  const { mutate: payment, data: dataPayment, isPending } = usePayment();
+  const { mutateAsync: saveProposal, isSuccess } = useSaveProposal();
   const handleEditClick = (key: string) => {
     toggleSection(key);
   };
@@ -138,7 +132,10 @@ export default function CompletePurchaseDetail({
   };
 
   const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
-    .filter(([, selectedValue]) => selectedValue !== 'NO')
+    .filter(([code, selectedValue]) => {
+      const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
+      return !isHidden && selectedValue !== 'NO';
+    })
     .map(([code, selectedValue]) => {
       const addon = quote?.data.plans?.[0]?.addons?.find(
         (a: any) => a.code === code,
@@ -348,14 +345,25 @@ export default function CompletePurchaseDetail({
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
   useEffect(() => {
-    if (isSuccess && dataPayment.payment_url) {
+    if (isSuccess) {
+      payment(key);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (dataPayment?.payment_url) {
       router.push(dataPayment.payment_url);
     }
-  }, [isSuccess, dataPayment]);
+  }, [dataPayment]);
 
   const onPay = async () => {
-    saveProposalFinalize(key);
-    payment(key);
+    const data: any = {
+      key: key,
+      selected_plan: quote?.data.selected_plan,
+      selected_addons: quote?.data.selected_addons,
+      add_named_driver_info: quote?.data.add_named_driver_info,
+    };
+    saveProposal(data);
   };
 
   const addons = plan?.addons ?? [];
@@ -399,38 +407,13 @@ export default function CompletePurchaseDetail({
     return acc + fee;
   }, 0);
 
-  const totalFee = totalAdditionFee + (plan?.premium_with_gst ?? 0);
-
   const premiumWithGst = plan?.premium_with_gst || 0;
 
   const _renderPremium = () => {
-    const discountRate = quote?.promo_code?.discount || 0;
     const tax = 1.09;
-    const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
-    const couponDiscount = pricePlanMain * (discountRate / 100);
-
-    const addonsSectionData = Object.entries(quote?.data.selected_addons || {})
-      .filter(([, selectedValue]) => selectedValue !== 'NO')
-      .map(([code, selectedValue]) => {
-        const addon = addonsFormatted.find((a) => a.code === code);
-        const value =
-          addon?.options?.find((opt: any) => opt.value === selectedValue)
-            ?.value || selectedValue;
-
-        return {
-          title: addon?.title || code,
-          value: value,
-        };
-      });
-
-    const addOnTotal = addonsSectionData.reduce((acc, addon) => {
-      const value = parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
-      return acc + value;
-    }, 0);
-
-    const netPremium = pricePlanMain - couponDiscount + addOnTotal / tax;
-    const valueCalculatedGST = 9;
-    const gst = (netPremium * valueCalculatedGST) / 100;
+    const drivers = quote?.data.review_info_premium?.drivers;
+    const addonAdditionalDriver =
+      quote?.data.review_info_premium?.addon_additional_driver;
 
     return (
       <div className='min-w-[400px]'>
@@ -449,44 +432,92 @@ export default function CompletePurchaseDetail({
                 <p className=' font-normal'>
                   {quote?.data?.selected_plan ?? ''}
                 </p>
-                <p>{pricePlanMain ? formatCurrency(pricePlanMain) : ''}</p>
+                <p>
+                  {formatCurrency(
+                    quote?.data.review_info_premium?.price_plan ?? 0,
+                  )}
+                </p>
               </div>
               {quote?.promo_code && (
                 <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
                   <p>Coupon Discount</p>
-                  <p>-{formatCurrency(couponDiscount)}</p>
+                  <p>
+                    -
+                    {formatCurrency(
+                      quote?.data.review_info_premium?.coupon_discount ?? 0,
+                    )}
+                  </p>
                 </div>
               )}
 
-              <div className='flex flex-col gap-2 border-b border-[#E4E4E4] py-2'>
+              <div className='flex flex-col border-b border-[#E4E4E4] py-2'>
                 <p className='font-bold text-[#171A1F]'>Add-on:</p>
-                {addonsSectionData.map((addon) => {
-                  const addonValue =
-                    parseFloat(addon.value.replace(/[^\d.-]/g, '')) || 0;
-                  return (
-                    <p
-                      key={addon.title}
-                      className='flex flex-row justify-between'
-                    >
-                      {addon.title}:{' '}
-                      <span>{formatCurrency(addonValue / tax)}</span>
-                    </p>
-                  );
-                })}
+                <div className='flex flex-col gap-1'>
+                  {quote?.data.review_info_premium?.data_section_add_ons.map(
+                    (addon: any) => (
+                      <p
+                        key={addon.title}
+                        className='flex flex-row justify-between'
+                      >
+                        {addon.title}:{' '}
+                        <span>{formatCurrency(addon.feeSelected / tax)}</span>
+                      </p>
+                    ),
+                  )}
+                </div>
+                <div>
+                  {drivers && drivers.length > 0 && (
+                    <div className=''>
+                      <p className='my-1 text-sm font-semibold text-[#303030]'>
+                        Additional Named Driver
+                      </p>
+                      {drivers.map((driver, index) => (
+                        <div
+                          key={index}
+                          className='flex flex-row items-center justify-between text-sm text-[#636262]'
+                        >
+                          <p>{driver.name}</p>
+                          <p>
+                            {index === 0
+                              ? 'Free'
+                              : addonAdditionalDriver?.options?.[0]
+                                    ?.premium_with_gst
+                                ? formatCurrency(
+                                    addonAdditionalDriver.options[0]
+                                      .premium_with_gst / 1.09,
+                                  )
+                                : ''}{' '}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className='flex flex-col gap-2 border-b border-[#E4E4E4] py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
                 <div className='flex flex-row justify-between'>
                   <p>Net Premium</p>
-                  <p>{formatCurrency(netPremium)}</p>
+                  <p>
+                    {formatCurrency(
+                      quote?.data.review_info_premium?.net_premium ?? 0,
+                    )}
+                  </p>
                 </div>
                 <div className='flex flex-row justify-between'>
                   <p>GST</p>
-                  <p>{formatCurrency(gst)}</p>
+                  <p>
+                    {formatCurrency(quote?.data.review_info_premium?.gst ?? 0)}
+                  </p>
                 </div>
               </div>
               <div className='flex flex-row justify-between font-bold'>
                 <p>Total (including GST)</p>
+                <p>
+                  {formatCurrency(
+                    quote?.data.review_info_premium?.total_final_price ?? 0,
+                  )}
+                </p>
               </div>
             </div>
 

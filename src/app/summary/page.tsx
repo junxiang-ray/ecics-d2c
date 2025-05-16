@@ -10,9 +10,13 @@ import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
 import { useGetQuote } from '@/hook/insurance/quote';
 import React from 'react';
+import { Spin } from 'antd';
+import { useSearchParams } from 'next/navigation';
 
 export default function Summary() {
-  const { data: quote } = useGetQuote('1745750192188');
+  const searchParams = useSearchParams();
+  const key = searchParams.get('key') || '';
+  const { data: quote, isLoading } = useGetQuote(key);
 
   const _renderCongratulation = () => {
     return (
@@ -95,6 +99,14 @@ export default function Summary() {
         value: label,
       };
     });
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <div className='flex w-full flex-col items-center justify-center gap-6 px-6 py-4'>

@@ -5,10 +5,8 @@ import { Form } from 'antd';
 import React, { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
-
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -81,7 +79,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
-
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
   const schema = useMemo(() => createSchema(), []);
@@ -109,6 +106,12 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         phone: personal_info?.phone ?? '',
         date_of_birth: personal_info?.date_of_birth ?? '',
         driving_experience: personal_info?.driving_experience ?? 0,
+        name: data.name,
+        nric: data.nric,
+        gender: data.gender,
+        marital_status: data.maritalStatus,
+        address: [data.address],
+        post_code: data.pinCode,
       },
       vehicle_info_selected: {
         ...vehicle_info_selected,
@@ -151,7 +154,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           block: 'center',
         }}
         onFinish={methods.handleSubmit(handleSubmit)}
-        className='w-full'
+        className='w-full px-4'
       >
         {/* MyInfo block */}
         {/*<div*/}
