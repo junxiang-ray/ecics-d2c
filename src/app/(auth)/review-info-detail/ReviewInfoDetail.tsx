@@ -44,6 +44,8 @@ import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
+import { RenewalModal } from '@/app/insurance/basic-detail/modal/RenewalModal';
+import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 
 const reviewInfoSchema = z.object({
   email_address: z
@@ -132,6 +134,7 @@ const ReviewInfoDetail = () => {
   const [showChooseVehicleModal, setShowChooseVehicleModal] = useState(false);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showRenewalModal, setShowRenewalModal] = useState(false);
   const [refreshSession, setRefreshSession] = useState(false);
 
   const handleGoBack = () => {
@@ -143,6 +146,7 @@ const ReviewInfoDetail = () => {
   const { mutate: postCheckVehicle, isSuccess } = usePostCheckVehicle(() => {
     setShowUnMatchModal(true);
   });
+  const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
 
   useEffect(() => {
     if (isSuccess) {
@@ -219,7 +223,22 @@ const ReviewInfoDetail = () => {
             })) || [],
           data_from_singpass: parsedSingpass,
         };
-        savePersonalInfo(payload);
+
+        verifyRestrictedUser({
+          vehicle_registration_number: vehicle_info_selected?.vehicle_number,
+          national_identity_no: updatedParsed.uinfin?.value,
+        })
+          .then((res) => {
+            if (res?.isAllowNewBiz === false) {
+              setShowContactModal(true);
+            }
+            if (res?.isAllowNewBiz === true && res?.isAllowRenewal === true) {
+              setShowRenewalModal(true);
+            }
+          })
+          .catch((err) => {
+            savePersonalInfo(payload);
+          });
       }
     }
   }, [isSuccess]);
@@ -717,6 +736,13 @@ const ReviewInfoDetail = () => {
           )}
           {showContactModal && (
             <UnableQuote onClick={handleGoBack} visible={showContactModal} />
+          )}
+          {showRenewalModal && (
+            <RenewalModal
+              onCancel={() => setShowRenewalModal(false)}
+              onRenew={() => setShowRenewalModal(false)}
+              visible={showRenewalModal}
+            />
           )}
         </div>
       </Form>
