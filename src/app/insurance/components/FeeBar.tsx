@@ -9,12 +9,14 @@ export function PricingSummary({
   textButton,
   onClick,
   setIsShowPopupPremium,
+  loading,
 }: {
   planFee: number;
   addonFee?: number;
   discount: number;
   title?: string;
   textButton?: string;
+  loading?: boolean;
   onClick?: () => void;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
 }) {
@@ -47,6 +49,7 @@ export function PricingSummary({
             onClick && onClick();
           }}
           className='px-6 leading-4 text-white md:w-40'
+          loading={loading}
         >
           {textButton || 'Continue'}
         </PrimaryButton>

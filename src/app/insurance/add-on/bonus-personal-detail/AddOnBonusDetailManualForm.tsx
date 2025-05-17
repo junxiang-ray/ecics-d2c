@@ -24,6 +24,7 @@ import {
 import { useSearchParams } from 'next/navigation';
 import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
 import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
+import { PricingSummary } from '../../components/FeeBar';
 
 const createSchema = () =>
   z.object({
@@ -73,10 +74,22 @@ interface Props {
   personal_info: any;
   vehicle_info_selected?: any;
   onClose?: () => void;
+  planFee: number;
+  addonFee?: number;
+  discount: number;
+  setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
 }
 
 const AddOnBonusDetailManualForm = (props: Props) => {
-  const { personal_info, vehicle_info_selected, onClose } = props;
+  const {
+    personal_info,
+    vehicle_info_selected,
+    onClose,
+    planFee,
+    addonFee,
+    discount,
+    setIsShowPopupPremium,
+  } = props;
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
@@ -296,21 +309,16 @@ const AddOnBonusDetailManualForm = (props: Props) => {
             </Form.Item>
           </div>
         </div>
-
-        <div className='mt-8 flex w-full flex-row justify-center gap-6 border-t border-[#F7F7F9] py-4'>
-          <SecondaryButton
-            className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
-            onClick={onClose}
-          >
-            Cancel
-          </SecondaryButton>
-          <PrimaryButton
+        <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+          <PricingSummary
+            planFee={planFee}
+            addonFee={addonFee}
+            discount={discount}
+            title='Premium breakdown'
+            textButton='Continue'
             onClick={methods.handleSubmit(handleSubmit)}
-            className='w-[10vw] min-w-[150px] rounded-md px-4 py-2 transition sm:w-[50vw] md:w-[10vw]'
-            loading={isPending}
-          >
-            Submit
-          </PrimaryButton>
+            setIsShowPopupPremium={setIsShowPopupPremium}
+          />
         </div>
       </Form>
       {showCSModal && (

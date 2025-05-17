@@ -413,10 +413,14 @@ function AddOnDetail({
       <div className='mb-24 flex w-full max-w-[1280px] flex-col items-center justify-center'>
         {isShowBonusDetail ? (
           <AddOnBonusDetailManualForm
+            planFee={premiumWithGst}
+            addonFee={totalAddonFee}
+            discount={quoteInfo?.promo_code?.discount || 0}
             key={quoteInfo?.data.key}
             personal_info={quoteInfo?.data.personal_info}
             vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
             onClose={() => setIsShowBonusDetail(false)}
+            setIsShowPopupPremium={setIsShowPopupPremium}
           />
         ) : (
           <>
@@ -478,25 +482,25 @@ function AddOnDetail({
             >
               <p>Here you can edit the car info or insurance details.</p>
             </Modal>
-
-            <ModalPremium
-              isShowPopupPremium={isShowPopupPremium}
-              setIsShowPopupPremium={setIsShowPopupPremium}
-              quoteInfo={quoteInfo}
-              dataSelectedAddOn={dataSelectedAddOn}
-              handleOkay={handleOkay}
-              isPending={isPending}
-              drivers={drivers}
-              addonAdditionalDriver={addonAdditionalDriver}
-              pricePlanMain={pricePlanMain}
-              couponDiscount={couponDiscount}
-              tax={tax}
-              gst={gst}
-              netPremium={netPremium}
-              addonsIncluded={plan?.add_ons_included_in_this_plan}
-            />
           </>
         )}
+
+        <ModalPremium
+          isShowPopupPremium={isShowPopupPremium}
+          setIsShowPopupPremium={setIsShowPopupPremium}
+          quoteInfo={quoteInfo}
+          dataSelectedAddOn={dataSelectedAddOn}
+          handleOkay={handleOkay}
+          isPending={isPending}
+          drivers={drivers}
+          addonAdditionalDriver={addonAdditionalDriver}
+          pricePlanMain={pricePlanMain}
+          couponDiscount={couponDiscount}
+          tax={tax}
+          gst={gst}
+          netPremium={netPremium}
+          addonsIncluded={plan?.add_ons_included_in_this_plan}
+        />
       </div>
       {!isShowBonusDetail && (
         <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>

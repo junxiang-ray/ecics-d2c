@@ -329,6 +329,7 @@ const PolicyDetailForm = ({
       return;
     }
     methods.setValue(MOTOR_QUOTE.end_date, defaultEndDate.toDate());
+    methods.trigger([MOTOR_QUOTE.end_date], { shouldFocus: false });
   };
 
   const hire_purchase_section = (
