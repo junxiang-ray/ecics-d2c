@@ -6,7 +6,7 @@ export const generateQuoteSchema = z.object({
   partner_code: z.string().optional(),
   promo_code: z.string().optional(),
   company_id: z.number().optional(),
-
+  company_name_other: z.string().optional(),
   personal_info: z.object({
     name: z.string().optional(),
     gender: z.enum(['Male', 'Female', 'Other']).optional(),

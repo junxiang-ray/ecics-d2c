@@ -87,6 +87,7 @@ model Quote {
   is_electric_model      Boolean   @default(false)
   expiration_date    DateTime? @map("expiration_date")
   key                String
+  company_name_other String? @map("company_name_other")
 
   created_at DateTime @default(now())
   update_at  DateTime @default(now()) @updatedAt
@@ -116,6 +117,7 @@ model Quote {
 model ProductType {
   id            Int            @id @default(autoincrement())
   name          String
+  documents     Json?        @default("[]")
   created_at    DateTime       @default(now())
   updated_at    DateTime       @default(now()) @updatedAt
   quote         Quote[]
