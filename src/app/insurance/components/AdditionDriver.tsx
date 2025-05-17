@@ -8,7 +8,6 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
-import DeleteIcon from '@/components/icons/DeleteIcon';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
@@ -25,6 +24,7 @@ import { validateNRIC } from '@/libs/utils/validation-utils';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import dayjs from 'dayjs';
 import RadioField from '@/components/ui/form/radiofield';
+import { DeleteIcon } from '@/components/icons/add-on-icons';
 
 interface Props {
   isShowAdditionDriver: boolean;

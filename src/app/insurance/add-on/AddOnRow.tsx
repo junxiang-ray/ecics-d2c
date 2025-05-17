@@ -3,10 +3,11 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
-import ArrowDownCircleIcon from '@/components/icons/ArrowDownCircle';
-import FinishIcon from '@/components/icons/FinishIcon';
-
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import {
+  ArrowDownCircleIcon,
+  FinishIcon,
+} from '@/components/icons/add-on-icons';
 
 export type Status = 'new' | 'completed';
 export default function AddOnRow({
