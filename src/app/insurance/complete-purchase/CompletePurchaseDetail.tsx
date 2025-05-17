@@ -577,6 +577,7 @@ export default function CompletePurchaseDetail({
           <PricingSummary
             planFee={premiumWithGst}
             addonFee={totalAdditionFee}
+            loading={isPendingSave || isPendingPay}
             discount={15}
             title='Premium breakdown'
             textButton='Pay'
