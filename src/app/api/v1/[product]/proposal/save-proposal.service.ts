@@ -29,6 +29,7 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
       data: true,
       id: true,
       company: true,
+      company_name_other: true,
     },
   });
 
@@ -114,7 +115,11 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   payload.quick_proposal_chassis_no =
     vehicle_info_selected?.chasis_number || '';
   payload.quick_proposal_engine_no = vehicle_info_selected?.engine_number || '';
-  payload.quick_proposal_hire_purchase = quoteInfo.company?.name || '';
+  payload.quick_proposal_hire_purchase = quoteInfo.company?.name
+    ? quoteInfo.company.name
+    : '-- Others (Not Available in this list) --';
+  payload.quick_proposal_other_hire_purchase =
+    quoteInfo?.company_name_other || '';
   payload.quick_proposal_proposer_name = personal_info?.name || '';
   payload.quick_proposal_proposer_nric = personal_info?.nric || '';
   payload.quick_proposal_proposer_gender = personal_info?.gender || '';
