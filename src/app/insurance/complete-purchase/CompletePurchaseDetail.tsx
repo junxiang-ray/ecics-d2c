@@ -14,7 +14,7 @@ import {
 } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { Option } from '@/libs/types/quote';
-import { Spin } from 'antd';
+import { Drawer, Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { PricingSummary } from '../components/FeeBar';
 import ReviewDesktop from './ReviewDesktop';
@@ -49,6 +49,8 @@ export default function CompletePurchaseDetail({
     [key: string]: boolean;
   }>({});
   const [showModal, setShowModal] = useState(false);
+  const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
+  console.log(isShowPopupPremium, 'chinh123');
   const { isMobile } = useDeviceDetection();
 
   const toggleSection = (key: string) => {
@@ -365,13 +367,13 @@ export default function CompletePurchaseDetail({
     const AddOnIncludedInPlan =
       quote?.data.review_info_premium?.add_ons_included_in_this_plan;
     return (
-      <div className='min-w-[400px]'>
-        <div className='flex h-[50px] justify-end'>
-          {/* <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
+      <div className='w-full md:max-w-[400px]'>
+        {/* <div className='flex h-[50px] justify-end'>
+          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
             Save
-          </div> */}
-        </div>
-        <div className='mt-6 flex w-full flex-col gap-3 rounded-lg border border-[#E4E4E4] p-4'>
+          </div>
+        </div> */}
+        <div className='flex w-full flex-col gap-3 rounded-lg p-4 md:mt-6 md:border md:border-[#E4E4E4]'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
             Premium Breakdown
           </p>
@@ -507,8 +509,8 @@ export default function CompletePurchaseDetail({
   }
 
   return (
-    <div className='w-full px-4 py-4 md:py-16'>
-      <div className='flex w-full flex-col justify-center md:flex-row md:gap-10'>
+    <div className='flex w-full flex-col items-center px-4 py-4 md:py-16'>
+      <div className='flex w-full max-w-[1200px] flex-col justify-center md:flex-row md:gap-10'>
         <div className='flex flex-col lg:flex-row'>
           <div className='flex-1'>
             <h1 className='text-xl font-semibold text-[#080808] md:text-center md:text-[32px] md:font-bold md:leading-[48px] md:text-[#171A1F]'>
@@ -581,7 +583,18 @@ export default function CompletePurchaseDetail({
             title='Premium breakdown'
             textButton='Pay'
             onClick={onPay}
+            setIsShowPopupPremium={setIsShowPopupPremium}
           />
+          <Drawer
+            placement='bottom'
+            open={isShowPopupPremium}
+            onClose={() => setIsShowPopupPremium(false)}
+            closable={false}
+            height='auto'
+            className='w-full rounded-t-xl'
+          >
+            {_renderPremium()}
+          </Drawer>
         </div>
       )}
     </div>
