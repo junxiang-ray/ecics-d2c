@@ -349,7 +349,7 @@ function AddOnDetail({
         return;
       }
     }
-    setIsShowPopupPremium(true);
+    handleOkay();
   };
 
   if (isLoading) {
@@ -461,6 +461,7 @@ function AddOnDetail({
             title='Premium breakdown'
             textButton='Continue'
             onClick={handleContinue}
+            setIsShowPopupPremium={setIsShowPopupPremium}
           />
         </div>
       )}
