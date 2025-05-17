@@ -1,12 +1,16 @@
+import { AddOnIncludedInPlan } from '@/libs/types/quote';
+
 type Props = {
   title: string;
   data: { label: string; value: string }[];
   extraTitle?: string;
   extraData?: { title: string; value?: string }[];
+  addOnIncludedInPlan?: AddOnIncludedInPlan[];
   drivers?: any;
 };
 const InfoCard = (props: Props) => {
-  const { title, data, extraTitle, extraData, drivers } = props;
+  const { title, data, extraTitle, extraData, drivers, addOnIncludedInPlan } =
+    props;
 
   return (
     <div className='w-full rounded-[10px] border border-[#EDEDED] shadow-[0px_4px_20px_0px_#00000014]'>
@@ -22,7 +26,24 @@ const InfoCard = (props: Props) => {
             </p>
           </div>
         ))}
-        {extraTitle && <p className='text-sm font-semibold'>{extraTitle}</p>}
+        {extraTitle && (
+          <p className='text-sm font-semibold'>
+            {extraTitle}
+            {addOnIncludedInPlan && addOnIncludedInPlan.length > 0 && (
+              <div className='mt-2 flex flex-col gap-2'>
+                {addOnIncludedInPlan.map((item, index) => (
+                  <div
+                    key={index}
+                    className='flex flex-row items-center justify-between font-normal'
+                  >
+                    <span>{item.add_on_name}</span>
+                    <span>INCLUDED</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </p>
+        )}
         {drivers ? (
           <p className='text-sm font-semibold'>
             Add Additional Named Driver(s)

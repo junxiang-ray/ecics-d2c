@@ -98,6 +98,8 @@ export default function Summary() {
     title: addon.title,
     value: addon.optionLabel,
   }));
+  const AddOnIncludedInPlan =
+    quote?.data.review_info_premium?.add_ons_included_in_this_plan;
 
   const driversData = (quote?.data.review_info_premium?.drivers || []).map(
     (driver: any) => [
@@ -116,7 +118,7 @@ export default function Summary() {
       </div>
     );
   }
-  console.log(quote?.product_type.documents, 'chinh123');
+
   return (
     <div className='flex w-full justify-center '>
       <div className='w-full max-w-[1280px]'>
@@ -147,6 +149,7 @@ export default function Summary() {
               ]}
               extraTitle='Add Ons:'
               extraData={addonsSectionData}
+              addOnIncludedInPlan={AddOnIncludedInPlan}
               drivers={quote?.data.review_info_premium?.drivers}
             />
             <InfoCard
