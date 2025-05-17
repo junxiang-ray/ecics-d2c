@@ -16,7 +16,7 @@ export function PricingSummary({
   title?: string;
   textButton?: string;
   onClick?: () => void;
-  setIsShowPopupPremium: (isShowPopupPremium: boolean) => void;
+  setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
 }) {
   const discountFee = planFee + addonFee;
   const notDiscountFee = planFee / (1 - discount / 100) + addonFee;
@@ -24,7 +24,7 @@ export function PricingSummary({
   return (
     <div
       className='w-full cursor-pointer md:flex md:flex-row md:justify-center'
-      onClick={() => setIsShowPopupPremium(true)}
+      onClick={() => setIsShowPopupPremium?.(true)}
     >
       <div className='fixed bottom-0 left-1/2 mt-2 flex w-full -translate-x-1/2 transform flex-row items-center justify-between border border-[#DEE1E6] bg-[#FFFEFF] px-4 py-3 md:static md:bottom-auto md:left-0 md:z-auto md:max-w-[800px] md:translate-x-0 md:rounded-md md:border-none'>
         <div className='flex flex-col gap-1'>
