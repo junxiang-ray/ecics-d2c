@@ -7,6 +7,7 @@ import { Steps } from 'antd';
 interface ProcessBarProps {
   currentStep: ProcessBarType;
   onChange?: (current: number) => void;
+  companyName?: string;
 }
 
 const stepsData = [
@@ -32,7 +33,11 @@ function splitText(text: string): [string, string] {
   return [firstWord, remaining];
 }
 
-export default function ProcessBar({ currentStep, onChange }: ProcessBarProps) {
+export default function ProcessBar({
+  currentStep,
+  onChange,
+  companyName,
+}: ProcessBarProps) {
   const steps: StepsProps['items'] = stepsData.map(({ title, step }) => {
     const stepStatus = getStepStatus(step, currentStep);
     const [firstWord, remaining] = splitText(title);
@@ -52,13 +57,18 @@ export default function ProcessBar({ currentStep, onChange }: ProcessBarProps) {
     };
   });
   return (
-    <Steps
-      current={currentStep}
-      onChange={onChange}
-      labelPlacement='vertical'
-      direction='horizontal'
-      responsive={false}
-      items={steps}
-    />
+    <div className='w-full justify-center'>
+      <Steps
+        current={currentStep}
+        onChange={onChange}
+        labelPlacement='vertical'
+        direction='horizontal'
+        responsive={false}
+        items={steps}
+      />
+      <p className='hidden pb-4 pt-2 text-center font-semibold md:block'>
+        {companyName}
+      </p>
+    </div>
   );
 }

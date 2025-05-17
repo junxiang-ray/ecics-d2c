@@ -79,7 +79,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
 
   return (
     <>
-      <div className='sticky top-0 z-10 mx-auto w-full items-center justify-center bg-white lg:w-[1200px]'>
+      <div className='sticky top-0 z-10 mx-auto w-full items-center justify-center bg-white lg:w-[1280px]'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
             businessName={partnerInfo ? 'Business Partner Name' : ''}
@@ -88,8 +88,6 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
             onSaveClick={handleSave}
           />
         </div>
-        {/* for save button exist */}
-        {/* <div className='flex w-full justify-between p-4 px-10 pb-0'>  */}
         <div className='relative flex w-full justify-center p-4 px-10 pb-0 lg:w-[1200px]'>
           <SecondaryButton
             icon={<ArrowBackIcon size={11} />}
@@ -100,7 +98,11 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
             Back
           </SecondaryButton>
           <div className='md:w-[520px]'>
-            <ProcessBar currentStep={currentStep} onChange={handleChangeStep} />
+            <ProcessBar
+              currentStep={currentStep}
+              onChange={handleChangeStep}
+              companyName={partnerInfo?.partner_name}
+            />
           </div>
           <div></div>
           {/* Reopen in Day 1.5 */}
@@ -113,7 +115,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
         </div>
       </div>
 
-      <div className='mx-auto flex w-full flex-col items-center justify-between lg:w-[1200px]'>
+      <div className='mx-auto flex w-full flex-col items-center justify-between'>
         {typeof children === 'function'
           ? children({
               onSave: (fn: () => any) => (childSaveRef.current = fn),
