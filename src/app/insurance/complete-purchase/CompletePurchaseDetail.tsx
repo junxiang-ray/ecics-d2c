@@ -583,10 +583,10 @@ export default function CompletePurchaseDetail({
       {isMobile && (
         <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
-            planFee={premiumWithGst}
+            planFee={quote?.data.review_info_premium?.total_final_price ?? 0}
             addonFee={totalAdditionFee}
+            discount={quote?.data.review_info_premium?.coupon_discount ?? 0}
             loading={isPendingSave || isPendingPay}
-            discount={15}
             title='Premium breakdown'
             textButton='Pay'
             onClick={onPay}
