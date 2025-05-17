@@ -50,7 +50,6 @@ export default function CompletePurchaseDetail({
   }>({});
   const [showModal, setShowModal] = useState(false);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
-  console.log(isShowPopupPremium, 'chinh123');
   const { isMobile } = useDeviceDetection();
 
   const toggleSection = (key: string) => {
@@ -98,6 +97,13 @@ export default function CompletePurchaseDetail({
   ).map((addon: any) => ({
     title: addon.title,
     value: formatCurrency(addon.feeSelected / 1.09),
+  }));
+
+  const addonsIncludedData = (
+    quote?.data.review_info_premium?.add_ons_included_in_this_plan || []
+  ).map((item: any) => ({
+    title: item.add_on_name,
+    value: 'Included',
   }));
 
   const getAdditionalDriverData = (drivers: any[] = []) => {
@@ -200,7 +206,7 @@ export default function CompletePurchaseDetail({
         value: quote?.data.insurance_additional_info?.end_date || 'N/A',
       },
     ],
-    addons: addonsSectionData,
+    addons: [...addonsSectionData, ...addonsIncludedData],
     driver: getAdditionalDriverData(quote?.data.add_named_driver_info),
     owner: [
       { title: 'Owner Name', value: `${quote?.data.personal_info?.name} ` },
