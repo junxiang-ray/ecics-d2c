@@ -1,6 +1,6 @@
 import { Form, Spin, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { FieldErrors, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { parsePhoneNumber, saveToSessionStorage } from '@/libs/utils/utils';

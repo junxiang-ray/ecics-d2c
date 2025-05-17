@@ -171,6 +171,200 @@ const ReviewInfoDetail = () => {
   });
   const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
 
+  function fakeData() {
+    const data = {
+      dob: {
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+        value: '1998-06-06',
+      },
+      email: {
+        lastupdated: '2025-05-15',
+        source: '4',
+        classification: 'C',
+        value: '',
+      },
+      marital: {
+        lastupdated: '2025-05-15',
+        code: '2',
+        source: '1',
+        classification: 'C',
+        desc: '',
+      },
+      mobileno: {
+        lastupdated: '2025-05-15',
+        source: '4',
+        classification: 'C',
+        areacode: {
+          value: '65',
+        },
+        prefix: {
+          value: '+',
+        },
+        nbr: {
+          value: '97399245',
+        },
+      },
+      name: {
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+        value: 'TAN XIAO HUI',
+      },
+      regadd: {
+        country: {
+          code: 'SG',
+          desc: 'SINGAPORE',
+        },
+        unit: {
+          value: '128',
+        },
+        street: {
+          value: 'BEDOK NORTH AVENUE 4',
+        },
+        lastupdated: '2025-05-15',
+        block: {
+          value: '102',
+        },
+        source: '1',
+        postal: {
+          value: '460102',
+        },
+        classification: 'C',
+        floor: {
+          value: '9',
+        },
+        type: 'SG',
+        building: {
+          value: 'PEARL GARDEN',
+        },
+      },
+      sex: {
+        lastupdated: '2025-05-15',
+        code: 'F',
+        source: '1',
+        classification: 'C',
+        desc: 'FEMALE',
+      },
+      uinfin: {
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+        value: 'S7790709B',
+      },
+      vehicles: [
+        {
+          chassisno: {
+            value: '',
+          },
+          lastupdated: '2025-05-15',
+          source: '1',
+          classification: 'C',
+          engineno: {
+            value: 'M13A1837453',
+          },
+          firstregistrationdate: {
+            value: '2015-12-07',
+          },
+          make: {
+            value: '',
+          },
+          model: {
+            value: 'KIA SEDONA',
+          },
+          vehicleno: {
+            value: 'SDF1235A',
+          },
+          yearofmanufacture: {
+            value: '2013',
+          },
+          enginecapacity: {
+            value: 1500,
+          },
+          powerrate: {
+            value: 1.8,
+          },
+        },
+        {
+          chassisno: {
+            value: '',
+          },
+          lastupdated: '2025-05-15',
+          source: '1',
+          classification: 'C',
+          engineno: {
+            value: 'M13A1837343',
+          },
+          firstregistrationdate: {
+            value: '',
+          },
+          make: {
+            value: 'Audi',
+          },
+          model: {
+            value: 'A1 1.0',
+          },
+          vehicleno: {
+            value: 'SDF1245A',
+          },
+          yearofmanufacture: {
+            value: '2018',
+          },
+          enginecapacity: {
+            value: 1700,
+          },
+          powerrate: {
+            value: 1.1,
+          },
+        },
+      ],
+      drivinglicence: {
+        qdl: {
+          classes: [
+            {
+              class: {
+                value: '2A',
+              },
+              issuedate: {
+                value: '2024-06-06',
+              },
+            },
+            {
+              class: {
+                value: '3A',
+              },
+              issuedate: {
+                value: '2020-06-06',
+              },
+            },
+            {
+              class: {
+                value: '2A',
+              },
+              issuedate: {
+                value: '2018-06-06',
+              },
+            },
+          ],
+        },
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+      },
+      iss: 'https://stg-id.singpass.gov.sg',
+      sub: 'u=a3e9470e-4075-4d22-b731-551b5d3849c3',
+      aud: 'XlC0mVynZGotrzeLK0Yk4ZXqeml2dJCg',
+      iat: 1747313757,
+    };
+    sessionStorage.setItem(ECICS_USER_INFO, JSON.stringify(data));
+    sessionStorage.setItem(DATA_FROM_SINGPASS, JSON.stringify(data));
+  }
+
+  useEffect(() => {
+    fakeData();
+  }, []);
+
   useEffect(() => {
     if (isSuccess) {
       const sessionDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
@@ -292,8 +486,6 @@ const ReviewInfoDetail = () => {
       ],
     },
   });
-
-  const { formState } = methods;
 
   useEffect(() => {
     const stored = sessionStorage.getItem(ECICS_USER_INFO);
