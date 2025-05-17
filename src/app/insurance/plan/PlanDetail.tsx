@@ -17,6 +17,7 @@ import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModa
 // import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
 import { current } from '@reduxjs/toolkit';
 import { UserStep } from '@/libs/enums/processBarEnums';
+import { formatCurrency } from '@/libs/utils/utils';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -145,11 +146,11 @@ function PlanDetail({
             <div className='gap-2 md:flex md:items-center md:gap-4'>
               <p>
                 <span className='text-lg font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
-                  SGD {selectedPlan?.premium_with_gst.toFixed(2)}
+                  {formatCurrency(selectedPlan?.premium_with_gst)}
                 </span>
                 {!!selectedPlan?.discount && (
                   <span className='ps-4 text-[15px] font-normal text-[#FF0004] line-through decoration-1 md:text-2xl md:text-[#EF0000]'>
-                    SGD {selectedPlan?.currentPrice.toFixed(2)}
+                    {formatCurrency(selectedPlan?.currentPrice)}
                   </span>
                 )}
               </p>

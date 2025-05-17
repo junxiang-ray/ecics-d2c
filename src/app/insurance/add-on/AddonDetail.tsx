@@ -410,7 +410,7 @@ function AddOnDetail({
 
   return (
     <div className='flex w-full flex-col items-center'>
-      <div className='mb-24 flex w-full max-w-[1280px] flex-col items-center justify-center'>
+      <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
         {isShowBonusDetail ? (
           <AddOnBonusDetailManualForm
             planFee={premiumWithGst}
@@ -424,7 +424,7 @@ function AddOnDetail({
           />
         ) : (
           <>
-            <div className='mt-2 flex flex-col gap-4 px-4'>
+            <div className='mt-2 flex w-full flex-col gap-4 px-4'>
               {/* Edit bar - hide for now */}
               {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
                   <HeaderVehicleInfo

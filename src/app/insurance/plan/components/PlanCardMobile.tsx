@@ -3,6 +3,7 @@ import CrossMarkIcon from '@/components/icons/CrossMark';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
 import clsx from 'clsx';
 import { FormatPlan } from '../PlanDetail';
+import { formatCurrency } from '@/libs/utils/utils';
 
 function PlanCardMobile({
   plans,
@@ -76,11 +77,11 @@ function PlanCardMobile({
                 />
                 <div className='flex items-center p-4 pb-2'>
                   <div className='text-center text-base font-semibold text-black'>
-                    $S {plan.premium_with_gst.toFixed(2)}
+                    {formatCurrency(plan.premium_with_gst)}
                   </div>
                   {!!plan.discount && (
                     <div className='ml-1 text-center text-sm font-medium text-[#FD1212] line-through decoration-1'>
-                      $S {plan.currentPrice.toFixed(2)}
+                      {formatCurrency(plan.currentPrice)}
                     </div>
                   )}
                 </div>

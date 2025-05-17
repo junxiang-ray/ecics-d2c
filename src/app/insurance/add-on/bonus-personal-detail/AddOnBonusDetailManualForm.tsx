@@ -29,38 +29,69 @@ import { PricingSummary } from '../../components/FeeBar';
 const createSchema = () =>
   z.object({
     name: z
-      .string()
+      .string({
+        required_error: 'Name is required',
+        invalid_type_error: 'Name is required',
+      })
       .min(3, 'Name must be at least 3 characters')
       .max(60, 'Name must be at most 60 characters')
       .nonempty('Name is required'),
     nric: z
-      .string()
+      .string({
+        required_error: 'NRIC/FIN is required',
+        invalid_type_error: 'NRIC/FIN is required',
+      })
       .nonempty('NRIC/FIN is required')
       .refine((val) => validateNRIC([val]), {
         message: 'Please enter a valid NRIC/FIN.',
       }),
-    gender: z.string().min(1, 'Gender is required'),
-    maritalStatus: z.string().min(1, 'Marital status is required'),
+    gender: z
+      .string({
+        required_error: 'Gender is required',
+        invalid_type_error: 'Gender is required',
+      })
+      .min(1, 'Gender is required'),
+    maritalStatus: z
+      .string({
+        required_error: 'Marital status is required',
+        invalid_type_error: 'Marital status is required',
+      })
+      .min(1, 'Marital status is required'),
     address: z
-      .string()
+      .string({
+        required_error: 'Address is required',
+        invalid_type_error: 'Address is required',
+      })
       .nonempty('Address is required')
       .max(60, 'Address must be at most 60 characters'),
     pinCode: z
-      .string()
+      .string({
+        required_error: 'Postal Code is required',
+        invalid_type_error: 'Postal Code is required',
+      })
       .nonempty('Postal Code is required')
       .refine((val) => /^\d{6}$/.test(val), {
         message: 'Postal code must be exactly 6 digits',
       }),
     chasisNumber: z
-      .string()
+      .string({
+        required_error: 'Chasis is required',
+        invalid_type_error: 'Chasis is required',
+      })
       .nonempty('Chasis is required')
       .max(50, 'Chasis must be at most 50 characters'),
     engineNumber: z
-      .string()
+      .string({
+        required_error: 'Engine is required',
+        invalid_type_error: 'Engine is required',
+      })
       .max(50, 'Engine must be at most 50 characters')
       .optional(),
     vehicleNumber: z
-      .string()
+      .string({
+        required_error: 'Vehicle number is required',
+        invalid_type_error: 'Vehicle number is required',
+      })
       .min(1, 'Vehicle number is required')
       .refine((val) => sgCarRegNoValidator(val), {
         message:
@@ -90,6 +121,23 @@ const AddOnBonusDetailManualForm = (props: Props) => {
     discount,
     setIsShowPopupPremium,
   } = props;
+
+  const { name, nric, gender, marital_status, address, post_code } =
+    personal_info;
+  const { vehicle_number, engine_number, chasis_number } =
+    vehicle_info_selected;
+
+  const initFormDate: FormData = {
+    name: name,
+    nric: nric,
+    address: Array.isArray(address) ? address.join('') : address,
+    pinCode: post_code,
+    vehicleNumber: vehicle_number,
+    engineNumber: engine_number,
+    chasisNumber: chasis_number,
+    gender: gender,
+    maritalStatus: marital_status,
+  };
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
@@ -105,6 +153,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
+    defaultValues: initFormDate,
   });
 
   const {
