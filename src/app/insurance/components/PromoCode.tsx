@@ -68,7 +68,7 @@ export const PromoCodeField = ({
   };
 
   return (
-    <div>
+    <div className='w-full'>
       {isDisablePromoCode && (
         <div>
           <Input disabled />
@@ -80,7 +80,7 @@ export const PromoCodeField = ({
       {!isDisablePromoCode && isValidPromoCode && (
         <Flex
           align='center'
-          className='mb-5 w-full max-w-fit justify-between rounded-md border border-blue-400 px-3 py-2'
+          className='mb-5 w-full justify-between rounded-md border border-blue-400 px-3 py-2'
         >
           <span className='text-base'>Promo Code</span>
           <span className='inline-block px-3 sm:px-6'>

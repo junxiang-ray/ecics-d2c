@@ -124,7 +124,7 @@ export const PolicyDetail = ({
 
   return (
     <>
-      <div className='mt-4 w-full max-w-[1280px] px-4 md:px-12'>
+      <div className='mt-4 w-full md:px-0'>
         {/* turn on Day 1.5 */}
         {/* {isSingPassFlow && (
           <>
