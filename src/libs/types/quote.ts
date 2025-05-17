@@ -49,6 +49,7 @@ export interface ReviewInfo {
   total_final_price: number;
   drivers: any[];
   addon_additional_driver: any;
+  add_ons_included_in_this_plan?: AddOnIncludedInPlan[];
 }
 
 export interface QuoteData {

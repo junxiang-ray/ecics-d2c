@@ -370,6 +370,7 @@ function AddOnDetail({
         total_final_price: totalFinalPrice,
         drivers: drivers,
         addon_additional_driver: addonAdditionalDriver,
+        add_ons_included_in_this_plan: plan?.add_ons_included_in_this_plan,
       },
     };
 
@@ -493,6 +494,7 @@ function AddOnDetail({
                 tax={tax}
                 gst={gst}
                 netPremium={netPremium}
+                addonsIncluded={plan?.add_ons_included_in_this_plan}
               />
             </>
           )}
