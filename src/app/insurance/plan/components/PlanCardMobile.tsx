@@ -89,7 +89,7 @@ function PlanCardMobile({
                 <div className='p-4 pt-[10px]'>
                   {!!plan.discount && (
                     <div className='text-sm font-semibold text-black'>
-                      CAR ({plan.discount}% off applied)
+                      CARS ({plan.discount}% off applied)
                     </div>
                   )}
                 </div>

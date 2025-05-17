@@ -454,7 +454,7 @@ const PolicyDetailForm = ({
           }}
           onFinish={methods.handleSubmit(handleSubmit)}
           disabled={isLoading}
-          className='flex w-full flex-col items-center px-4 md:mb-16'
+          className=' mb-16 flex w-full flex-col items-center px-4'
           {...props}
         >
           <div className='max-w-[1200px]'>
