@@ -224,10 +224,13 @@ function AddOnDetail({
     .map(([code, selectedValue]) => {
       const addon = addonsFormatted.find((a) => a.code === code);
       const feeSelected = addon?.feeSelected || 0;
+      const selectedOptionLabel = addon?.selectedOption?.label || '';
+
       return {
         title: addon?.title || code,
         feeSelected: feeSelected,
         selectedValue: selectedValue,
+        optionLabel: selectedOptionLabel,
       };
     });
 
