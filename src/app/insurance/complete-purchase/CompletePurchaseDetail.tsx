@@ -362,7 +362,8 @@ export default function CompletePurchaseDetail({
     const drivers = quote?.data.review_info_premium?.drivers;
     const addonAdditionalDriver =
       quote?.data.review_info_premium?.addon_additional_driver;
-
+    const AddOnIncludedInPlan =
+      quote?.data.review_info_premium?.add_ons_included_in_this_plan;
     return (
       <div className='min-w-[400px]'>
         <div className='flex h-[50px] justify-end'>
@@ -436,6 +437,21 @@ export default function CompletePurchaseDetail({
                                   )
                                 : ''}{' '}
                           </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  {AddOnIncludedInPlan && AddOnIncludedInPlan.length > 0 && (
+                    <div className='mt-4 flex flex-col gap-2'>
+                      {AddOnIncludedInPlan.map((item, index) => (
+                        <div
+                          key={index}
+                          className='flex flex-row items-center justify-between'
+                        >
+                          <span>{item.add_on_name}</span>
+                          <span>INCLUDED</span>
                         </div>
                       ))}
                     </div>

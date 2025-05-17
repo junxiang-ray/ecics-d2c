@@ -370,6 +370,7 @@ function AddOnDetail({
         total_final_price: totalFinalPrice,
         drivers: drivers,
         addon_additional_driver: addonAdditionalDriver,
+        add_ons_included_in_this_plan: plan?.add_ons_included_in_this_plan,
       },
     };
 
@@ -396,7 +397,7 @@ function AddOnDetail({
         return;
       }
     }
-    setIsShowPopupPremium(true);
+    handleOkay();
   };
 
   if (isLoading) {
@@ -408,21 +409,20 @@ function AddOnDetail({
   }
 
   return (
-    <div className='flex w-[full] flex-col items-center'>
-      <div className='flex w-full max-w-[1280px] flex-col items-center justify-center'>
-        <div className='w-full'>
-          {isShowBonusDetail ? (
-            <AddOnBonusDetailManualForm
-              key={quoteInfo?.data.key}
-              personal_info={quoteInfo?.data.personal_info}
-              vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
-              onClose={() => setIsShowBonusDetail(false)}
-            />
-          ) : (
-            <>
-              <div className='mt-2 flex flex-col gap-4 px-4'>
-                {/* Edit bar - hide for now */}
-                {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
+    <div className='flex w-full flex-col items-center'>
+      <div className='mb-24 flex w-full max-w-[1280px] flex-col items-center justify-center'>
+        {isShowBonusDetail ? (
+          <AddOnBonusDetailManualForm
+            key={quoteInfo?.data.key}
+            personal_info={quoteInfo?.data.personal_info}
+            vehicle_info_selected={quoteInfo?.data.vehicle_info_selected}
+            onClose={() => setIsShowBonusDetail(false)}
+          />
+        ) : (
+          <>
+            <div className='mt-2 flex flex-col gap-4 px-4'>
+              {/* Edit bar - hide for now */}
+              {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
                   <HeaderVehicleInfo
                     vehicleInfo={quoteInfo?.data.vehicle_info_selected}
                     insuranceAdditionalInfo={
@@ -432,73 +432,72 @@ function AddOnDetail({
                     isShowScreen={true}
                   />
                 </div> */}
-                <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
-                  {addonAdditionalDriver && (
-                    <AddonAdditionalDriver
-                      addon={addonAdditionalDriver}
-                      drivers={drivers}
-                      setDrivers={setDrivers}
-                      policyStartDate={
-                        quoteInfo?.data.insurance_additional_info?.start_date ??
-                        dayjs().format('DD/MM/YYYY')
-                      }
+              <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
+                {addonAdditionalDriver && (
+                  <AddonAdditionalDriver
+                    addon={addonAdditionalDriver}
+                    drivers={drivers}
+                    setDrivers={setDrivers}
+                    policyStartDate={
+                      quoteInfo?.data.insurance_additional_info?.start_date ??
+                      dayjs().format('DD/MM/YYYY')
+                    }
+                  />
+                )}
+                {plan?.add_ons_included_in_this_plan?.map((addon) => (
+                  <AddOnRow
+                    key={addon.add_on_id}
+                    title={addon.add_on_name}
+                    icon={<RoadSideIcon className='text-brand-blue' />}
+                    status='completed'
+                  >
+                    <TruncateText text={addon.add_on_desc} />
+                    <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />
+                    <p>Included in Plan</p>
+                  </AddOnRow>
+                ))}
+                {addonsFormatted.map((addon) => {
+                  return (
+                    <AddOnRowDetail
+                      key={addon.code}
+                      addon={addon}
+                      addonsAdded={addonsAdded}
+                      setAddonsAdded={setAddonsAdded}
+                      addonsSelected={addonsSelected}
+                      setAddonsSelected={setAddonsSelected}
                     />
-                  )}
-                  {plan?.add_ons_included_in_this_plan?.map((addon) => (
-                    <AddOnRow
-                      key={addon.add_on_id}
-                      title={addon.add_on_name}
-                      icon={<RoadSideIcon className='text-brand-blue' />}
-                      status='completed'
-                    >
-                      <TruncateText text={addon.add_on_desc} />
-                      <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />
-                      <p>Included in Plan</p>
-                    </AddOnRow>
-                  ))}
-                  {addonsFormatted.map((addon) => {
-                    return (
-                      <AddOnRowDetail
-                        key={addon.code}
-                        addon={addon}
-                        addonsAdded={addonsAdded}
-                        setAddonsAdded={setAddonsAdded}
-                        addonsSelected={addonsSelected}
-                        setAddonsSelected={setAddonsSelected}
-                      />
-                    );
-                  })}
-                </div>
+                  );
+                })}
               </div>
-              <Modal
-                title='Edit Information'
-                open={isModalVisible}
-                footer={[]}
-                onCancel={() => setIsModalVisible(false)}
-              >
-                <p>Here you can edit the car info or insurance details.</p>
-              </Modal>
+            </div>
+            <Modal
+              title='Edit Information'
+              open={isModalVisible}
+              footer={[]}
+              onCancel={() => setIsModalVisible(false)}
+            >
+              <p>Here you can edit the car info or insurance details.</p>
+            </Modal>
 
-              <ModalPremium
-                isShowPopupPremium={isShowPopupPremium}
-                setIsShowPopupPremium={setIsShowPopupPremium}
-                quoteInfo={quoteInfo}
-                dataSelectedAddOn={dataSelectedAddOn}
-                handleOkay={handleOkay}
-                isPending={isPending}
-                drivers={drivers}
-                addonAdditionalDriver={addonAdditionalDriver}
-                pricePlanMain={pricePlanMain}
-                couponDiscount={couponDiscount}
-                tax={tax}
-                gst={gst}
-                netPremium={netPremium}
-              />
-            </>
-          )}
-        </div>
+            <ModalPremium
+              isShowPopupPremium={isShowPopupPremium}
+              setIsShowPopupPremium={setIsShowPopupPremium}
+              quoteInfo={quoteInfo}
+              dataSelectedAddOn={dataSelectedAddOn}
+              handleOkay={handleOkay}
+              isPending={isPending}
+              drivers={drivers}
+              addonAdditionalDriver={addonAdditionalDriver}
+              pricePlanMain={pricePlanMain}
+              couponDiscount={couponDiscount}
+              tax={tax}
+              gst={gst}
+              netPremium={netPremium}
+              addonsIncluded={plan?.add_ons_included_in_this_plan}
+            />
+          </>
+        )}
       </div>
-
       {!isShowBonusDetail && (
         <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
@@ -508,6 +507,7 @@ function AddOnDetail({
             title='Premium breakdown'
             textButton='Continue'
             onClick={handleContinue}
+            setIsShowPopupPremium={setIsShowPopupPremium}
           />
         </div>
       )}

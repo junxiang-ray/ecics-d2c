@@ -1,6 +1,6 @@
 'use client';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { Addon, Quote } from '@/libs/types/quote';
+import { Addon, AddOnIncludedInPlan, Quote } from '@/libs/types/quote';
 import { Drawer, Modal } from 'antd';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { formatCurrency } from '@/libs/utils/utils';
@@ -19,6 +19,7 @@ interface Props {
   tax: number;
   gst: number;
   netPremium: number;
+  addonsIncluded?: AddOnIncludedInPlan[];
 }
 
 const ModalPremium = (props: Props) => {
@@ -36,9 +37,9 @@ const ModalPremium = (props: Props) => {
     tax,
     gst,
     netPremium,
+    addonsIncluded,
   } = props;
   const isMobile = useDeviceDetection();
-
   const _renderPremium = () => {
     return (
       <div className='flex flex-col gap-6'>
@@ -94,6 +95,16 @@ const ModalPremium = (props: Props) => {
                   ))}
                 </div>
               )}
+              {addonsIncluded && addonsIncluded.length > 0 && (
+                <div className='mt-4 flex flex-col gap-2'>
+                  {addonsIncluded.map((item, index) => (
+                    <div key={index} className='flex flex-row justify-between'>
+                      <span>{item.add_on_name}</span>
+                      <span>INCLUDED</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
@@ -139,7 +150,7 @@ const ModalPremium = (props: Props) => {
           maskClosable={true}
           keyboard={true}
           footer={null}
-          width={400}
+          width={500}
           centered
         >
           <div>{_renderPremium()}</div>
