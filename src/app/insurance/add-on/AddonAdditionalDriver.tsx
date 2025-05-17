@@ -9,8 +9,8 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import dayjs from 'dayjs';
 import AdditionDriver from '../components/AdditionDriver';
 import AddOnRow from './AddOnRow';
-import RoadSideIcon from '@/components/icons/RoadSideIcon';
 import TruncateText from './TruncateText ';
+import { PersonIcon } from '@/components/icons/add-on-icons';
 
 export const ADDON_CARS = [
   'CAR_COM_AND',
@@ -56,7 +56,7 @@ function AddonAdditionalDriver({
     <AddOnRow
       isRequired={isRequired}
       title={addon.title}
-      icon={<RoadSideIcon className='text-brand-blue' />}
+      icon={<PersonIcon className='text-brand-blue' />}
       status={status}
     >
       <TruncateText text={addon.description} />

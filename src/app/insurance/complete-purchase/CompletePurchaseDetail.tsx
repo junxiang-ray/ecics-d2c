@@ -1,33 +1,29 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
 import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
+import { useEffect, useMemo, useState } from 'react';
 import ReviewSection from './ReviewSection';
-import PersonIcon from '@/components/icons/PersonIcon';
-import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
-import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
-import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
+
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
-import ReviewDesktop from './ReviewDesktop';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
+import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import { ROUTES } from '@/constants/routes';
 import {
   useGetQuote,
   usePayment,
   useSaveProposal,
 } from '@/hook/insurance/quote';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { Option } from '@/libs/types/quote';
-import { PricingSummary } from '../components/FeeBar';
-import { useSearchParams } from 'next/navigation';
 import { Spin } from 'antd';
-import KeyIcon from '@/components/icons/KeyIcon';
-import RepairIcon from '@/components/icons/RepairIcon';
-import RoadSideIcon from '@/components/icons/RoadSideIcon';
-import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
-import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
+import { useSearchParams } from 'next/navigation';
+import { PricingSummary } from '../components/FeeBar';
+import ReviewDesktop from './ReviewDesktop';
+
+import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { AddOnFormat } from '../add-on/AddonDetail';
 import { formatCurrency } from '@/libs/utils/utils';
+import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
 
 function calculateFee(
   option: Option,
@@ -43,49 +39,6 @@ function calculateFee(
   );
   return dependency?.premium_with_gst ?? 0;
 }
-
-const mapCodeTypeAddon = [
-  {
-    code: 'CAR_COM_ANW',
-    icon: <KeyIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_AJE',
-    icon: <RepairIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_AND',
-    icon: <RoadSideIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_BUN',
-    icon: <EnhancedAccidentIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_LOU',
-    icon: <PersonalAccidentIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_PAC',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_MDE',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_RSA',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_KRC',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_NOR',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
-  },
-];
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
@@ -109,12 +62,19 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
   const { data: quote, isLoading } = useGetQuote(key);
-  const { mutate: payment, data: dataPayment, isPending } = usePayment();
-  const { mutateAsync: saveProposal, isSuccess } = useSaveProposal();
+  const {
+    mutate: payment,
+    data: dataPayment,
+    isPending: isPendingPay,
+  } = usePayment();
+  const {
+    mutateAsync: saveProposal,
+    isSuccess,
+    isPending: isPendingSave,
+  } = useSaveProposal();
   const handleEditClick = (key: string) => {
     toggleSection(key);
   };
-
   const routerBySectionKey = (key: string) => {
     switch (key) {
       case 'basic':
@@ -199,8 +159,8 @@ export default function CompletePurchaseDetail({
     ],
     vehicle: [
       {
-        title: 'Vehicle  Number',
-        value: quote?.data.vehicle_info_selected?.chasis_number || 'N/A',
+        title: 'Vehicle Number',
+        value: quote?.data.vehicle_info_selected?.vehicle_number || 'N/A',
       },
       {
         title: 'Year of Registration',
@@ -244,7 +204,7 @@ export default function CompletePurchaseDetail({
       { title: 'Owner Name', value: `${quote?.data.personal_info?.name} ` },
       {
         title: 'Vehicle number',
-        value: `${quote?.data.vehicle_info_selected?.chasis_number} `,
+        value: `${quote?.data.vehicle_info_selected?.vehicle_number} `,
       },
     ],
   };
@@ -260,7 +220,7 @@ export default function CompletePurchaseDetail({
       key: 'vehicle',
       title: 'Vehicle Details',
       description: `${quote?.data.vehicle_info_selected?.vehicle_make} ${quote?.data.vehicle_info_selected?.vehicle_model} ${quote?.data.vehicle_info_selected?.chasis_number}`,
-      icon: <NewOldReplacementIcon className='text-white' />,
+      icon: <CarIcon className='text-white' />,
     },
     {
       key: 'policy',
@@ -283,7 +243,7 @@ export default function CompletePurchaseDetail({
     {
       key: 'owner',
       title: 'Vehicle Owner',
-      description: `${quote?.data.personal_info?.name}  ${quote?.data.vehicle_info_selected?.chasis_number}`,
+      description: `${quote?.data.personal_info?.name}  ${quote?.data.vehicle_info_selected?.vehicle_number}`,
       icon: <PersonIcon className='text-white' />,
     },
   ];
@@ -358,7 +318,7 @@ export default function CompletePurchaseDetail({
 
   const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
     // map the icon to the addon
-    const iconMatched = mapCodeTypeAddon.find(
+    const iconMatched = mapIconToTypeAddOn.find(
       (item) => item.code === addon.code,
     );
 
@@ -511,7 +471,7 @@ export default function CompletePurchaseDetail({
 
             <SecondaryButton
               onClick={onPay}
-              loading={isPending}
+              loading={isPendingSave || isPendingPay}
               className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
             >
               Pay

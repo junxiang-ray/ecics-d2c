@@ -54,6 +54,7 @@ export async function getQuoteByKey(key: string) {
           select: {
             id: true,
             name: true,
+            documents: true,
           },
         },
       },
