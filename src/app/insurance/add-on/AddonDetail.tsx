@@ -397,7 +397,7 @@ function AddOnDetail({
         return;
       }
     }
-    setIsShowPopupPremium(true);
+    handleOkay();
   };
 
   if (isLoading) {
@@ -499,14 +499,17 @@ function AddOnDetail({
         )}
       </div>
       {!isShowBonusDetail && (
-        <PricingSummary
-          planFee={premiumWithGst}
-          addonFee={totalAddonFee}
-          discount={quoteInfo?.promo_code?.discount || 0}
-          title='Premium breakdown'
-          textButton='Continue'
-          onClick={handleContinue}
-        />
+        <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+          <PricingSummary
+            planFee={premiumWithGst}
+            addonFee={totalAddonFee}
+            discount={quoteInfo?.promo_code?.discount || 0}
+            title='Premium breakdown'
+            textButton='Continue'
+            onClick={handleContinue}
+            setIsShowPopupPremium={setIsShowPopupPremium}
+          />
+        </div>
       )}
       {isShowRequireModal && (
         <RequiredModal
