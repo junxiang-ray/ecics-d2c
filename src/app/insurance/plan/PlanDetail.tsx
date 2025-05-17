@@ -139,16 +139,16 @@ function PlanDetail({
         </div>
       </div>
 
-      <div className='mt-4 w-full border !border-[#F7F7F9] bg-[#FFFEFF] shadow-md md:flex md:flex-row md:justify-center'>
-        <div className='fixed bottom-0 left-1/2 z-10 w-full -translate-x-1/2 transform shadow-gray-300 md:static md:bottom-auto md:left-0 md:z-auto md:max-w-[800px] md:translate-x-0 md:rounded-md md:border-none'>
-          <div className='flex w-full justify-between border-t-2 bg-white p-4 py-2 md:border-none md:py-4 '>
+      <div className='mt-4 w-full md:flex md:flex-row md:justify-center '>
+        <div className='fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
+          <div className='flex w-full justify-between border-t-2 bg-white p-4 py-2 md:max-w-[900px] md:border-none md:py-4'>
             <div className='gap-2 md:flex md:items-center md:gap-4'>
               <p>
                 <span className='text-lg font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
                   SGD {selectedPlan?.premium_with_gst.toFixed(2)}
                 </span>
                 {!!selectedPlan?.discount && (
-                  <span className='ps-4 text-lg font-normal text-[#FF0004] line-through decoration-1 md:text-2xl md:text-[#EF0000]'>
+                  <span className='ps-4 text-[15px] font-normal text-[#FF0004] line-through decoration-1 md:text-2xl md:text-[#EF0000]'>
                     SGD {selectedPlan?.currentPrice.toFixed(2)}
                   </span>
                 )}
