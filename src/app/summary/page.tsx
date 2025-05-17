@@ -122,7 +122,7 @@ export default function Summary() {
       </div>
     );
   }
-  console.log(quote?.product_type.documents, 'chinh123');
+
   return (
     <div className='flex w-full justify-center '>
       <div className='w-full max-w-[1280px]'>
