@@ -101,10 +101,6 @@ export default function Summary() {
   const AddOnIncludedInPlan =
     quote?.data.review_info_premium?.add_ons_included_in_this_plan;
 
-  console.log(
-    quote?.data.review_info_premium?.add_ons_included_in_this_plan,
-    'addOnIncludedInPlan',
-  );
   const driversData = (quote?.data.review_info_premium?.drivers || []).map(
     (driver: any) => [
       { label: 'Name', value: driver.name || 'N/A' },
@@ -153,9 +149,7 @@ export default function Summary() {
               ]}
               extraTitle='Add Ons:'
               extraData={addonsSectionData}
-              addOnIncludedInPlan={
-                quote?.data.review_info_premium?.add_ons_included_in_this_plan
-              }
+              addOnIncludedInPlan={AddOnIncludedInPlan}
               drivers={quote?.data.review_info_premium?.drivers}
             />
             <InfoCard
