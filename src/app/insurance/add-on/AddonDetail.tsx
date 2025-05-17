@@ -1,75 +1,119 @@
 'use client';
 
-import EnhancedAccidentIcon from '@/components/icons/EnhancedAccidentIcon';
-import KeyIcon from '@/components/icons/KeyIcon';
-import NewOldReplacementIcon from '@/components/icons/NewOldReplacementIcon';
-import PersonalAccidentIcon from '@/components/icons/PersonalAccidentIcon';
-import RepairIcon from '@/components/icons/RepairIcon';
-import RoadSideIcon from '@/components/icons/RoadSideIcon';
-import {
-  useGetQuote,
-  useSaveProposal,
-  useSaveQuote,
-} from '@/hook/insurance/quote';
+import { useGetQuote, useSaveQuote } from '@/hook/insurance/quote';
 import { UserStep } from '@/libs/enums/processBarEnums';
-import { Addon, Option, ProposalPayload } from '@/libs/types/quote';
+import { Addon, Option } from '@/libs/types/quote';
 import { Modal, Spin } from 'antd';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { PricingSummary } from '../components/FeeBar';
 // import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
-import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
-import AddOnRowDetail from './AddOnRowDetail';
-import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
-import ModalPremium from './ModalPremium';
-import AddOnRow from './AddOnRow';
-import TruncateText from './TruncateText ';
+
+import {
+  AddIcon,
+  BillIcon,
+  CarIcon,
+  KeyIcon,
+  MedicalKitIcon,
+  PersonIcon,
+  RepairIcon,
+  RoadSideIcon,
+} from '@/components/icons/add-on-icons';
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
+import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
+import AddOnRow from './AddOnRow';
+import AddOnRowDetail from './AddOnRowDetail';
+import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
+import ModalPremium from './ModalPremium';
+import TruncateText from './TruncateText ';
 
-const mapIconToTypeAddOn = [
+export const mapIconToTypeAddOn = [
   {
-    code: 'CAR_COM_ANW',
-    icon: <KeyIcon className='text-brand-blue' />,
-    isRecommended: true,
+    code: 'CAR_COM_AND',
+    icon: <PersonIcon className='text-brand-blue' />,
   },
   {
-    code: 'CAR_COM_AJE',
+    code: 'CAR_TPFT_AND',
+    icon: <PersonIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_TPO_AND',
+    icon: <PersonIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_FNCD_AND',
+    icon: <PersonIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_COM_ANW',
     icon: <RepairIcon className='text-brand-blue' />,
   },
   {
-    code: 'CAR_COM_AND',
+    code: 'CAR_FNCD_ANW',
+    icon: <RepairIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_FNCD_RSA',
     icon: <RoadSideIcon className='text-brand-blue' />,
   },
   {
+    code: 'CAR_COM_RSA',
+    icon: <RoadSideIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_TPFT_BUN',
+    icon: <BillIcon className='text-brand-blue' />,
+  },
+  {
     code: 'CAR_COM_BUN',
-    icon: <EnhancedAccidentIcon className='text-brand-blue' />,
+    icon: <BillIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_TPO_BUN',
+    icon: <BillIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_FNCD_BUN',
+    icon: <BillIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_FNCD_LOU',
+    icon: <AddIcon className='text-brand-blue' />,
   },
   {
     code: 'CAR_COM_LOU',
-    icon: <PersonalAccidentIcon className='text-brand-blue' />,
+    icon: <AddIcon className='text-brand-blue' />,
   },
   {
     code: 'CAR_COM_PAC',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    icon: <MedicalKitIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_FNCD_PAC',
+    icon: <MedicalKitIcon className='text-brand-blue' />,
   },
   {
     code: 'CAR_COM_MDE',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_RSA',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    icon: <MedicalKitIcon className='text-brand-blue' />,
   },
   {
     code: 'CAR_COM_KRC',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    icon: <KeyIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_FNCD_KRC',
+    icon: <KeyIcon className='text-brand-blue' />,
   },
   {
     code: 'CAR_COM_NOR',
-    icon: <NewOldReplacementIcon className='text-brand-blue' />,
+    icon: <CarIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'CAR_FNCD_NOR',
+    icon: <CarIcon className='text-brand-blue' />,
   },
 ];
 
