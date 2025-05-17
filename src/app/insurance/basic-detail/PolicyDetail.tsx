@@ -19,8 +19,6 @@ import {
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
-import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
-import HeaderVehicleInfoMobile from '../plan/components/HeaderVehicleInfoMobile';
 import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
