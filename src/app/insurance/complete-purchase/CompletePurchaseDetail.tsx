@@ -109,12 +109,19 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
   const { data: quote, isLoading } = useGetQuote(key);
-  const { mutate: payment, data: dataPayment, isPending } = usePayment();
-  const { mutateAsync: saveProposal, isSuccess } = useSaveProposal();
+  const {
+    mutate: payment,
+    data: dataPayment,
+    isPending: isPendingPay,
+  } = usePayment();
+  const {
+    mutateAsync: saveProposal,
+    isSuccess,
+    isPending: isPendingSave,
+  } = useSaveProposal();
   const handleEditClick = (key: string) => {
     toggleSection(key);
   };
-
   const routerBySectionKey = (key: string) => {
     switch (key) {
       case 'basic':
@@ -199,8 +206,8 @@ export default function CompletePurchaseDetail({
     ],
     vehicle: [
       {
-        title: 'Vehicle  Number',
-        value: quote?.data.vehicle_info_selected?.chasis_number || 'N/A',
+        title: 'Vehicle Number',
+        value: quote?.data.vehicle_info_selected?.vehicle_number || 'N/A',
       },
       {
         title: 'Year of Registration',
@@ -244,7 +251,7 @@ export default function CompletePurchaseDetail({
       { title: 'Owner Name', value: `${quote?.data.personal_info?.name} ` },
       {
         title: 'Vehicle number',
-        value: `${quote?.data.vehicle_info_selected?.chasis_number} `,
+        value: `${quote?.data.vehicle_info_selected?.vehicle_number} `,
       },
     ],
   };
@@ -283,7 +290,7 @@ export default function CompletePurchaseDetail({
     {
       key: 'owner',
       title: 'Vehicle Owner',
-      description: `${quote?.data.personal_info?.name}  ${quote?.data.vehicle_info_selected?.chasis_number}`,
+      description: `${quote?.data.personal_info?.name}  ${quote?.data.vehicle_info_selected?.vehicle_number}`,
       icon: <PersonIcon className='text-white' />,
     },
   ];
@@ -511,7 +518,7 @@ export default function CompletePurchaseDetail({
 
             <SecondaryButton
               onClick={onPay}
-              loading={isPending}
+              loading={isPendingSave || isPendingPay}
               className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
             >
               Pay
