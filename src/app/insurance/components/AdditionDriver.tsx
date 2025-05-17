@@ -57,7 +57,7 @@ const createSchema = (policyStartDate: Date) =>
           date_of_birth: z
             .date({
               required_error: 'Date of birth is required',
-              invalid_type_error: 'Date of birth is required',
+              // invalid_type_error: 'Date of birth is required',
             })
             .refine(
               (dob) => {
@@ -150,7 +150,13 @@ const AdditionDriver = ({
   );
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const initDrivers = dataDrivers.length === 0 ? [initDriver] : dataDrivers;
+  const drivers = dataDrivers.map((driver) => ({
+    ...driver,
+    date_of_birth: driver.date_of_birth
+      ? dayjs(driver.date_of_birth, 'DD/MM/YYYY').toDate()
+      : null,
+  }));
+  const initDrivers = dataDrivers.length === 0 ? [initDriver] : drivers;
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -200,85 +206,93 @@ const AdditionDriver = ({
   const _renderFormInput = () => {
     return (
       <>
-        {fields.map((field, index) => (
-          <div
-            key={field.id}
-            className='flex w-full flex-col gap-3 rounded-lg border border-[#E5E5E5] bg-[#8189940F] px-4 py-2'
-          >
-            <div className='flex w-full flex-row items-center justify-between'>
-              <p className='text-xl font-semibold text-[#080808]'>
-                Additional Driver {index + 1}
-              </p>
-              <div className='mt-3'>
-                {formValues.drivers.length > 1 && (
-                  <DeleteIcon
-                    className='cursor-pointer text-red-500'
-                    onClick={() => handleRemoveDriver(index)}
-                  />
-                )}
+        {fields.map((field, index) => {
+          const selectedDate = field?.date_of_birth
+            ? dayjs(field?.date_of_birth)
+            : null;
+          return (
+            <div
+              key={field.id}
+              className='flex w-full flex-col gap-3 rounded-lg border border-[#E5E5E5] bg-[#8189940F] px-4 py-2'
+            >
+              <div className='flex w-full flex-row items-center justify-between'>
+                <p className='text-xl font-semibold text-[#080808]'>
+                  Additional Driver {index + 1}
+                </p>
+                <div className='mt-3'>
+                  {formValues.drivers.length > 1 && (
+                    <DeleteIcon
+                      className='cursor-pointer text-red-500'
+                      onClick={() => handleRemoveDriver(index)}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
 
-            <InputField
-              name={`drivers.${index}.name`}
-              label='Name as Per NRIC'
-              placeholder='Enter your Name'
-            />
-            <InputField
-              name={`drivers.${index}.nric_or_fin`}
-              label='NRIC'
-              placeholder='Enter NRIC/FIN'
-            />
-            <DatePickerField
-              name={`drivers.${index}.date_of_birth`}
-              label='Date of Birth'
-              minDate={adjustDateInDayjs(
-                dateToDayjs(policyStartDate as Date),
-                -71,
-                0,
-                1,
-              )}
-              maxDate={adjustDateInDayjs(
-                dateToDayjs(policyStartDate as Date),
-                -18,
-                0,
-                0,
-              )}
-              pickerValue={adjustDateInDayjs(
-                dateToDayjs(policyStartDate as Date),
-                -26,
-                0,
-                0,
-              )}
-            />
-            <DropdownField
-              name={`drivers.${index}.gender`}
-              label='Gender'
-              placeholder='Select gender'
-              options={GENDER_OPTIONS}
-            />
-            <DropdownField
-              name={`drivers.${index}.marital_status`}
-              label='Marital Status'
-              placeholder='Select marital status'
-              options={MARITAL_STATUS_OPTIONS}
-            />
-            <DropdownField
-              name={`drivers.${index}.driving_experience`}
-              label='Driving Experience'
-              placeholder='Select driving experience'
-              options={DRV_EXP_OPTIONS}
-            />
-            <RadioField
-              name={`drivers.${index}.is_claim_in_3_years`}
-              label='Do you have a claim in the past 3 years?'
-              options={[
-                { value: 'true', text: 'Yes' },
-                { value: 'false', text: 'No' },
-              ]}
-            />
-          </div>
-        ))}
+              <InputField
+                name={`drivers.${index}.name`}
+                label='Name as Per NRIC'
+                placeholder='Enter your Name'
+              />
+              <InputField
+                name={`drivers.${index}.nric_or_fin`}
+                label='NRIC'
+                placeholder='Enter NRIC/FIN'
+              />
+              <DatePickerField
+                name={`drivers.${index}.date_of_birth`}
+                label='Date of Birth'
+                minDate={adjustDateInDayjs(
+                  dateToDayjs(policyStartDate as Date),
+                  -71,
+                  0,
+                  1,
+                )}
+                maxDate={adjustDateInDayjs(
+                  dateToDayjs(policyStartDate as Date),
+                  -18,
+                  0,
+                  0,
+                )}
+                defaultPickerValue={
+                  selectedDate ??
+                  adjustDateInDayjs(
+                    dateToDayjs(policyStartDate as Date),
+                    -27,
+                    0,
+                    0,
+                  )
+                }
+              />
+              <DropdownField
+                name={`drivers.${index}.gender`}
+                label='Gender'
+                placeholder='Select gender'
+                options={GENDER_OPTIONS}
+              />
+              <DropdownField
+                name={`drivers.${index}.marital_status`}
+                label='Marital Status'
+                placeholder='Select marital status'
+                options={MARITAL_STATUS_OPTIONS}
+              />
+              <DropdownField
+                name={`drivers.${index}.driving_experience`}
+                label='Driving Experience'
+                placeholder='Select driving experience'
+                options={DRV_EXP_OPTIONS}
+              />
+              <RadioField
+                name={`drivers.${index}.is_claim_in_3_years`}
+                label='Do you have a claim in the past 3 years?'
+                options={[
+                  { value: 'true', text: 'Yes' },
+                  { value: 'false', text: 'No' },
+                ]}
+              />
+            </div>
+          );
+        })}
       </>
     );
   };
