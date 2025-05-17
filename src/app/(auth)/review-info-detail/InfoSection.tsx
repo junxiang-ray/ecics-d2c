@@ -1,7 +1,6 @@
-import { Spin, Tooltip } from 'antd';
+import { Form, Spin, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { ZodType } from 'zod';
+import { UseFormReturn } from 'react-hook-form';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { parsePhoneNumber, saveToSessionStorage } from '@/libs/utils/utils';
@@ -14,6 +13,7 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
+import { ReviewInfoForm } from '@/app/(auth)/review-info-detail/ReviewInfoDetail';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import {
   DRIVE_EXP_OPTIONS,
@@ -29,14 +29,35 @@ import {
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
+type VehicleInfo = {
+  vehicle_number: string;
+  vehicle_make: string;
+  vehicle_model: string | null;
+  chassis_number: string;
+  engine_number?: string;
+  engine_capacity?: string;
+  power_rate?: string;
+  year_of_manufacture?: string;
+  year_of_registration: string;
+};
+
+type FormValues = {
+  email_address: string;
+  phone_number: string;
+  qualified_driving_license: string;
+  marital_status: string;
+  vehicles: VehicleInfo[];
+};
+
 type InfoSectionProps = {
   title?: string;
   data: { label: string; value: string | number | null }[];
   boxClass?: string;
   setIsDisabled?: (val: boolean) => void;
   vehicleIndex?: number;
-  validationSchema: ZodType<any>;
+  methods: UseFormReturn<FormValues>;
 };
+
 const isReadOnly = true;
 
 const InfoSection: React.FC<InfoSectionProps> = ({
@@ -45,11 +66,19 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   boxClass = '',
   setIsDisabled,
   vehicleIndex,
+  methods,
 }) => {
   const { isMobile } = useDeviceDetection();
-  const methods = useForm();
-  const { setValue, watch } = methods;
-  const selectedMakeId = watch('vehicle_make');
+  const {
+    setValue,
+    watch,
+    formState: { errors },
+  } = methods;
+
+  const selectedMakeId = watch(
+    `vehicles.${vehicleIndex as number}.vehicle_make`,
+  );
+
   const [showContactModal, setShowContactModal] = useState(false);
   const handleClickOK = () => {
     setShowContactModal(false);
@@ -112,34 +141,32 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   };
 
   const checkInputsCompleted = (data: any): boolean => {
-    // Check if vehicle length is 1, use vehicles array instead of vehicle_selected
-    const vehicle =
-      data?.vehicles?.length === 1
-        ? data?.vehicles[0]
-        : data?.vehicle_selected?.[0] || {};
     const personal = data || {};
+    const values = methods.getValues();
+    const vehicles = values.vehicles || [];
 
-    const vehicleRequiredFields = [
-      'vehicleno',
-      'firstregistrationdate',
-      'make',
-      'model',
-      'engineno',
-      'chassisno',
-      'enginecapacity',
-      'powerrate',
-      'yearofmanufacture',
-    ];
+    const isVehicleCompleted = (vehicles: any[]): boolean => {
+      if (!Array.isArray(vehicles)) return false;
 
-    const isVehicleCompleted = vehicleRequiredFields.every((field) => {
-      const value = vehicle?.[field]?.value;
-      const isValid =
-        value !== undefined && value !== null && String(value).trim() !== '';
-      if (!isValid) {
-        console.warn(`Invalid or missing value for field "${field}":`, value);
-      }
-      return isValid;
-    });
+      const requiredFields = [
+        'vehicle_number',
+        'vehicle_make',
+        'vehicle_model',
+        'chassis_number',
+        'year_of_registration',
+      ];
+
+      return vehicles.every((vehicle) => {
+        return requiredFields.every((field) => {
+          if (Object.prototype.hasOwnProperty.call(vehicle, field)) {
+            const value = vehicle[field];
+            return value !== undefined && value !== null && value !== '';
+          }
+          return true;
+        });
+      });
+    };
+    const hasVehicleCompleted = isVehicleCompleted(vehicles);
 
     const isEmailValid = !!personal?.email?.value;
     const isMobileValid =
@@ -155,11 +182,15 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         )
       : false;
 
+    const hasValidMaritalStatus =
+      !!personal?.marital?.desc && personal.marital.desc.trim() !== '';
+
     const allCompleted =
-      isVehicleCompleted &&
+      hasVehicleCompleted &&
       isEmailValid &&
       isMobileValid &&
-      hasValidDrivingLicence;
+      hasValidDrivingLicence &&
+      hasValidMaritalStatus;
 
     if (allCompleted === true) {
       setIsDisabled?.(false);
@@ -170,9 +201,13 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
   const handleInputChangeEmailPhone = (
     e: React.ChangeEvent<HTMLInputElement>,
+    key: 'email_address' | 'phone_number',
   ) => {
     const value = e.target.value.trim();
     const inputName = e.target.name.toLowerCase();
+
+    methods.setValue(key, value);
+
     const ecicsData = sessionStorage.getItem(ECICS_USER_INFO);
     if (!ecicsData) return;
 
@@ -255,34 +290,22 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         issuedDate.setFullYear(today.getFullYear() - value);
         const formattedDate = issuedDate.toISOString().split('T')[0];
 
-        if (
-          parsed.drivinglicence &&
-          parsed.drivinglicence.qdl &&
-          parsed.drivinglicence.qdl.classes &&
-          parsed.drivinglicence.qdl.classes.length > 0
-        ) {
-          parsed.drivinglicence.qdl.classes[0].class = { value: '3A' };
-          parsed.drivinglicence.qdl.classes[0].issuedate = {
-            value: formattedDate,
-          };
+        const drivingLicenceClass = {
+          class: { value: '3A' },
+          issuedate: { value: formattedDate },
+        };
+
+        if (parsed.drivinglicence?.qdl?.classes?.length > 0) {
+          parsed.drivinglicence.qdl.classes[0] = drivingLicenceClass;
         } else {
           parsed.drivinglicence = {
             ...parsed.drivinglicence,
-            qdl: {
-              classes: [
-                {
-                  class: { value: '3A' },
-                  issuedate: { value: formattedDate },
-                },
-              ],
-            },
+            qdl: { classes: [drivingLicenceClass] },
           };
         }
-
         parsed.drivinglicence.lastupdated = formattedDate;
         saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(parsed) });
       }
-
       // Check if inputs are completed
       const isInputsCompleted = checkInputsCompleted(parsed);
       saveToSessionStorage({
@@ -392,6 +415,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
     // Check if entered is complete
     const isInputsCompleted = checkInputsCompleted(updatedData);
+
     saveToSessionStorage({
       [IS_FILL_INPUT_COMPLETE]: String(isInputsCompleted),
     });
@@ -399,17 +423,20 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
   //Call API
   const { data: makeOptionsData } = useGetVehicleMakes();
+  const vehicleMakeId = makeOptionsData?.find(
+    (item: any) => item.name === selectedMakeId,
+  )?.id;
   const makeOptions: DropdownOption[] =
     makeOptionsData?.map((item: VehicleResponse) => ({
-      value: item.id,
+      value: item.name,
       text: item.name,
     })) || [];
 
   const { data: modelOptionsData, isLoading: isLoadingModelOptions } =
-    useGetVehicleModels(selectedMakeId || '');
+    useGetVehicleModels(vehicleMakeId || '');
   const modelOptions: DropdownOption[] =
     modelOptionsData?.map((item: VehicleResponse) => ({
-      value: item.id,
+      value: item.name,
       text: item.name,
     })) || [];
 
@@ -441,29 +468,29 @@ const InfoSection: React.FC<InfoSectionProps> = ({
               item.value != null &&
               (nameKey === 'email_address' || nameKey === 'phone_number')
             ) {
-              setValue(nameKey, item.value);
+              setValue(nameKey, String(item.value));
             }
 
             if (isEmailAddress || isPhoneNumber) {
               return (
-                <FormProvider key={idx} {...methods}>
-                  <div>
-                    <div className='text-sm font-bold'>
-                      {isEmailAddress ? 'Email Address' : 'Phone Number'}
-                    </div>
-                    <InputField
-                      name={nameKey}
-                      type='text'
-                      className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
-                      placeholder={
-                        isEmailAddress
-                          ? `Enter ${item.label} info`
-                          : `Enter ${item.label} info, e.g. +65 81234567`
-                      }
-                      onChange={handleInputChangeEmailPhone}
-                    />
-                  </div>
-                </FormProvider>
+                <Form.Item
+                  key={nameKey}
+                  name={nameKey}
+                  validateStatus={errors[nameKey] ? 'error' : ''}
+                >
+                  <InputField
+                    name={nameKey}
+                    label={isEmailAddress ? 'Email Address' : 'Phone Number'}
+                    type='text'
+                    className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
+                    placeholder={
+                      isEmailAddress
+                        ? `Enter ${item.label} info`
+                        : `Enter ${item.label} info, e.g. +65 81234567`
+                    }
+                    onChange={(e) => handleInputChangeEmailPhone(e, nameKey)}
+                  />
+                </Form.Item>
               );
             }
             if (
@@ -475,127 +502,142 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 isMaritalStatus)
             ) {
               return (
-                <FormProvider key={idx} {...methods}>
-                  <div>
-                    {isVehicleMake && (
-                      <>
-                        <div className='text-sm font-bold'>Vehicle Make</div>
-                        <DropdownField
-                          name='vehicle_make'
-                          placeholder='Enter vehicle make'
-                          options={makeOptions}
-                          onChange={(value) => {
-                            const selectedMake = makeOptions.find(
-                              (option) => option.value === value,
-                            );
-                            const makeText = selectedMake
-                              ? selectedMake.text
-                              : '';
-                            setValue('vehicle_model', null);
-                            handleInputChange(
-                              vehicleIndex,
-                              'vehicle_make',
-                              makeText,
-                            );
-                          }}
-                          showSearch
-                        />
-                      </>
-                    )}
-                    {isVehicleModel && (
-                      <>
-                        <div className='text-sm font-bold'>Vehicle Model</div>
-                        <DropdownField
-                          name='vehicle_model'
-                          placeholder='Enter vehicle model'
-                          disabled={!selectedMakeId}
-                          options={modelOptions}
-                          onChange={(value) => {
-                            const selectedModel = modelOptions.find(
-                              (option) => option.value === value,
-                            );
-                            const modelText = selectedModel
-                              ? selectedModel.text
-                              : '';
-                            handleInputChange(
-                              vehicleIndex,
-                              'vehicle_model',
-                              modelText,
-                            );
-                          }}
-                          notFoundContent={
-                            isLoadingModelOptions ? (
-                              <Spin size='small' />
-                            ) : (
-                              'No results found'
-                            )
-                          }
-                          showSearch
-                        />
-                      </>
-                    )}
-                    {isVehicleYearRegistration && (
-                      <>
-                        <div className='text-sm font-bold'>
-                          Year of Registration
-                        </div>
-                        <DropdownField
-                          name='year_of_registration'
-                          placeholder='Select year'
-                          options={Array.from({ length: 21 }, (_, i) => {
-                            const year = new Date().getFullYear() - i;
-                            return {
-                              value: year.toString(),
-                              text: year.toString(),
-                            };
-                          })}
-                          onChange={(value) => {
-                            handleInputChange(
-                              vehicleIndex,
-                              'year_of_registration',
-                              value,
-                            );
-                          }}
-                        />
-                      </>
-                    )}
-                    {isDrivingLicence && (
-                      <>
-                        <div className='text-sm font-bold'>
-                          Driving Experience
-                        </div>
-                        <DropdownField
-                          name='qualified_driving_license'
-                          placeholder='Select driving experience year'
-                          options={DRIVE_EXP_OPTIONS}
-                          onChange={(value) =>
-                            handlePersonalInfoInputChange(
-                              'qualified_driving_license',
-                              value,
-                              setShowContactModal,
-                            )
-                          }
-                        />
-                      </>
-                    )}
-                    {isMaritalStatus && (
-                      <>
-                        <div className='text-sm font-bold'>Marital Status</div>
-                        <DropdownField
-                          name={nameKey}
-                          placeholder='Select Marital Status'
-                          options={MARITAL_STATUS_OPTIONS}
-                          onChange={(value) =>
-                            handlePersonalInfoInputChange(
-                              'marital_status',
-                              value,
-                            )
-                          }
-                        />
-                      </>
-                    )}
-                  </div>
-                </FormProvider>
+                <div key={idx}>
+                  {isVehicleMake && (
+                    <>
+                      <div className='text-sm font-bold'>Vehicle Make</div>
+                      <DropdownField
+                        name={`vehicles.${vehicleIndex}.vehicle_make`}
+                        placeholder='Enter vehicle make'
+                        options={makeOptions}
+                        onChange={(value) => {
+                          const selectedMake = makeOptions.find(
+                            (option) => option.value === value,
+                          );
+                          const makeText = selectedMake
+                            ? selectedMake.text
+                            : '';
+                          methods.setValue(
+                            `vehicles.${vehicleIndex}.vehicle_make`,
+                            value,
+                          );
+                          setValue(
+                            `vehicles.${vehicleIndex}.vehicle_model`,
+                            null,
+                          );
+                          handleInputChange(
+                            vehicleIndex,
+                            'vehicle_make',
+                            makeText,
+                          );
+                        }}
+                        showSearch
+                      />
+                    </>
+                  )}
+                  {isVehicleModel && (
+                    <>
+                      <div className='text-sm font-bold'>Vehicle Model</div>
+                      <DropdownField
+                        name={`vehicles.${vehicleIndex}.vehicle_model`}
+                        placeholder='Enter vehicle model'
+                        disabled={!selectedMakeId}
+                        options={modelOptions}
+                        onChange={(value) => {
+                          const selectedModel = modelOptions.find(
+                            (option) => option.value === value,
+                          );
+                          const modelText = selectedModel
+                            ? selectedModel.text
+                            : '';
+                          methods.setValue(
+                            `vehicles.${vehicleIndex}.vehicle_model`,
+                            value,
+                          );
+                          handleInputChange(
+                            vehicleIndex,
+                            'vehicle_model',
+                            modelText,
+                          );
+                        }}
+                        notFoundContent={
+                          isLoadingModelOptions ? (
+                            <Spin size='small' />
+                          ) : (
+                            'No results found'
+                          )
+                        }
+                        showSearch
+                      />
+                    </>
+                  )}
+                  {isVehicleYearRegistration && (
+                    <>
+                      <div className='text-sm font-bold'>
+                        Year of Registration
+                      </div>
+                      <DropdownField
+                        name={`vehicles.${vehicleIndex}.year_of_registration`}
+                        placeholder='Select year'
+                        options={Array.from({ length: 16 }, (_, i) => {
+                          const year = new Date().getFullYear() - i;
+                          return {
+                            value: year.toString(),
+                            text: year.toString(),
+                          };
+                        })}
+                        onChange={(value) => {
+                          handleInputChange(
+                            vehicleIndex,
+                            'year_of_registration',
+                            value,
+                          );
+                          methods.setValue(
+                            `vehicles.${vehicleIndex}.year_of_registration`,
+                            value,
+                          );
+                        }}
+                      />
+                    </>
+                  )}
+                  {isDrivingLicence && (
+                    <>
+                      <div className='text-sm font-bold'>
+                        Driving Experience
+                      </div>
+                      <DropdownField
+                        name='qualified_driving_license'
+                        placeholder='Select driving experience year'
+                        options={DRIVE_EXP_OPTIONS}
+                        onChange={(value) => {
+                          handlePersonalInfoInputChange(
+                            'qualified_driving_license',
+                            value,
+                            setShowContactModal,
+                          );
+                          methods.setValue('qualified_driving_license', value);
+                        }}
+                      />
+                    </>
+                  )}
+                  {isMaritalStatus && (
+                    <>
+                      <div className='text-sm font-bold'>Marital Status</div>
+                      <DropdownField
+                        name={nameKey}
+                        placeholder='Select Marital Status'
+                        options={MARITAL_STATUS_OPTIONS}
+                        onChange={(value) => {
+                          handlePersonalInfoInputChange(
+                            'marital_status',
+                            value,
+                          );
+                          methods.setValue('marital_status', value);
+                        }}
+                      />
+                    </>
+                  )}
+                </div>
               );
             }
 
@@ -605,13 +647,23 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 <div className='text-sm'>
                   {item.value == null ? (
                     <InputField
-                      name={nameKey}
+                      name={`vehicles.${vehicleIndex}.${nameKey}`}
                       type='text'
                       className='h-10 w-full rounded-[6px] border border-gray-300 p-2'
                       placeholder={`Enter ${item.label} info`}
-                      onChange={(e) =>
-                        handleInputChange(vehicleIndex, nameKey, e.target.value)
-                      }
+                      onChange={(e) => {
+                        handleInputChange(
+                          vehicleIndex,
+                          nameKey,
+                          e.target.value,
+                        );
+                        methods.setValue(
+                          nameKey as keyof ReviewInfoForm,
+                          typeof e.target.value === 'string'
+                            ? String(e.target.value)
+                            : e.target.value,
+                        );
+                      }}
                     />
                   ) : isMobile ? (
                     item.value

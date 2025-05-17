@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
@@ -26,6 +26,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
 import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
+import { RenewalModal } from '@/app/insurance/basic-detail/modal/RenewalModal';
 import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
 import {
@@ -41,17 +42,17 @@ import {
   vehicleNumberRegex,
 } from '@/constants/validation.constant';
 import { usePostPersonalInfo } from '@/hook/auth/login';
+import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-import { RenewalModal } from '@/app/insurance/basic-detail/modal/RenewalModal';
-import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 
 const reviewInfoSchema = z.object({
   email_address: z
     .string({
       required_error: 'This field is required',
+      invalid_type_error: 'Please enter a valid email address.',
     })
     .regex(emailRegex, 'Please enter a valid email address.'),
   phone_number: z
@@ -63,56 +64,77 @@ const reviewInfoSchema = z.object({
       phoneRegex,
       "Please enter an 8-digit number starting with '8' or '9'.",
     ),
-  vehicle_number: z
-    .string({
-      required_error: 'This field is required',
-    })
-    .min(1, 'This field is required')
-    .regex(
-      vehicleNumberRegex,
-      'Please enter a valid vehicle registration no. (e.g. SBA123A).',
-    ),
-  vehicle_make: z
+  qualified_driving_license: z
     .string({
       required_error: 'This field is required',
     })
     .min(1, 'This field is required'),
-  vehicle_model: z
+  marital_status: z
     .string({
       required_error: 'This field is required',
     })
     .min(1, 'This field is required'),
-  engine_number: z
-    .string()
-    .max(50, 'Engine Number must be 50 characters or fewer.')
-    .optional(),
-  chassis_number: z
-    .string({
-      required_error: 'This field is required',
-    })
-    .min(1, 'This field is required')
-    .max(50, 'Chassis Number must be 50 characters or fewer.'),
-  engine_capacity: z
-    .string()
-    .max(50, 'Engine Capacity must be 50 characters or fewer.')
-    .optional(),
-  power_rate: z
-    .string()
-    .max(50, 'Power Rate must be 50 characters or fewer.')
-    .optional(),
-  year_of_manufacture: z
-    .string()
-    .max(4, 'Enter a valid year (max 4 digits).')
-    .regex(/^\d*$/, 'Year of Manufacture must be numbers only.')
-    .optional(),
-  year_of_registration: z
-    .string({
-      required_error: 'This field is required',
-    })
-    .min(4, 'Enter a valid year'),
+  vehicles: z.array(
+    z.object({
+      vehicle_number: z
+        .string({
+          required_error: 'This field is required',
+        })
+        .min(1, 'This field is required')
+        .regex(
+          vehicleNumberRegex,
+          'Please enter a valid vehicle registration no. (e.g. SBA123A).',
+        ),
+
+      vehicle_make: z
+        .string({
+          required_error: 'This field is required',
+        })
+        .min(1, 'This field is required'),
+
+      vehicle_model: z.union([
+        z.string().min(1, 'This field is required'),
+        z.null().refine(() => false, { message: 'This field is required' }),
+      ]),
+
+      engine_number: z
+        .string()
+        .max(50, 'Engine Number must be 50 characters or fewer.')
+        .optional(),
+
+      chassis_number: z
+        .string({
+          required_error: 'This field is required',
+        })
+        .min(1, 'This field is required')
+        .max(50, 'Chassis Number must be 50 characters or fewer.'),
+
+      engine_capacity: z
+        .string()
+        .max(50, 'Engine Capacity must be 50 characters or fewer.')
+        .optional(),
+
+      power_rate: z
+        .string()
+        .max(50, 'Power Rate must be 50 characters or fewer.')
+        .optional(),
+
+      year_of_manufacture: z
+        .string()
+        .max(4, 'Enter a valid year (max 4 digits).')
+        .regex(/^\d*$/, 'Year of Manufacture must be numbers only.')
+        .optional(),
+
+      year_of_registration: z
+        .string({
+          required_error: 'This field is required',
+        })
+        .min(4, 'Enter a valid year'),
+    }),
+  ),
 });
 
-type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
+export type ReviewInfoForm = z.infer<typeof reviewInfoSchema>;
 
 interface CommonInfo {
   email: string | null;
@@ -148,6 +170,200 @@ const ReviewInfoDetail = () => {
     setShowUnMatchModal(true);
   });
   const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
+
+  function fakeData() {
+    const data = {
+      dob: {
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+        value: '1998-06-06',
+      },
+      email: {
+        lastupdated: '2025-05-15',
+        source: '4',
+        classification: 'C',
+        value: '',
+      },
+      marital: {
+        lastupdated: '2025-05-15',
+        code: '2',
+        source: '1',
+        classification: 'C',
+        desc: '',
+      },
+      mobileno: {
+        lastupdated: '2025-05-15',
+        source: '4',
+        classification: 'C',
+        areacode: {
+          value: '65',
+        },
+        prefix: {
+          value: '+',
+        },
+        nbr: {
+          value: '97399245',
+        },
+      },
+      name: {
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+        value: 'TAN XIAO HUI',
+      },
+      regadd: {
+        country: {
+          code: 'SG',
+          desc: 'SINGAPORE',
+        },
+        unit: {
+          value: '128',
+        },
+        street: {
+          value: 'BEDOK NORTH AVENUE 4',
+        },
+        lastupdated: '2025-05-15',
+        block: {
+          value: '102',
+        },
+        source: '1',
+        postal: {
+          value: '460102',
+        },
+        classification: 'C',
+        floor: {
+          value: '9',
+        },
+        type: 'SG',
+        building: {
+          value: 'PEARL GARDEN',
+        },
+      },
+      sex: {
+        lastupdated: '2025-05-15',
+        code: 'F',
+        source: '1',
+        classification: 'C',
+        desc: 'FEMALE',
+      },
+      uinfin: {
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+        value: 'S7790709B',
+      },
+      vehicles: [
+        {
+          chassisno: {
+            value: '',
+          },
+          lastupdated: '2025-05-15',
+          source: '1',
+          classification: 'C',
+          engineno: {
+            value: 'M13A1837453',
+          },
+          firstregistrationdate: {
+            value: '2015-12-07',
+          },
+          make: {
+            value: '',
+          },
+          model: {
+            value: 'KIA SEDONA',
+          },
+          vehicleno: {
+            value: 'SDF1235A',
+          },
+          yearofmanufacture: {
+            value: '2013',
+          },
+          enginecapacity: {
+            value: 1500,
+          },
+          powerrate: {
+            value: 1.8,
+          },
+        },
+        {
+          chassisno: {
+            value: '',
+          },
+          lastupdated: '2025-05-15',
+          source: '1',
+          classification: 'C',
+          engineno: {
+            value: 'M13A1837343',
+          },
+          firstregistrationdate: {
+            value: '',
+          },
+          make: {
+            value: 'Audi',
+          },
+          model: {
+            value: 'A1 1.0',
+          },
+          vehicleno: {
+            value: 'SDF1245A',
+          },
+          yearofmanufacture: {
+            value: '2018',
+          },
+          enginecapacity: {
+            value: 1700,
+          },
+          powerrate: {
+            value: 1.1,
+          },
+        },
+      ],
+      drivinglicence: {
+        qdl: {
+          classes: [
+            {
+              class: {
+                value: '2A',
+              },
+              issuedate: {
+                value: '2024-06-06',
+              },
+            },
+            {
+              class: {
+                value: '3A',
+              },
+              issuedate: {
+                value: '2020-06-06',
+              },
+            },
+            {
+              class: {
+                value: '2A',
+              },
+              issuedate: {
+                value: '2018-06-06',
+              },
+            },
+          ],
+        },
+        lastupdated: '2025-05-15',
+        source: '1',
+        classification: 'C',
+      },
+      iss: 'https://stg-id.singpass.gov.sg',
+      sub: 'u=a3e9470e-4075-4d22-b731-551b5d3849c3',
+      aud: 'XlC0mVynZGotrzeLK0Yk4ZXqeml2dJCg',
+      iat: 1747313757,
+    };
+    sessionStorage.setItem(ECICS_USER_INFO, JSON.stringify(data));
+    sessionStorage.setItem(DATA_FROM_SINGPASS, JSON.stringify(data));
+  }
+
+  useEffect(() => {
+    fakeData();
+  }, []);
 
   useEffect(() => {
     if (isSuccess) {
@@ -247,9 +463,27 @@ const ReviewInfoDetail = () => {
 
   const methods = useForm<ReviewInfoForm>({
     resolver: zodResolver(reviewInfoSchema),
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
+    criteriaMode: 'all',
     defaultValues: {
       email_address: '',
       phone_number: '',
+      qualified_driving_license: '',
+      marital_status: '',
+      vehicles: [
+        {
+          vehicle_number: '',
+          vehicle_make: '',
+          vehicle_model: null,
+          chassis_number: '',
+          engine_number: '',
+          engine_capacity: '',
+          power_rate: '',
+          year_of_manufacture: '',
+          year_of_registration: '',
+        },
+      ],
     },
   });
 
@@ -258,7 +492,7 @@ const ReviewInfoDetail = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       const isInvalidSingleVehicle =
-        parsed.vehicles?.length === 1 &&
+        parsed.vehicles?.length >= 1 &&
         (!parsed.vehicles[0]?.make?.value?.trim() ||
           !parsed.vehicles[0]?.model?.value?.trim());
 
@@ -423,6 +657,30 @@ const ReviewInfoDetail = () => {
         email_address: transformed.email,
         phone_number: transformed.phone ?? undefined,
       });
+
+      if (parsed.vehicles?.length >= 1) {
+        const updatedVehicles = parsed.vehicles.map((vehicle: any) => {
+          const make = vehicle?.make?.value?.trim();
+          const model = vehicle?.model?.value?.trim();
+
+          if (!make || !model) {
+            return {
+              ...vehicle,
+              make: { ...vehicle.make, value: '' },
+              model: { ...vehicle.model, value: '' },
+            };
+          }
+
+          return vehicle;
+        });
+        const updatedParsed = {
+          ...parsed,
+          vehicles: updatedVehicles,
+        };
+        saveToSessionStorage({
+          [ECICS_USER_INFO]: JSON.stringify(updatedParsed),
+        });
+      }
     }
   }, [methods, refreshSession]);
 
@@ -646,14 +904,14 @@ const ReviewInfoDetail = () => {
                     { label: 'Phone Number', value: commonInfo?.phone ?? null },
                   ]}
                   setIsDisabled={setIsDisabled}
-                  validationSchema={reviewInfoSchema}
+                  methods={methods}
                 />
                 {commonInfo?.personal && (
                   <InfoSection
                     title='Personal Info'
                     data={commonInfo.personal}
                     setIsDisabled={setIsDisabled}
-                    validationSchema={reviewInfoSchema}
+                    methods={methods}
                   />
                 )}
                 {!showChooseVehicleModal &&
@@ -670,7 +928,7 @@ const ReviewInfoDetail = () => {
                       }
                       data={vehicle}
                       setIsDisabled={setIsDisabled}
-                      validationSchema={reviewInfoSchema}
+                      methods={methods}
                     />
                   ))}
               </div>
@@ -686,7 +944,7 @@ const ReviewInfoDetail = () => {
                     { label: 'Phone Number', value: commonInfo?.phone ?? null },
                   ]}
                   setIsDisabled={setIsDisabled}
-                  validationSchema={reviewInfoSchema}
+                  methods={methods}
                 />
                 {commonInfo?.personal && (
                   <InfoSection
@@ -694,7 +952,7 @@ const ReviewInfoDetail = () => {
                     data={commonInfo.personal}
                     boxClass='mt-4'
                     setIsDisabled={setIsDisabled}
-                    validationSchema={reviewInfoSchema}
+                    methods={methods}
                   />
                 )}
                 {!showChooseVehicleModal &&
@@ -711,7 +969,7 @@ const ReviewInfoDetail = () => {
                       }
                       data={vehicle}
                       setIsDisabled={setIsDisabled}
-                      validationSchema={reviewInfoSchema}
+                      methods={methods}
                     />
                   ))}
               </div>
