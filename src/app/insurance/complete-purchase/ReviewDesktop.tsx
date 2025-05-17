@@ -42,24 +42,26 @@ const ReviewDesktop = (props: Props) => {
             Edit
           </div>
         </div>
-        <div className='grid grid-cols-4 gap-2'>
+        <div className='flex flex-wrap gap-x-6 gap-y-3'>
           {data.map((item, index) => (
             <div key={index} className='flex flex-col gap-2'>
               <p className='text-sm font-semibold leading-6 text-[#000000]'>
                 {item.title}
               </p>
-              <p className='max-w-[200px] rounded-xl bg-[#0000000D] px-1 py-2 text-center text-base font-normal leading-[26px] text-[#535353]'>
+              <p className='rounded-xl bg-[#0000000D] px-1 py-2 text-center text-base font-normal leading-[26px] text-[#535353]'>
                 {item.value}
               </p>
             </div>
           ))}
         </div>
       </div>
-      <ModalImportant
-        isShowPopupImportant={isShowPopupImportant}
-        handleRedirect={handleRedirect}
-        setIsShowPopupImportant={setIsShowPopupImportant}
-      />
+      {isShowPopupImportant && (
+        <ModalImportant
+          isShowPopupImportant={isShowPopupImportant}
+          handleRedirect={handleRedirect}
+          setIsShowPopupImportant={setIsShowPopupImportant}
+        />
+      )}
     </>
   );
 };

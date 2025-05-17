@@ -20,7 +20,7 @@ import { PricingSummary } from '../components/FeeBar';
 import ReviewDesktop from './ReviewDesktop';
 
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
-import { SecondaryButton } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { formatCurrency } from '@/libs/utils/utils';
 import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
@@ -374,11 +374,11 @@ export default function CompletePurchaseDetail({
       quote?.data.review_info_premium?.add_ons_included_in_this_plan;
     return (
       <div className='w-full md:max-w-[400px]'>
-        {/* <div className='flex h-[50px] justify-end'>
-          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
+        <div className='flex h-[50px] justify-end'>
+          {/* <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
             Save
-          </div>
-        </div> */}
+          </div> */}
+        </div>
         <div className='flex w-full flex-col gap-3 rounded-lg p-4 md:mt-6 md:border md:border-[#E4E4E4]'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
             Premium Breakdown
@@ -493,13 +493,13 @@ export default function CompletePurchaseDetail({
               </div>
             </div>
 
-            <SecondaryButton
+            <PrimaryButton
               onClick={onPay}
               loading={isPendingSave || isPendingPay}
-              className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+              className='w-full cursor-pointer rounded-lg px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
             >
               Pay
-            </SecondaryButton>
+            </PrimaryButton>
           </div>
         </div>
       </div>
@@ -515,7 +515,7 @@ export default function CompletePurchaseDetail({
   }
 
   return (
-    <div className='flex w-full flex-col items-center px-4 py-4 md:py-16'>
+    <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
       <div className='flex w-full max-w-[1200px] flex-col justify-center md:flex-row md:gap-10'>
         <div className='flex flex-col lg:flex-row'>
           <div className='flex-1'>

@@ -57,7 +57,7 @@ const createSchema = (policyStartDate: Date) =>
           date_of_birth: z
             .date({
               required_error: 'Date of birth is required',
-              // invalid_type_error: 'Date of birth is required',
+              invalid_type_error: 'Date of birth is required',
             })
             .refine(
               (dob) => {
@@ -83,7 +83,8 @@ const createSchema = (policyStartDate: Date) =>
           }),
           driving_experience: z
             .string({
-              required_error: 'This field is required',
+              required_error: 'Driving experience field is required',
+              invalid_type_error: 'Driving experience field is required',
             })
             .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
               message:

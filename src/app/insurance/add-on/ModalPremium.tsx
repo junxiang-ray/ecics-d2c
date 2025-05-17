@@ -2,7 +2,7 @@
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { Addon, AddOnIncludedInPlan, Quote } from '@/libs/types/quote';
 import { Drawer, Modal } from 'antd';
-import { SecondaryButton } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { formatCurrency } from '@/libs/utils/utils';
 
 interface Props {
@@ -118,13 +118,13 @@ const ModalPremium = (props: Props) => {
             </div>
           </div>
         </div>
-        <SecondaryButton
+        <PrimaryButton
           className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
           onClick={() => handleOkay()}
           loading={isPending}
         >
           Okay
-        </SecondaryButton>
+        </PrimaryButton>
       </div>
     );
   };

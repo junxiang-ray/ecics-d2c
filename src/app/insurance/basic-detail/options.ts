@@ -91,13 +91,13 @@ export const NCD_OPTIONS: DropdownOption[] = [
 
 export const NO_CLAIM_OPTIONS: DropdownOption[] = [
   { value: NumberClaim.NEVER, text: '0' },
-  { value: NumberClaim.ONE_CLAIM_LESS_THAN_10K, text: '1 claim ≤$10k' },
-  { value: NumberClaim.ONE_CLAIM_LESS_THAN_20K, text: '1 claim ≤$20k' },
-  { value: NumberClaim.TWO_CLAIM_LESS_THAN_10K, text: '2 claims ≤$10k' },
-  { value: NumberClaim.TWO_CLAIM_LESS_THAN_20K, text: '2 claims ≤$20k' },
+  { value: NumberClaim.ONE_CLAIM_LESS_THAN_10K, text: '1 claim ≤ SGD 10k' },
+  { value: NumberClaim.ONE_CLAIM_LESS_THAN_20K, text: '1 claim ≤ SGD 20k' },
+  { value: NumberClaim.TWO_CLAIM_LESS_THAN_10K, text: '2 claims ≤ SGD 10k' },
+  { value: NumberClaim.TWO_CLAIM_LESS_THAN_20K, text: '2 claims ≤ SGD 20k' },
   {
     value: NumberClaim.TWO_MANY_CLAIMS,
-    text: 'More than 2 claims or SGD20k',
+    text: 'More than 2 claims or SGD 20k',
   },
 ];
 

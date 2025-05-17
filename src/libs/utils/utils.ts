@@ -105,7 +105,10 @@ export const parsePhoneNumber = (raw: string) => {
   return { prefix, areaCode, nbr };
 };
 
-export const formatCurrency = (value: number) => {
+export const formatCurrency = (value: number | undefined) => {
+  if (value === undefined) {
+    return '';
+  }
   return `SGD ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 

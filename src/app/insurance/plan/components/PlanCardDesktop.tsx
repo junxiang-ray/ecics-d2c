@@ -6,6 +6,7 @@ import TickCircleIcon from '@/components/icons/TickCircleIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 import clsx from 'clsx';
 import { FormatPlan } from '../PlanDetail';
+import { formatCurrency } from '@/libs/utils/utils';
 
 function PlanCardDesktop({
   plans,
@@ -64,12 +65,12 @@ function PlanCardDesktop({
                 )}
                 <div className='max-w-80 pt-3'>
                   <p className='text-lg font-bold text-[#1B223C]'>
-                    SGD {plan.premium_with_gst.toFixed(2)}
+                    {formatCurrency(plan.premium_with_gst)}
                   </p>
                   {!!plan.discount && (
                     <div className='mt-1'>
                       <p className='text-md font-normal text-[#FF0004] line-through decoration-1'>
-                        SGD {plan.currentPrice.toFixed(2)}
+                        {formatCurrency(plan.currentPrice)}
                       </p>
                       <p className='text-xs font-light text-[#797878]'>
                         ({plan.discount}% off applied)
