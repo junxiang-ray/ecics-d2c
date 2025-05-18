@@ -35,7 +35,10 @@ export async function handlePaymentResult(data: paymentDTO) {
 
     await prisma.quote.update({
       where: { id: quoteInfo.id },
-      data: { is_paid: true },
+      data: {
+        is_paid: true,
+        payment_result_id: result.id,
+      },
     });
 
     logger.info(`Quote updated to paid: ${JSON.stringify(quoteInfo)}`);
