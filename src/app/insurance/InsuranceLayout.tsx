@@ -1,6 +1,6 @@
 'use client';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
@@ -10,13 +10,14 @@ import { SecondaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
-import { useSaveQuote } from '@/hook/insurance/quote';
+import { useGetQuote, useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
 import ModalImportant from './complete-purchase/ModalImportant';
 import { updateQuote } from '@/redux/slices/quote.slice';
+import { Spin } from 'antd';
 
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
@@ -54,6 +55,15 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   const isFinalized = useAppSelector(
     (state) => state.quote.quote?.is_finalized,
   );
+  const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
+
+  const key = params.get('key') || '';
+  const { data, isLoading } = useGetQuote(key);
+
+  useEffect(() => {
+    if (!data) return;
+    dispatch(updateQuote(data));
+  }, [data]);
 
   useLayoutEffect(() => {
     const currentStep = getStepFromRoute(pathName);
@@ -90,7 +100,13 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       dispatch(updateQuote(res));
     });
   };
-  const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <>
