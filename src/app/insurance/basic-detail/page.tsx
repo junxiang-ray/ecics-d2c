@@ -1,16 +1,12 @@
 'use client';
+import { useSearchParams } from 'next/navigation';
 import InsuranceLayout from '../InsuranceLayout';
 import { PolicyDetail } from './PolicyDetail';
 
-interface PolicyDetailPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default function PolicyDetailPage({
-  searchParams,
-}: PolicyDetailPageProps) {
-  const params = searchParams;
-  const isManual = params?.manual === 'true' ? true : false;
+export default function PolicyDetailPage() {
+  const params = useSearchParams();
+  const manual = params?.get('manual') || '';
+  const isManual = manual === 'true' ? true : false;
 
   return (
     <InsuranceLayout>
