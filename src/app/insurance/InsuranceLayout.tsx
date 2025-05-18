@@ -57,14 +57,6 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   );
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
 
-  const key = params.get('key') || '';
-  const { data, isLoading } = useGetQuote(key);
-
-  useEffect(() => {
-    if (!data) return;
-    dispatch(updateQuote(data));
-  }, [data]);
-
   useLayoutEffect(() => {
     const currentStep = getStepFromRoute(pathName);
     if (currentStep) {
@@ -100,13 +92,6 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       dispatch(updateQuote(res));
     });
   };
-  if (isLoading) {
-    return (
-      <div className='flex h-96 w-full items-center justify-center'>
-        <Spin size='large' />
-      </div>
-    );
-  }
 
   return (
     <>
