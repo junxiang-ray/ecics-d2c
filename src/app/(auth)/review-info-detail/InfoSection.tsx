@@ -130,7 +130,32 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       sessionData.vehicles || [];
 
     const updatedVehicles = [...existingVehicles];
-    updatedVehicles[index] = updatedVehicle;
+
+    updatedVehicles[index] = {
+      ...existingVehicles[index],
+      ...Object.fromEntries(
+        (
+          Object.entries(updatedVehicle) as [
+            keyof VehicleSingPassResponse,
+            { value: string | number },
+          ][]
+        ).map(([key, value]) => {
+          const currentValue = existingVehicles[index][key];
+
+          const isEmpty =
+            currentValue.value === undefined ||
+            currentValue.value === null ||
+            (typeof currentValue.value === 'string' &&
+              currentValue.value.trim() === '');
+
+          if (isEmpty) {
+            return [key, value];
+          }
+
+          return [key, currentValue];
+        }),
+      ),
+    };
 
     saveToSessionStorage({
       [ECICS_USER_INFO]: JSON.stringify({

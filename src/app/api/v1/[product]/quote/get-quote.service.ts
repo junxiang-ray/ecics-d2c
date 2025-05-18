@@ -105,6 +105,7 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
         company_name_other: data?.company_name_other || null,
         is_electric_model: quoteResInfo?.ev_model === 'YES' ? true : false,
         product_type_id: productType?.id || null,
+        is_finalized: false,
       };
 
       if (quoteFound) {
