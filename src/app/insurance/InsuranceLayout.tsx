@@ -6,14 +6,17 @@ import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import ProcessBar from '@/components/ProcessBar';
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { SecondaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
+import ModalImportant from './complete-purchase/ModalImportant';
+import { updateQuote } from '@/redux/slices/quote.slice';
 
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
@@ -41,10 +44,16 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   const router = useRouterWithQuery();
   const pathName = usePathname();
   const params = useSearchParams();
+  const dispatch = useAppDispatch();
   const partner_code = params.get('partner_code') || '';
   const childSaveRef = useRef<() => any>(() => null);
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
+  const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
+
+  const isFinalized = useAppSelector(
+    (state) => state.quote.quote?.is_finalized,
+  );
 
   useLayoutEffect(() => {
     const currentStep = getStepFromRoute(pathName);
@@ -62,6 +71,10 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   };
 
   const handleBack = () => {
+    if (isFinalized) {
+      setIsShowPopupImportant(true);
+      return;
+    }
     router.back();
   };
 
@@ -73,6 +86,8 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       key,
       data,
       is_sending_email: true,
+    }).then((res) => {
+      dispatch(updateQuote(res));
     });
   };
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
@@ -102,6 +117,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
               currentStep={currentStep}
               onChange={handleChangeStep}
               companyName={partnerInfo?.partner_name}
+              isFinalized={isFinalized}
             />
           </div>
           <div></div>
@@ -122,6 +138,13 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
             })
           : children}
       </div>
+      {isShowPopupImportant && (
+        <ModalImportant
+          isShowPopupImportant={isShowPopupImportant}
+          handleRedirect={() => router.push(ROUTES.INSURANCE.BASIC_DETAIL)}
+          setIsShowPopupImportant={setIsShowPopupImportant}
+        />
+      )}
     </>
   );
 }

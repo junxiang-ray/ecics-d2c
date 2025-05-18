@@ -218,6 +218,7 @@ export interface PersonalInfo {
   date_of_birth: string;
   marital_status: string;
   driving_experience: number;
+  post_code: string;
 }
 export interface ProductType {
   id: number;

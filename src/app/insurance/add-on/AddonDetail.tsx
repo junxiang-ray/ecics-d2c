@@ -1,9 +1,9 @@
 'use client';
 
-import { useGetQuote, useSaveQuote } from '@/hook/insurance/quote';
+import { useSaveQuote } from '@/hook/insurance/quote';
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Addon, Option } from '@/libs/types/quote';
-import { Modal, Spin } from 'antd';
+import { Modal } from 'antd';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -22,6 +22,8 @@ import {
 } from '@/components/icons/add-on-icons';
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { updateQuote } from '@/redux/slices/quote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRow from './AddOnRow';
@@ -100,6 +102,10 @@ export const mapIconToTypeAddOn = [
     icon: <MedicalKitIcon className='text-brand-blue' />,
   },
   {
+    code: 'CAR_FNCD_MDE',
+    icon: <MedicalKitIcon className='text-brand-blue' />,
+  },
+  {
     code: 'CAR_COM_KRC',
     icon: <KeyIcon className='text-brand-blue' />,
   },
@@ -154,7 +160,10 @@ function AddOnDetail({
 }) {
   const searchParams = useSearchParams();
   const router = useRouterWithQuery();
+  const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
+  const quoteInfo = useAppSelector((state) => state.quote.quote);
+
   const isManual = searchParams.get('manual') === 'true';
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [drivers, setDrivers] = useState<any[]>([]);
@@ -164,7 +173,6 @@ function AddOnDetail({
   const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
   const [isShowRequireModal, setIsShowRequireModal] = useState(false);
 
-  const { data: quoteInfo, isLoading } = useGetQuote(key);
   const { mutateAsync: saveQuote, isPending } = useSaveQuote();
 
   const plan = useMemo(() => {
@@ -378,7 +386,8 @@ function AddOnDetail({
       key: key,
       data: data,
       is_sending_email: false,
-    }).then(() => {
+    }).then((res) => {
+      dispatch(updateQuote(res));
       setIsShowPopupPremium(false);
       if (isManual) {
         setIsShowBonusDetail(true);
@@ -399,14 +408,6 @@ function AddOnDetail({
     }
     handleOkay();
   };
-
-  if (isLoading) {
-    return (
-      <div className='flex h-96 w-full items-center justify-center'>
-        <Spin size='large' />
-      </div>
-    );
-  }
 
   return (
     <div className='flex w-full flex-col items-center'>

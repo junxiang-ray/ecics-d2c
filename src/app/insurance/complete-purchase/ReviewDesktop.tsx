@@ -2,6 +2,8 @@ import EditIcon from '@/components/icons/EditIcon';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { useState } from 'react';
 import ModalImportant from './ModalImportant';
+import { useAppSelector } from '@/redux/store';
+import { PrimaryButton } from '@/components/ui/buttons';
 
 interface Props {
   title: string;
@@ -14,6 +16,9 @@ const ReviewDesktop = (props: Props) => {
   const { title, data, setShowModal, editRoute } = props;
   const router = useRouterWithQuery();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
+  const isFinalized = useAppSelector(
+    (state) => state.quote?.quote?.is_finalized,
+  );
 
   const handleEditClick = () => {
     setIsShowPopupImportant(true);
@@ -34,13 +39,14 @@ const ReviewDesktop = (props: Props) => {
           <p className='text-xl font-bold leading-[30px] text-[#0095CE]'>
             {title}
           </p>
-          <div
+          <PrimaryButton
             onClick={handleEditClick}
-            className='flex cursor-pointer flex-row items-center gap-2 rounded-[53px] border-[0.5px] border-[#00ADEF] bg-[#00ADEF] px-6 py-3 text-[14px] font-bold leading-4 text-white'
+            className='flex cursor-pointer flex-row items-center gap-2 rounded-[53px] border-[0.5px] bg-[#00ADEF] px-6 py-3 text-[14px] font-bold leading-4 text-white'
+            disabled={isFinalized}
           >
             <EditIcon className='cursor-pointer text-white' size={18} />
             Edit
-          </div>
+          </PrimaryButton>
         </div>
         <div className='flex flex-wrap gap-x-6 gap-y-3'>
           {data.map((item, index) => (

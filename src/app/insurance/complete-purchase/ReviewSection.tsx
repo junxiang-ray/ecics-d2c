@@ -5,6 +5,7 @@ import ArrowUpIcon from '@/components/icons/ArrowUpIcon';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import React, { useState } from 'react';
 import ModalImportant from './ModalImportant';
+import { useAppSelector } from '@/redux/store';
 
 interface ReviewSectionProps {
   title: string;
@@ -28,6 +29,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   editRoute,
 }) => {
   const router = useRouterWithQuery();
+  const isFinalized = useAppSelector(
+    (state) => state.quote?.quote?.is_finalized,
+  );
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
 
   const handleEditClick = () => {
@@ -59,13 +63,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                   <p className='text-[14px] font-normal'>{description}</p>
                 </div>
               </div>
-
               <div onClick={onToggle} className='cursor-pointer'>
                 {isExpanded ? (
                   <div className='gap flex flex-row items-center'>
-                    <p className='mr-2 font-bold' onClick={handleEditClick}>
-                      Edit
-                    </p>
+                    {!isFinalized && (
+                      <p className='mr-2 font-bold' onClick={handleEditClick}>
+                        Edit
+                      </p>
+                    )}
                     <ArrowUpIcon className='text-[#00ADEF]' size={15} />
                   </div>
                 ) : (
@@ -86,8 +91,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
               </div>
             ) : (
               <div key={index} className='flex flex-row justify-between'>
-                <p>{item.title}</p>
-                <p>{item.value}</p>
+                <p className='flex-[3]'>{item.title}</p>
+                <p className='flex-[2] text-end'>{item.value}</p>
               </div>
             ),
           )}

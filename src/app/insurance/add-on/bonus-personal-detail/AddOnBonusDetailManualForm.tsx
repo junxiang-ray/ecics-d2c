@@ -25,6 +25,8 @@ import { useSearchParams } from 'next/navigation';
 import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
 import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
 import { PricingSummary } from '../../components/FeeBar';
+import { useAppDispatch } from '@/redux/store';
+import { updateQuote } from '@/redux/slices/quote.slice';
 
 const createSchema = () =>
   z.object({
@@ -112,6 +114,7 @@ interface Props {
 }
 
 const AddOnBonusDetailManualForm = (props: Props) => {
+  const dispatch = useAppDispatch();
   const {
     personal_info,
     vehicle_info_selected,
@@ -202,7 +205,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           data: transformedData,
           is_sending_email: false,
         };
-        saveQuote(dataQuote).then(() => {
+        saveQuote(dataQuote).then((res) => {
+          if (res) {
+            dispatch(updateQuote(res));
+          }
           router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
         });
       });

@@ -20,6 +20,8 @@ import {
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 import PolicyDetailForm from './PolicyDetailForm';
+import { useAppDispatch } from '@/redux/store';
+import { updateQuote } from '@/redux/slices/quote.slice';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;
@@ -32,6 +34,7 @@ export const PolicyDetail = ({
 }: PolicyDetailProps) => {
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
 
   const promo_code = formatPromoCode(searchParams.get('promo_code'));
   const initKey = searchParams.get('key') || '';
@@ -93,9 +96,13 @@ export const PolicyDetail = ({
     setKey(keyQuote);
   }, []);
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data: any) => {
     let payload: any;
-    payload = { ...data, key: key };
+    const updateLoadVehicle = {
+      ...selectedVehicle,
+      ...data?.vehicle_info_selected,
+    };
+    payload = { ...data, vehicle_info_selected: updateLoadVehicle, key: key };
 
     if (isSingPassFlow && userInfo) {
       // data from Singpass
@@ -117,7 +124,10 @@ export const PolicyDetail = ({
         vehicle_info_selected: selectedVehicle,
       };
     }
-    generateQuote(payload).then(() => {
+    generateQuote(payload).then((res) => {
+      if (res) {
+        dispatch(updateQuote(res));
+      }
       router.push(ROUTES.INSURANCE.PLAN);
     });
   };

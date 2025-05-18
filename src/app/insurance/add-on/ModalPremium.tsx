@@ -72,7 +72,7 @@ const ModalPremium = (props: Props) => {
               {drivers && drivers.length > 0 && (
                 <div className='mt-4'>
                   <p className='text-sm font-semibold text-[#303030]'>
-                    Additional Named Driver
+                    Additional Named Driver(s)
                   </p>
                   {drivers.map((driver, index) => (
                     <div

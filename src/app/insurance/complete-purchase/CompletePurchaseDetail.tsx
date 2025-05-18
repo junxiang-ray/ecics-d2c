@@ -24,6 +24,8 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { formatCurrency } from '@/libs/utils/utils';
 import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { updateQuote } from '@/redux/slices/quote.slice';
 
 function calculateFee(
   option: Option,
@@ -45,6 +47,9 @@ export default function CompletePurchaseDetail({
 }: {
   onSaveRegister: (fn: () => any) => void;
 }) {
+  const dispatch = useAppDispatch();
+  const router = useRouterWithQuery();
+
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;
   }>({});
@@ -61,8 +66,13 @@ export default function CompletePurchaseDetail({
 
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
-  const router = useRouterWithQuery();
-  const { data: quote, isLoading } = useGetQuote(key);
+  const quote = useAppSelector((state) => state.quote?.quote);
+  const vehicleSelected = quote?.data?.vehicle_info_selected;
+
+  const plan = quote?.data?.plans?.find(
+    (plan) => quote.data?.selected_plan === plan.title,
+  );
+
   const {
     mutate: payment,
     data: dataPayment,
@@ -100,7 +110,7 @@ export default function CompletePurchaseDetail({
   }));
 
   const addonsIncludedData = (
-    quote?.data.review_info_premium?.add_ons_included_in_this_plan || []
+    quote?.data?.review_info_premium?.add_ons_included_in_this_plan || []
   ).map((item: any) => ({
     title: item.add_on_name,
     value: 'Included',
@@ -149,70 +159,76 @@ export default function CompletePurchaseDetail({
     basic: [
       {
         title: 'Policy Start Date',
-        value: quote?.data.insurance_additional_info?.start_date || 'N/A',
+        value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
       },
       {
         title: 'Policy End Date',
-        value: quote?.data.insurance_additional_info?.end_date,
+        value: quote?.data?.insurance_additional_info?.end_date,
       },
       {
         title: 'No Claim Discount',
-        value: `${quote?.data.insurance_additional_info?.no_claim_discount}%`,
+        value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
       },
       {
         title: 'Number of claims in last 3 years',
-        value: quote?.data.insurance_additional_info?.no_of_claim,
+        value: quote?.data?.insurance_additional_info?.no_of_claim,
       },
       { title: 'Vehicle financed by', value: quote?.company?.name || 'N/A' },
     ],
     vehicle: [
       {
         title: 'Vehicle Number',
-        value: quote?.data.vehicle_info_selected?.vehicle_number || 'N/A',
+        value: vehicleSelected?.vehicle_number || 'N/A',
       },
       {
         title: 'Year of Registration',
-        value:
-          quote?.data.vehicle_info_selected?.first_registered_year || 'N/A',
+        value: vehicleSelected?.first_registered_year || 'N/A',
       },
       {
         title: 'Vehicle Make',
-        value: quote?.data.vehicle_info_selected?.vehicle_make || 'N/A',
+        value: vehicleSelected?.vehicle_make || 'N/A',
       },
       {
         title: 'Vehicle Model',
-        value: quote?.data.vehicle_info_selected?.vehicle_model || 'N/A',
+        value: vehicleSelected?.vehicle_model || 'N/A',
       },
       {
         title: 'Chassis Number',
-        value: quote?.data.vehicle_info_selected?.chasis_number || 'N/A',
+        value: vehicleSelected?.chasis_number || 'N/A',
       },
       {
         title: 'Engine Number',
-        value: quote?.data.vehicle_info_selected?.engine_number || 'N/A',
+        value: vehicleSelected?.engine_number || 'N/A',
       },
       { title: 'Engine Capacity', value: 'N/A' },
       { title: 'Power Rate', value: 'N/A' },
       { title: 'Year of Manufacture', value: 'N/A' },
     ],
     policy: [
-      { title: 'Selected Plan', value: quote?.data.selected_plan || 'N/A' },
+      { title: 'Selected Plan', value: quote?.data?.selected_plan || 'N/A' },
       {
         title: 'Policy Start Date',
-        value: quote?.data.insurance_additional_info?.start_date || 'N/A',
+        value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
       },
       {
         title: 'Policy End Date',
-        value: quote?.data.insurance_additional_info?.end_date || 'N/A',
+        value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
       },
     ],
     addons: [...addonsSectionData, ...addonsIncludedData],
-    driver: getAdditionalDriverData(quote?.data.add_named_driver_info),
+    driver: getAdditionalDriverData(quote?.data?.add_named_driver_info),
     owner: [
-      { title: 'Owner Name', value: `${quote?.data.personal_info?.name} ` },
+      { title: 'Name', value: quote?.data?.personal_info?.name ?? 'N/A' },
+      { title: 'NRIC/FIN', value: quote?.data?.personal_info?.nric ?? 'N/A' },
+      { title: 'Gender', value: quote?.data?.personal_info?.gender ?? 'N/A' },
       {
-        title: 'Vehicle number',
-        value: `${quote?.data.vehicle_info_selected?.vehicle_number} `,
+        title: 'Marital Status',
+        value: quote?.data?.personal_info?.marital_status ?? 'N/A',
+      },
+      { title: 'Address', value: quote?.data?.personal_info?.address ?? 'N/A' },
+      {
+        title: 'Postal Code',
+        value: quote?.data?.personal_info?.post_code ?? 'N/A',
       },
     ],
   };
@@ -227,19 +243,19 @@ export default function CompletePurchaseDetail({
     {
       key: 'vehicle',
       title: 'Vehicle Details',
-      description: `${quote?.data.vehicle_info_selected?.vehicle_make} ${quote?.data.vehicle_info_selected?.vehicle_model} ${quote?.data.vehicle_info_selected?.chasis_number}`,
+      description: `${vehicleSelected?.vehicle_make} ${vehicleSelected?.vehicle_model} ${vehicleSelected?.chasis_number}`,
       icon: <CarIcon className='text-white' />,
     },
     {
       key: 'policy',
       title: 'Policy Plan',
-      description: 'Comprehensive Plan',
+      description: `${plan?.title} Plan`,
       icon: <PolicyPlanIcon className='text-white' />,
     },
     {
       key: 'addons',
       title: 'Add Ons Selected',
-      description: 'Additional Named Driver',
+      description: 'Additional Named Driver(s)',
       icon: <AddOnsSelectedIcon className='text-white' />,
     },
     {
@@ -250,15 +266,12 @@ export default function CompletePurchaseDetail({
     },
     {
       key: 'owner',
-      title: 'Vehicle Owner',
-      description: `${quote?.data.personal_info?.name}  ${quote?.data.vehicle_info_selected?.vehicle_number}`,
+      title: 'Main Driver Details',
+      description: `${quote?.data?.personal_info?.name}  ${quote?.data?.vehicle_info_selected?.vehicle_number}`,
       icon: <PersonIcon className='text-white' />,
     },
   ];
 
-  const plan = quote?.data?.plans?.find(
-    (plan) => quote.data?.selected_plan === plan.title,
-  );
   const [addonsAdded, setAddonsAdded] = useState<any>(null);
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
 
@@ -315,11 +328,14 @@ export default function CompletePurchaseDetail({
   const onPay = async () => {
     const data: any = {
       key: key,
-      selected_plan: quote?.data.selected_plan,
-      selected_addons: quote?.data.selected_addons,
-      add_named_driver_info: quote?.data.add_named_driver_info,
+      selected_plan: quote?.data?.selected_plan,
+      selected_addons: quote?.data?.selected_addons,
+      add_named_driver_info: quote?.data?.add_named_driver_info,
     };
-    saveProposal(data);
+    saveProposal(data).then((res) => {
+      if (!res?.final_premium) return;
+      dispatch(updateQuote({ is_finalized: true }));
+    });
   };
 
   const addons = plan?.addons ?? [];
@@ -367,11 +383,11 @@ export default function CompletePurchaseDetail({
 
   const _renderPremium = () => {
     const tax = 1.09;
-    const drivers = quote?.data.review_info_premium?.drivers;
+    const drivers = quote?.data?.review_info_premium?.drivers;
     const addonAdditionalDriver =
-      quote?.data.review_info_premium?.addon_additional_driver;
+      quote?.data?.review_info_premium?.addon_additional_driver;
     const AddOnIncludedInPlan =
-      quote?.data.review_info_premium?.add_ons_included_in_this_plan;
+      quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
     return (
       <div className='w-full md:max-w-[400px]'>
         <div className='flex h-[50px] justify-end'>
@@ -391,7 +407,7 @@ export default function CompletePurchaseDetail({
                 </p>
                 <p>
                   {formatCurrency(
-                    quote?.data.review_info_premium?.price_plan ?? 0,
+                    quote?.data?.review_info_premium?.price_plan ?? 0,
                   )}
                 </p>
               </div>
@@ -401,7 +417,7 @@ export default function CompletePurchaseDetail({
                   <p>
                     -
                     {formatCurrency(
-                      quote?.data.review_info_premium?.coupon_discount ?? 0,
+                      quote?.data?.review_info_premium?.coupon_discount ?? 0,
                     )}
                   </p>
                 </div>
@@ -410,7 +426,7 @@ export default function CompletePurchaseDetail({
               <div className='flex flex-col border-b border-[#E4E4E4] py-2'>
                 <p className='font-bold text-[#171A1F]'>Add-on:</p>
                 <div className='flex flex-col gap-1'>
-                  {quote?.data.review_info_premium?.data_section_add_ons.map(
+                  {quote?.data?.review_info_premium?.data_section_add_ons.map(
                     (addon: any) => (
                       <p
                         key={addon.title}
@@ -426,7 +442,7 @@ export default function CompletePurchaseDetail({
                   {drivers && drivers.length > 0 && (
                     <div className=''>
                       <p className='my-1 text-sm font-semibold text-[#303030]'>
-                        Additional Named Driver
+                        Additional Named Driver(s)
                       </p>
                       {drivers.map((driver, index) => (
                         <div
@@ -472,14 +488,14 @@ export default function CompletePurchaseDetail({
                   <p>Net Premium</p>
                   <p>
                     {formatCurrency(
-                      quote?.data.review_info_premium?.net_premium ?? 0,
+                      quote?.data?.review_info_premium?.net_premium ?? 0,
                     )}
                   </p>
                 </div>
                 <div className='flex flex-row justify-between'>
                   <p>GST</p>
                   <p>
-                    {formatCurrency(quote?.data.review_info_premium?.gst ?? 0)}
+                    {formatCurrency(quote?.data?.review_info_premium?.gst ?? 0)}
                   </p>
                 </div>
               </div>
@@ -487,7 +503,7 @@ export default function CompletePurchaseDetail({
                 <p>Total (including GST)</p>
                 <p>
                   {formatCurrency(
-                    quote?.data.review_info_premium?.total_final_price ?? 0,
+                    quote?.data?.review_info_premium?.total_final_price ?? 0,
                   )}
                 </p>
               </div>
@@ -506,14 +522,6 @@ export default function CompletePurchaseDetail({
     );
   };
 
-  if (isLoading) {
-    return (
-      <div className='flex h-96 w-full items-center justify-center'>
-        <Spin size='large' />
-      </div>
-    );
-  }
-
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
       <div className='flex w-full max-w-[1200px] flex-col justify-center md:flex-row md:gap-10'>
@@ -526,7 +534,7 @@ export default function CompletePurchaseDetail({
             {sections.map((section) => {
               if (section.key === 'driver') {
                 const drivers = getDriverSections(
-                  quote?.data.add_named_driver_info,
+                  quote?.data?.add_named_driver_info,
                 );
                 return drivers.map((driverSection) =>
                   isMobile ? (
@@ -583,9 +591,9 @@ export default function CompletePurchaseDetail({
       {isMobile && (
         <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
-            planFee={quote?.data.review_info_premium?.total_final_price ?? 0}
+            planFee={quote?.data?.review_info_premium?.total_final_price ?? 0}
             addonFee={totalAdditionFee}
-            discount={quote?.data.review_info_premium?.coupon_discount ?? 0}
+            discount={quote?.data?.review_info_premium?.coupon_discount ?? 0}
             loading={isPendingSave || isPendingPay}
             title='Premium breakdown'
             textButton='Pay'
