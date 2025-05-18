@@ -8,6 +8,7 @@ interface ProcessBarProps {
   currentStep: ProcessBarType;
   onChange?: (current: number) => void;
   companyName?: string;
+  isFinalized?: boolean;
 }
 
 const stepsData = [
@@ -37,6 +38,7 @@ export default function ProcessBar({
   currentStep,
   onChange,
   companyName,
+  isFinalized,
 }: ProcessBarProps) {
   const steps: StepsProps['items'] = stepsData.map(({ title, step }) => {
     const stepStatus = getStepStatus(step, currentStep);
@@ -49,7 +51,7 @@ export default function ProcessBar({
         </p>
       ),
       status: stepStatus,
-      disabled: stepStatus === 'wait',
+      disabled: stepStatus === 'wait' || isFinalized,
       icon:
         stepStatus === 'wait' ? (
           <div className='custom-step-wait'></div>

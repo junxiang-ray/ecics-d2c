@@ -18,6 +18,8 @@ import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModa
 import { current } from '@reduxjs/toolkit';
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { formatCurrency } from '@/libs/utils/utils';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { updateQuote } from '@/redux/slices/quote.slice';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -30,11 +32,13 @@ function PlanDetail({
 }) {
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
 
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
-  const { data: quoteInfo, isLoading } = useGetQuote(key);
+
+  const quoteInfo = useAppSelector((state) => state.quote?.quote);
   const {
     mutateAsync: saveQuote,
     isPending: isSaving,
@@ -88,18 +92,13 @@ function PlanDetail({
       key: key,
     };
     saveQuote({ key, data, is_sending_email: false }).then((res) => {
+      if (res) {
+        dispatch(updateQuote(res));
+      }
       router.push(ROUTES.INSURANCE.ADD_ON);
     });
     setShowConfirmDeclaration(false);
   };
-
-  if (isLoading) {
-    return (
-      <div className='flex h-96 w-full items-center justify-center'>
-        <Spin size='large' />
-      </div>
-    );
-  }
 
   return (
     <div className='flex w-full flex-col justify-center'>

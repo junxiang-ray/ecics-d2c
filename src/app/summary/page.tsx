@@ -99,9 +99,9 @@ export default function Summary() {
     value: addon.optionLabel,
   }));
   const AddOnIncludedInPlan =
-    quote?.data.review_info_premium?.add_ons_included_in_this_plan;
+    quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
 
-  const driversData = (quote?.data.review_info_premium?.drivers || []).map(
+  const driversData = (quote?.data?.review_info_premium?.drivers || []).map(
     (driver: any) => [
       { label: 'Name', value: driver.name || 'N/A' },
       { label: 'Gender', value: driver.gender || 'N/A' },
@@ -134,42 +134,42 @@ export default function Summary() {
               data={[
                 {
                   label: 'Plan Type',
-                  value: quote?.data.selected_plan || 'N/A',
+                  value: quote?.data?.selected_plan || 'N/A',
                 },
                 {
                   label: 'Policy Start Date',
                   value:
-                    quote?.data.insurance_additional_info?.start_date || 'N/A',
+                    quote?.data?.insurance_additional_info?.start_date || 'N/A',
                 },
                 {
                   label: 'Policy End Date',
                   value:
-                    quote?.data.insurance_additional_info?.end_date || 'N/A',
+                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
                 },
               ]}
               extraTitle='Add Ons:'
               extraData={addonsSectionData}
               addOnIncludedInPlan={AddOnIncludedInPlan}
-              drivers={quote?.data.review_info_premium?.drivers}
+              drivers={quote?.data?.review_info_premium?.drivers}
             />
             <InfoCard
               title='Insured Info'
               data={[
                 {
                   label: 'Name',
-                  value: quote?.data.personal_info?.name || 'N/A',
+                  value: quote?.data?.personal_info?.name || 'N/A',
                 },
                 {
                   label: 'Mobile Number',
-                  value: quote?.data.personal_info?.phone || 'N/A',
+                  value: quote?.data?.personal_info?.phone || 'N/A',
                 },
                 {
                   label: 'Email',
-                  value: quote?.data.personal_info?.email || 'N/A',
+                  value: quote?.data?.personal_info?.email || 'N/A',
                 },
                 {
                   label: 'Address',
-                  value: quote?.data.personal_info?.address[0] || 'N/A',
+                  value: quote?.data?.personal_info?.address[0] || 'N/A',
                 },
               ]}
             />
