@@ -16,6 +16,8 @@ interface ReviewSectionProps {
   onToggle: () => void;
   setShowModal: (showModal: boolean) => void;
   editRoute?: string;
+  isPendingSave?: boolean;
+  isPendingPay?: boolean;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
@@ -27,6 +29,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   onToggle,
   setShowModal,
   editRoute,
+  isPendingSave,
+  isPendingPay,
 }) => {
   const router = useRouterWithQuery();
   const isFinalized = useAppSelector(
@@ -67,7 +71,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 {isExpanded ? (
                   <div className='gap flex flex-row items-center'>
                     {!isFinalized && (
-                      <p className='mr-2 font-bold' onClick={handleEditClick}>
+                      <p
+                        className='mr-2 font-bold'
+                        onClick={() => {
+                          if (!isPendingSave && !isPendingPay) {
+                            handleEditClick();
+                          }
+                        }}
+                      >
                         Edit
                       </p>
                     )}
