@@ -18,10 +18,10 @@ import {
   useGetQuote,
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { updateQuote } from '@/redux/slices/quote.slice';
+import { useAppDispatch } from '@/redux/store';
 
 import PolicyDetailForm from './PolicyDetailForm';
-import { useAppDispatch } from '@/redux/store';
-import { updateQuote } from '@/redux/slices/quote.slice';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;

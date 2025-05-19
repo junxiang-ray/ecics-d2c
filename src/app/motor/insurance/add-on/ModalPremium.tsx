@@ -1,9 +1,13 @@
 'use client';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { Addon, AddOnIncludedInPlan, Quote } from '@/libs/types/quote';
+
 import { Drawer, Modal } from 'antd';
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+
+import { Addon, AddOnIncludedInPlan, Quote } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
+
+import { PrimaryButton } from '@/components/ui/buttons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface Props {
   isShowPopupPremium: boolean;

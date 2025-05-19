@@ -1,5 +1,6 @@
-import { PrimaryButton } from '@/components/ui/buttons';
 import { formatCurrency } from '@/libs/utils/utils';
+
+import { PrimaryButton } from '@/components/ui/buttons';
 
 export function PricingSummary({
   planFee,

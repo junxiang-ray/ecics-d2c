@@ -1,6 +1,6 @@
 'use client';
-import InsuranceLayout from '../InsuranceLayout';
 import CompletePurchaseDetail from './CompletePurchaseDetail';
+import InsuranceLayout from '../InsuranceLayout';
 
 interface PolicyDetailPageProps {
   searchParams: { [key: string]: string | string[] | undefined };

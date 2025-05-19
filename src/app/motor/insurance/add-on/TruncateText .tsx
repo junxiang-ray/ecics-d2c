@@ -1,5 +1,6 @@
+import React, { useEffect, useRef, useState } from 'react';
+
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import React, { useRef, useState, useEffect } from 'react';
 
 interface TruncateTextProps {
   text: string | null;

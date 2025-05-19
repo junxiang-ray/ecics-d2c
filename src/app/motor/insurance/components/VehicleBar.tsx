@@ -3,6 +3,7 @@ import { Button, Flex } from 'antd';
 import { useState } from 'react';
 
 import { Vehicle } from '@/libs/types/quote';
+
 import { VehicleSelectionModal } from './VehicleSelection';
 
 interface VehicleBarProps {

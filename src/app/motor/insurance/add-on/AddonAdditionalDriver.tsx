@@ -1,16 +1,16 @@
 'use client';
 
+import dayjs from 'dayjs';
 import { memo, useState } from 'react';
 
 import { AddNamedDriverInfo, Addon } from '@/libs/types/quote';
 
+import { PersonIcon } from '@/components/icons/add-on-icons';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
-import dayjs from 'dayjs';
-import AdditionDriver from '../components/AdditionDriver';
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
-import { PersonIcon } from '@/components/icons/add-on-icons';
+import AdditionDriver from '../components/AdditionDriver';
 
 export const ADDON_CARS = [
   'CAR_COM_AND',

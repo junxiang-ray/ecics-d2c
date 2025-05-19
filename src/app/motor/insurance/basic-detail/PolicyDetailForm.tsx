@@ -12,6 +12,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
@@ -38,7 +39,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { formatPromoCode } from '@/libs/utils/utils';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
