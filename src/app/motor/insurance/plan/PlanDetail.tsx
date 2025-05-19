@@ -24,6 +24,7 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 export interface FormatPlan extends Plan {
   discount: number;
   currentPrice: number;
+  promoCode: string;
 }
 function PlanDetail({
   onSaveRegister,
@@ -65,6 +66,7 @@ function PlanDetail({
     currentPrice:
       plan.premium_with_gst /
       (1 - (quoteInfo?.promo_code?.discount ?? 0) / 100),
+    promoCode: quoteInfo?.promo_code?.code ?? '',
   }));
 
   useEffect(() => {

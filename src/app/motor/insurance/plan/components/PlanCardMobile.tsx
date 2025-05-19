@@ -60,40 +60,42 @@ function PlanCardMobile({
                 />
               </div>
             ))}
-            <div className='relative mt-6'>
-              <div className='relative z-0 overflow-hidden rounded-xl bg-review-blue'>
-                <div className='pointer-events-none absolute inset-0 z-0 rounded-xl border border-secondaryBlue' />
-                <div
-                  className={clsx(
-                    'absolute -left-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue',
-                    active ? 'bg-plan-blue' : 'bg-white',
-                  )}
-                />
-                <div
-                  className={clsx(
-                    'absolute -right-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue',
-                    active ? 'bg-plan-blue' : 'bg-white',
-                  )}
-                />
-                <div className='flex items-center p-4 pb-2'>
-                  <div className='text-center text-base font-semibold text-black'>
-                    {formatCurrency(plan.premium_with_gst)}
-                  </div>
-                  {!!plan.discount && (
+            <div className='relative z-0 mt-6 overflow-hidden rounded-xl bg-review-blue'>
+              <div className='pointer-events-none absolute inset-0 z-0 rounded-xl border border-secondaryBlue' />
+              <div
+                className={clsx(
+                  'absolute -left-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue',
+                  active ? 'bg-plan-blue' : 'bg-white',
+                )}
+              />
+              <div
+                className={clsx(
+                  'absolute -right-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue',
+                  active ? 'bg-plan-blue' : 'bg-white',
+                )}
+              />
+              {plan.discount ? (
+                <>
+                  <div className='flex items-center p-4 pb-2'>
+                    <div className='text-center text-base font-semibold text-black'>
+                      {formatCurrency(plan.premium_with_gst)}
+                    </div>
                     <div className='ml-1 text-center text-sm font-medium text-[#FD1212] line-through decoration-1'>
                       {formatCurrency(plan.currentPrice)}
                     </div>
-                  )}
-                </div>
-                <div className='mx-4 border-t border-dashed border-secondaryBlue' />
-                <div className='p-4 pt-[10px]'>
-                  {!!plan.discount && (
+                  </div>
+                  <div className='mx-4 border-t border-dashed border-secondaryBlue' />
+                  <div className='p-4 pt-[10px]'>
                     <div className='text-sm font-semibold text-black'>
-                      CARS ({plan.discount}% off applied)
+                      {plan.promoCode} ({plan.discount}% off applied)
                     </div>
-                  )}
+                  </div>
+                </>
+              ) : (
+                <div className='flex min-h-12 items-center ps-6'>
+                  {formatCurrency(plan.premium_with_gst)}
                 </div>
-              </div>
+              )}
             </div>
           </div>
         );
