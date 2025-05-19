@@ -312,11 +312,11 @@ const ReviewInfoDetail = () => {
             : null,
         personal: [
           {
-            label: 'Name as per NRIC',
+            label: 'Name as per NRIC/FIN',
             value: capitalizeWords(parsed.name?.value) || '',
           },
           {
-            label: 'NRIC',
+            label: 'NRIC/FIN',
             value: parsed.uinfin?.value || '',
           },
           {

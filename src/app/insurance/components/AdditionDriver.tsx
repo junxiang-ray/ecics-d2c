@@ -232,12 +232,12 @@ const AdditionDriver = ({
 
               <InputField
                 name={`drivers.${index}.name`}
-                label='Name as Per NRIC'
+                label='Name as Per NRIC/FIN'
                 placeholder='Enter your Name'
               />
               <InputField
                 name={`drivers.${index}.nric_or_fin`}
-                label='NRIC'
+                label='NRIC/FIN'
                 placeholder='Enter NRIC/FIN'
               />
               <DatePickerField
