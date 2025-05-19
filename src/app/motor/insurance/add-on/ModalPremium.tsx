@@ -38,7 +38,7 @@ const ModalPremium = (props: Props) => {
   const isMobile = useDeviceDetection();
   const _renderPremium = () => {
     return (
-      <div className='flex flex-col gap-6'>
+      <div className='flex max-h-[80vh] flex-col gap-6 overflow-y-auto'>
         <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
           Premium Breakdown
         </p>
