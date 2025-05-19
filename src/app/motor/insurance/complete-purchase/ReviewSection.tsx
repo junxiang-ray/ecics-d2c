@@ -61,15 +61,19 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         <div
           className={`border px-2 ${isExpanded ? 'w-full rounded-t-lg border-[#00ADEF] bg-[#F4FBFD]' : 'rounded-lg border-[#EDEDED]'}`}
         >
-          <div className='flex w-full flex-row justify-between py-2'>
-            <div className='flex w-full flex-row justify-between'>
+          <div className='flex w-full flex-row  justify-between py-2'>
+            <div className='flex w-full flex-row items-center justify-between'>
               <div className='flex flex-row items-center gap-2'>
-                <div className='flex items-center justify-center rounded-lg bg-[#00ADEF] p-2 font-bold'>
-                  {icon}
-                </div>
-                <div className='flex flex-col'>
+                {!isExpanded && (
+                  <div className='flex items-center justify-center rounded-lg bg-[#00ADEF] p-2 font-bold'>
+                    {icon}
+                  </div>
+                )}
+                <div className='flex flex-col pl-2'>
                   <p className='text-base font-semibold'>{title}</p>
-                  <p className='text-[14px] font-normal'>{description}</p>
+                  {!isExpanded && (
+                    <p className='text-[14px] font-normal'>{description}</p>
+                  )}
                 </div>
               </div>
               <div onClick={onToggle} className='cursor-pointer'>
