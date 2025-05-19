@@ -116,6 +116,25 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
             quote_res_from_ISP: true,
             quote_finalize_from_ISP: true,
           },
+          include: {
+            promo_code: {
+              select: {
+                code: true,
+                discount: true,
+                start_time: true,
+                end_time: true,
+                description: true,
+                products: true,
+                is_public: true,
+                is_show_count_down: true,
+              },
+            },
+            company: {
+              select: {
+                name: true,
+              },
+            },
+          },
         });
       } else {
         quoteInfo = await prisma.quote.create({
@@ -123,6 +142,25 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
           omit: {
             quote_res_from_ISP: true,
             quote_finalize_from_ISP: true,
+          },
+          include: {
+            promo_code: {
+              select: {
+                code: true,
+                discount: true,
+                start_time: true,
+                end_time: true,
+                description: true,
+                products: true,
+                is_public: true,
+                is_show_count_down: true,
+              },
+            },
+            company: {
+              select: {
+                name: true,
+              },
+            },
           },
         });
       }
