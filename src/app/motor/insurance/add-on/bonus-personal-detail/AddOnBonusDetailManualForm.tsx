@@ -7,10 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
-import {
-  GENDER_OPTIONS,
-  MARITAL_STATUS_OPTIONS,
-} from '@/app/insurance/basic-detail/options';
+
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
@@ -27,6 +24,10 @@ import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
 import { PricingSummary } from '../../components/FeeBar';
 import { useAppDispatch } from '@/redux/store';
 import { updateQuote } from '@/redux/slices/quote.slice';
+import {
+  GENDER_OPTIONS,
+  MARITAL_STATUS_OPTIONS,
+} from '../../basic-detail/options';
 
 const createSchema = () =>
   z.object({

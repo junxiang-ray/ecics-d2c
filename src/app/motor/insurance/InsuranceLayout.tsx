@@ -1,6 +1,6 @@
 'use client';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
@@ -10,14 +10,13 @@ import { SecondaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
-import { useGetQuote, useSaveQuote } from '@/hook/insurance/quote';
+import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import BusinessPartnerBar from './components/BusinessPartnerBar';
-import ModalImportant from './complete-purchase/ModalImportant';
 import { updateQuote } from '@/redux/slices/quote.slice';
-import { Spin } from 'antd';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import ModalImportant from './complete-purchase/ModalImportant';
+import BusinessPartnerBar from './components/BusinessPartnerBar';
 
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {

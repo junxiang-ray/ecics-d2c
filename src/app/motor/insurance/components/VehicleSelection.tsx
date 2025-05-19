@@ -15,8 +15,6 @@ import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
-import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
-import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
@@ -26,6 +24,8 @@ import {
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import UnMatchVehicleModal from '../../review-info-detail/modal/UnMatchVehicleModal';
+import { UnableQuote } from '../basic-detail/modal/UnableQuote';
 
 interface VehicleSelectionModalProps {
   isReviewScreen?: boolean;

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import { ECICS_USER_INFO } from '@/constants/general.constant';
-import { STEP_TO_ROUTE } from '@/constants/routes';
+import { ROUTES, STEP_TO_ROUTE } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
 
 export default function Home() {
@@ -25,7 +25,7 @@ export default function Home() {
     if (isLoading) return;
 
     if (!quoteInfo?.data) {
-      router.push('/login');
+      router.push(ROUTES.MOTOR.LOGIN);
       return;
     }
 
@@ -37,7 +37,7 @@ export default function Home() {
     if (targetRoute) {
       router.push(`${targetRoute}?key=${key}`);
     } else {
-      router.push('/login');
+      router.push(ROUTES.MOTOR.LOGIN);
     }
   }, [quoteInfo, isLoading]);
 
