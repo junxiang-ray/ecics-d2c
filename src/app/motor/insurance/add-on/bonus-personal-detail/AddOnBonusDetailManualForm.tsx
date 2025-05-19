@@ -225,6 +225,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         }}
         onFinish={methods.handleSubmit(handleSubmit)}
         className='w-full px-4'
+        disabled={isPending}
       >
         {/* MyInfo block */}
         {/*<div*/}

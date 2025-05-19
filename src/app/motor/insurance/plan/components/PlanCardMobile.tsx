@@ -9,10 +9,12 @@ function PlanCardMobile({
   plans,
   selectedPlan,
   setSelectedPlan,
+  isSaving,
 }: {
   plans: FormatPlan[];
   selectedPlan: FormatPlan | null;
   setSelectedPlan: (plan: FormatPlan | null) => void;
+  isSaving: boolean;
 }) {
   return (
     <div className='flex flex-col gap-2'>
@@ -34,7 +36,7 @@ function PlanCardMobile({
                 : 'border-secondaryBlue bg-white',
             )}
             key={index}
-            onClick={() => setSelectedPlan(plan)}
+            onClick={!isSaving ? () => setSelectedPlan(plan) : undefined}
           >
             {isRecommended && (
               <div className='absolute -top-3 right-4 rounded-full bg-sky-500 px-3 py-1'>

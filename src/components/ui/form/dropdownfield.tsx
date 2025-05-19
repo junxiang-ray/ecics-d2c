@@ -25,6 +25,7 @@ interface AddOnDropDownFieldProps {
   options: OptionType[];
   selectedOption: string;
   handleSelectOption: (value: string) => void;
+  isPending: boolean;
 }
 
 export const DropdownField = ({
@@ -99,6 +100,7 @@ export const AddOnDropDownField = ({
   options,
   selectedOption,
   handleSelectOption,
+  isPending,
 }: AddOnDropDownFieldProps) => {
   return (
     <Select
@@ -116,6 +118,7 @@ export const AddOnDropDownField = ({
         whiteSpace: 'normal',
         wordBreak: 'break-word',
       }}
+      disabled={isPending}
     />
   );
 };

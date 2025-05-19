@@ -12,10 +12,12 @@ function PlanCardDesktop({
   plans,
   selectedPlan,
   setSelectedPlan,
+  isSaving,
 }: {
   plans: FormatPlan[] | undefined;
   selectedPlan: FormatPlan | null;
   setSelectedPlan: (plan: FormatPlan | null) => void;
+  isSaving: boolean;
 }) {
   return (
     <div className='flex w-full justify-evenly gap-6 lg:gap-5'>
@@ -108,6 +110,7 @@ function PlanCardDesktop({
                   },
                 )}
                 onClick={() => setSelectedPlan(plan)}
+                disabled={isSaving}
               >
                 Select
               </PrimaryButton>

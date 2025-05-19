@@ -24,11 +24,13 @@ function AddonAdditionalDriver({
   drivers,
   setDrivers,
   policyStartDate,
+  isPending,
 }: {
   addon: Addon;
   drivers: AddNamedDriverInfo[];
   setDrivers: (drivers: AddNamedDriverInfo[]) => void;
   policyStartDate: string;
+  isPending: boolean;
 }) {
   const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
 
@@ -68,6 +70,7 @@ function AddonAdditionalDriver({
             <SecondaryButton
               className='black h-8 w-28 rounded-md '
               onClick={() => setIsShowAdditionDriver(true)}
+              disabled={isPending}
             >
               Edit Driver
             </SecondaryButton>
@@ -77,6 +80,7 @@ function AddonAdditionalDriver({
               onClick={() => {
                 setIsShowAdditionDriver(true);
               }}
+              disabled={isPending}
             >
               Add
             </SecondaryButton>
@@ -104,6 +108,7 @@ function AddonAdditionalDriver({
                 <PrimaryButton
                   className='black h-8 w-28 rounded-md bg-red-400'
                   onClick={() => handleRemoveAdditionalDriver(driver)}
+                  disabled={isPending}
                 >
                   Remove
                 </PrimaryButton>

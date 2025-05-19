@@ -125,6 +125,7 @@ function PlanDetail({
               plans={plansFormatted}
               selectedPlan={selectedPlan}
               setSelectedPlan={setSelectedPlan}
+              isSaving={isSaving}
             />
           </div>
 
@@ -134,6 +135,7 @@ function PlanDetail({
               plans={plansFormatted}
               selectedPlan={selectedPlan}
               setSelectedPlan={setSelectedPlan}
+              isSaving={isSaving}
             />
           </div>
         </div>

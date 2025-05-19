@@ -447,6 +447,7 @@ function AddOnDetail({
                       quoteInfo?.data.insurance_additional_info?.start_date ??
                       dayjs().format('DD/MM/YYYY')
                     }
+                    isPending={isPending}
                   />
                 )}
                 {plan?.add_ons_included_in_this_plan?.map((addon) => (
@@ -470,6 +471,7 @@ function AddOnDetail({
                       setAddonsAdded={setAddonsAdded}
                       addonsSelected={addonsSelected}
                       setAddonsSelected={setAddonsSelected}
+                      isPending={isPending}
                     />
                   );
                 })}

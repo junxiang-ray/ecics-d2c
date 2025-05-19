@@ -11,10 +11,13 @@ interface Props {
   data: { title: string; value: any }[];
   setShowModal: (showModal: boolean) => void;
   editRoute?: string;
+  isPendingSave?: boolean;
+  isPendingPay?: boolean;
 }
 
 const ReviewDesktop = (props: Props) => {
-  const { title, data, setShowModal, editRoute } = props;
+  const { title, data, setShowModal, editRoute, isPendingSave, isPendingPay } =
+    props;
   const router = useRouterWithQuery();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
   const isFinalized = useAppSelector(
@@ -47,7 +50,7 @@ const ReviewDesktop = (props: Props) => {
           <PrimaryButton
             onClick={handleEditClick}
             className='flex cursor-pointer flex-row items-center gap-2 rounded-[53px] border-[0.5px] bg-[#00ADEF] px-6 py-3 text-[14px] font-bold leading-4 text-white'
-            disabled={isFinalized}
+            disabled={isPendingSave || isPendingPay || isFinalized}
           >
             <EditIcon className='cursor-pointer text-white' size={18} />
             Edit

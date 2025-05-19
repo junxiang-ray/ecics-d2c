@@ -579,6 +579,8 @@ export default function CompletePurchaseDetail({
                       data={driverSection.data}
                       setShowModal={setShowModal}
                       editRoute={ROUTES.INSURANCE.ADD_ON}
+                      isPendingSave={isPendingSave}
+                      isPendingPay={isPendingPay}
                     />
                   ),
                 );
@@ -603,6 +605,8 @@ export default function CompletePurchaseDetail({
                   data={sharedDataMap[section.key] || []}
                   setShowModal={setShowModal}
                   editRoute={routerBySectionKey(section.key)}
+                  isPendingSave={isPendingSave}
+                  isPendingPay={isPendingPay}
                 />
               );
             })}
