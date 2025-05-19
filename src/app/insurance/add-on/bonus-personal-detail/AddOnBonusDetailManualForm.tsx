@@ -256,7 +256,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
             >
               <InputField
                 name='name'
-                label='Name as Per NRIC'
+                label='Name as Per NRIC/FIN'
                 placeholder='Enter your Name'
               />
             </Form.Item>

@@ -128,7 +128,7 @@ export default function CompletePurchaseDetail({
         value: driver.name,
       },
       {
-        title: 'NRIC',
+        title: 'NRIC/FIN',
         value: driver.nric_or_fin,
       },
     ]);
@@ -137,8 +137,8 @@ export default function CompletePurchaseDetail({
   const getDriverSections = (drivers: any[] = []) => {
     return drivers.map((driver, index) => {
       const data = [
-        { title: 'Name as Per NRIC', value: driver.name },
-        { title: 'NRIC', value: driver.nric_or_fin },
+        { title: 'Name as Per NRIC/FIN', value: driver.name },
+        { title: 'NRIC/FIN', value: driver.nric_or_fin },
         { title: 'Date of Birth', value: driver.date_of_birth },
         { title: 'Gender', value: driver.gender },
         { title: 'Marital Status', value: driver.marital_status },

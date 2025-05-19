@@ -4,8 +4,6 @@ export function validateNRIC(params: any[]): boolean {
   if (!nricInput) return true;
   if (nricInput.length === 1) return false;
   if (nricInput.includes(' ')) return false;
-  if (nricInput.length !== 9 || !/^[ST]\d{7}[A-Z]$/.test(nricInput))
-    return false;
 
   const chars = nricInput.split('');
   const first = chars.shift();
