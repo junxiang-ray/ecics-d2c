@@ -20,7 +20,7 @@ import { PricingSummary } from '../components/FeeBar';
 import ReviewDesktop from './ReviewDesktop';
 
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { PrimaryButton } from '@/components/ui/buttons';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { formatCurrency } from '@/libs/utils/utils';
 import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
@@ -338,6 +338,10 @@ export default function CompletePurchaseDetail({
     });
   };
 
+  const onClosePopup = () => {
+    setIsShowPopupPremium(false);
+  };
+
   const addons = plan?.addons ?? [];
 
   const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
@@ -374,12 +378,32 @@ export default function CompletePurchaseDetail({
     };
   });
 
-  const totalAdditionFee = addonsFormatted.reduce((acc, addon) => {
-    const fee = addon.feeAdded ?? 0;
-    return acc + fee;
-  }, 0);
+  const totalAddonFeeSelected =
+    quote?.data?.review_info_premium?.data_section_add_ons.reduce(
+      (total: number, addon: any) => total + (addon.feeSelected || 0),
+      0,
+    );
 
-  const premiumWithGst = plan?.premium_with_gst || 0;
+  const totalAddonDriver =
+    quote?.data?.review_info_premium?.drivers?.reduce(
+      (total: number, driver: any, index: number) => {
+        if (index === 0) return total;
+        return (
+          total +
+          (quote?.data?.review_info_premium?.addon_additional_driver
+            ?.options?.[0]?.premium_with_gst
+            ? quote?.data?.review_info_premium?.addon_additional_driver
+                .options[0].premium_with_gst
+            : 0)
+        );
+      },
+      0,
+    ) || 0;
+
+  const totalAdditionFee = totalAddonFeeSelected + totalAddonDriver;
+  const planFreeTotal =
+    (quote?.data?.review_info_premium?.total_final_price || 0) -
+    (totalAdditionFee || 0);
 
   const _renderPremium = () => {
     const tax = 1.09;
@@ -510,11 +534,11 @@ export default function CompletePurchaseDetail({
             </div>
 
             <PrimaryButton
-              onClick={onPay}
+              onClick={!isMobile ? onPay : onClosePopup}
               loading={isPendingSave || isPendingPay}
               className='w-full cursor-pointer rounded-lg px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
             >
-              Pay
+              {isMobile ? 'Okay' : 'Pay'}
             </PrimaryButton>
           </div>
         </div>
@@ -591,9 +615,9 @@ export default function CompletePurchaseDetail({
       {isMobile && (
         <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
-            planFee={quote?.data?.review_info_premium?.total_final_price ?? 0}
+            planFee={planFreeTotal}
             addonFee={totalAdditionFee}
-            discount={quote?.data?.review_info_premium?.coupon_discount ?? 0}
+            discount={quote?.promo_code?.discount || 0}
             loading={isPendingSave || isPendingPay}
             title='Premium breakdown'
             textButton='Pay'

@@ -491,8 +491,6 @@ function AddOnDetail({
           setIsShowPopupPremium={setIsShowPopupPremium}
           quoteInfo={quoteInfo}
           dataSelectedAddOn={dataSelectedAddOn}
-          handleOkay={handleOkay}
-          isPending={isPending}
           drivers={drivers}
           addonAdditionalDriver={addonAdditionalDriver}
           pricePlanMain={pricePlanMain}
@@ -513,6 +511,7 @@ function AddOnDetail({
             textButton='Continue'
             onClick={handleContinue}
             setIsShowPopupPremium={setIsShowPopupPremium}
+            loading={isPending}
           />
         </div>
       )}
