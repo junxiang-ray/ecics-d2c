@@ -13,6 +13,9 @@ export async function getAllCompanies(productTypeName: string) {
           name: productTypeName,
         },
       },
+      orderBy: {
+        id: 'asc',
+      },
     });
     return resCompanies;
   } catch (error) {
