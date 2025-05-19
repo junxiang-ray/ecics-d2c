@@ -51,8 +51,7 @@ function SelfDeclarationConfirmModal({
               rewards;
             </li>
             <li>
-              You have not had 3 or more at-fault claims made against your car
-              insurance.
+              You have not had 3 or more claims made against your car insurance.
             </li>
           </ul>
         </div>
