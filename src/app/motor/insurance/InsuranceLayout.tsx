@@ -94,7 +94,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
 
   return (
     <>
-      <div className='mx-auto h-[163px] w-full items-center justify-center bg-white md:h-[123px] lg:max-w-[1280px]'>
+      <div className='mx-auto h-[163px] w-full items-center justify-center bg-white md:h-[130px] lg:max-w-[1280px]'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
             businessName={partnerInfo ? 'Business Partner Name' : ''}
@@ -131,7 +131,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
         </div>
       </div>
 
-      <div className='mx-auto flex h-[calc(100svh-163px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-123px)]'>
+      <div className='mx-auto flex h-[calc(100svh-163px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-130px)]'>
         {typeof children === 'function'
           ? children({
               onSave: (fn: () => any) => (childSaveRef.current = fn),
