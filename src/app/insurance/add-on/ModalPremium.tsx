@@ -10,8 +10,6 @@ interface Props {
   setIsShowPopupPremium: (isShowPopupPremium: boolean) => void;
   quoteInfo?: Quote;
   dataSelectedAddOn: any;
-  handleOkay: () => void;
-  isPending: boolean;
   drivers: any[];
   addonAdditionalDriver?: Addon;
   pricePlanMain: number;
@@ -28,8 +26,6 @@ const ModalPremium = (props: Props) => {
     setIsShowPopupPremium,
     quoteInfo,
     dataSelectedAddOn,
-    handleOkay,
-    isPending,
     drivers,
     addonAdditionalDriver,
     pricePlanMain,
@@ -121,7 +117,6 @@ const ModalPremium = (props: Props) => {
         <PrimaryButton
           className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
           onClick={() => setIsShowPopupPremium(false)}
-          loading={isPending}
         >
           Okay
         </PrimaryButton>
