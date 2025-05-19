@@ -6,6 +6,7 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import React, { useState } from 'react';
 import ModalImportant from './ModalImportant';
 import { useAppSelector } from '@/redux/store';
+import { ROUTES } from '@/constants/routes';
 
 interface ReviewSectionProps {
   title: string;
@@ -35,7 +36,11 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
 
   const handleEditClick = () => {
-    setIsShowPopupImportant(true);
+    if (editRoute === ROUTES.INSURANCE.BASIC_DETAIL) {
+      setIsShowPopupImportant(true);
+    } else {
+      handleRedirect();
+    }
   };
 
   const handleRedirect = () => {

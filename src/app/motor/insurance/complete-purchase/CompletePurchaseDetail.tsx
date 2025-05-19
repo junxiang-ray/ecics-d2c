@@ -90,13 +90,12 @@ export default function CompletePurchaseDetail({
     switch (key) {
       case 'basic':
       case 'vehicle':
-      case 'owner':
+      case 'policy':
         return ROUTES.INSURANCE.BASIC_DETAIL;
       case 'addons':
       case 'driver':
+      case 'owner':
         return ROUTES.INSURANCE.ADD_ON;
-      case 'policy':
-        return ROUTES.INSURANCE.PLAN;
       default:
         return undefined;
     }

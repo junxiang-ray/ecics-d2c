@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ModalImportant from './ModalImportant';
 import { useAppSelector } from '@/redux/store';
 import { PrimaryButton } from '@/components/ui/buttons';
+import { ROUTES } from '@/constants/routes';
 
 interface Props {
   title: string;
@@ -21,7 +22,11 @@ const ReviewDesktop = (props: Props) => {
   );
 
   const handleEditClick = () => {
-    setIsShowPopupImportant(true);
+    if (editRoute === ROUTES.INSURANCE.BASIC_DETAIL) {
+      setIsShowPopupImportant(true);
+    } else {
+      handleRedirect();
+    }
   };
 
   const handleRedirect = () => {
