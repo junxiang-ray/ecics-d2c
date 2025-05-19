@@ -104,7 +104,7 @@ export const PromoCodeField = ({
           name={MOTOR_QUOTE.promo_code}
           required={false}
           validateStatus={errorMessage ? 'error' : ''}
-          className='mx-1 border p-3 font-semibold shadow-xl'
+          className='border p-3 font-semibold shadow-xl md:ms-2'
         >
           <div className='w-full'>Enter Promo Code</div>
           <Flex gap='small' className='w-full justify-between'>

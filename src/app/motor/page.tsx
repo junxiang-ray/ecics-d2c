@@ -5,13 +5,13 @@ import { useEffect } from 'react';
 
 import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
 
-import LimitedPeriodOffer from '@/app/(auth)/login/LimitedPeriodOffer';
-import MyInfoLoginSection from '@/app/(auth)/login/MyInfoLoginSection';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import MyInfoLoginSection from './MyInfoLoginSection';
+import LimitedPeriodOffer from './LimitedPeriodOffer';
 
-const Login = () => {
+const MotorPage = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
   const partnerCode = searchParams.get('partner_code') || '';
@@ -107,4 +107,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default MotorPage;

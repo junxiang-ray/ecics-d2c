@@ -24,11 +24,6 @@ import {
 
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
-import ConfirmInfoModalWrapper from '@/app/(auth)/review-info-detail/modal/ConfirmInfoModalWrapper';
-import UnMatchVehicleModal from '@/app/(auth)/review-info-detail/modal/UnMatchVehicleModal';
-import { RenewalModal } from '@/app/insurance/basic-detail/modal/RenewalModal';
-import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
-import { VehicleSelectionModal } from '@/app/insurance/components/VehicleSelection';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
@@ -47,6 +42,11 @@ import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
+import UnMatchVehicleModal from './modal/UnMatchVehicleModal';
+import ConfirmInfoModalWrapper from './modal/ConfirmInfoModalWrapper';
+import { VehicleSelectionModal } from '../insurance/components/VehicleSelection';
+import { UnableQuote } from '../insurance/basic-detail/modal/UnableQuote';
+import { RenewalModal } from '../insurance/basic-detail/modal/RenewalModal';
 
 const reviewInfoSchema = z.object({
   email_address: z
@@ -162,7 +162,7 @@ const ReviewInfoDetail = () => {
 
   const handleGoBack = () => {
     setShowContactModal(false);
-    router.push(ROUTES.AUTH.LOGIN);
+    router.push(ROUTES.MOTOR.LOGIN);
   };
 
   const { mutate: savePersonalInfo } = usePostPersonalInfo();

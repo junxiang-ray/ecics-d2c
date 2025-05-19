@@ -3,8 +3,8 @@
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 
-import ReviewInfoDetail from '@/app/(auth)/review-info-detail/ReviewInfoDetail';
 import { usePostUserInfo } from '@/hook/auth/login';
+import ReviewInfoDetail from './ReviewInfoDetail';
 
 export default function ReviewInfoDetailPage() {
   const [params, setParams] = useState({ code: '', state: '' });

@@ -12,7 +12,6 @@ import { calculateAge } from '@/libs/utils/utils';
 
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
-import { UnableQuote } from '@/app/insurance/basic-detail/modal/UnableQuote';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
@@ -22,6 +21,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { UnableQuote } from '../../insurance/basic-detail/modal/UnableQuote';
 
 const ConfirmInfoModal = ({
   onSave,
@@ -46,7 +46,7 @@ const ConfirmInfoModal = ({
   const [showOverAgeModal, setShowOverAgeModal] = useState(false);
   const handleGoBack = () => {
     setShowOverAgeModal(false);
-    router.push(ROUTES.AUTH.LOGIN);
+    router.push(ROUTES.MOTOR.LOGIN);
   };
 
   useEffect(() => {

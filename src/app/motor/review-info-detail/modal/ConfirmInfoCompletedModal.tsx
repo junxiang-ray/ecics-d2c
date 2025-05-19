@@ -1,18 +1,18 @@
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-import WarningCircleIcon from '@/components/icons/WarningCircleIcon';
-import { PrimaryButton } from '@/components/ui/buttons';
+import TickCircleIcon from '@/components/icons/TickCircleIcon';
+import { LinkButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
-const ConfirmInfoFailedModal = () => {
+const ConfirmInfoCompletedModal = () => {
   const { isMobile } = useDeviceDetection();
   const router = useRouter();
 
   const handleGoBack = () => {
-    router.push(ROUTES.AUTH.LOGIN);
+    router.push(ROUTES.MOTOR.LOGIN);
   };
 
   return (
@@ -20,35 +20,33 @@ const ConfirmInfoFailedModal = () => {
       <div className='relative z-10 flex-grow'>
         {isMobile ? (
           <>
-            <WarningCircleIcon size={32} className='mx-auto text-[#F4333D]' />
-            <div className='mt-4 text-lg font-bold'>Progress Not Saved!</div>
+            <TickCircleIcon size={32} className='mx-auto text-[#10B707]' />
+            <div className='mt-4 text-lg font-bold'>Progress Saved!</div>
           </>
         ) : (
           <div className='relative flex items-center justify-center'>
-            <div className='absolute text-lg font-bold'>
-              Progress Not Saved!
-            </div>
-            <WarningCircleIcon
+            <div className='absolute text-lg font-bold'>Progress Saved!</div>
+            <TickCircleIcon
               size={24}
-              className='absolute right-0 z-20 text-[#F4333D]'
+              className='absolute right-0 z-20 text-[#10B707]'
             />
           </div>
         )}
         <div
           className={`mt-8 ${isMobile ? 'text-sm' : 'rounded bg-gray-100 p-2 text-sm'}`}
         >
-          Please try and save your progress again. <br />
-          Thank you.
+          A link has been sent to your email. Use it anytime to continue your
+          car insurance journey.
         </div>
       </div>
 
       <div className='flex justify-center gap-4 bg-white pt-4'>
-        <PrimaryButton onClick={handleGoBack} className='w-full'>
-          Okay
-        </PrimaryButton>
+        <LinkButton type='link' onClick={handleGoBack}>
+          Go Back to Home
+        </LinkButton>
       </div>
     </div>
   );
 };
 
-export default ConfirmInfoFailedModal;
+export default ConfirmInfoCompletedModal;
