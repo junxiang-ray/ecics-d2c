@@ -42,11 +42,11 @@ import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoSection from './InfoSection';
-import UnMatchVehicleModal from './modal/UnMatchVehicleModal';
 import ConfirmInfoModalWrapper from './modal/ConfirmInfoModalWrapper';
-import { VehicleSelectionModal } from '../insurance/components/VehicleSelection';
-import { UnableQuote } from '../insurance/basic-detail/modal/UnableQuote';
+import UnMatchVehicleModal from './modal/UnMatchVehicleModal';
 import { RenewalModal } from '../insurance/basic-detail/modal/RenewalModal';
+import { UnableQuote } from '../insurance/basic-detail/modal/UnableQuote';
+import { VehicleSelectionModal } from '../insurance/components/VehicleSelection';
 
 const reviewInfoSchema = z.object({
   email_address: z

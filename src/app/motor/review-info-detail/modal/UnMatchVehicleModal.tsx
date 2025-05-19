@@ -1,3 +1,4 @@
+import { Spin } from 'antd';
 import React, { useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
@@ -28,7 +29,6 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { Spin } from 'antd';
 
 interface UnMatchVehicleModalProps {
   onClose: () => void;

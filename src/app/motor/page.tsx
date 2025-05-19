@@ -8,8 +8,9 @@ import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import MyInfoLoginSection from './MyInfoLoginSection';
+
 import LimitedPeriodOffer from './LimitedPeriodOffer';
+import MyInfoLoginSection from './MyInfoLoginSection';
 
 const MotorPage = () => {
   const { isMobile } = useDeviceDetection();
@@ -45,7 +46,8 @@ const MotorPage = () => {
           alt='Background Image'
         />
         <div className='text-center text-[18px] font-semibold leading-[100%] text-[#007AFF]'>
-          Get an instant quote with Myinfo login
+          Get an instant quote with your <br />
+          <span className='ml-[4px] text-red-logo'>Personal Details</span>
         </div>
         <MyInfoLoginSection
           promoCode={promoCodeDefault}
@@ -81,16 +83,20 @@ const MotorPage = () => {
           <div className='flex w-full justify-center'>
             <img src='ecics.svg' />
           </div>
-          <div className='mt-4 text-center text-lg font-semibold text-[#00adef]'>
-            Get an instant quote with
-            <span className='text-red-logo'> Myinfo</span> login
+          <div className='mt-4 text-center text-2xl font-semibold text-[#00adef]'>
+            Get a quote with your <br />
+            <span className='ml-[4px] text-red-logo'>Personal Details</span>
           </div>
-          <div className='mt-4 text-center'>
-            <span>
-              Save time by securely retrieving your personal and vehicle details
-              directly from Myinfo
-            </span>
-          </div>
+          {/*<div className='mt-4 text-center text-lg font-semibold text-[#00adef]'>*/}
+          {/*    Get an instant quote with*/}
+          {/*    <span className='text-red-logo'> Myinfo</span> login*/}
+          {/*</div>*/}
+          {/*<div className='mt-4 text-center'>*/}
+          {/*  <span>*/}
+          {/*    Save time by securely retrieving your personal and vehicle details*/}
+          {/*    directly from Myinfo*/}
+          {/*  </span>*/}
+          {/*</div>*/}
           <MyInfoLoginSection
             promoCode={promoCodeDefault}
             partnerCode={partnerCode}
