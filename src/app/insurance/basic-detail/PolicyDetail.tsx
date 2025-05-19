@@ -82,8 +82,6 @@ export const PolicyDetail = ({
 
   // Options for Dropdown
   const hirePurchaseListFormatted: DropdownOption[] = [
-    { value: -1, text: '-- Not Applicable --' },
-    { value: 0, text: '-- Others (Not Available in this list) --' },
     ...(Array.isArray(hirePurchaseList)
       ? hirePurchaseList.map((item: any) => ({
           value: item.id,

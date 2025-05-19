@@ -88,7 +88,7 @@ export const PromoCodeField = ({
               {promoInfoSelected?.data.code}:
             </span>
             <span className='text-sm'>
-              {promoInfoSelected?.data?.discount} % off applied
+              {promoInfoSelected?.data?.discount}% off applied
             </span>
           </span>
           <Button

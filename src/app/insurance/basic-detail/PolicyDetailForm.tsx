@@ -122,7 +122,7 @@ const nonSingpassFlowFields = {
     required_error: 'This field is required',
   }),
 };
-
+const ID_OPTION_OTHER = 2; //-- Others (Not Available in this list) --
 const createSchema = (isSingpassFlow: boolean) => {
   const baseSchema = z.object(
     isSingpassFlow ? singpassFlowFields : nonSingpassFlowFields,
@@ -343,25 +343,18 @@ const PolicyDetailForm = ({
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
           placeholder='Select name of finance company'
-          renderOption={(option) => (
-            <div
-              className='max-w-[300px] truncate md:max-w-full'
-              title={option.text}
-            >
-              {option.text}
-            </div>
-          )}
           options={hirePurchaseOptions}
           showSearch
         />
       </Form.Item>
 
-      {hire_purchase === 0 ? (
+      {hire_purchase === ID_OPTION_OTHER ? (
         <Form.Item
           name={MOTOR_QUOTE.other_hire_purchase}
           validateStatus={
             errors[MOTOR_QUOTE.other_hire_purchase] ? 'error' : ''
           }
+          className='pt-1'
         >
           <InputField
             name={MOTOR_QUOTE.other_hire_purchase}
