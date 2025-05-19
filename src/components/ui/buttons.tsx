@@ -8,7 +8,7 @@ export const PrimaryButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
     { className = '', children, disabled, htmlType = 'button', ...rest },
     ref,
   ) => {
-    const baseStyle = 'px-3 text-base font-semibold hover:opacity-85';
+    const baseStyle = 'px-3 text-base font-bold hover:opacity-85';
 
     const enabledStyle = 'bg-[#00adef] text-white';
     const disabledStyle =

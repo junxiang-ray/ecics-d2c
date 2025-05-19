@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import ConfirmInfoCompletedModal from './ConfirmInfoCompletedModal';
-import ConfirmInfoModal from './ConfirmInfoModal';
 import ConfirmInfoFailedModal from './ConfirmInfoFailedModal';
+import ConfirmInfoModal from './ConfirmInfoModal';
 
 interface ConfirmInfoModalWrapperProps {
   showConfirmModal: boolean;

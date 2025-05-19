@@ -21,6 +21,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { usePostPersonalInfo } from '@/hook/auth/login';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import { UnableQuote } from '../../insurance/basic-detail/modal/UnableQuote';
 
 const ConfirmInfoModal = ({

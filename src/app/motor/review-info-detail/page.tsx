@@ -4,6 +4,7 @@ import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 
 import { usePostUserInfo } from '@/hook/auth/login';
+
 import ReviewInfoDetail from './ReviewInfoDetail';
 
 export default function ReviewInfoDetailPage() {
