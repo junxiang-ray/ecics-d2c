@@ -2,13 +2,14 @@
 
 import { memo, useEffect, useState } from 'react';
 
-import { SecondaryButton } from '@/components/ui/buttons';
-
 import { formatCurrency } from '@/libs/utils/utils';
+
+import { SecondaryButton } from '@/components/ui/buttons';
+import { AddOnDropDownField } from '@/components/ui/form/dropdownfield';
+
 import { AddOnFormat } from './AddonDetail';
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
-import { AddOnDropDownField } from '@/components/ui/form/dropdownfield';
 
 function AddOnRowDetail({
   addon,

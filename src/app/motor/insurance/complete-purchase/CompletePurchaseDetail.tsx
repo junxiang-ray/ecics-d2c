@@ -1,31 +1,29 @@
 'use client';
-import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
-import { useEffect, useMemo, useState } from 'react';
-import ReviewSection from './ReviewSection';
-
-import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
-import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
-import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
-import { ROUTES } from '@/constants/routes';
-import {
-  useGetQuote,
-  usePayment,
-  useSaveProposal,
-} from '@/hook/insurance/quote';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { Option } from '@/libs/types/quote';
-import { Drawer, Spin } from 'antd';
+import { Drawer } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import { PricingSummary } from '../components/FeeBar';
-import ReviewDesktop from './ReviewDesktop';
+import { useEffect, useMemo, useState } from 'react';
+
+import { Option } from '@/libs/types/quote';
+import { formatCurrency } from '@/libs/utils/utils';
 
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
+import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
+import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
+import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
+import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
+
+import { ROUTES } from '@/constants/routes';
+import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { formatCurrency } from '@/libs/utils/utils';
-import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { updateQuote } from '@/redux/slices/quote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+
+import ReviewDesktop from './ReviewDesktop';
+import ReviewSection from './ReviewSection';
+import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
+import { PricingSummary } from '../components/FeeBar';
 
 function calculateFee(
   option: Option,

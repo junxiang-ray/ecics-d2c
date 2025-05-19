@@ -1,12 +1,15 @@
 'use client';
 
+import React, { useState } from 'react';
+
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
 import ArrowUpIcon from '@/components/icons/ArrowUpIcon';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import React, { useState } from 'react';
-import ModalImportant from './ModalImportant';
-import { useAppSelector } from '@/redux/store';
+
 import { ROUTES } from '@/constants/routes';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { useAppSelector } from '@/redux/store';
+
+import ModalImportant from './ModalImportant';
 
 interface ReviewSectionProps {
   title: string;

@@ -1,16 +1,23 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Drawer, Form, Modal } from 'antd';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { Drawer, Modal } from 'antd';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { useEffect, useMemo } from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
+import dayjs from 'dayjs';
+
+import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
+import { validateNRIC } from '@/libs/utils/validation-utils';
+
+import { DeleteIcon } from '@/components/icons/add-on-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import RadioField from '@/components/ui/form/radiofield';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -20,11 +27,6 @@ import {
   MARITAL_STATUS_OPTIONS,
   NumberDriverExperience,
 } from '../basic-detail/options';
-import { validateNRIC } from '@/libs/utils/validation-utils';
-import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
-import dayjs from 'dayjs';
-import RadioField from '@/components/ui/form/radiofield';
-import { DeleteIcon } from '@/components/icons/add-on-icons';
 
 enum ClaimStatus {
   YES = 'true',

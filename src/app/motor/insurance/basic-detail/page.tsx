@@ -1,7 +1,9 @@
 'use client';
+
 import { useSearchParams } from 'next/navigation';
-import InsuranceLayout from '../InsuranceLayout';
+
 import { PolicyDetail } from './PolicyDetail';
+import InsuranceLayout from '../InsuranceLayout';
 
 export default function PolicyDetailPage() {
   const params = useSearchParams();

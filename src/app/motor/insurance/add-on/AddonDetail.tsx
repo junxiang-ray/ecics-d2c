@@ -1,15 +1,14 @@
 'use client';
 
-import { useSaveQuote } from '@/hook/insurance/quote';
-import { UserStep } from '@/libs/enums/processBarEnums';
-import { Addon, Option } from '@/libs/types/quote';
 import { Modal } from 'antd';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { PricingSummary } from '../components/FeeBar';
-// import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 
+import { UserStep } from '@/libs/enums/processBarEnums';
+import { Addon, Option } from '@/libs/types/quote';
+
+// import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import {
   AddIcon,
   BillIcon,
@@ -20,17 +19,21 @@ import {
   RepairIcon,
   RoadSideIcon,
 } from '@/components/icons/add-on-icons';
+
 import { ROUTES } from '@/constants/routes';
+import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { RequiredModal } from '../basic-detail/modal/RequireModal';
+
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRow from './AddOnRow';
 import AddOnRowDetail from './AddOnRowDetail';
 import AddOnBonusDetailManualForm from './bonus-personal-detail/AddOnBonusDetailManualForm';
 import ModalPremium from './ModalPremium';
 import TruncateText from './TruncateText ';
+import { RequiredModal } from '../basic-detail/modal/RequireModal';
+import { PricingSummary } from '../components/FeeBar';
 
 export const mapIconToTypeAddOn = [
   {

@@ -3,11 +3,12 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import {
   ArrowDownCircleIcon,
   FinishIcon,
 } from '@/components/icons/add-on-icons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 export type Status = 'new' | 'completed';
 export default function AddOnRow({
@@ -44,6 +45,9 @@ export default function AddOnRow({
           'border-sky-600 md:border-sky-200': status === 'new',
         },
       )}
+      onClick={() => {
+        if (isMobile) setIsOpen(!isOpen);
+      }}
     >
       {isRecommended && status === 'new' && (
         <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1'>
@@ -80,7 +84,6 @@ export default function AddOnRow({
               'rotate-180': isOpen,
               'rounded-full bg-white': status === 'completed',
             })}
-            onClick={() => setIsOpen(!isOpen)}
           />
         )}
       </div>
