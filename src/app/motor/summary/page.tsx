@@ -1,23 +1,38 @@
 'use client';
+
 import {
   ArrowRightOutlined,
   CopyOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons';
-import { SecondaryButton } from '@/components/ui/buttons';
-import InfoCard from './InfoCard';
-import CheckCircle from '@/components/icons/CheckCircle';
-import DocDuplicate from '@/components/icons/DocDuplicate';
-import { useGetQuote } from '@/hook/insurance/quote';
-import React from 'react';
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
+import React from 'react';
+
+import CheckCircle from '@/components/icons/CheckCircle';
+import DocDuplicate from '@/components/icons/DocDuplicate';
+import {
+  LinkButton,
+  PrimaryButton,
+  SecondaryButton,
+} from '@/components/ui/buttons';
+
+import { ROUTES } from '@/constants/routes';
+import { useGetQuote } from '@/hook/insurance/quote';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+
+import InfoCard from './InfoCard';
 
 export default function Summary() {
   const searchParams = useSearchParams();
+  const { isMobile } = useDeviceDetection();
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
+
+  const handleGoBack = () => {
+    router.push(ROUTES.MOTOR.LOGIN, { preserveQuery: false });
+  };
 
   const { data: quote, isLoading } = useGetQuote(key);
 
@@ -72,21 +87,18 @@ export default function Summary() {
 
   const _renderDoc = (title: string, url: string) => {
     return (
-      <div className='flex min-h-[126px]'>
-        <div className='flex flex-col justify-between border border-[#00ADEF] px-2 py-2'>
-          <div>
-            {' '}
-            <DocDuplicate size={24} />
-          </div>
-          <p className='text-[11px] font-semibold'>{title}</p>
-          <div
-            className='flex cursor-pointer flex-row gap-2 text-[10px] font-semibold text-[#00ADEF]'
-            onClick={() => {
-              router.push(url);
-            }}
-          >
-            Read More <ArrowRightOutlined />
-          </div>
+      <div className='flex h-full min-h-[150px] w-full flex-col items-start justify-between rounded border border-[#00ADEF] p-2'>
+        <DocDuplicate size={24} />
+        <p className='w-full cursor-pointer whitespace-normal break-words text-[11px] font-semibold'>
+          {title}
+        </p>
+        <div
+          className='flex cursor-pointer flex-row gap-2 text-[10px] font-semibold text-[#00ADEF]'
+          onClick={() => {
+            router.push(url);
+          }}
+        >
+          Read More <ArrowRightOutlined />
         </div>
       </div>
     );
@@ -128,7 +140,7 @@ export default function Summary() {
             A confirmation email with the policy details has been sent to your
             registered email.
           </p>
-          <div className='flex w-full flex-col items-center justify-center gap-6 md:max-w-[600px]'>
+          <div className='flex w-full flex-col items-center justify-center gap-6 md:max-w-[800px]'>
             <InfoCard
               title='Policy Details'
               data={[
@@ -185,16 +197,34 @@ export default function Summary() {
           {_renderRewarded()}
           {_renderCashBack()} */}
 
-          <div className='w-full md:max-w-[600px]'>
+          <div className='w-full md:max-w-[800px]'>
             <p className='mb-2 text-base font-semibold leading-5'>
               Documents Download
             </p>
-            <div className='grid items-center justify-center gap-4 md:grid-cols-3'>
+            <div className='grid grid-cols-2 items-stretch gap-4 md:grid-cols-3'>
               {quote?.product_type.documents?.map((doc: any, index: number) => (
                 <div key={index}>{_renderDoc(doc.title, doc.link)}</div>
               ))}
             </div>
           </div>
+          {isMobile ? (
+            <div className='flex justify-center gap-4 bg-white pt-4 text-[16px]'>
+              <LinkButton
+                type='link'
+                className='font-bold text-[#00ADEF]'
+                onClick={handleGoBack}
+              >
+                Go Back to Home
+              </LinkButton>
+            </div>
+          ) : (
+            <PrimaryButton
+              className='w-full font-bold md:max-w-[800px]'
+              onClick={handleGoBack}
+            >
+              Done
+            </PrimaryButton>
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
 import {
   mappedAddonEligibility,

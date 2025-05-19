@@ -40,8 +40,12 @@ const ConfirmInfoCompletedModal = () => {
         </div>
       </div>
 
-      <div className='flex justify-center gap-4 bg-white pt-4'>
-        <LinkButton type='link' onClick={handleGoBack}>
+      <div className='flex justify-center gap-4 bg-white pt-4 text-[16px] font-bold'>
+        <LinkButton
+          type='link'
+          className='font-bold text-[#00ADEF]'
+          onClick={handleGoBack}
+        >
           Go Back to Home
         </LinkButton>
       </div>
