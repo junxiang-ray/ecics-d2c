@@ -19,7 +19,7 @@ import {
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PolicyDetailForm from './PolicyDetailForm';
 
@@ -42,7 +42,7 @@ export const PolicyDetail = ({
   const [key, setKey] = useState(initKey);
 
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
-  const { data: quoteInfo } = useGetQuote(initKey);
+  const quoteInfo = useAppSelector((state) => state.quote?.quote);
   const { mutateAsync: generateQuote, isPending } = useGenerateQuote();
 
   const userInfo = quoteInfo?.data?.personal_info;

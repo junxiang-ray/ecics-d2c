@@ -76,6 +76,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   };
 
   const handleBack = () => {
+    if (currentStep === undefined) return;
     if (currentStep === StepProcessBar.SELECT_PLAN) {
       setIsShowPopupImportant(true);
       return;
@@ -84,7 +85,13 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       setIsShowPopupImportant(true);
       return;
     }
-    router.back();
+    if (currentStep === StepProcessBar.POLICY_DETAILS) {
+      router.push(ROUTES.MOTOR.LOGIN, { preserveQuery: false });
+      return;
+    }
+    const previousStep = currentStep - 1;
+    const previousRouter = stepToRoute[previousStep as StepProcessBar];
+    router.push(previousRouter);
   };
 
   const handleSave = () => {
