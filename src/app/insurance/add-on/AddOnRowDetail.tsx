@@ -16,12 +16,14 @@ function AddOnRowDetail({
   setAddonsAdded,
   addonsSelected,
   setAddonsSelected,
+  isPending,
 }: {
   addon: AddOnFormat;
   addonsAdded: any;
   setAddonsAdded: (addonSelected: any) => void;
   addonsSelected: any;
   setAddonsSelected: (feeAdditions: any) => void;
+  isPending: boolean;
 }) {
   const [selectedOption, setSelectedOption] = useState<any>(null);
 
@@ -92,6 +94,7 @@ function AddOnRowDetail({
                   options={options}
                   selectedOption={selectedOption}
                   handleSelectOption={(value) => handleSelectOption(value)}
+                  isPending={isPending}
                 />
               </div>
               <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
@@ -101,6 +104,7 @@ function AddOnRowDetail({
                 <SecondaryButton
                   className='black h-8 w-28 rounded-md !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
                   onClick={() => handleAddAddonSelect(addon)}
+                  disabled={isPending}
                 >
                   Add
                 </SecondaryButton>
@@ -115,6 +119,7 @@ function AddOnRowDetail({
               <SecondaryButton
                 className='black h-8 w-28 rounded-md'
                 onClick={() => handleAddAddonCheckbox(addon)}
+                disabled={isPending}
               >
                 Add
               </SecondaryButton>
@@ -133,6 +138,7 @@ function AddOnRowDetail({
             <SecondaryButton
               className='h-8 w-28 rounded-md py-0 leading-4 text-red-500'
               onClick={() => handleRemoveAddon(addon)}
+              disabled={isPending}
             >
               Remove
             </SecondaryButton>
