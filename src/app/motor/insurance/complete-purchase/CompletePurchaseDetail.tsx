@@ -214,7 +214,10 @@ export default function CompletePurchaseDetail({
         value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
       },
     ],
-    addons: [...addonsSectionData, ...addonsIncludedData],
+    addons:
+      addonsSectionData.length === 0 && addonsIncludedData.length === 0
+        ? [{ title: 'You have no Add Ons selected', value: '' }]
+        : [...addonsSectionData, ...addonsIncludedData],
     driver: getAdditionalDriverData(quote?.data?.add_named_driver_info),
     owner: [
       { title: 'Name', value: quote?.data?.personal_info?.name ?? 'N/A' },

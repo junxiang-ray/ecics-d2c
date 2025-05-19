@@ -62,9 +62,11 @@ const ReviewDesktop = (props: Props) => {
               <p className='text-sm font-semibold leading-6 text-[#000000]'>
                 {item.title}
               </p>
-              <p className='rounded-xl bg-[#0000000D] px-1 py-2 text-center text-base font-normal leading-[26px] text-[#535353]'>
-                {item.value}
-              </p>
+              {item.value && (
+                <p className='rounded-xl bg-[#0000000D] px-1 py-2 text-center text-base font-normal leading-[26px] text-[#535353]'>
+                  {item.value}
+                </p>
+              )}
             </div>
           ))}
         </div>
