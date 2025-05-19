@@ -33,3 +33,9 @@
   text-overflow: ellipsis !important;
   width: calc(100vw - 200px);
 }
+
+.ant-select-selection-item p {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
