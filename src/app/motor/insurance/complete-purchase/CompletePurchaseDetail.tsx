@@ -633,7 +633,7 @@ export default function CompletePurchaseDetail({
             onClose={() => setIsShowPopupPremium(false)}
             closable={false}
             height='auto'
-            className='max-h-[90vh] w-full overflow-y-auto rounded-t-xl'
+            className='max-h-[70svh] w-full overflow-y-auto rounded-t-xl'
           >
             {_renderPremium()}
           </Drawer>
