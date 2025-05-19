@@ -29,9 +29,9 @@ export function PricingSummary({
       onClick={() => setIsShowPopupPremium?.(true)}
     >
       <div className='item-center fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
-        <div className='flex w-full justify-between border-t-2 bg-white px-2 py-2 md:max-w-[900px] md:border-none md:py-4'>
+        <div className='flex w-full items-center justify-between border-t-2 bg-white px-2 py-2 md:max-w-[900px] md:border-none md:py-4'>
           <div className='flex flex-col gap-1'>
-            <p className='text-[18px] font-semibold leading-6 text-[#323743] md:text-[28px] md:font-bold md:text-[#1B223C] '>
+            <p className='flex flex-col text-[18px] font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-[28px] md:font-bold md:text-[#1B223C]'>
               {discountFee
                 ? formatCurrency(Number(discountFee.toFixed(2)))
                 : ''}{' '}
@@ -45,6 +45,7 @@ export function PricingSummary({
               {title}
             </p>
           </div>
+
           <PrimaryButton
             onClick={(e) => {
               e.stopPropagation();

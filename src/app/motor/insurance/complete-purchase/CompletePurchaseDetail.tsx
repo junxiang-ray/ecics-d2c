@@ -413,12 +413,12 @@ export default function CompletePurchaseDetail({
       quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
     return (
       <div className='w-full md:max-w-[400px]'>
-        <div className='flex h-[50px] justify-end'>
-          {/* <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
+        {/* <div className='flex h-[50px] justify-end'>
+          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
             Save
-          </div> */}
-        </div>
-        <div className='flex w-full flex-col gap-3 rounded-lg p-4 md:mt-6 md:border md:border-[#E4E4E4]'>
+          </div>
+        </div> */}
+        <div className='flex w-full flex-col gap-3 rounded-lg py-4 md:mt-6 md:border md:border-[#E4E4E4]'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
             Premium Breakdown
           </p>
@@ -633,7 +633,7 @@ export default function CompletePurchaseDetail({
             onClose={() => setIsShowPopupPremium(false)}
             closable={false}
             height='auto'
-            className='w-full rounded-t-xl'
+            className='max-h-[90vh] w-full overflow-y-auto rounded-t-xl'
           >
             {_renderPremium()}
           </Drawer>
