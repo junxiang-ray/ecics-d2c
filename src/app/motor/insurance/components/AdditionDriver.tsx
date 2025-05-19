@@ -357,7 +357,7 @@ const AdditionDriver = ({
       className='w-full rounded-t-xl'
       onClose={() => setIsShowAdditionDriver(false)}
     >
-      <div className='mb-14 h-[80vh] overflow-y-scroll'>{content}</div>
+      <div className='mb-14 h-[70svh] overflow-y-scroll'>{content}</div>
     </Drawer>
   ) : (
     <Modal
@@ -370,7 +370,7 @@ const AdditionDriver = ({
       centered
       width={600}
     >
-      <div className='mb-14 h-[85vh] overflow-y-scroll'>{content}</div>
+      <div className='mb-14 h-[80vh] overflow-y-scroll'>{content}</div>
     </Modal>
   );
 };
