@@ -513,6 +513,7 @@ function AddOnDetail({
             textButton='Continue'
             onClick={handleContinue}
             setIsShowPopupPremium={setIsShowPopupPremium}
+            loading={isPending}
           />
         </div>
       )}

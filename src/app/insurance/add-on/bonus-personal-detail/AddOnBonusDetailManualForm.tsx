@@ -315,7 +315,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='pinCode'
                 label='Postal Code'
                 placeholder='Enter Postal Code'
-                type='number'
               />
             </Form.Item>
           </div>
@@ -373,6 +372,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
             textButton='Continue'
             onClick={methods.handleSubmit(handleSubmit)}
             setIsShowPopupPremium={setIsShowPopupPremium}
+            loading={isPending}
           />
         </div>
       </Form>

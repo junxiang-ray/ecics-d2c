@@ -120,7 +120,7 @@ const ModalPremium = (props: Props) => {
         </div>
         <PrimaryButton
           className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
-          onClick={() => handleOkay()}
+          onClick={() => setIsShowPopupPremium(false)}
           loading={isPending}
         >
           Okay
