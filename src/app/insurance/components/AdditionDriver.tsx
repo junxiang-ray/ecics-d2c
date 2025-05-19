@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Drawer, Form, Modal } from 'antd';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -149,8 +149,8 @@ const AdditionDriver = ({
     () => createSchema(policyStartDate),
     [policyStartDate],
   );
+  const { isMobile } = useDeviceDetection();
 
-  const scrollRef = useRef<HTMLDivElement>(null);
   const drivers = dataDrivers.map((driver) => ({
     ...driver,
     date_of_birth: driver.date_of_birth
@@ -171,25 +171,30 @@ const AdditionDriver = ({
     handleSubmit,
     formState: { errors },
   } = methods;
+  const formValues = methods.watch();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'drivers',
   });
-  const { isMobile } = useDeviceDetection();
 
   const handleAddDriver = () => {
-    methods.handleSubmit(() => {
-      if (fields.length < 3) {
-        append(initDriver as any);
-        setTimeout(() => {
-          scrollRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end',
-          });
-        }, 100);
-      }
-    })();
+    if (fields.length < 3) {
+      append(initDriver as any);
+    }
   };
+
+  // Use an effect to scroll the last driver field into view when fields change
+  useEffect(() => {
+    if (fields.length > 0) {
+      // Get the last field's element by its id (which is set to field.id)
+      const lastFieldElement = document.getElementById(
+        fields[fields.length - 1].id,
+      );
+      if (lastFieldElement) {
+        lastFieldElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [fields]);
 
   const handleRemoveDriver = (index: number) => {
     remove(index);
@@ -203,7 +208,7 @@ const AdditionDriver = ({
     setDataDrivers(formattedDrivers);
     setIsShowAdditionDriver(false);
   };
-  const formValues = methods.watch();
+
   const _renderFormInput = () => {
     return (
       <>
@@ -215,6 +220,7 @@ const AdditionDriver = ({
             <div
               key={field.id}
               className='flex w-full flex-col gap-3 rounded-lg border border-[#E5E5E5] bg-[#8189940F] px-4 py-2'
+              id={field.id}
             >
               <div className='flex w-full flex-row items-center justify-between'>
                 <p className='text-xl font-semibold text-[#080808]'>
@@ -306,7 +312,7 @@ const AdditionDriver = ({
       >
         {_renderFormInput()}
         {fields.length < 3 && (
-          <div className='flex flex-row justify-end' ref={scrollRef}>
+          <div className='flex flex-row justify-end'>
             <button
               className='flex flex-row items-center gap-2 rounded-md border border-[#00ADEF] px-4 py-2 text-sm font-normal text-[#00ADEF]'
               onClick={handleAddDriver}

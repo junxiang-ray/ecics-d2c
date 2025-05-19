@@ -74,8 +74,8 @@ export const DropdownField = ({
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
               }}
-              virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
-              // https://github.com/ant-design/ant-design/issues/26480
+              // virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
+              // // https://github.com/ant-design/ant-design/issues/26480
             >
               {options.map((option: DropdownOption) => (
                 <Select.Option key={option.value} value={option.value}>
