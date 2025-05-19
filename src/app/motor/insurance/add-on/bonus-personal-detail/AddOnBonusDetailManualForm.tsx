@@ -225,6 +225,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         }}
         onFinish={methods.handleSubmit(handleSubmit)}
         className='w-full px-4'
+        disabled={isPending}
       >
         {/* MyInfo block */}
         {/*<div*/}
@@ -259,7 +260,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='name'
                 label='Name as Per NRIC/FIN'
                 placeholder='Enter your Name'
-                disabled={isPending}
               />
             </Form.Item>
 
@@ -271,7 +271,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='nric'
                 label='NRIC/FIN'
                 placeholder='Enter NRIC/FIN'
-                disabled={isPending}
               />
             </Form.Item>
 
@@ -284,7 +283,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 label='Gender'
                 placeholder='Select gender'
                 options={GENDER_OPTIONS}
-                disabled={isPending}
               />
             </Form.Item>
 
@@ -297,7 +295,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 label='Marital Status'
                 placeholder='Select marital status'
                 options={MARITAL_STATUS_OPTIONS}
-                disabled={isPending}
               />
             </Form.Item>
 
@@ -309,7 +306,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='address'
                 label='Address'
                 placeholder='Enter Address'
-                disabled={isPending}
               />
             </Form.Item>
 
@@ -321,7 +317,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='pinCode'
                 label='Postal Code'
                 placeholder='Enter Postal Code'
-                disabled={isPending}
               />
             </Form.Item>
           </div>
@@ -343,7 +338,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='chasisNumber'
                 label='Chasis Number'
                 placeholder='Enter Chasis Number'
-                disabled={isPending}
               />
             </Form.Item>
 
@@ -356,7 +350,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 label='Engine Number'
                 placeholder='Enter Engine Number'
                 required={false}
-                disabled={isPending}
               />
             </Form.Item>
 
@@ -368,7 +361,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='vehicleNumber'
                 label='Vehicle Number'
                 placeholder='Enter Vehicle Number'
-                disabled={isPending}
               />
             </Form.Item>
           </div>
