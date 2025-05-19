@@ -92,7 +92,7 @@ function PlanCardMobile({
                   </div>
                 </>
               ) : (
-                <div className='flex min-h-12 items-center ps-6'>
+                <div className='flex h-12 items-center ps-6'>
                   {formatCurrency(plan.premium_with_gst)}
                 </div>
               )}

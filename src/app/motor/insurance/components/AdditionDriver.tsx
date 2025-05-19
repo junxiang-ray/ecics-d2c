@@ -26,6 +26,11 @@ import dayjs from 'dayjs';
 import RadioField from '@/components/ui/form/radiofield';
 import { DeleteIcon } from '@/components/icons/add-on-icons';
 
+enum ClaimStatus {
+  YES = 'true',
+  NO = 'false',
+}
+
 interface Props {
   isShowAdditionDriver: boolean;
   setIsShowAdditionDriver: (value: boolean) => void;
@@ -144,6 +149,7 @@ const AdditionDriver = ({
     gender: null,
     marital_status: null,
     driving_experience: null,
+    is_claim_in_3_years: ClaimStatus.NO,
   };
   const schema = useMemo(
     () => createSchema(policyStartDate),
@@ -293,8 +299,8 @@ const AdditionDriver = ({
                 name={`drivers.${index}.is_claim_in_3_years`}
                 label='Do you have a claim in the past 3 years?'
                 options={[
-                  { value: 'true', text: 'Yes' },
-                  { value: 'false', text: 'No' },
+                  { value: ClaimStatus.YES, text: 'Yes' },
+                  { value: ClaimStatus.NO, text: 'No' },
                 ]}
               />
             </div>
