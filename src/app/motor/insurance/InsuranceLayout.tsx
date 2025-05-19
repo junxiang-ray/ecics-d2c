@@ -65,6 +65,10 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
 
   const handleChangeStep = (step: StepProcessBar) => {
     if (step === currentStep) return;
+    if (step === StepProcessBar.POLICY_DETAILS) {
+      setIsShowPopupImportant(true);
+      return;
+    }
     const path = stepToRoute[step];
     if (!path) return;
     setCurrentStep(step);
@@ -72,6 +76,10 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   };
 
   const handleBack = () => {
+    if (currentStep === StepProcessBar.SELECT_PLAN) {
+      setIsShowPopupImportant(true);
+      return;
+    }
     if (isFinalized) {
       setIsShowPopupImportant(true);
       return;
