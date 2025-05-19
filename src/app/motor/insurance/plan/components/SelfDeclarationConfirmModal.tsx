@@ -5,9 +5,7 @@ import { useState } from 'react';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
-import { ROUTES } from '@/constants/routes';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 function SelfDeclarationConfirmModal({
   visible,
