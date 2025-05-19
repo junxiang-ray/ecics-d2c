@@ -83,6 +83,17 @@ export async function getQuoteByKey(key: string) {
       delete quote.data.quoteResFromISP;
     }
 
+    if (quote.product_type && quote.product_type.documents) {
+      if (
+        !quote.is_electric_model &&
+        Array.isArray(quote.product_type.documents)
+      ) {
+        quote.product_type.documents = quote.product_type.documents.filter(
+          (doc: any) => doc.isEVModel === false,
+        );
+      }
+    }
+
     return {
       message: 'Quote found',
       data: quote,
