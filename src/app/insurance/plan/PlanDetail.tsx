@@ -101,7 +101,7 @@ function PlanDetail({
   };
 
   return (
-    <div className='flex w-full flex-col justify-center'>
+    <div className='flex w-full flex-col justify-center md:mb-16'>
       {/* hidden for now */}
       {/* <div className='py-4 md:hidden'>
         <HeaderVehicleInfoMobile
