@@ -78,11 +78,11 @@ const createSchema = () =>
       }),
     chasisNumber: z
       .string({
-        required_error: 'Chasis is required',
-        invalid_type_error: 'Chasis is required',
+        required_error: 'Chassis is required',
+        invalid_type_error: 'Chassis is required',
       })
-      .nonempty('Chasis is required')
-      .max(50, 'Chasis must be at most 50 characters'),
+      .nonempty('Chassis is required')
+      .max(50, 'Chassis must be at most 50 characters'),
     engineNumber: z
       .string({
         required_error: 'Engine is required',
@@ -336,8 +336,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
             >
               <InputField
                 name='chasisNumber'
-                label='Chasis Number'
-                placeholder='Enter Chasis Number'
+                label='Chassis Number'
+                placeholder='Enter Chassis Number'
               />
             </Form.Item>
 
