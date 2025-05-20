@@ -81,9 +81,7 @@ export default function AddOnRow({
               'rotate-180': isOpen,
               'rounded-full bg-white': status === 'completed',
             })}
-            onClick={() => {
-              if (isMobile) setIsOpen(!isOpen);
-            }}
+            onClick={() => setIsOpen((prev) => !prev)}
           />
         )}
       </div>
