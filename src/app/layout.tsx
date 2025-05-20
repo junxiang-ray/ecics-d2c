@@ -1,10 +1,12 @@
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata, Viewport } from 'next';
 import { Open_Sans } from 'next/font/google';
-import { AntdRegistry } from '@ant-design/nextjs-registry';
-import '@/styles/app.scss';
-import { ReduxProvider } from '@/providers/redux';
-import { ReactQueryProvider } from '@/providers/react-query';
 import { Suspense } from 'react';
+
+import '@/styles/app.scss';
+
+import { ReactQueryProvider } from '@/providers/react-query';
+import { ReduxProvider } from '@/providers/redux';
 
 const openSans = Open_Sans({
   subsets: ['latin'],

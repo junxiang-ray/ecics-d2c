@@ -1,7 +1,7 @@
 'use client';
 
-import InsuranceLayout from '../InsuranceLayout';
 import PlanDetail from './PlanDetail';
+import InsuranceLayout from '../InsuranceLayout';
 
 function PlanPage({}) {
   return (

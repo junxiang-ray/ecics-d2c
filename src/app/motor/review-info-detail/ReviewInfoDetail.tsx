@@ -67,6 +67,7 @@ const reviewInfoSchema = z.object({
   qualified_driving_license: z
     .string({
       required_error: 'This field is required',
+      invalid_type_error: 'Please select qualified driving license.',
     })
     .min(1, 'This field is required'),
   marital_status: z

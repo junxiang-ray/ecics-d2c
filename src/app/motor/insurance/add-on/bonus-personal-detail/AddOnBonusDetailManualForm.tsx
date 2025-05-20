@@ -2,32 +2,34 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
+import { useSearchParams } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import {
+  sgCarRegNoValidator,
+  validateNRIC,
+} from '@/libs/utils/validation-utils';
+
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import {
-  sgCarRegNoValidator,
-  validateNRIC,
-} from '@/libs/utils/validation-utils';
-import { useSearchParams } from 'next/navigation';
-import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
-import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
-import { PricingSummary } from '../../components/FeeBar';
-import { useAppDispatch } from '@/redux/store';
 import { updateQuote } from '@/redux/slices/quote.slice';
+import { useAppDispatch } from '@/redux/store';
+
+import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
+import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from '../../basic-detail/options';
+import { PricingSummary } from '../../components/FeeBar';
 
 const createSchema = () =>
   z.object({

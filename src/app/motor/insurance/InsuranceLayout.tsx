@@ -1,4 +1,5 @@
 'use client';
+
 import { usePathname, useSearchParams } from 'next/navigation';
 import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 
@@ -12,9 +13,9 @@ import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 import ModalImportant from './complete-purchase/ModalImportant';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
 

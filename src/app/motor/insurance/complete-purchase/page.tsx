@@ -1,4 +1,5 @@
 'use client';
+
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import InsuranceLayout from '../InsuranceLayout';
 

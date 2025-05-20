@@ -1,4 +1,5 @@
 'use client';
+
 import { Drawer } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -197,9 +198,9 @@ export default function CompletePurchaseDetail({
         title: 'Engine Number',
         value: vehicleSelected?.engine_number || 'N/A',
       },
-      { title: 'Engine Capacity', value: 'N/A' },
-      { title: 'Power Rate', value: 'N/A' },
-      { title: 'Year of Manufacture', value: 'N/A' },
+      // { title: 'Engine Capacity', value: 'N/A' },
+      // { title: 'Power Rate', value: 'N/A' },
+      // { title: 'Year of Manufacture', value: 'N/A' },
     ],
     policy: [
       { title: 'Selected Plan', value: quote?.data?.selected_plan || 'N/A' },
@@ -412,6 +413,7 @@ export default function CompletePurchaseDetail({
       quote?.data?.review_info_premium?.addon_additional_driver;
     const AddOnIncludedInPlan =
       quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
+
     return (
       <div className='w-full md:max-w-[400px]'>
         {/* <div className='flex h-[50px] justify-end'>
@@ -536,7 +538,7 @@ export default function CompletePurchaseDetail({
             <PrimaryButton
               onClick={!isMobile ? onPay : onClosePopup}
               loading={isPendingSave || isPendingPay}
-              className='w-full cursor-pointer rounded-lg px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+              className='mx-auto w-[80%] cursor-pointer rounded-lg px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
             >
               {isMobile ? 'Okay' : 'Pay'}
             </PrimaryButton>

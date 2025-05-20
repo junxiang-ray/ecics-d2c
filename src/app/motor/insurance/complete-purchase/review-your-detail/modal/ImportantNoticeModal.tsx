@@ -1,6 +1,8 @@
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { Drawer, Modal } from 'antd';
+
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface Props {
   onSave: () => void;

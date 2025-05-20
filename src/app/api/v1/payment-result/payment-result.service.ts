@@ -1,8 +1,8 @@
+import { paymentDTO } from './payment-result.dto';
 import logger from '../../libs/logger';
 import { sendMail } from '../../libs/mailer';
 import { teslaFractionalEmail } from '../../libs/mailer/templates';
 import { prisma } from '../../libs/prisma';
-import { paymentDTO } from './payment-result.dto';
 
 export async function handlePaymentResult(data: paymentDTO) {
   logger.info(`Handling payment result with data: ${JSON.stringify(data)}`);

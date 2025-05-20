@@ -1,7 +1,9 @@
+import { Vehicle } from '@/libs/types/auth';
+
 import EditIcon from '@/components/icons/EditIcon';
+
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { Vehicle } from '@/libs/types/auth';
 
 interface Props {
   vehicleInfo?: Vehicle;

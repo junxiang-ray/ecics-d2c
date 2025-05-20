@@ -1,4 +1,5 @@
 import { schedule } from 'node-cron';
+
 import logger from '../libs/logger';
 import { sendMail } from '../libs/mailer';
 import { quoteReminderHTML } from '../libs/mailer/templates';

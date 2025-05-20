@@ -13,7 +13,6 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
-
 import {
   ECICS_USER_INFO,
   IS_FILL_INPUT_COMPLETE,
@@ -23,12 +22,13 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import { ReviewInfoForm } from './ReviewInfoDetail';
+import { UnableQuote } from '../insurance/basic-detail/modal/UnableQuote';
 import {
   DRIVE_EXP_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from '../insurance/basic-detail/options';
-import { UnableQuote } from '../insurance/basic-detail/modal/UnableQuote';
 
 type VehicleInfo = {
   vehicle_number: string;
