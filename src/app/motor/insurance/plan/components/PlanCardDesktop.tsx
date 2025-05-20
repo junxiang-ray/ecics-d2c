@@ -1,12 +1,16 @@
 'use client';
+
+import clsx from 'clsx';
+
+import { formatCurrency } from '@/libs/utils/utils';
+
 import CrossMarkIcon from '@/components/icons/CrossMark';
 import PlanNormalIcon from '@/components/icons/PlanNormalIcon';
 import PlanPremiumIcon from '@/components/icons/PlanPremiumIcon';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
-import clsx from 'clsx';
+
 import { FormatPlan } from '../PlanDetail';
-import { formatCurrency } from '@/libs/utils/utils';
 
 function PlanCardDesktop({
   plans,

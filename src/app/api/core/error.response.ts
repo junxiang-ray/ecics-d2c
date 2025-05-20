@@ -1,5 +1,6 @@
-import { STATUS_CODE } from './status.code';
 import { NextResponse } from 'next/server';
+
+import { STATUS_CODE } from './status.code';
 
 type BaseResponse = {
   message: string;

@@ -2,16 +2,16 @@
 
 import SvgIcon, { SvgIconProps } from '@/components/SvgIcon';
 
-import BillIconSvg from '@/assets/icons/add-on/bill.svg';
-import RoadSideIconSvg from '@/assets/icons/add-on/road-side.svg';
-import RepairIconSvg from '@/assets/icons/add-on/repair.svg';
-import PersonIconSvg from '@/assets/icons/add-on/person.svg';
-import MedicalKitIconSvg from '@/assets/icons/add-on/medical-kit.svg';
-import FinishIconSvg from '@/assets/icons/add-on/finish.svg';
 import AddIconSvg from '@/assets/icons/add-on/add.svg';
-import CarIconSvg from '@/assets/icons/add-on/car.svg';
 import ArrowDownCircleIconSvg from '@/assets/icons/add-on/arrow-down-circle.svg';
+import BillIconSvg from '@/assets/icons/add-on/bill.svg';
+import CarIconSvg from '@/assets/icons/add-on/car.svg';
 import DeleteIconSvg from '@/assets/icons/add-on/delete.svg';
+import FinishIconSvg from '@/assets/icons/add-on/finish.svg';
+import MedicalKitIconSvg from '@/assets/icons/add-on/medical-kit.svg';
+import PersonIconSvg from '@/assets/icons/add-on/person.svg';
+import RepairIconSvg from '@/assets/icons/add-on/repair.svg';
+import RoadSideIconSvg from '@/assets/icons/add-on/road-side.svg';
 
 export const BillIcon = (props: Omit<SvgIconProps, 'svg'>) => {
   return <SvgIcon svg={BillIconSvg} {...props} />;

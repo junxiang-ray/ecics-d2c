@@ -1,8 +1,10 @@
+import { InsuranceAdditionalInfo, Vehicle } from '@/libs/types/quote';
+
 import EditIcon from '@/components/icons/EditIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
+
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { InsuranceAdditionalInfo, Vehicle } from '@/libs/types/quote';
 
 interface Props {
   vehicleInfo?: Vehicle;

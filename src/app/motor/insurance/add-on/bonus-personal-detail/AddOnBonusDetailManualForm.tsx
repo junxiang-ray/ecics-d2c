@@ -1,25 +1,28 @@
 'use client';
 
-import { DropdownField } from '@/components/ui/form/dropdownfield';
-import { InputField } from '@/components/ui/form/inputfield';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
+import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import {
+  sgCarRegNoValidator,
+  validateNRIC,
+} from '@/libs/utils/validation-utils';
+
+import { DropdownField } from '@/components/ui/form/dropdownfield';
+import { InputField } from '@/components/ui/form/inputfield';
 
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import {
-  sgCarRegNoValidator,
-  validateNRIC,
-} from '@/libs/utils/validation-utils';
 import { updateQuote, useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch } from '@/redux/store';
-import { useSearchParams } from 'next/navigation';
+
 import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
 import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
 import {

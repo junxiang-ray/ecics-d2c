@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import logger from '@/app/api/libs/logger';
+
 import { paymentDTOSchema } from './payment.dto';
 import { handlePayment } from './payment.service';
 import { successRes } from '../../core/success.response';

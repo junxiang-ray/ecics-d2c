@@ -1,25 +1,27 @@
 'use client';
 
-import { Spin } from 'antd';
+// import HeaderVehicleInfo from './components/HeaderVehicleInfo';
+// import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/navigation';
+
+import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
+import { formatCurrency } from '@/libs/utils/utils';
+
 import { PrimaryButton } from '@/components/ui/buttons';
+
 import { ROUTES } from '@/constants/routes';
-import { useGetQuote, useSaveQuote } from '@/hook/insurance/quote';
+import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { updateQuote } from '@/redux/slices/quote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 import PlanCardDesktop from './components/PlanCardDesktop';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
-// import HeaderVehicleInfo from './components/HeaderVehicleInfo';
-// import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
-import { current } from '@reduxjs/toolkit';
-import { UserStep } from '@/libs/enums/processBarEnums';
-import { formatCurrency } from '@/libs/utils/utils';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { updateQuote } from '@/redux/slices/quote.slice';
 
 export interface FormatPlan extends Plan {
   discount: number;

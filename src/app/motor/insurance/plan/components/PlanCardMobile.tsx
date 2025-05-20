@@ -1,9 +1,13 @@
 'use client';
+
+import clsx from 'clsx';
+
+import { formatCurrency } from '@/libs/utils/utils';
+
 import CrossMarkIcon from '@/components/icons/CrossMark';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
-import clsx from 'clsx';
+
 import { FormatPlan } from '../PlanDetail';
-import { formatCurrency } from '@/libs/utils/utils';
 
 function PlanCardMobile({
   plans,
