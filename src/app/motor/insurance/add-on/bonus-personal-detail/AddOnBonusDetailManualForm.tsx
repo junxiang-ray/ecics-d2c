@@ -1,14 +1,13 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from 'antd';
-import React, { useMemo, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from 'antd';
+import { useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -18,18 +17,18 @@ import {
   sgCarRegNoValidator,
   validateNRIC,
 } from '@/libs/utils/validation-utils';
-import { useSearchParams } from 'next/navigation';
-import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
-import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
-import { PricingSummary } from '../../components/FeeBar';
+import { updateQuote, useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch } from '@/redux/store';
-import { updateQuote } from '@/redux/slices/quote.slice';
+import { useSearchParams } from 'next/navigation';
+import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
+import { UnableQuote } from '../../basic-detail/modal/UnableQuote';
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from '../../basic-detail/options';
+import { PricingSummary } from '../../components/FeeBar';
 
-const createSchema = () =>
+const createSchema = (listNric: any[] | undefined) =>
   z.object({
     name: z
       .string({
@@ -47,7 +46,20 @@ const createSchema = () =>
       .nonempty('NRIC/FIN is required')
       .refine((val) => validateNRIC([val]), {
         message: 'Please enter a valid NRIC/FIN.',
-      }),
+      })
+      .refine(
+        (val) => {
+          const isUniqueNric =
+            !listNric ||
+            !listNric
+              .map((item) => item?.toUpperCase())
+              .includes(val?.toUpperCase());
+          return isUniqueNric;
+        },
+        {
+          message: 'NRIC/FIN already used by an additional driver.',
+        },
+      ),
     gender: z
       .string({
         required_error: 'Gender is required',
@@ -131,6 +143,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const { vehicle_number, engine_number, chasis_number } =
     vehicle_info_selected;
 
+  const addNamedDriverInfo = useAddNamedDriverInfo();
+  const listNamedDriverNric = addNamedDriverInfo?.map(
+    (item) => item.nric_or_fin,
+  );
   const initFormDate: FormData = {
     name: name,
     nric: nric,
@@ -142,12 +158,15 @@ const AddOnBonusDetailManualForm = (props: Props) => {
     gender: gender,
     maritalStatus: marital_status,
   };
+  const schema = useMemo(
+    () => createSchema(listNamedDriverNric),
+    [listNamedDriverNric],
+  );
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
-  const schema = useMemo(() => createSchema(), []);
   const [showCSModal, setShowCSModal] = useState(false);
   const [showRenewalModal, setShowRenewalModal] = useState(false);
 

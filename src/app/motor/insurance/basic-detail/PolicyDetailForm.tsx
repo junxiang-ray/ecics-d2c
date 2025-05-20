@@ -43,7 +43,8 @@ import { PromoCodeField } from '../components/PromoCode';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
-const sryMsg = 'Sorry, we cannot provide you a quotation online';
+const sryMsg =
+  'Please contact us for assistance at +65 6206 5588 or customerservice@ecics.com.sg';
 
 const singpassFlowFields = {
   [MOTOR_QUOTE.hire_purchase]: z.number({
