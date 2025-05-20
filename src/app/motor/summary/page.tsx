@@ -95,7 +95,7 @@ export default function Summary() {
         <div
           className='flex cursor-pointer flex-row gap-2 text-[10px] font-semibold text-[#00ADEF]'
           onClick={() => {
-            router.push(url);
+            window.open(url, '_blank');
           }}
         >
           Read More <ArrowRightOutlined />
@@ -188,7 +188,7 @@ export default function Summary() {
             {driversData.map((driver, index) => (
               <InfoCard
                 key={index}
-                title={`Additional Name Driver ${index + 1}`}
+                title={`Additional Named Driver ${index + 1}`}
                 data={driver}
               />
             ))}

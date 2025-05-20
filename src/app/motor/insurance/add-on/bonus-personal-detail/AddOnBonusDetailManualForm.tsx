@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -20,7 +20,7 @@ import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { updateQuote } from '@/redux/slices/quote.slice';
+import { updateQuote, useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch } from '@/redux/store';
 
 import { RenewalModal } from '../../basic-detail/modal/RenewalModal';
@@ -31,7 +31,7 @@ import {
 } from '../../basic-detail/options';
 import { PricingSummary } from '../../components/FeeBar';
 
-const createSchema = () =>
+const createSchema = (listNric: any[] | undefined) =>
   z.object({
     name: z
       .string({
@@ -49,7 +49,20 @@ const createSchema = () =>
       .nonempty('NRIC/FIN is required')
       .refine((val) => validateNRIC([val]), {
         message: 'Please enter a valid NRIC/FIN.',
-      }),
+      })
+      .refine(
+        (val) => {
+          const isUniqueNric =
+            !listNric ||
+            !listNric
+              .map((item) => item?.toUpperCase())
+              .includes(val?.toUpperCase());
+          return isUniqueNric;
+        },
+        {
+          message: 'NRIC/FIN already used by an additional driver.',
+        },
+      ),
     gender: z
       .string({
         required_error: 'Gender is required',
@@ -80,11 +93,11 @@ const createSchema = () =>
       }),
     chasisNumber: z
       .string({
-        required_error: 'Chasis is required',
-        invalid_type_error: 'Chasis is required',
+        required_error: 'Chassis is required',
+        invalid_type_error: 'Chassis is required',
       })
-      .nonempty('Chasis is required')
-      .max(50, 'Chasis must be at most 50 characters'),
+      .nonempty('Chassis is required')
+      .max(50, 'Chassis must be at most 50 characters'),
     engineNumber: z
       .string({
         required_error: 'Engine is required',
@@ -133,6 +146,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const { vehicle_number, engine_number, chasis_number } =
     vehicle_info_selected;
 
+  const addNamedDriverInfo = useAddNamedDriverInfo();
+  const listNamedDriverNric = addNamedDriverInfo?.map(
+    (item) => item.nric_or_fin,
+  );
   const initFormDate: FormData = {
     name: name,
     nric: nric,
@@ -144,12 +161,15 @@ const AddOnBonusDetailManualForm = (props: Props) => {
     gender: gender,
     maritalStatus: marital_status,
   };
+  const schema = useMemo(
+    () => createSchema(listNamedDriverNric),
+    [listNamedDriverNric],
+  );
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
-  const schema = useMemo(() => createSchema(), []);
   const [showCSModal, setShowCSModal] = useState(false);
   const [showRenewalModal, setShowRenewalModal] = useState(false);
 
@@ -319,6 +339,14 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='pinCode'
                 label='Postal Code'
                 placeholder='Enter Postal Code'
+                inputMode='numeric'
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const onlyNums = e.target.value.replace(/\D/g, '');
+                  methods.setValue('pinCode', onlyNums, {
+                    shouldValidate: true,
+                  });
+                }}
+                value={methods.watch('pinCode')}
               />
             </Form.Item>
           </div>
@@ -338,8 +366,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
             >
               <InputField
                 name='chasisNumber'
-                label='Chasis Number'
-                placeholder='Enter Chasis Number'
+                label='Chassis Number'
+                placeholder='Enter Chassis Number'
               />
             </Form.Item>
 

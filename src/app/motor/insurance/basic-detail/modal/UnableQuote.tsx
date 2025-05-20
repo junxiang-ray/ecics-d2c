@@ -19,7 +19,8 @@ export const UnableQuote = ({ onClick, visible }: UnableQuoteModalProps) => {
     <>
       <div className='flex flex-col items-center text-center'>
         <div className='mb-9 break-words text-lg font-semibold leading-none'>
-          We are unable to provide you a quote at the moment.
+          We'd be happy to assist you - please contact us and we will provide a
+          quote as soon as possible.
         </div>
         <div className='mb-6 break-words text-base leading-none'>
           Please contact us for assistance
