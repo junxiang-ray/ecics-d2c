@@ -485,6 +485,15 @@ const PolicyDetailForm = ({
                           name={MOTOR_QUOTE.mobile}
                           label='Phone Number'
                           placeholder='Enter your phone number'
+                          onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>,
+                          ) => {
+                            const onlyNums = e.target.value.replace(/\D/g, '');
+                            methods.setValue(MOTOR_QUOTE.mobile, onlyNums, {
+                              shouldValidate: true,
+                            });
+                          }}
+                          value={String(watch(MOTOR_QUOTE.mobile) ?? '')}
                         />
                       </Form.Item>
 

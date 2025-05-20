@@ -317,6 +317,14 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='pinCode'
                 label='Postal Code'
                 placeholder='Enter Postal Code'
+                inputMode='numeric'
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const onlyNums = e.target.value.replace(/\D/g, '');
+                  methods.setValue('pinCode', onlyNums, {
+                    shouldValidate: true,
+                  });
+                }}
+                value={methods.watch('pinCode')}
               />
             </Form.Item>
           </div>
