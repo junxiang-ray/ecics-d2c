@@ -188,7 +188,7 @@ export default function Summary() {
             {driversData.map((driver, index) => (
               <InfoCard
                 key={index}
-                title={`Additional Name Driver ${index + 1}`}
+                title={`Additional Named Driver ${index + 1}`}
                 data={driver}
               />
             ))}
