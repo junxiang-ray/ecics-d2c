@@ -414,7 +414,7 @@ function AddOnDetail({
 
   return (
     <div className='flex w-full flex-col items-center'>
-      <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
+      <div className='flex w-full max-w-[1280px] flex-col items-center justify-center pb-6 md:mb-24 md:pb-2'>
         {isShowBonusDetail ? (
           <AddOnBonusDetailManualForm
             planFee={premiumWithGst}
