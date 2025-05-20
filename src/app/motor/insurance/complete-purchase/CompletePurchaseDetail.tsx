@@ -550,7 +550,7 @@ export default function CompletePurchaseDetail({
 
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
-      <div className='flex w-full max-w-[1200px] flex-col justify-center pb-6 md:flex-row md:gap-10 md:pb-2'>
+      <div className='flex w-full max-w-[1200px] flex-col justify-center md:flex-row md:gap-10'>
         <div className='flex flex-col lg:flex-row'>
           <div className='flex-1'>
             <h1 className='text-xl font-semibold text-[#080808] md:text-center md:text-[32px] md:font-bold md:leading-[48px] md:text-[#171A1F]'>
