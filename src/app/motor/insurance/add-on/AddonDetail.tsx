@@ -506,6 +506,7 @@ function AddOnDetail({
           addonsIncluded={plan?.add_ons_included_in_this_plan}
         />
       </div>
+
       {!isShowBonusDetail && (
         <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
