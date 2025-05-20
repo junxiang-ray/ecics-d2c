@@ -13,7 +13,6 @@ import {
   mappingAddonByPlan,
 } from '@/app/api/utils/quote.helpers';
 import { saveQuoteProposalDTO } from './save-proposal.dto';
-import { PRODUCT_ID } from '@/app/api/constants/product';
 
 export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;
@@ -39,7 +38,7 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
 
   const { quote_id, policy_id, proposal_id } = quoteInfo;
   const payload: any = {
-    product_id: PRODUCT_ID.CAR,
+    product_id: process.env.PRODUCT_CAR_ID || '',
     policy_id,
     quote_id,
     proposal_id,
