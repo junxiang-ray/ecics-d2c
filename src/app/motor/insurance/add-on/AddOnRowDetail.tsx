@@ -104,10 +104,7 @@ function AddOnRowDetail({
                 </p>
                 <SecondaryButton
                   className='black h-8 w-28 rounded-md !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAddAddonSelect(addon);
-                  }}
+                  onClick={() => handleAddAddonSelect(addon)}
                   disabled={isPending}
                 >
                   Add
@@ -122,10 +119,7 @@ function AddOnRowDetail({
               </p>
               <SecondaryButton
                 className='black h-8 w-28 rounded-md'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddAddonCheckbox(addon);
-                }}
+                onClick={() => handleAddAddonCheckbox(addon)}
                 disabled={isPending}
               >
                 Add
@@ -144,10 +138,7 @@ function AddOnRowDetail({
             </p>
             <SecondaryButton
               className='h-8 w-28 rounded-md py-0 leading-4 text-red-500'
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRemoveAddon(addon);
-              }}
+              onClick={() => handleRemoveAddon(addon)}
               disabled={isPending}
             >
               Remove
