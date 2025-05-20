@@ -1,6 +1,6 @@
 import logger from '@/app/api/libs/logger';
 import { generateQuoteDTO } from './get-quote.dto';
-import { PRODUCT_ID, PRODUCT_NAME } from '@/app/api/constants/product';
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import apiServer from '@/app/api/configs/api.config';
 import { successRes } from '@/app/api/core/success.response';
 import { formatCarQuoteInfo } from './format-car-quote-data';
@@ -30,7 +30,7 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
     });
 
     const payloadData = {
-      product_id: PRODUCT_ID.CAR,
+      product_id: process.env.PRODUCT_CAR_ID || '',
       quick_quote_make: data.vehicle_info_selected.vehicle_make,
       quick_quote_model: data.vehicle_info_selected.vehicle_model,
       quick_quote_reg_yyyy: data.vehicle_info_selected.first_registered_year,
