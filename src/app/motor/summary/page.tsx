@@ -31,7 +31,11 @@ export default function Summary() {
   const router = useRouterWithQuery();
 
   const handleGoPersonal = () => {
-    window.open('https://www.ecics.com/product-listing/personal', '_blank');
+    window.open(
+      'https://www.ecics.com/product-listing/personal',
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
   const { data: quote, isLoading } = useGetQuote(key);
