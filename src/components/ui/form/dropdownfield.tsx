@@ -1,7 +1,10 @@
 import { Select, SelectProps } from 'antd';
+import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
+
+import { useLockBodyScroll } from '@/hook/useLockBodyScroll';
 
 interface DropdownFieldProps extends SelectProps {
   name: string;
@@ -38,6 +41,10 @@ export const DropdownField = ({
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
+  const [open, setOpen] = useState(false);
+
+  // Lock scroll when open dropdown
+  useLockBodyScroll(open);
 
   return (
     <>
@@ -51,9 +58,11 @@ export const DropdownField = ({
               {...props}
               {...field}
               value={field.value}
+              onDropdownVisibleChange={(visible) => setOpen(visible)}
               onChange={(value, option) => {
                 field.onChange(value);
                 props.onChange?.(value, option);
+                setOpen(false);
               }}
               disabled={disabled}
               optionFilterProp='children'
@@ -74,7 +83,9 @@ export const DropdownField = ({
                 maxWidth: '100vw',
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
+                zIndex: 9999,
               }}
+              getPopupContainer={() => document.body}
               // virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
               // // https://github.com/ant-design/ant-design/issues/26480
             >
