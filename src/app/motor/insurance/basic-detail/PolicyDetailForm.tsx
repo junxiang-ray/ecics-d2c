@@ -449,9 +449,14 @@ const PolicyDetailForm = ({
           onFinish={methods.handleSubmit(handleSubmit)}
           disabled={isLoading}
           className=' mb-16 flex w-full flex-col items-center px-4'
+          style={{ maxHeight: 'calc(100vh - 257px)', overflow: 'scroll' }}
           {...props}
         >
-          <div className='max-w-[1200px]'>
+          <div
+            className='max-w-[1200px]'
+            id='scrollableDiv'
+            style={{ maxHeight: '100vh - 227px ', overflow: 'auto' }}
+          >
             {!isSingpassFlow && (
               <>
                 <div className='w-full'>
