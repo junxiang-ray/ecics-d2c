@@ -85,7 +85,7 @@ export const DropdownField = ({
                 wordBreak: 'break-word',
                 zIndex: 9999,
               }}
-              getPopupContainer={() => document.body}
+              getPopupContainer={() => document.body} // Make sure the dropdown outside the parent class has scrolling
               // virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
               // // https://github.com/ant-design/ant-design/issues/26480
             >
