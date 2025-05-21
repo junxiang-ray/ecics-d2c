@@ -30,8 +30,8 @@ export default function Summary() {
   const key = searchParams.get('key') || '';
   const router = useRouterWithQuery();
 
-  const handleGoBack = () => {
-    router.push(ROUTES.MOTOR.LOGIN, { preserveQuery: false });
+  const handleGoPersonal = () => {
+    window.open('https://www.ecics.com/product-listing/personal', '_blank');
   };
 
   const { data: quote, isLoading } = useGetQuote(key);
@@ -212,17 +212,17 @@ export default function Summary() {
               <LinkButton
                 type='link'
                 className='font-bold text-[#00ADEF]'
-                onClick={handleGoBack}
+                onClick={handleGoPersonal}
               >
-                Go Back to Home
+                Find out more about our other products!
               </LinkButton>
             </div>
           ) : (
             <PrimaryButton
               className='w-full font-bold md:max-w-[800px]'
-              onClick={handleGoBack}
+              onClick={handleGoPersonal}
             >
-              Done
+              Find out more about our other products!
             </PrimaryButton>
           )}
         </div>
