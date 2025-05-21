@@ -39,3 +39,10 @@
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
+
+.ant-select-dropdown {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  max-height: 200px !important;
+}

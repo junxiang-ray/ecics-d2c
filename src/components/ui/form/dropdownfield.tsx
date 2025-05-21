@@ -58,7 +58,15 @@ export const DropdownField = ({
               {...props}
               {...field}
               value={field.value}
-              onDropdownVisibleChange={(visible) => setOpen(visible)}
+              onDropdownVisibleChange={(visible) => {
+                setOpen(visible);
+
+                const scrollableDiv = document.getElementById('scrollableDiv');
+                if (scrollableDiv) {
+                  scrollableDiv.style.overflow = visible ? 'hidden' : '';
+                }
+              }}
+              onPopupScroll={(e) => e.stopPropagation()}
               onChange={(value, option) => {
                 field.onChange(value);
                 props.onChange?.(value, option);
@@ -83,10 +91,17 @@ export const DropdownField = ({
                 maxWidth: '100vw',
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
-                zIndex: 9999,
               }}
-              getPopupContainer={() => document.body} // Make sure the dropdown outside the parent class has scrolling
-              // virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
+              onFocus={() => {
+                document.documentElement.style.overflow = 'hidden';
+              }}
+              onBlur={() => {
+                document.documentElement.style.overflow = '';
+              }}
+              getPopupContainer={() =>
+                document.getElementById('scrollableDiv') || document.body
+              } // Make sure the dropdown outside the parent class has scrolling
+              virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
               // // https://github.com/ant-design/ant-design/issues/26480
             >
               {options.map((option: DropdownOption) => (
