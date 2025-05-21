@@ -11,6 +11,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
 import AdditionDriver from '../components/AdditionDriver';
+import { formatCurrency } from '@/libs/utils/utils';
 
 export const ADDON_CARS = [
   'CAR_COM_AND',
@@ -65,7 +66,7 @@ function AddonAdditionalDriver({
       <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
       <div className='flex flex-col gap-2'>
         <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
-          <p className='text-[#525252]'>SGD {totalFee ?? 0}</p>
+          <p className='text-[#525252]'>{formatCurrency(totalFee)}</p>
           {drivers.length > 0 ? (
             <SecondaryButton
               className='black h-8 w-28 rounded-md '
