@@ -1,6 +1,6 @@
 import { Input, Select, SelectProps } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { Controller, useFormContext, UseFormSetValue } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
 
@@ -102,6 +102,7 @@ export const LongOptionDropdownField = ({
   name,
   label,
   options,
+  disabled,
   renderOption,
   setValue,
   ...props
@@ -159,13 +160,14 @@ export const LongOptionDropdownField = ({
               onChange={(e) => {
                 setSearchTerm(e.target.value);
               }}
+              disabled={disabled}
               status={fieldState.invalid ? 'error' : undefined}
               className='w-full rounded border px-3 py-2'
               readOnly={false}
             />
 
             <span
-              className='absolute right-3 top-1/2 transform cursor-pointer'
+              className='absolute right-3 transform cursor-pointer pt-[10px]'
               onClick={() =>
                 setSearchTerm((prev: any) => {
                   return prev == null ? '' : null;
@@ -179,10 +181,7 @@ export const LongOptionDropdownField = ({
             {open && (
               <ul
                 className='absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white'
-                style={{
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  zIndex: '9999',
-                }}
+                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
               >
                 {filteredOptions.length > 0 ? (
                   filteredOptions.map((opt) => (
@@ -190,14 +189,12 @@ export const LongOptionDropdownField = ({
                       key={opt.value}
                       className='cursor-pointer px-3 py-2 hover:bg-blue-100'
                       onClick={() => {
-                        console.log(setValue);
                         if (setValue)
                           setValue(name, opt.value, {
                             shouldDirty: true,
                             shouldValidate: true,
                           });
                         field.onChange(opt.value);
-                        // setOpen(false);
                         setSearchTerm(null);
                       }}
                     >

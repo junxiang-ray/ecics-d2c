@@ -454,10 +454,10 @@ const PolicyDetailForm = ({
           style={{ maxHeight: 'calc(100vh - 257px)', overflow: 'scroll' }}
           {...props}
         >
-          <div className='max-w-[1200px]' id='scrollableDiv'>
+          <div className='max-w-[1200px]'>
             {!isSingpassFlow && (
               <>
-                <div className='w-full'>
+                <div className='relative w-full' style={{ zIndex: '999' }}>
                   <div className='text-xl font-bold'>
                     Enter Your Policy Details
                   </div>
