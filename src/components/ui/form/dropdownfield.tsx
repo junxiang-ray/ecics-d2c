@@ -117,10 +117,10 @@ export const LongOptionDropdownField = ({
   const filteredOptions =
     searchTerm == null
       ? options
-      : searchTerm == ''
+      : searchTerm === ''
         ? options
         : options.filter((opt) =>
-            opt.text.toLowerCase().includes(searchTerm.toLowerCase()),
+            opt.text.toLowerCase().includes(String(searchTerm).toLowerCase()),
           );
 
   useEffect(() => {
