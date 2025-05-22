@@ -111,8 +111,15 @@ export const LongOptionDropdownField = ({
   const [searchTerm, setSearchTerm] = useState(
     control._formValues[name] || null,
   );
-  const open = searchTerm !== null;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const open = isDropdownOpen;
+
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setSearchTerm('');
+    setIsDropdownOpen(false);
+  }, []);
 
   const filteredOptions =
     searchTerm == null
@@ -129,7 +136,7 @@ export const LongOptionDropdownField = ({
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
-        setSearchTerm(null);
+        setIsDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -173,11 +180,9 @@ export const LongOptionDropdownField = ({
 
             <span
               className='absolute right-3 transform cursor-pointer pt-[10px]'
-              onClick={() =>
-                setSearchTerm((prev: any) => {
-                  return prev == null ? '' : null;
-                })
-              }
+              onClick={() => {
+                setIsDropdownOpen((prev) => !prev);
+              }}
             >
               <ArrowDownIcon size={20} />
             </span>
@@ -202,6 +207,7 @@ export const LongOptionDropdownField = ({
 
                         field.onChange(opt.value);
                         setSearchTerm(null);
+                        setIsDropdownOpen(false);
                       }}
                     >
                       {renderOption ? renderOption(opt) : opt.text}
