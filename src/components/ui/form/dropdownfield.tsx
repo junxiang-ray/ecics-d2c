@@ -158,7 +158,12 @@ export const LongOptionDropdownField = ({
               placeholder={`Select ${label?.toLowerCase() || ''}`}
               value={searchTerm || selected?.text || ''}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
+                if (e.target.value == '') {
+                  field.onChange(null);
+                  setSearchTerm('');
+                } else {
+                  setSearchTerm(e.target.value);
+                }
               }}
               disabled={disabled}
               status={fieldState.invalid ? 'error' : undefined}
@@ -194,6 +199,7 @@ export const LongOptionDropdownField = ({
                             shouldDirty: true,
                             shouldValidate: true,
                           });
+
                         field.onChange(opt.value);
                         setSearchTerm(null);
                       }}
