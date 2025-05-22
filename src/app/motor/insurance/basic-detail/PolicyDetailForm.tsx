@@ -457,7 +457,7 @@ const PolicyDetailForm = ({
           <div className='max-w-[1200px]'>
             {!isSingpassFlow && (
               <>
-                <div className='relative w-full' style={{ zIndex: '999' }}>
+                <div className='relative w-full' style={{ zIndex: '99' }}>
                   <div className='text-xl font-bold'>
                     Enter Your Policy Details
                   </div>
@@ -676,7 +676,7 @@ const PolicyDetailForm = ({
           </Form.Item>
         </div>
       </div> */}
-      <div className='fixed bottom-0 w-full bg-white'>
+      <div className='fixed bottom-0 w-full bg-white' style={{ zIndex: 100 }}>
         <div className='flex w-full justify-center py-3'>
           <PrimaryButton
             loading={isLoading}
