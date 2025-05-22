@@ -1,10 +1,8 @@
-import { Select, SelectProps } from 'antd';
-import { useState } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Input, Select, SelectProps } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import { Controller, useFormContext, UseFormSetValue } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
-
-import { useLockBodyScroll } from '@/hook/useLockBodyScroll';
 
 interface DropdownFieldProps extends SelectProps {
   name: string;
@@ -12,6 +10,7 @@ interface DropdownFieldProps extends SelectProps {
   label?: string;
   className?: string;
   renderOption?: (option: DropdownOption) => React.ReactNode;
+  setValue?: any;
 }
 
 export interface DropdownOption {
@@ -41,10 +40,6 @@ export const DropdownField = ({
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
-  const [open, setOpen] = useState(false);
-
-  // Lock scroll when open dropdown
-  useLockBodyScroll(open);
 
   return (
     <>
@@ -58,19 +53,9 @@ export const DropdownField = ({
               {...props}
               {...field}
               value={field.value}
-              onDropdownVisibleChange={(visible) => {
-                setOpen(visible);
-
-                const scrollableDiv = document.getElementById('scrollableDiv');
-                if (scrollableDiv) {
-                  scrollableDiv.style.overflow = visible ? 'hidden' : '';
-                }
-              }}
-              onPopupScroll={(e) => e.stopPropagation()}
               onChange={(value, option) => {
                 field.onChange(value);
                 props.onChange?.(value, option);
-                setOpen(false);
               }}
               disabled={disabled}
               optionFilterProp='children'
@@ -92,16 +77,7 @@ export const DropdownField = ({
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
               }}
-              onFocus={() => {
-                document.documentElement.style.overflow = 'hidden';
-              }}
-              onBlur={() => {
-                document.documentElement.style.overflow = '';
-              }}
-              getPopupContainer={() =>
-                document.getElementById('scrollableDiv') || document.body
-              } // Make sure the dropdown outside the parent class has scrolling
-              virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
+              // virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
               // // https://github.com/ant-design/ant-design/issues/26480
             >
               {options.map((option: DropdownOption) => (
@@ -119,6 +95,130 @@ export const DropdownField = ({
         )}
       />
     </>
+  );
+};
+
+export const LongOptionDropdownField = ({
+  name,
+  label,
+  options,
+  renderOption,
+  setValue,
+  ...props
+}: DropdownFieldProps) => {
+  const { control } = useFormContext();
+  const [searchTerm, setSearchTerm] = useState(
+    control._formValues[name] || null,
+  );
+  const open = searchTerm !== null;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const filteredOptions =
+    searchTerm == null
+      ? options
+      : searchTerm == ''
+        ? options
+        : options.filter((opt) =>
+            opt.text.toLowerCase().includes(searchTerm.toLowerCase()),
+          );
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setSearchTerm(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => {
+        const selected = options.find((opt) => opt.value === field.value);
+
+        return (
+          <div
+            className={props.className}
+            ref={containerRef}
+            style={{ position: 'relative' }}
+          >
+            {label && (
+              <label className='text-base font-semibold'>{label}</label>
+            )}
+            <Input
+              {...field}
+              type='text'
+              placeholder={`Select ${label?.toLowerCase() || ''}`}
+              value={searchTerm || selected?.text || ''}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
+              status={fieldState.invalid ? 'error' : undefined}
+              className='w-full rounded border px-3 py-2'
+              readOnly={false}
+            />
+
+            <span
+              className='absolute right-3 top-1/2 transform cursor-pointer'
+              onClick={() =>
+                setSearchTerm((prev: any) => {
+                  return prev == null ? '' : null;
+                })
+              }
+            >
+              <ArrowDownIcon size={20} />
+            </span>
+
+            {/* Dropdown option */}
+            {open && (
+              <ul
+                className='absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white'
+                style={{
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  zIndex: '9999',
+                }}
+              >
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((opt) => (
+                    <li
+                      key={opt.value}
+                      className='cursor-pointer px-3 py-2 hover:bg-blue-100'
+                      onClick={() => {
+                        console.log(setValue);
+                        if (setValue)
+                          setValue(name, opt.value, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          });
+                        field.onChange(opt.value);
+                        // setOpen(false);
+                        setSearchTerm(null);
+                      }}
+                    >
+                      {renderOption ? renderOption(opt) : opt.text}
+                    </li>
+                  ))
+                ) : (
+                  <li className='px-3 py-2 text-gray-400'>No options found</li>
+                )}
+              </ul>
+            )}
+
+            {fieldState.error && (
+              <span className='block text-sm text-red-500'>
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
+        );
+      }}
+    />
   );
 };
 

@@ -18,6 +18,7 @@ import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownField,
   DropdownOption,
+  LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
@@ -340,11 +341,12 @@ const PolicyDetailForm = ({
         validateStatus={errors[MOTOR_QUOTE.hire_purchase] ? 'error' : ''}
         className='mb-1'
       >
-        <DropdownField
+        <LongOptionDropdownField
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
           placeholder='Select name of finance company'
           options={hirePurchaseOptions}
+          setValue={methods.setValue}
           showSearch
         />
       </Form.Item>
@@ -452,11 +454,7 @@ const PolicyDetailForm = ({
           style={{ maxHeight: 'calc(100vh - 257px)', overflow: 'scroll' }}
           {...props}
         >
-          <div
-            className='max-w-[1200px]'
-            id='scrollableDiv'
-            style={{ maxHeight: '100vh - 227px ', overflow: 'auto' }}
-          >
+          <div className='max-w-[1200px]' id='scrollableDiv'>
             {!isSingpassFlow && (
               <>
                 <div className='w-full'>
@@ -540,11 +538,12 @@ const PolicyDetailForm = ({
                     </div>
                     <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
                       <Form.Item name={MOTOR_QUOTE.vehicle_make}>
-                        <DropdownField
+                        <LongOptionDropdownField
                           name={MOTOR_QUOTE.vehicle_make}
                           label='Vehicle Make'
                           placeholder='Select vehicle make'
                           options={makeOptionsFormatted}
+                          setValue={methods.setValue}
                           onChange={() => {
                             // Reset model when make changes
                             methods.setValue(
@@ -557,11 +556,12 @@ const PolicyDetailForm = ({
                       </Form.Item>
 
                       <Form.Item name={MOTOR_QUOTE.vehicle_model}>
-                        <DropdownField
+                        <LongOptionDropdownField
                           name={MOTOR_QUOTE.vehicle_model}
                           label='Vehicle Model'
                           placeholder='Select vehicle model'
                           options={modelOptionsFormatted}
+                          setValue={methods.setValue}
                           disabled={!vehicle_make || isLoading}
                           notFoundContent={
                             isLoadingModelOptions ? (
