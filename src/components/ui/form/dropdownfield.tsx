@@ -108,12 +108,8 @@ export const LongOptionDropdownField = ({
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
-  const [searchTerm, setSearchTerm] = useState(
-    control._formValues[name] || null,
-  );
+  const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const open = isDropdownOpen;
-
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -122,13 +118,11 @@ export const LongOptionDropdownField = ({
   }, []);
 
   const filteredOptions =
-    searchTerm == null
+    searchTerm === ''
       ? options
-      : searchTerm === ''
-        ? options
-        : options.filter((opt) =>
-            opt.text.toLowerCase().includes(String(searchTerm).toLowerCase()),
-          );
+      : options.filter((opt) =>
+          opt.text.toLowerCase().includes(searchTerm.toLowerCase()),
+        );
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -159,40 +153,44 @@ export const LongOptionDropdownField = ({
             {label && (
               <label className='text-base font-semibold'>{label}</label>
             )}
+
+            {/* Display-only input */}
             <Input
-              {...field}
               type='text'
               placeholder={`Select ${label?.toLowerCase() || ''}`}
-              value={searchTerm || selected?.text || ''}
-              onChange={(e) => {
-                if (e.target.value == '') {
-                  field.onChange(null);
-                  setSearchTerm('');
-                } else {
-                  setSearchTerm(e.target.value);
-                }
-              }}
+              value={selected?.text || ''}
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
               disabled={disabled}
+              readOnly
               status={fieldState.invalid ? 'error' : undefined}
               className='w-full rounded border px-3 py-2'
-              readOnly={false}
             />
 
             <span
               className='absolute right-3 transform cursor-pointer pt-[10px]'
-              onClick={() => {
-                setIsDropdownOpen((prev) => !prev);
-              }}
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
               <ArrowDownIcon size={20} />
             </span>
 
-            {/* Dropdown option */}
-            {open && (
+            {isDropdownOpen && (
               <ul
                 className='absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white'
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
               >
+                {/* Search inside dropdown */}
+                <li className='px-3 py-2'>
+                  <input
+                    type='text'
+                    placeholder='Search...'
+                    className='w-full rounded border px-2 py-1 text-sm'
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    autoFocus
+                  />
+                </li>
+
+                {/* Filtered options */}
                 {filteredOptions.length > 0 ? (
                   filteredOptions.map((opt) => (
                     <li
@@ -204,9 +202,8 @@ export const LongOptionDropdownField = ({
                             shouldDirty: true,
                             shouldValidate: true,
                           });
-
                         field.onChange(opt.value);
-                        setSearchTerm(null);
+                        setSearchTerm('');
                         setIsDropdownOpen(false);
                       }}
                     >
