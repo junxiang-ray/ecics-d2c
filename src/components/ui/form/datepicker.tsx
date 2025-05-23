@@ -45,6 +45,7 @@ export const DatePickerField = ({
                   }
                 />
               }
+              inputReadOnly={true}
               className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
             />
             {fieldState.error && (
