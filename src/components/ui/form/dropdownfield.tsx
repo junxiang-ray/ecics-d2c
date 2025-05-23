@@ -154,8 +154,8 @@ export const LongOptionDropdownField = ({
               <label className='text-base font-semibold'>{label}</label>
             )}
 
-            {/* Display-only input */}
             <Input
+              {...field}
               type='text'
               placeholder={`Select ${label?.toLowerCase() || ''}`}
               value={selected?.text || ''}
