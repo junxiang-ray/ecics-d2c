@@ -118,6 +118,23 @@ export const LongOptionDropdownField = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>(
+    'down',
+  );
+
+  useEffect(() => {
+    if (isDropdownOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      if (spaceBelow < 200 && spaceAbove > spaceBelow) {
+        setDropdownDirection('up');
+      } else {
+        setDropdownDirection('down');
+      }
+    }
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     setSearchTerm('');
@@ -171,8 +188,14 @@ export const LongOptionDropdownField = ({
 
             {isDropdownOpen && (
               <ul
-                className='absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white'
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+                className={`absolute z-50 max-h-60 w-full overflow-auto rounded border bg-white ${
+                  dropdownDirection === 'down' ? 'mt-1' : 'mb-1'
+                }`}
+                style={{
+                  top: dropdownDirection === 'down' ? '100%' : undefined,
+                  bottom: dropdownDirection === 'up' ? '100%' : undefined,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                }}
               >
                 {/* Search inside dropdown */}
                 <li className='px-3 py-2'>
