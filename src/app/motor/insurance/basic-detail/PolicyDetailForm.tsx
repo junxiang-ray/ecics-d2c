@@ -346,7 +346,6 @@ const PolicyDetailForm = ({
           label='Vehicle Financed By'
           placeholder='Select name of finance company'
           options={hirePurchaseOptions}
-          setValue={methods.setValue}
           showSearch
         />
       </Form.Item>
@@ -543,7 +542,6 @@ const PolicyDetailForm = ({
                           label='Vehicle Make'
                           placeholder='Select vehicle make'
                           options={makeOptionsFormatted}
-                          setValue={methods.setValue}
                           onChange={() => {
                             // Reset model when make changes
                             methods.setValue(
@@ -561,7 +559,6 @@ const PolicyDetailForm = ({
                           label='Vehicle Model'
                           placeholder='Select vehicle model'
                           options={modelOptionsFormatted}
-                          setValue={methods.setValue}
                           disabled={!vehicle_make || isLoading}
                           notFoundContent={
                             isLoadingModelOptions ? (

@@ -4,13 +4,14 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
 
+import { useHandleClickOutside } from '@/hook/useHandleClickOutside';
+
 interface DropdownFieldProps extends SelectProps {
   name: string;
   options: DropdownOption[];
   label?: string;
   className?: string;
   renderOption?: (option: DropdownOption) => React.ReactNode;
-  setValue?: any;
 }
 
 export interface DropdownOption {
@@ -77,6 +78,13 @@ export const DropdownField = ({
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
               }}
+              onFocus={() => {
+                document.documentElement.style.overflow = 'hidden';
+              }}
+              onBlur={() => {
+                document.documentElement.style.overflow = '';
+              }}
+              getPopupContainer={() => document.body} // Make sure the dropdown outside the parent class has scrolling
               // virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
               // // https://github.com/ant-design/ant-design/issues/26480
             >
@@ -104,7 +112,6 @@ export const LongOptionDropdownField = ({
   options,
   disabled,
   renderOption,
-  setValue,
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
@@ -124,18 +131,7 @@ export const LongOptionDropdownField = ({
           opt.text.toLowerCase().includes(searchTerm.toLowerCase()),
         );
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  useHandleClickOutside(containerRef, () => setIsDropdownOpen(false));
 
   return (
     <Controller
@@ -197,11 +193,6 @@ export const LongOptionDropdownField = ({
                       key={opt.value}
                       className='cursor-pointer px-3 py-2 hover:bg-blue-100'
                       onClick={() => {
-                        if (setValue)
-                          setValue(name, opt.value, {
-                            shouldDirty: true,
-                            shouldValidate: true,
-                          });
                         field.onChange(opt.value);
                         setSearchTerm('');
                         setIsDropdownOpen(false);
