@@ -29,8 +29,9 @@ export const TextAreaField = ({
             {...props}
             {...field}
             status={fieldState.invalid ? 'error' : undefined}
-            className={`w-full ${fieldState.invalid ? '!border-red-500' : ''} min-h-[32px]`} // Added Tailwind min-height class
+            className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''} min-h-[32px]`} // Added Tailwind min-height class
             rows={rows}
+            autoSize={{ minRows: rows, maxRows: rows + 3 }}
             style={{
               height: '32px',
               minHeight: '32px',

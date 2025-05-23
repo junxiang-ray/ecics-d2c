@@ -1,10 +1,10 @@
-import { Select, SelectProps } from 'antd';
-import { useState } from 'react';
+import { Input, Select, SelectProps } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
 
-import { useLockBodyScroll } from '@/hook/useLockBodyScroll';
+import { useHandleClickOutside } from '@/hook/useHandleClickOutside';
 
 interface DropdownFieldProps extends SelectProps {
   name: string;
@@ -41,10 +41,6 @@ export const DropdownField = ({
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
-  const [open, setOpen] = useState(false);
-
-  // Lock scroll when open dropdown
-  useLockBodyScroll(open);
 
   return (
     <>
@@ -58,19 +54,9 @@ export const DropdownField = ({
               {...props}
               {...field}
               value={field.value}
-              onDropdownVisibleChange={(visible) => {
-                setOpen(visible);
-
-                const scrollableDiv = document.getElementById('scrollableDiv');
-                if (scrollableDiv) {
-                  scrollableDiv.style.overflow = visible ? 'hidden' : '';
-                }
-              }}
-              onPopupScroll={(e) => e.stopPropagation()}
               onChange={(value, option) => {
                 field.onChange(value);
                 props.onChange?.(value, option);
-                setOpen(false);
               }}
               disabled={disabled}
               optionFilterProp='children'
@@ -98,10 +84,8 @@ export const DropdownField = ({
               onBlur={() => {
                 document.documentElement.style.overflow = '';
               }}
-              getPopupContainer={() =>
-                document.getElementById('scrollableDiv') || document.body
-              } // Make sure the dropdown outside the parent class has scrolling
-              virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
+              getPopupContainer={() => document.body} // Make sure the dropdown outside the parent class has scrolling
+              // virtual={false} // to resolve the scrolling bug for ant design exist after Ant v4.6 but may be less performant with very large option lists
               // // https://github.com/ant-design/ant-design/issues/26480
             >
               {options.map((option: DropdownOption) => (
@@ -119,6 +103,119 @@ export const DropdownField = ({
         )}
       />
     </>
+  );
+};
+
+export const LongOptionDropdownField = ({
+  name,
+  label,
+  options,
+  disabled,
+  renderOption,
+  ...props
+}: DropdownFieldProps) => {
+  const { control } = useFormContext();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setSearchTerm('');
+    setIsDropdownOpen(false);
+  }, []);
+
+  const filteredOptions =
+    searchTerm === ''
+      ? options
+      : options.filter((opt) =>
+          opt.text.toLowerCase().includes(searchTerm.toLowerCase()),
+        );
+
+  useHandleClickOutside(containerRef, () => setIsDropdownOpen(false));
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => {
+        const selected = options.find((opt) => opt.value === field.value);
+
+        return (
+          <div
+            className={props.className}
+            ref={containerRef}
+            style={{ position: 'relative' }}
+          >
+            {label && (
+              <label className='text-base font-semibold'>{label}</label>
+            )}
+
+            <Input
+              {...field}
+              type='text'
+              placeholder={`Select ${label?.toLowerCase() || ''}`}
+              value={selected?.text || ''}
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+              disabled={disabled}
+              readOnly
+              status={fieldState.invalid ? 'error' : undefined}
+              className='w-full rounded border px-3 py-2'
+            />
+
+            <span
+              className='absolute right-3 transform cursor-pointer pt-[10px]'
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+            >
+              <ArrowDownIcon size={20} />
+            </span>
+
+            {isDropdownOpen && (
+              <ul
+                className='absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white'
+                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+              >
+                {/* Search inside dropdown */}
+                <li className='px-3 py-2'>
+                  <input
+                    type='text'
+                    placeholder='Search...'
+                    className='w-full rounded border px-2 py-1 text-sm'
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    autoFocus
+                  />
+                </li>
+
+                {/* Filtered options */}
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((opt) => (
+                    <li
+                      key={opt.value}
+                      className='cursor-pointer px-3 py-2 hover:bg-blue-100'
+                      onClick={() => {
+                        field.onChange(opt.value);
+                        setSearchTerm('');
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      {renderOption ? renderOption(opt) : opt.text}
+                    </li>
+                  ))
+                ) : (
+                  <li className='px-3 py-2 text-gray-400'>No options found</li>
+                )}
+              </ul>
+            )}
+
+            {fieldState.error && (
+              <span className='block text-sm text-red-500'>
+                {fieldState.error.message}
+              </span>
+            )}
+          </div>
+        );
+      }}
+    />
   );
 };
 
