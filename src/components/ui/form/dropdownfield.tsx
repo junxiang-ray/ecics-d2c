@@ -12,6 +12,7 @@ interface DropdownFieldProps extends SelectProps {
   label?: string;
   className?: string;
   renderOption?: (option: DropdownOption) => React.ReactNode;
+  notFoundContent?: React.ReactNode;
 }
 
 export interface DropdownOption {
@@ -112,6 +113,7 @@ export const LongOptionDropdownField = ({
   options,
   disabled,
   renderOption,
+  notFoundContent,
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
@@ -235,7 +237,7 @@ export const LongOptionDropdownField = ({
                     ))
                   ) : (
                     <li className='px-3 py-2 text-gray-400'>
-                      No options found
+                      {notFoundContent || 'No options found'}
                     </li>
                   )}
                 </ul>
