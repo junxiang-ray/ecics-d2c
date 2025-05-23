@@ -1,5 +1,5 @@
 import { Input, Select, SelectProps } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
@@ -12,6 +12,7 @@ interface DropdownFieldProps extends SelectProps {
   label?: string;
   className?: string;
   renderOption?: (option: DropdownOption) => React.ReactNode;
+  notFoundContent?: React.ReactNode;
 }
 
 export interface DropdownOption {
@@ -112,24 +113,51 @@ export const LongOptionDropdownField = ({
   options,
   disabled,
   renderOption,
+  notFoundContent,
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>(
+    'down',
+  );
+
+  const handlePosition = useCallback(() => {
+    if (!isDropdownOpen || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    const newDirection =
+      spaceBelow < 200 && spaceAbove > spaceBelow ? 'up' : 'down';
+    setDropdownDirection(newDirection);
+  }, [isDropdownOpen]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handlePosition, true);
+    window.addEventListener('resize', handlePosition);
+
+    return () => {
+      window.removeEventListener('scroll', handlePosition, true);
+      window.removeEventListener('resize', handlePosition);
+    };
+  }, [handlePosition]);
 
   useEffect(() => {
     setSearchTerm('');
     setIsDropdownOpen(false);
   }, []);
 
-  const filteredOptions =
-    searchTerm === ''
+  const filteredOptions = useMemo(() => {
+    return searchTerm === ''
       ? options
       : options.filter((opt) =>
           opt.text.toLowerCase().includes(searchTerm.toLowerCase()),
         );
+  }, [searchTerm, options]);
 
   useHandleClickOutside(containerRef, () => setIsDropdownOpen(false));
 
@@ -168,14 +196,19 @@ export const LongOptionDropdownField = ({
             >
               <ArrowDownIcon size={20} />
             </span>
-
             {isDropdownOpen && (
-              <ul
-                className='absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded border bg-white'
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+              <div
+                className='absolute z-50 w-full rounded border bg-white shadow-lg'
+                style={{
+                  top: dropdownDirection === 'down' ? '100%' : undefined,
+                  bottom: dropdownDirection === 'up' ? '100%' : undefined,
+                  transform:
+                    dropdownDirection === 'up'
+                      ? 'translateY(-4px)'
+                      : 'translateY(4px)',
+                }}
               >
-                {/* Search inside dropdown */}
-                <li className='px-3 py-2'>
+                <div className='sticky top-0 z-10 border-b bg-white px-3 py-2'>
                   <input
                     type='text'
                     placeholder='Search...'
@@ -184,29 +217,32 @@ export const LongOptionDropdownField = ({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     autoFocus
                   />
-                </li>
+                </div>
 
-                {/* Filtered options */}
-                {filteredOptions.length > 0 ? (
-                  filteredOptions.map((opt) => (
-                    <li
-                      key={opt.value}
-                      className='cursor-pointer px-3 py-2 hover:bg-blue-100'
-                      onClick={() => {
-                        field.onChange(opt.value);
-                        setSearchTerm('');
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      {renderOption ? renderOption(opt) : opt.text}
+                <ul className='max-h-60 overflow-auto'>
+                  {filteredOptions.length > 0 ? (
+                    filteredOptions.map((opt) => (
+                      <li
+                        key={opt.value}
+                        className='cursor-pointer px-3 py-2 hover:bg-blue-100'
+                        aria-selected={field.value === opt.value}
+                        onClick={() => {
+                          field.onChange(opt.value);
+                          setSearchTerm('');
+                          setIsDropdownOpen(false);
+                        }}
+                      >
+                        {renderOption ? renderOption(opt) : opt.text}
+                      </li>
+                    ))
+                  ) : (
+                    <li className='px-3 py-2 text-gray-400'>
+                      {notFoundContent || 'No options found'}
                     </li>
-                  ))
-                ) : (
-                  <li className='px-3 py-2 text-gray-400'>No options found</li>
-                )}
-              </ul>
+                  )}
+                </ul>
+              </div>
             )}
-
             {fieldState.error && (
               <span className='block text-sm text-red-500'>
                 {fieldState.error.message}
