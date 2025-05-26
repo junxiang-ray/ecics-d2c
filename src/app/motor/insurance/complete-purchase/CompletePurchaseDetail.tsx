@@ -226,7 +226,26 @@ export default function CompletePurchaseDetail({
         title: 'Marital Status',
         value: quote?.data?.personal_info?.marital_status ?? 'N/A',
       },
-      { title: 'Address', value: quote?.data?.personal_info?.address ?? 'N/A' },
+      {
+        title: 'Address Line 1',
+        value: quote?.data?.personal_info?.address?.[0] ?? 'N/A',
+      },
+      ...(quote?.data?.personal_info?.address?.[1]
+        ? [
+            {
+              title: 'Address Line 2',
+              value: quote?.data?.personal_info?.address?.[1],
+            },
+          ]
+        : []),
+      ...(quote?.data?.personal_info?.address?.[2]
+        ? [
+            {
+              title: 'Address Line 3',
+              value: quote?.data?.personal_info?.address?.[2],
+            },
+          ]
+        : []),
       {
         title: 'Postal Code',
         value: quote?.data?.personal_info?.post_code ?? 'N/A',
