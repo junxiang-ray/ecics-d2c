@@ -161,9 +161,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const initFormDate: FormData = {
     name: name,
     nric: nric,
-    address1: Array.isArray(address) ? address[0] || '' : address[0] || '',
-    address2: Array.isArray(address) ? address[1] || '' : address[1] || '',
-    address3: Array.isArray(address) ? address[2] || '' : address[2] || '',
+    address1: Array.isArray(address) ? address[0] || '' : '',
+    address2: Array.isArray(address) ? address[1] || '' : '',
+    address3: Array.isArray(address) ? address[2] || '' : '',
     pinCode: post_code,
     vehicleNumber: vehicle_number,
     engineNumber: engine_number,
