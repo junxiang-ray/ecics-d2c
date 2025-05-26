@@ -93,8 +93,9 @@ export default function CompletePurchaseDetail({
         return ROUTES.INSURANCE.BASIC_DETAIL;
       case 'addons':
       case 'driver':
-      case 'owner':
         return ROUTES.INSURANCE.ADD_ON;
+      case 'owner':
+        return ROUTES.INSURANCE.PERSONAL_DETAIL;
       default:
         return undefined;
     }
