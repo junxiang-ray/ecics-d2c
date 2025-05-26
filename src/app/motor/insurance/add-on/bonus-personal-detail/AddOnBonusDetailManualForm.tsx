@@ -161,9 +161,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const initFormDate: FormData = {
     name: name,
     nric: nric,
-    address1: Array.isArray(address) ? address[0] || '' : address || '',
-    address2: Array.isArray(address) ? address[1] || '' : '',
-    address3: Array.isArray(address) ? address[2] || '' : '',
+    address1: Array.isArray(address) ? address[0] || '' : address[0] || '',
+    address2: Array.isArray(address) ? address[1] || '' : address[1] || '',
+    address3: Array.isArray(address) ? address[2] || '' : address[2] || '',
     pinCode: post_code,
     vehicleNumber: vehicle_number,
     engineNumber: engine_number,
@@ -337,7 +337,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               <InputField
                 name='address1'
                 label='Address Line 1'
-                placeholder='Enter Address Line 1'
+                placeholder='Block number and street name'
               />
             </Form.Item>
 
@@ -348,7 +348,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               <InputField
                 name='address2'
                 label='Address Line 2'
-                placeholder='Enter Address Line 2'
+                placeholder='Unit number (floor-unit format)'
               />
             </Form.Item>
 
@@ -359,7 +359,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               <InputField
                 name='address3'
                 label='Address Line 3'
-                placeholder='Enter Address Line 3'
+                placeholder='Building Name or estate name (Optional)'
               />
             </Form.Item>
 
