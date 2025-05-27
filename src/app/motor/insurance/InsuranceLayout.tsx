@@ -111,7 +111,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
 
   return (
     <>
-      <div className='mx-auto h-[163px] w-full items-center justify-center bg-white md:h-[130px] lg:max-w-[1280px]'>
+      <div className='no-scroll-mobile mx-auto h-[163px] w-full items-center justify-center bg-white md:h-[130px] lg:max-w-[1280px]'>
         <div className='block h-16 md:hidden'>
           <BusinessPartnerBar
             businessName={partnerInfo ? 'Business Partner Name' : ''}
