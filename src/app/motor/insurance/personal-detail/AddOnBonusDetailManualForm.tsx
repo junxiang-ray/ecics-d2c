@@ -76,13 +76,21 @@ const createSchema = (listNric: any[] | undefined) =>
         invalid_type_error: 'Marital status is required',
       })
       .min(1, 'Marital status is required'),
-    address: z
+    address1: z
       .string({
         required_error: 'Address is required',
         invalid_type_error: 'Address is required',
       })
       .nonempty('Address is required')
       .max(60, 'Address must be at most 60 characters'),
+    address2: z
+      .string()
+      .max(60, 'Address must be at most 60 characters')
+      .optional(),
+    address3: z
+      .string()
+      .max(60, 'Address must be at most 60 characters')
+      .optional(),
     pinCode: z
       .string({
         required_error: 'Postal Code is required',
@@ -144,7 +152,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const initFormDate: FormData = {
     name: name ?? '',
     nric: nric ?? '',
-    address: Array.isArray(address) ? address.join('') : (address ?? ''),
+    address1: address?.[0] ?? '',
+    address2: address?.[1] ?? '',
+    address3: address?.[2] ?? '',
     pinCode: post_code ?? '',
     vehicleNumber: vehicle_number ?? '',
     engineNumber: engine_number,
@@ -194,7 +204,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         nric: data.nric,
         gender: data.gender,
         marital_status: data.maritalStatus,
-        address: [data.address],
+        address: [data.address1, data.address2, data.address3],
         post_code: data.pinCode,
       },
       vehicle_info_selected: {
@@ -317,13 +327,35 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               </Form.Item>
 
               <Form.Item
-                name='address'
-                validateStatus={errors['address'] ? 'error' : ''}
+                name='address1'
+                validateStatus={errors['address1'] ? 'error' : ''}
               >
                 <InputField
-                  name='address'
-                  label='Address'
-                  placeholder='Enter Address'
+                  name='address1'
+                  label='Address Line 1'
+                  placeholder='Block number and street name'
+                />
+              </Form.Item>
+
+              <Form.Item
+                name='address2'
+                validateStatus={errors['address2'] ? 'error' : ''}
+              >
+                <InputField
+                  name='address2'
+                  label='Address Line 2'
+                  placeholder='Unit number (floor-unit format)'
+                />
+              </Form.Item>
+
+              <Form.Item
+                name='address3'
+                validateStatus={errors['address3'] ? 'error' : ''}
+              >
+                <InputField
+                  name='address3'
+                  label='Address Line 3'
+                  placeholder='Building Name or estate name (Optional)'
                 />
               </Form.Item>
 
