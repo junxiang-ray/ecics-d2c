@@ -29,7 +29,6 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRow from './AddOnRow';
 import AddOnRowDetail from './AddOnRowDetail';
-import AddOnBonusDetailManualForm from '../personal-detail/AddOnBonusDetailManualForm';
 import ModalPremium from './ModalPremium';
 import TruncateText from './TruncateText ';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';

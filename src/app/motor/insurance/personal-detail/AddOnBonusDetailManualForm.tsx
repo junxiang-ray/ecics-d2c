@@ -15,6 +15,7 @@ import {
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -23,6 +24,7 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote, useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
+import ModalPremium from '../add-on/ModalPremium';
 import { RenewalModal } from '../basic-detail/modal/RenewalModal';
 import { UnableQuote } from '../basic-detail/modal/UnableQuote';
 import {
@@ -30,7 +32,6 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '../basic-detail/options';
 import { PricingSummary } from '../components/FeeBar';
-import ModalPremium from '../add-on/ModalPremium';
 
 const createSchema = (listNric: any[] | undefined) =>
   z.object({
