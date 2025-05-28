@@ -13,7 +13,7 @@ export const POST = requestHandler(async (req: NextRequest) => {
   const result = await saveQuote(data);
 
   if (!result.data) {
-    return ErrBadRequest('Invalid quote information');
+    return ErrBadRequest(result.message);
   }
 
   return successRes(result);
