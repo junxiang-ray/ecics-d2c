@@ -26,14 +26,14 @@ export default function AddOnRow({
   isRequired?: boolean;
   children?: React.ReactNode;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const { isMobile } = useDeviceDetection();
 
-  useEffect(() => {
-    if (!isMobile) {
-      setIsOpen(true);
-    }
-  }, [isMobile]);
+  // useEffect(() => {
+  //   if (!isMobile) {
+  //     setIsOpen(true);
+  //   }
+  // }, [isMobile]);
 
   return (
     <div
@@ -57,7 +57,13 @@ export default function AddOnRow({
         </div>
       )}
       <div className='flex w-full items-center justify-between gap-4'>
-        {status === 'new' ? (
+        <div className='bg- flex items-center gap-4'>
+          <div className='flex h-9 w-9 justify-center rounded-[20px] border border-[#00ADEF] bg-[#00ADEF1A]'>
+            {icon}
+          </div>
+          <p className='font-bold'>{title}</p>
+        </div>
+        {/* {status === 'new' ? (
           <div className='bg- flex items-center gap-4'>
             <div className='flex h-9 w-9 justify-center rounded-[20px] border border-[#00ADEF] bg-[#00ADEF1A]'>
               {icon}
@@ -83,7 +89,7 @@ export default function AddOnRow({
             })}
             onClick={() => setIsOpen((prev) => !prev)}
           />
-        )}
+        )} */}
       </div>
       {isOpen && <div className='pt-2'>{children}</div>}
     </div>

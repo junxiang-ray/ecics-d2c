@@ -54,7 +54,7 @@ function AddonAdditionalDriver({
   const totalFee = drivers.length ? baseFee * (drivers.length - 1) : 0;
   // addon with code: CAR_FNCD_AJE is required additional driver
   const isRequired = addon.code === 'CAR_FNCD_AND';
-
+  console.log(drivers, 'chinh123');
   return (
     <AddOnRow
       isRequired={isRequired}
@@ -65,7 +65,7 @@ function AddonAdditionalDriver({
       <TruncateText text={addon.description} />
       <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
       <div className='flex flex-col gap-2'>
-        <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
+        {/* <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
           <p className='text-[#525252]'>{formatCurrency(totalFee)}</p>
           {drivers.length > 0 ? (
             <SecondaryButton
@@ -77,7 +77,7 @@ function AddonAdditionalDriver({
             </SecondaryButton>
           ) : (
             <SecondaryButton
-              className='black h-8 w-28 rounded-md'
+              className='black h-8 w-28 rounded-md bg-[#00ADEF] text-[#FFFFFF] hover:bg-[#00ADEF]'
               onClick={() => {
                 setIsShowAdditionDriver(true);
               }}
@@ -86,6 +86,33 @@ function AddonAdditionalDriver({
               Add
             </SecondaryButton>
           )}
+          {isShowAdditionDriver && (
+            <AdditionDriver
+              isShowAdditionDriver={isShowAdditionDriver}
+              setIsShowAdditionDriver={setIsShowAdditionDriver}
+              setDataDrivers={setDrivers}
+              dataDrivers={drivers}
+              policyStartDate={dayjs(policyStartDate, 'DD/MM/YYYY').toDate()}
+            />
+          )}
+        </div> */}
+        <div className='flex flex-col gap-4 pb-4'>
+          <p className='text-sm font-bold'>Additional Named Drivers</p>
+          <div className='flex w-full flex-col items-center justify-center gap-2'>
+            <p className='text-sm font-normal text-[#535353]'>
+              No drivers added yet
+            </p>
+            <SecondaryButton
+              className='h-7 w-28 rounded-lg border border-[#00ADEF] bg-[#00ADEF] text-xs font-semibold text-white'
+              onClick={() => {
+                setIsShowAdditionDriver(true);
+              }}
+              disabled={isPending}
+            >
+              Add Driver
+            </SecondaryButton>
+          </div>
+
           {isShowAdditionDriver && (
             <AdditionDriver
               isShowAdditionDriver={isShowAdditionDriver}
