@@ -10,6 +10,12 @@ export enum UserStep {
   POLICY_DETAILS = 'policy_details',
   SELECT_PLAN = 'select_plan',
   SELECT_ADD_ON = 'select_add_on',
+  PERSONAL_DETAIL = 'personal_detail',
   COMPLETE_PURCHASE = 'complete_purchase',
   COMPLETE = 'complete',
+}
+
+export enum ProductName {
+  CAR = 'car',
+  MAID = 'maid',
 }
