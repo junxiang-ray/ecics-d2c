@@ -233,7 +233,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           key,
           data: transformedData,
           is_sending_email: false,
-          product_name: PRODUCT_NAME.CAR,
         };
         saveQuote(dataQuote).then((res) => {
           if (res) {

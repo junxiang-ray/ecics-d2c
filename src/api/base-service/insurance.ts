@@ -24,17 +24,11 @@ export default {
   saveProposal(data: ProposalPayload) {
     return baseClient.post<any>('/car/proposal', data);
   },
-  saveQuote(
-    key: string,
-    data: any,
-    is_sending_email: boolean,
-    product_name: string,
-  ) {
+  saveQuote(key: string, data: any, is_sending_email: boolean) {
     const formatData = {
       data: { ...data },
       key: key,
       is_sending_email: is_sending_email,
-      product_name: product_name,
     };
     return baseClient.post<QuoteResponse>(`${API_SAVE_QUOTE}`, formatData);
   },

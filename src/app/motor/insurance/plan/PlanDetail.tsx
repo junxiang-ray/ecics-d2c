@@ -13,7 +13,6 @@ import { formatCurrency } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
@@ -97,12 +96,7 @@ function PlanDetail({
       selected_plan: plan?.title,
       key: key,
     };
-    saveQuote({
-      key,
-      data,
-      is_sending_email: false,
-      product_name: PRODUCT_NAME.CAR,
-    }).then((res) => {
+    saveQuote({ key, data, is_sending_email: false }).then((res) => {
       if (res) {
         dispatch(updateQuote(res));
       }

@@ -9,7 +9,6 @@ import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import ProcessBar from '@/components/ProcessBar';
 import { SecondaryButton } from '@/components/ui/buttons';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -105,7 +104,6 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       key,
       data,
       is_sending_email: true,
-      product_name: PRODUCT_NAME.CAR,
     }).then((res) => {
       dispatch(updateQuote(res));
     });
