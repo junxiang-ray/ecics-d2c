@@ -137,15 +137,15 @@ export async function saveQuote(data: saveQuoteDTO) {
     `Quote not found. Creating a new quote with data: ${JSON.stringify(data)}`,
   );
 
-  const quoteType = await prisma.productType.findFirst({
+  const productType = await prisma.productType.findFirst({
     where: {
       name: data?.product_name || '',
     },
   });
 
-  logger.info(`Product type: ${quoteType}`);
+  logger.info(`Product type: ${productType}`);
 
-  if (!quoteType) {
+  if (!productType) {
     return {
       message: 'Product type not found.',
       data: null,
@@ -174,7 +174,7 @@ export async function saveQuote(data: saveQuoteDTO) {
       company_id: data.company_id,
       payment_result_id: data.payment_result_id,
       country_nationality_id: data.country_nationality_id,
-      product_type_id: quoteType?.id,
+      product_type_id: productType?.id,
       promo_code_id: data.promo_code_id,
     },
     omit: {
@@ -186,11 +186,11 @@ export async function saveQuote(data: saveQuoteDTO) {
   if (data.is_sending_email) {
     const retrieveQuoteHTML = generateQuoteEmail({
       quote_key: newQuote.key ?? '',
-      product_name: quoteType?.name ?? '',
+      product_name: productType?.name ?? '',
     });
     sendMail({
       to: newQuote.email ?? '',
-      subject: `ECICS Limited | Your ${capitalizeFirstLetter(quoteType?.name ?? '')} Insurance Purchase Journey`,
+      subject: `ECICS Limited | Your ${capitalizeFirstLetter(productType?.name ?? '')} Insurance Purchase Journey`,
       html: retrieveQuoteHTML,
     });
   }
