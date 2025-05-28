@@ -45,12 +45,19 @@ export const useSaveQuote = () => {
     key,
     data,
     is_sending_email,
+    product_name,
   }: {
     key: string;
     data: any;
     is_sending_email: boolean;
+    product_name: string;
   }) => {
-    const res = await insurance.saveQuote(key, data, is_sending_email);
+    const res = await insurance.saveQuote(
+      key,
+      data,
+      is_sending_email,
+      product_name,
+    );
     return res.data.data;
   };
   return useMutation({

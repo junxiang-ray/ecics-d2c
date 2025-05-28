@@ -8,6 +8,7 @@ import {
 import {
   API_GET_QUOTE_BY_KEY,
   API_POST_PERSONAL_INFO_SAVE,
+  API_SAVE_QUOTE,
 } from '@/constants/api.constant';
 
 import baseClient from './api.config';
@@ -23,13 +24,19 @@ export default {
   saveProposal(data: ProposalPayload) {
     return baseClient.post<any>('/car/proposal', data);
   },
-  saveQuote(key: string, data: any, is_sending_email: boolean) {
+  saveQuote(
+    key: string,
+    data: any,
+    is_sending_email: boolean,
+    product_name: string,
+  ) {
     const formatData = {
       data: { ...data },
       key: key,
       is_sending_email: is_sending_email,
+      product_name: product_name,
     };
-    return baseClient.post<QuoteResponse>('/quote/save', formatData);
+    return baseClient.post<QuoteResponse>(`${API_SAVE_QUOTE}`, formatData);
   },
   postPersonalInfoSave(payload: SavePersonalInfoPayload) {
     return baseClient.post<any>(`${API_POST_PERSONAL_INFO_SAVE}`, payload);

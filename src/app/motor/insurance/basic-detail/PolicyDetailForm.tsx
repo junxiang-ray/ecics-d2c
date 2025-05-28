@@ -23,6 +23,7 @@ import {
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { MOTOR_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import {
@@ -40,7 +41,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { ProductName } from '@/libs/enums/processBarEnums';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -298,7 +298,7 @@ const PolicyDetailForm = ({
 
       const payload = {
         key: key,
-        product_name: ProductName.CAR,
+        product_name: PRODUCT_NAME.CAR,
         partner_code: partnerCode,
         promo_code: applyPromoCode,
         company_id: value[MOTOR_QUOTE.hire_purchase],

@@ -14,8 +14,3 @@ export enum UserStep {
   COMPLETE_PURCHASE = 'complete_purchase',
   COMPLETE = 'complete',
 }
-
-export enum ProductName {
-  CAR = 'car',
-  MAID = 'maid',
-}

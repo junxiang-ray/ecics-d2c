@@ -20,6 +20,7 @@ import {
   RoadSideIcon,
 } from '@/components/icons/add-on-icons';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
@@ -29,11 +30,11 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRow from './AddOnRow';
 import AddOnRowDetail from './AddOnRowDetail';
-import AddOnBonusDetailManualForm from '../personal-detail/AddOnBonusDetailManualForm';
 import ModalPremium from './ModalPremium';
 import TruncateText from './TruncateText ';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
 import { PricingSummary } from '../components/FeeBar';
+import AddOnBonusDetailManualForm from '../personal-detail/AddOnBonusDetailManualForm';
 
 export const mapIconToTypeAddOn = [
   {
@@ -389,6 +390,7 @@ function AddOnDetail({
       key: key,
       data: data,
       is_sending_email: false,
+      product_name: PRODUCT_NAME.CAR,
     }).then((res) => {
       dispatch(updateQuote(res));
       setIsShowPopupPremium(false);
