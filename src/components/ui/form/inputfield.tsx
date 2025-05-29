@@ -4,9 +4,15 @@ import { Controller, useFormContext } from 'react-hook-form';
 interface InputFieldProps extends InputProps {
   name: string;
   label?: string;
+  requiredMark?: boolean;
 }
 
-export const InputField = ({ name, label, ...props }: InputFieldProps) => {
+export const InputField = ({
+  name,
+  label,
+  requiredMark,
+  ...props
+}: InputFieldProps) => {
   const { control } = useFormContext();
 
   return (
@@ -16,7 +22,10 @@ export const InputField = ({ name, label, ...props }: InputFieldProps) => {
         control={control}
         render={({ field, fieldState }) => (
           <>
-            <span className='text-base font-semibold'>{label}</span>
+            <span className='text-base font-semibold'>
+              {label}
+              {requiredMark && <span className='text-red-500'>*</span>}
+            </span>
             <Input
               {...props}
               {...field}

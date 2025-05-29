@@ -7,11 +7,13 @@ import CalendarIcon from '@/components/icons/CalendarIcon';
 interface DatePickerFieldProps extends Omit<DatePickerProps, 'value'> {
   name: string;
   label?: string;
+  requiredMark?: boolean;
 }
 
 export const DatePickerField = ({
   name,
   label,
+  requiredMark,
   format = 'DD/MM/YYYY',
   ...props
 }: DatePickerFieldProps) => {
@@ -23,7 +25,10 @@ export const DatePickerField = ({
       render={({ field, fieldState }) => {
         return (
           <>
-            <span className='text-base font-semibold'>{label}</span>
+            <span className='text-base font-semibold'>
+              {label}
+              {requiredMark && <span className='text-red-500'>*</span>}
+            </span>
             <DatePicker
               {...props}
               {...field}

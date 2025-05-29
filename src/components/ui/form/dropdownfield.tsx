@@ -10,6 +10,7 @@ interface DropdownFieldProps extends SelectProps {
   name: string;
   options: DropdownOption[];
   label?: string;
+  requiredMark?: boolean;
   className?: string;
   renderOption?: (option: DropdownOption) => React.ReactNode;
   notFoundContent?: React.ReactNode;
@@ -38,6 +39,7 @@ export const DropdownField = ({
   options,
   disabled,
   className,
+  requiredMark,
   renderOption,
   ...props
 }: DropdownFieldProps) => {
@@ -50,7 +52,12 @@ export const DropdownField = ({
         control={control}
         render={({ field, fieldState }) => (
           <>
-            {label && <span className='text-base font-semibold'>{label}</span>}
+            {label && (
+              <span className='text-base font-semibold'>
+                {label}
+                {requiredMark && <span className='text-red-500'>*</span>}
+              </span>
+            )}
             <Select
               {...props}
               {...field}
@@ -113,6 +120,7 @@ export const LongOptionDropdownField = ({
   options,
   disabled,
   renderOption,
+  requiredMark,
   notFoundContent,
   ...props
 }: DropdownFieldProps) => {
@@ -175,7 +183,10 @@ export const LongOptionDropdownField = ({
             style={{ position: 'relative' }}
           >
             {label && (
-              <label className='text-base font-semibold'>{label}</label>
+              <label className='text-base font-semibold'>
+                {label}
+                {requiredMark && <span className='text-red-500'>*</span>}
+              </label>
             )}
 
             <Input

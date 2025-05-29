@@ -32,6 +32,7 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '../basic-detail/options';
 import { PricingSummary } from '../components/FeeBar';
+import RadioField from '@/components/ui/form/radiofield';
 
 const createSchema = (listNric: any[] | undefined) =>
   z.object({
@@ -274,10 +275,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           {/*</div>*/}
 
           {/* Personal Details */}
-          <div
-            className={`w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm ${isMobile ? '' : 'mt-[14px]'}`}
-          >
-            <div className={`text-lg font-bold ${isMobile ? 'mt-[28px]' : ''}`}>
+          <div className={`w-full ${isMobile ? '' : 'mt-[14px]'}`}>
+            <div
+              className={`text-lg font-bold underline ${isMobile ? 'mt-[28px]' : ''}`}
+            >
               Enter Personal Details
             </div>
             <div className='grid gap-y-2 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
@@ -287,8 +288,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               >
                 <InputField
                   name='name'
-                  label='Name as Per NRIC/FIN'
-                  placeholder='Enter your Name'
+                  label='Full Name as per NRIC / FIN'
+                  requiredMark
+                  placeholder='Enter Your Full Name as per NRIC/FIN'
                 />
               </Form.Item>
 
@@ -299,6 +301,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='nric'
                   label='NRIC/FIN'
+                  requiredMark
                   placeholder='Enter NRIC/FIN'
                 />
               </Form.Item>
@@ -307,10 +310,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='gender'
                 validateStatus={errors['gender'] ? 'error' : ''}
               >
-                <DropdownField
+                <RadioField
                   name='gender'
                   label='Gender'
-                  placeholder='Select gender'
                   options={GENDER_OPTIONS}
                 />
               </Form.Item>
@@ -319,10 +321,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='maritalStatus'
                 validateStatus={errors['maritalStatus'] ? 'error' : ''}
               >
-                <DropdownField
+                <RadioField
                   name='maritalStatus'
                   label='Marital Status'
-                  placeholder='Select marital status'
+                  requiredMark
                   options={MARITAL_STATUS_OPTIONS}
                 />
               </Form.Item>
@@ -333,6 +335,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               >
                 <InputField
                   name='address1'
+                  requiredMark
                   label='Address Line 1'
                   placeholder='Block number and street name'
                 />
@@ -367,7 +370,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='pinCode'
                   label='Postal Code'
-                  placeholder='Enter Postal Code'
+                  requiredMark
+                  placeholder='6-digit Postal Code'
                   inputMode='numeric'
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const onlyNums = e.target.value.replace(/\D/g, '');
@@ -382,10 +386,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           </div>
 
           {/* Vehicle Details */}
-          <div
-            className={`w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm ${isMobile ? '' : 'mt-[14px]'}`}
-          >
-            <div className={`text-lg font-bold ${isMobile ? 'mt-[6px]' : ''}`}>
+          <div className={`w-full ${isMobile ? '' : 'mt-[14px]'}`}>
+            <div
+              className={`text-lg font-bold underline ${isMobile ? 'mt-[6px]' : ''}`}
+            >
               Enter Vehicle Details
             </div>
             <div className='grid gap-y-2 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
@@ -396,6 +400,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='chasisNumber'
                   label='Chassis Number'
+                  requiredMark
                   placeholder='Enter Chassis Number'
                 />
               </Form.Item>
@@ -407,8 +412,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='engineNumber'
                   label='Engine Number'
+                  requiredMark
                   placeholder='Enter Engine Number'
-                  required={false}
                 />
               </Form.Item>
 
@@ -419,6 +424,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='vehicleNumber'
                   label='Vehicle Number'
+                  requiredMark
                   placeholder='Enter Vehicle Number'
                 />
               </Form.Item>

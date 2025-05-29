@@ -344,6 +344,7 @@ const PolicyDetailForm = ({
         <LongOptionDropdownField
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
+          requiredMark
           placeholder='Select name of finance company'
           options={hirePurchaseOptions}
           showSearch
@@ -360,6 +361,7 @@ const PolicyDetailForm = ({
         >
           <InputField
             name={MOTOR_QUOTE.other_hire_purchase}
+            requiredMark
             placeholder='Please enter your hire purchase company'
           />
         </Form.Item>
@@ -472,7 +474,8 @@ const PolicyDetailForm = ({
                       >
                         <InputField
                           name={MOTOR_QUOTE.email}
-                          label='Email ID'
+                          label='Email Address'
+                          requiredMark
                           placeholder='Enter your email address'
                         />
                       </Form.Item>
@@ -485,7 +488,8 @@ const PolicyDetailForm = ({
                       >
                         <InputField
                           name={MOTOR_QUOTE.mobile}
-                          label='Phone Number'
+                          label='Mobile Number'
+                          requiredMark
                           placeholder='Enter your phone number'
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>,
@@ -508,6 +512,7 @@ const PolicyDetailForm = ({
                         <DatePickerField
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
+                          requiredMark
                           minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
                           maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
                           onChange={handleChangeDob}
@@ -539,6 +544,7 @@ const PolicyDetailForm = ({
                         <LongOptionDropdownField
                           name={MOTOR_QUOTE.vehicle_make}
                           label='Vehicle Make'
+                          requiredMark
                           placeholder='Select vehicle make'
                           options={makeOptionsFormatted}
                           onChange={() => {
@@ -556,6 +562,7 @@ const PolicyDetailForm = ({
                         <LongOptionDropdownField
                           name={MOTOR_QUOTE.vehicle_model}
                           label='Vehicle Model'
+                          requiredMark
                           placeholder='Select vehicle model'
                           options={modelOptionsFormatted}
                           disabled={!vehicle_make || isLoading}
@@ -574,6 +581,7 @@ const PolicyDetailForm = ({
                         <DropdownField
                           name={MOTOR_QUOTE.reg_yyyy}
                           label="Vehicle's Year of Registration"
+                          requiredMark
                           placeholder='Select registration year'
                           options={REG_YEAR_OPTIONS}
                         />
@@ -598,6 +606,7 @@ const PolicyDetailForm = ({
                   <DatePickerField
                     name={MOTOR_QUOTE.start_date}
                     label='Policy Start Date'
+                    requiredMark
                     minDate={minPolicyStartDate}
                     maxDate={maxPolicyStartDate}
                     onChange={handleChangeStartDate}
@@ -614,6 +623,7 @@ const PolicyDetailForm = ({
                   <DatePickerField
                     label='Policy End Date'
                     name={MOTOR_QUOTE.end_date}
+                    requiredMark
                     minDate={minPolicyEndDate}
                     maxDate={maxPolicyEndDate}
                     disabled={!start_date || isLoading}
