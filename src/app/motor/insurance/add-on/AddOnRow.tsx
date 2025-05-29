@@ -27,21 +27,15 @@ export default function AddOnRow({
   children?: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(true);
-  const { isMobile } = useDeviceDetection();
-
-  // useEffect(() => {
-  //   if (!isMobile) {
-  //     setIsOpen(true);
-  //   }
-  // }, [isMobile]);
 
   return (
     <div
       className={clsx(
-        'relative rounded-xl border-[1px] p-4 md:min-h-[212px] md:border-[1.25px] ',
+        'relative rounded-xl border-[1px] p-4 md:min-h-[212px] md:border-[1.25px]',
         {
           'pt-6': isRecommended && status === 'new',
-          '!bg-[#0C8CE94D] shadow-md md:bg-[#00ADEF21]': status === 'completed',
+          'border-[#11CE00] !bg-white shadow-md md:bg-[#00ADEF21]':
+            status === 'completed',
           'border-sky-600 md:border-sky-200': status === 'new',
         },
       )}

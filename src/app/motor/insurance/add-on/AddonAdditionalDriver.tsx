@@ -6,12 +6,14 @@ import { memo, useState } from 'react';
 import { AddNamedDriverInfo, Addon } from '@/libs/types/quote';
 
 import { PersonIcon } from '@/components/icons/add-on-icons';
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { SecondaryButton } from '@/components/ui/buttons';
 
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
 import AdditionDriver from '../components/AdditionDriver';
 import { formatCurrency } from '@/libs/utils/utils';
+import IconEditDriver from '@/components/icons/EditDriver';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 
 export const ADDON_CARS = [
   'CAR_COM_AND',
@@ -34,6 +36,10 @@ function AddonAdditionalDriver({
   isPending: boolean;
 }) {
   const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
+  const [editingDriver, setEditingDriver] = useState<AddNamedDriverInfo | null>(
+    null,
+  );
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const handleRemoveAdditionalDriver = (driver: AddNamedDriverInfo) => {
     const updatedDrivers = drivers.filter(
@@ -54,7 +60,6 @@ function AddonAdditionalDriver({
   const totalFee = drivers.length ? baseFee * (drivers.length - 1) : 0;
   // addon with code: CAR_FNCD_AJE is required additional driver
   const isRequired = addon.code === 'CAR_FNCD_AND';
-  console.log(drivers, 'chinh123');
   return (
     <AddOnRow
       isRequired={isRequired}
@@ -96,18 +101,24 @@ function AddonAdditionalDriver({
             />
           )}
         </div> */}
-        <div className='flex flex-col gap-4 pb-4'>
-          <p className='text-sm font-bold'>Additional Named Drivers</p>
-          <div className='flex w-full flex-col items-center justify-center gap-2'>
-            <p className='text-sm font-normal text-[#535353]'>
-              No drivers added yet
-            </p>
+        <div
+          className={`pb-4 ${drivers.length > 0 ? 'flex flex-row items-center justify-between' : 'flex flex-col gap-4 '}`}
+        >
+          <p className='text-sm font-bold'>Additional Drivers</p>
+          <div className='flex  flex-col items-center justify-center gap-2'>
+            {drivers.length === 0 && (
+              <p className='text-sm font-normal text-[#535353]'>
+                No drivers added yet
+              </p>
+            )}
             <SecondaryButton
               className='h-7 w-28 rounded-lg border border-[#00ADEF] bg-[#00ADEF] text-xs font-semibold text-white'
               onClick={() => {
+                setEditingDriver(null);
+                setEditingIndex(null);
                 setIsShowAdditionDriver(true);
               }}
-              disabled={isPending}
+              disabled={isPending || drivers.length >= 3}
             >
               Add Driver
             </SecondaryButton>
@@ -117,29 +128,61 @@ function AddonAdditionalDriver({
             <AdditionDriver
               isShowAdditionDriver={isShowAdditionDriver}
               setIsShowAdditionDriver={setIsShowAdditionDriver}
-              setDataDrivers={setDrivers}
-              dataDrivers={drivers}
+              setDataDrivers={(newDrivers) => {
+                if (editingIndex !== null) {
+                  const updated = [...drivers];
+                  updated[editingIndex] = newDrivers[0];
+                  setDrivers(updated);
+                } else {
+                  setDrivers([...drivers, newDrivers[0]]);
+                }
+                setEditingDriver(null);
+                setEditingIndex(null);
+              }}
+              dataDrivers={editingIndex !== null ? [drivers[editingIndex]] : []}
+              allDrivers={drivers}
+              editingIndex={editingIndex}
               policyStartDate={dayjs(policyStartDate, 'DD/MM/YYYY').toDate()}
             />
           )}
         </div>
+
         {drivers.length > 0 && (
           <>
             {drivers.map((driver, index) => (
               <div
-                className='flex items-center justify-between text-[14px]'
+                className='flex w-full flex-row items-center justify-between border border-[#F0F0F0] p-2'
                 key={index}
               >
-                <p className='font-semibold leading-[20px] text-[#525252]'>
-                  Additional Driver: {driver.name}
-                </p>
-                <PrimaryButton
-                  className='black h-8 w-28 rounded-md bg-red-400'
-                  onClick={() => handleRemoveAdditionalDriver(driver)}
-                  disabled={isPending}
-                >
-                  Remove
-                </PrimaryButton>
+                <div>
+                  <p className='text-sm font-bold'>{driver.name}</p>
+                  <p className='text-[11px] font-normal'>
+                    {driver.nric_or_fin}
+                  </p>
+                </div>
+                <div className='flex flex-row gap-2'>
+                  <span className='text-base font-bold '>
+                    {' '}
+                    {index === 0 ? (
+                      'FREE'
+                    ) : (
+                      <span>+ {formatCurrency(baseFee)}</span>
+                    )}
+                  </span>
+                  <DeleteIcon
+                    size={16}
+                    onClick={() => handleRemoveAdditionalDriver(driver)}
+                  />
+                  <IconEditDriver
+                    className='cursor-pointer text-brand-blue'
+                    size={16}
+                    onClick={() => {
+                      setEditingDriver(driver);
+                      setEditingIndex(index);
+                      setIsShowAdditionDriver(true);
+                    }}
+                  />
+                </div>
               </div>
             ))}
           </>
