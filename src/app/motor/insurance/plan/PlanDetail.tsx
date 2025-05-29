@@ -2,6 +2,7 @@
 
 // import HeaderVehicleInfo from './components/HeaderVehicleInfo';
 // import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
+import { Button } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import 'swiper/css';
@@ -11,6 +12,7 @@ import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
 
+import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
@@ -28,10 +30,13 @@ export interface FormatPlan extends Plan {
   currentPrice: number;
   promoCode: string;
 }
+
 function PlanDetail({
   onSaveRegister,
+  handleBack,
 }: {
   onSaveRegister: (fn: () => any) => void;
+  handleBack: () => void;
 }) {
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
@@ -147,27 +152,41 @@ function PlanDetail({
 
       <div className='mt-4 w-full md:flex md:flex-row md:justify-center '>
         <div className='fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
-          <div className='flex w-full justify-between border-t-2 bg-white p-4 py-2 md:max-w-[900px] md:border-none md:py-4'>
-            <div className='gap-2 md:flex md:items-center md:gap-4'>
+          <div className='flex w-full items-center justify-between border-t-2 bg-white p-4 py-2 md:max-w-5xl md:border-none md:py-4'>
+            <Button
+              color='cyan'
+              icon={<ArrowBackIcon size={16} />}
+              shape='circle'
+              className='border-none bg-gray-200 pt-[6px]'
+              onClick={handleBack}
+            />
+            <div className='gap-2 px-2 md:flex md:items-center md:gap-4'>
+              <p className='text-lg font-semibold text-[#323743] md:text-lg md:font-bold md:text-[#1B223C]'>
+                {selectedPlan?.title}
+              </p>
               <p>
-                <span className='text-lg font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
-                  {formatCurrency(selectedPlan?.premium_with_gst)}
-                </span>
                 {!!selectedPlan?.discount && (
-                  <span className='ps-4 text-[15px] font-normal text-[#FF0004] line-through decoration-1 md:text-2xl md:text-[#EF0000]'>
+                  <span className='ps-4 text-[14px] font-normal text-[#FF0004] line-through decoration-1 md:text-2xl md:text-[#EF0000]'>
                     {formatCurrency(selectedPlan?.currentPrice)}
                   </span>
                 )}
               </p>
-              <p className='font-semibold text-[#323743]'>(inclusive of GST)</p>
+              <div className='gap-2 md:flex md:flex-col md:gap-1'>
+                <p className='text-lg font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
+                  {formatCurrency(selectedPlan?.premium_with_gst)}
+                </p>
+                <p className='font-semibold text-[#323743]'>
+                  (inclusive of GST)
+                </p>
+              </div>
             </div>
             <PrimaryButton
               onClick={() => setShowConfirmDeclaration(true)}
-              className='md:w-40'
+              className='bg-[#52C41A] md:w-40'
               disabled={!selectedPlan?.id}
               loading={isSaving}
             >
-              Continue
+              Next
             </PrimaryButton>
           </div>
         </div>
