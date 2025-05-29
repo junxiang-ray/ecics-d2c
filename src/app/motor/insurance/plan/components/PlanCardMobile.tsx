@@ -43,14 +43,14 @@ function PlanCardMobile({
             onClick={!isSaving ? () => setSelectedPlan(plan) : undefined}
           >
             {isRecommended && (
-              <div className='absolute -top-3 right-4 rounded-full bg-sky-500 px-3 py-1'>
+              <div className='absolute -top-3 left-4 rounded-full bg-[#FF9500] px-3 py-1'>
                 <span className='text-white'>Recommended</span>
               </div>
             )}
             <div className='text-lg font-bold text-[#080808]'>{plan.title}</div>
             {activeFeatures.map((feature, index) => (
               <div className='mt-4 flex items-start gap-2' key={index}>
-                <TickCircleIcon size={12} className='mt-[6px]' />
+                <TickCircleIcon size={12} className='mt-[6px] text-green-600' />
                 <div dangerouslySetInnerHTML={{ __html: feature.name }} />
               </div>
             ))}
@@ -58,7 +58,7 @@ function PlanCardMobile({
               <div className='mt-4 flex items-start' key={index}>
                 <CrossMarkIcon
                   size={15}
-                  className='mr-1 mt-[6px] text-[#00ADEF]'
+                  className='mr-1 mt-[6px] text-[#FD1212]'
                 />
                 <div
                   className='text-[#1E1E1E61]'
