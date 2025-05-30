@@ -158,8 +158,10 @@ function calculateFee(
 
 function AddOnDetail({
   onSaveRegister,
+  handleBack,
 }: {
   onSaveRegister: (fn: () => any) => void;
+  handleBack?: () => void;
 }) {
   const searchParams = useSearchParams();
   const router = useRouterWithQuery();
@@ -431,15 +433,15 @@ function AddOnDetail({
             <div className='mt-2 flex w-full flex-col gap-4 px-4'>
               {/* Edit bar - hide for now */}
               {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-                  <HeaderVehicleInfo
-                    vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                    insuranceAdditionalInfo={
-                      quoteInfo?.data.insurance_additional_info
-                    }
-                    selectPlan={quoteInfo?.data.selected_plan}
-                    isShowScreen={true}
-                  />
-                </div> */}
+                                  <HeaderVehicleInfo
+                                    vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+                                    insuranceAdditionalInfo={
+                                      quoteInfo?.data.insurance_additional_info
+                                    }
+                                    selectPlan={quoteInfo?.data.selected_plan}
+                                    isShowScreen={true}
+                                  />
+                                </div> */}
               <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
                 {addonAdditionalDriver && (
                   <AddonAdditionalDriver
@@ -514,8 +516,9 @@ function AddOnDetail({
             addonFee={totalAddonFee}
             discount={quoteInfo?.promo_code?.discount || 0}
             title='Premium breakdown'
-            textButton='Continue'
+            textButton='Next'
             onClick={handleContinue}
+            handleBack={handleBack}
             setIsShowPopupPremium={setIsShowPopupPremium}
             loading={isPending}
           />

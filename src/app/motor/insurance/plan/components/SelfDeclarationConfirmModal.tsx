@@ -57,7 +57,8 @@ function SelfDeclarationConfirmModal({
       <div className='mt-6 flex justify-center'>
         <SecondaryButton
           onClick={onCancel}
-          className='mr-[10px] w-full !border-[#FD1212] py-3 text-base font-semibold !text-[#FD1212] hover:!bg-red-50'
+          danger
+          className='mr-[10px] w-full py-3 text-base font-semibold'
         >
           Back
         </SecondaryButton>

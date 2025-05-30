@@ -1,6 +1,12 @@
+import { Button } from 'antd';
+
 import { formatCurrency } from '@/libs/utils/utils';
 
+import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useAppSelector } from '@/redux/store';
 
 export function PricingSummary({
   planFee,
@@ -9,6 +15,7 @@ export function PricingSummary({
   title,
   textButton,
   onClick,
+  handleBack,
   setIsShowPopupPremium,
   loading,
 }: {
@@ -19,10 +26,14 @@ export function PricingSummary({
   textButton?: string;
   loading?: boolean;
   onClick?: () => void;
+  handleBack?: () => void;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
 }) {
   const discountFee = planFee + addonFee;
   const notDiscountFee = planFee / (1 - discount / 100) + addonFee;
+  const { isMobile } = useDeviceDetection();
+  const quoteInfo = useAppSelector((state) => state.quote?.quote);
+  const selectedPlan = quoteInfo?.data?.selected_plan;
 
   return (
     <div
@@ -30,35 +41,112 @@ export function PricingSummary({
       onClick={() => setIsShowPopupPremium?.(true)}
     >
       <div className='item-center fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
-        <div className='flex w-full items-center justify-between border-t-2 bg-white px-4 py-2 md:max-w-[900px] md:border-none md:py-4'>
-          <div className='flex flex-col gap-1'>
-            <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
-              <span className='text-[18px] font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
-                {discountFee
-                  ? formatCurrency(Number(discountFee.toFixed(2)))
-                  : ''}{' '}
-              </span>
-              {discount > 0 && (
-                <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
-                  {formatCurrency(notDiscountFee)}
-                </span>
-              )}
-            </p>
-            <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
-              {title}
-            </p>
-          </div>
+        <div className='w-full border-t-2 bg-white px-4 py-2 md:max-w-[1000px] md:border-none md:py-4'>
+          {isMobile ? (
+            <div className='flex w-full flex-col items-center gap-3'>
+              <div className='flex w-full items-center justify-between'>
+                <div>
+                  <p className='max-w-[150px] text-[12px] font-semibold md:text-[16px]'>
+                    {selectedPlan}
+                  </p>
+                  <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
+                    {title}
+                  </p>
+                </div>
+                <div className='flex flex-col gap-1'>
+                  <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
+                    <div className=''>
+                      <span className='text-[18px] font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
+                        {discountFee
+                          ? formatCurrency(Number(discountFee.toFixed(2)))
+                          : ''}{' '}
+                      </span>
+                      <p className='text-[12px] font-semibold text-[#323743]'>
+                        (inclusive of GST)
+                      </p>
+                    </div>
+                    {discount > 0 && (
+                      <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
+                        {formatCurrency(notDiscountFee)}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className='flex w-full items-center'>
+                <Button
+                  color='cyan'
+                  icon={<ArrowBackIcon size={16} />}
+                  shape='circle'
+                  className='mr-[6px] border-none bg-gray-200 pt-[6px]'
+                  onClick={handleBack}
+                />
+                <PrimaryButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClick && onClick();
+                  }}
+                  className='w-full bg-[#52C41A] px-1 leading-4 text-white md:mt-5'
+                  loading={loading}
+                >
+                  {textButton || 'Continue'}
+                </PrimaryButton>
+              </div>
+            </div>
+          ) : (
+            <div className='flex items-center justify-between'>
+              <Button
+                color='cyan'
+                icon={<ArrowBackIcon size={16} />}
+                shape='circle'
+                className='border-none bg-gray-200 pt-[6px]'
+                onClick={handleBack}
+              />
+              <div>
+                <p className='text-[12px] font-semibold md:text-[16px]'>
+                  {selectedPlan}
+                </p>
+                <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
+                  {title}
+                </p>
+              </div>
+              <div className='flex flex-col gap-1'>
+                <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
+                  {discount > 0 && (
+                    <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
+                      {formatCurrency(notDiscountFee)}
+                    </span>
+                  )}
+                  <div>
+                    <span className='text-[18px] font-semibold text-[#323743] md:text-2xl md:font-bold md:text-[#1B223C]'>
+                      {discountFee
+                        ? formatCurrency(Number(discountFee.toFixed(2)))
+                        : ''}{' '}
+                    </span>
+                    <p className='text-[12px] font-semibold text-[#323743]'>
+                      (inclusive of GST)
+                    </p>
+                  </div>
+                  {discount > 0 && (
+                    <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
+                      {formatCurrency(notDiscountFee)}
+                    </span>
+                  )}
+                </p>
+              </div>
 
-          <PrimaryButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick && onClick();
-            }}
-            className='px-1 leading-4 text-white md:mt-5 md:w-40'
-            loading={loading}
-          >
-            {textButton || 'Continue'}
-          </PrimaryButton>
+              <PrimaryButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClick && onClick();
+                }}
+                className='bg-[#52C41A] px-1 leading-4 text-white md:mt-5 md:w-40'
+                loading={loading}
+              >
+                {textButton || 'Continue'}
+              </PrimaryButton>
+            </div>
+          )}
         </div>
       </div>
     </div>
