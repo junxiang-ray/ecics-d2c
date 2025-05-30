@@ -22,7 +22,6 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import PlanCardDesktop from './components/PlanCardDesktop';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
 
@@ -120,6 +119,9 @@ function PlanDetail({
               </div> */}
       <div className='flex flex-col items-center justify-center'>
         <div className='w-full max-w-[1280px]'>
+          <div className='mx-4 pb-4 text-[16px] font-bold underline'>
+            Select a plan
+          </div>
           {/* hidden for now */}
           {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4'>
                         <HeaderVehicleInfo
@@ -129,19 +131,9 @@ function PlanDetail({
                           }
                         />
                       </div> */}
-          {/* UI for Mobile */}
-          <div className='mx-4 pb-20 lg:hidden'>
+          {/* UI for Mobile and Desktop (updated*/}
+          <div className='mx-4'>
             <PlanCardMobile
-              plans={plansFormatted}
-              selectedPlan={selectedPlan}
-              setSelectedPlan={setSelectedPlan}
-              isSaving={isSaving}
-            />
-          </div>
-
-          {/* UI for Desktop */}
-          <div className='hidden w-full py-4 md:px-4 lg:block lg:px-8'>
-            <PlanCardDesktop
               plans={plansFormatted}
               selectedPlan={selectedPlan}
               setSelectedPlan={setSelectedPlan}
