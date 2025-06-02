@@ -29,34 +29,33 @@ export default function AddOnRow({
   children?: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(true);
+  const { isMobile } = useDeviceDetection();
 
-  return (
-    <div
-      className={clsx(
-        'relative rounded-xl border-[1px] p-4 md:min-h-[100px] md:border-[1.25px]',
-        {
-          'pt-6': isRecommended && status === 'new',
-          'border-[#11CE00] !bg-white shadow-md': status === 'completed',
-          'border-sky-600 md:border-sky-200': status === 'new',
-        },
-      )}
-    >
-      {isRecommended && status === 'new' && (
-        <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1'>
-          <span className='text-white'>Recommended</span>
-        </div>
-      )}
-      {isRequired && (
-        <div className='absolute -top-4 right-3 rounded-full bg-[#FF9500] px-3 py-1'>
-          <span className='text-white'>Required</span>
-        </div>
-      )}
-      {isIncluded && (
-        <div className='absolute -top-4 right-3 rounded-full bg-[#11CE00] px-3 py-1'>
-          <span className='text-white'>Included</span>
-        </div>
-      )}
-      <div className='flex w-full items-center justify-between gap-4'>
+  const _renderStatusItem = () => {
+    return (
+      <div>
+        {isRecommended && status === 'new' && (
+          <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1 md:static md:right-auto md:top-auto'>
+            <span className='text-white'>Recommended</span>
+          </div>
+        )}
+        {isRequired && (
+          <div className='absolute -top-4 right-3 rounded-full bg-[#FF9500] px-3 py-1 md:static md:right-auto md:top-auto'>
+            <span className='text-white'>Required</span>
+          </div>
+        )}
+        {isIncluded && (
+          <div className='absolute -top-4 right-3 rounded-full bg-[#11CE00] px-3 py-1 md:static md:right-auto md:top-auto'>
+            <span className='text-white'>Included</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const _renderTitleItem = () => {
+    return (
+      <div className='flex items-center justify-between gap-4'>
         <div className='bg- flex items-center gap-4'>
           {!isRequired && !isIncluded ? (
             <div className='flex h-9 w-9 justify-center rounded-[20px] border border-[#00ADEF] bg-[#00ADEF1A]'>
@@ -71,6 +70,31 @@ export default function AddOnRow({
           <p className='font-bold'>{title}</p>
         </div>
       </div>
+    );
+  };
+
+  return (
+    <div
+      className={clsx(
+        'relative rounded-xl border-[1px] p-4 md:min-h-[100px] md:border-[1.25px]',
+        {
+          'pt-6': isRecommended && status === 'new',
+          'border-[#11CE00] !bg-white shadow-md': status === 'completed',
+          'border-sky-600 md:border-sky-200': status === 'new',
+        },
+      )}
+    >
+      {isMobile ? (
+        <div className='w-full md:flex md:flex-row md:items-center md:justify-between'>
+          {_renderStatusItem()}
+          {_renderTitleItem()}
+        </div>
+      ) : (
+        <div className='flex items-center justify-between gap-4'>
+          {_renderTitleItem()}
+          {_renderStatusItem()}
+        </div>
+      )}
       {isOpen && <div className='pt-2'>{children}</div>}
     </div>
   );
