@@ -112,7 +112,7 @@ function AddonAdditionalDriver({
               </p>
             )}
             <SecondaryButton
-              className='h-7 w-28 rounded-lg border border-[#00ADEF] bg-[#00ADEF] text-xs font-semibold text-white'
+              className={`h-7 w-28 rounded-lg border border-[#00ADEF] bg-[#00ADEF] text-xs font-semibold text-white ${drivers.length >= 3 && 'border border-[#D9D9D9] bg-[#F5F5F5] text-[#00000040]'}`}
               onClick={() => {
                 setEditingDriver(null);
                 setEditingIndex(null);
@@ -160,8 +160,8 @@ function AddonAdditionalDriver({
                     {driver.nric_or_fin}
                   </p>
                 </div>
-                <div className='flex flex-row gap-2'>
-                  <span className='text-base font-bold '>
+                <div className='flex flex-row gap-4'>
+                  <span className='text-sm font-bold text-[#000000]'>
                     {' '}
                     {index === 0 ? (
                       'FREE'
@@ -170,12 +170,12 @@ function AddonAdditionalDriver({
                     )}
                   </span>
                   <DeleteIcon
-                    size={16}
+                    size={14}
                     onClick={() => handleRemoveAdditionalDriver(driver)}
                   />
                   <IconEditDriver
                     className='cursor-pointer text-brand-blue'
-                    size={16}
+                    size={14}
                     onClick={() => {
                       setEditingDriver(driver);
                       setEditingIndex(index);
@@ -187,6 +187,16 @@ function AddonAdditionalDriver({
             ))}
           </>
         )}
+        <div className='flex flex-row items-center justify-between'>
+          <p className='text-[#525252]'>{formatCurrency(totalFee)}</p>
+          <SecondaryButton
+            className='h-8 w-28 rounded-md border border-[#FD1212] py-0 leading-4 !text-[#FD1212]'
+            disabled={isPending}
+            onClick={() => setDrivers([])}
+          >
+            Remove
+          </SecondaryButton>
+        </div>
       </div>
     </AddOnRow>
   );

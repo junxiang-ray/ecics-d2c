@@ -46,7 +46,7 @@ export default function AddOnRow({
         </div>
       )}
       {isRequired && status === 'new' && (
-        <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1'>
+        <div className='absolute -top-4 right-3 rounded-full bg-[#FF9500] px-3 py-1'>
           <span className='text-white'>Required</span>
         </div>
       )}
