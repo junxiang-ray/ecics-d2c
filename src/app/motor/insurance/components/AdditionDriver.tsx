@@ -320,19 +320,21 @@ const AdditionDriver = ({
         className='flex h-full w-full flex-col gap-4 md:gap-8'
       >
         {_renderFormInput()}
-        <div className='absolute bottom-0 left-0 flex w-full flex-row justify-between gap-4 rounded-md bg-[#DCDDDC4F] px-6 py-4 text-base font-bold leading-[21px]'>
+        <div className='absolute bottom-0 left-0 flex w-full flex-row justify-between gap-4 rounded-md bg-white px-6 py-4 text-base font-bold leading-[21px]'>
           <button
-            className='rounded-md border border-[#0096D8] bg-white px-8 py-2 text-[#00ADEF]'
+            className='rounded-md border border-[#525252] bg-white px-8 py-2 text-[#525252]'
             type='button'
             onClick={() => setIsShowAdditionDriver(false)}
           >
-            Cancel
+            Back
           </button>
           <button
             className='rounded-md bg-[#00ADEF] px-8 py-2 text-white'
             type='submit'
           >
-            Save
+            {editingIndex !== null && editingIndex !== undefined
+              ? 'Save'
+              : 'Add'}
           </button>
         </div>
       </form>

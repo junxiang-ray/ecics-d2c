@@ -137,7 +137,7 @@ function AddOnRowDetail({
               <span>{formatCurrency(addon.feeAdded)}</span>
             </p>
             <SecondaryButton
-              className='h-8 w-28 rounded-xl py-0 leading-4 text-red-500'
+              className='h-8 w-28 rounded-xl border border-[#FD1212] py-0 leading-4 text-[#fd1212]'
               onClick={() => handleRemoveAddon(addon)}
               disabled={isPending}
             >

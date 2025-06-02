@@ -415,6 +415,7 @@ function AddOnDetail({
     <div className='flex w-full flex-col items-center'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
+          <p className='mt-4 text-base font-bold underline'>Select Add-ons</p>
           {/* Edit bar - hide for now */}
           {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
                   <HeaderVehicleInfo
@@ -426,7 +427,7 @@ function AddOnDetail({
                     isShowScreen={true}
                   />
                 </div> */}
-          <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
+          <div className='mt-4 flex flex-col gap-6 md:gap-10'>
             {addonAdditionalDriver && (
               <AddonAdditionalDriver
                 addon={addonAdditionalDriver}
@@ -445,6 +446,7 @@ function AddOnDetail({
                 title={addon.add_on_name}
                 icon={<RoadSideIcon className='text-brand-blue' />}
                 status='completed'
+                isIncluded={true}
               >
                 <TruncateText text={addon.add_on_desc} />
                 <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />

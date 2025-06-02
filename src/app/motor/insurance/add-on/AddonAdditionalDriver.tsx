@@ -81,7 +81,7 @@ function AddonAdditionalDriver({
               </p>
             )}
             <SecondaryButton
-              className={`h-8 w-28 rounded-xl border border-[#00ADEF] bg-[#00ADEF] text-xs font-semibold text-white ${drivers.length >= 3 && 'border !border-[#D9D9D9] bg-[#F5F5F5] !text-[#00000040]'}`}
+              className={`h-8 w-28 rounded-xl bg-[#00ADEF] text-xs font-semibold text-white ${drivers.length >= 3 ? 'border !border-[#d9d9d9] !bg-[#f5f5f5] !text-gray-300' : 'border border-[#00ADEF]'}`}
               onClick={() => {
                 setEditingDriver(null);
                 setEditingIndex(null);
@@ -163,7 +163,7 @@ function AddonAdditionalDriver({
               {totalFee ? formatCurrency(totalFee) : 'SGD -'}
             </p>
             <SecondaryButton
-              className='h-8 w-28 rounded-xl border !border-[#FD1212] py-0 leading-4 !text-[#fd1212]'
+              className='h-8 w-28 rounded-xl border !border-[#fd1212] py-0 leading-4 text-[#fd1212]'
               disabled={isPending}
               onClick={() => setDrivers([])}
             >
