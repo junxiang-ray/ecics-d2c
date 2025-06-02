@@ -112,7 +112,7 @@ function AddonAdditionalDriver({
               </p>
             )}
             <SecondaryButton
-              className={`h-7 w-28 rounded-lg border border-[#00ADEF] bg-[#00ADEF] text-xs font-semibold text-white ${drivers.length >= 3 && 'border border-[#D9D9D9] bg-[#F5F5F5] text-[#00000040]'}`}
+              className={`h-8 w-28 rounded-xl border border-[#00ADEF] bg-[#00ADEF] text-xs font-semibold text-white ${drivers.length >= 3 && 'border !border-[#D9D9D9] bg-[#F5F5F5] !text-[#00000040]'}`}
               onClick={() => {
                 setEditingDriver(null);
                 setEditingIndex(null);
@@ -172,6 +172,7 @@ function AddonAdditionalDriver({
                   <DeleteIcon
                     size={14}
                     onClick={() => handleRemoveAdditionalDriver(driver)}
+                    className='cursor-pointer'
                   />
                   <IconEditDriver
                     className='cursor-pointer text-brand-blue'
@@ -187,16 +188,20 @@ function AddonAdditionalDriver({
             ))}
           </>
         )}
-        <div className='flex flex-row items-center justify-between'>
-          <p className='text-[#525252]'>{formatCurrency(totalFee)}</p>
-          <SecondaryButton
-            className='h-8 w-28 rounded-md border border-[#FD1212] py-0 leading-4 !text-[#FD1212]'
-            disabled={isPending}
-            onClick={() => setDrivers([])}
-          >
-            Remove
-          </SecondaryButton>
-        </div>
+        {!isRequired && (
+          <div className='flex flex-row items-center justify-between'>
+            <p className='text-sm font-semibold text-[#525252]'>
+              {totalFee ? formatCurrency(totalFee) : 'SGD -'}
+            </p>
+            <SecondaryButton
+              className='h-8 w-28 rounded-xl border !border-[#FD1212] py-0 leading-4 !text-[#fd1212]'
+              disabled={isPending}
+              onClick={() => setDrivers([])}
+            >
+              Remove
+            </SecondaryButton>
+          </div>
+        )}
       </div>
     </AddOnRow>
   );

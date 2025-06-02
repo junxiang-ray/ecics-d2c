@@ -103,7 +103,7 @@ function AddOnRowDetail({
                   {formatCurrency(addon.feeSelected ?? 0)}
                 </p>
                 <SecondaryButton
-                  className='black h-8 w-28 rounded-md !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
+                  className='black h-8 w-28 rounded-xl !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
                   onClick={() => handleAddAddonSelect(addon)}
                   disabled={isPending}
                 >
@@ -118,7 +118,7 @@ function AddOnRowDetail({
                 {formatCurrency(addon.feeSelected ?? 0)}
               </p>
               <SecondaryButton
-                className='black h-8 w-28 rounded-md'
+                className='black h-8 w-28 rounded-xl'
                 onClick={() => handleAddAddonCheckbox(addon)}
                 disabled={isPending}
               >
@@ -137,7 +137,7 @@ function AddOnRowDetail({
               <span>{formatCurrency(addon.feeAdded)}</span>
             </p>
             <SecondaryButton
-              className='h-8 w-28 rounded-md py-0 leading-4 text-red-500'
+              className='h-8 w-28 rounded-xl py-0 leading-4 text-red-500'
               onClick={() => handleRemoveAddon(addon)}
               disabled={isPending}
             >
