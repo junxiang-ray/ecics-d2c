@@ -70,37 +70,6 @@ function AddonAdditionalDriver({
       <TruncateText text={addon.description} />
       <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
       <div className='flex flex-col gap-2'>
-        {/* <div className='flex items-center justify-between pt-2 text-[14px] font-semibold leading-5'>
-          <p className='text-[#525252]'>{formatCurrency(totalFee)}</p>
-          {drivers.length > 0 ? (
-            <SecondaryButton
-              className='black h-8 w-28 rounded-md '
-              onClick={() => setIsShowAdditionDriver(true)}
-              disabled={isPending}
-            >
-              Edit Driver
-            </SecondaryButton>
-          ) : (
-            <SecondaryButton
-              className='black h-8 w-28 rounded-md bg-[#00ADEF] text-[#FFFFFF] hover:bg-[#00ADEF]'
-              onClick={() => {
-                setIsShowAdditionDriver(true);
-              }}
-              disabled={isPending}
-            >
-              Add
-            </SecondaryButton>
-          )}
-          {isShowAdditionDriver && (
-            <AdditionDriver
-              isShowAdditionDriver={isShowAdditionDriver}
-              setIsShowAdditionDriver={setIsShowAdditionDriver}
-              setDataDrivers={setDrivers}
-              dataDrivers={drivers}
-              policyStartDate={dayjs(policyStartDate, 'DD/MM/YYYY').toDate()}
-            />
-          )}
-        </div> */}
         <div
           className={`pb-4 ${drivers.length > 0 ? 'flex flex-row items-center justify-between' : 'flex flex-col gap-4 '}`}
         >

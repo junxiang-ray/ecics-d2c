@@ -57,33 +57,6 @@ export default function AddOnRow({
           </div>
           <p className='font-bold'>{title}</p>
         </div>
-        {/* {status === 'new' ? (
-          <div className='bg- flex items-center gap-4'>
-            <div className='flex h-9 w-9 justify-center rounded-[20px] border border-[#00ADEF] bg-[#00ADEF1A]'>
-              {icon}
-            </div>
-            <p className='font-bold'>{title}</p>
-          </div>
-        ) : (
-          <div className='flex items-center gap-4 rounded-full'>
-            <div className='flex items-center justify-center rounded-full bg-white p-[2px]'>
-              <FinishIcon
-                className='rounded-full bg-white text-sky-400'
-                size={28}
-              />
-            </div>
-            <p className='font-bold'>{title}</p>
-          </div>
-        )}
-        {isMobile && (
-          <ArrowDownCircleIcon
-            className={clsx('cursor-pointer text-brand-blue', {
-              'rotate-180': isOpen,
-              'rounded-full bg-white': status === 'completed',
-            })}
-            onClick={() => setIsOpen((prev) => !prev)}
-          />
-        )} */}
       </div>
       {isOpen && <div className='pt-2'>{children}</div>}
     </div>
