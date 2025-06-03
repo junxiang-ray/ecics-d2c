@@ -18,6 +18,10 @@
   font-size: 16px;
 }
 
+.ant-steps-item-tail {
+  padding: 0 !important;
+}
+
 .ant-steps-item-finish .ant-steps-item-tail::after {
   background-color: #2ecc71 !important;
   height: 2px !important;
@@ -66,7 +70,7 @@
 .custom-step-wait {
   width: 32px;
   height: 32px;
-  border: 2px solid #9ca3af;
+  border: 2px solid #e0e0e0;
   border-radius: 50%;
   background-color: white;
   display: flex;
