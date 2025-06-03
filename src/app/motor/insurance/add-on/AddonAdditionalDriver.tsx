@@ -2,18 +2,15 @@
 
 import dayjs from 'dayjs';
 import { memo, useState } from 'react';
-
 import { AddNamedDriverInfo, Addon } from '@/libs/types/quote';
-
 import { PersonIcon } from '@/components/icons/add-on-icons';
-import { SecondaryButton } from '@/components/ui/buttons';
-
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
 import AdditionDriver from '../components/AdditionDriver';
 import { formatCurrency } from '@/libs/utils/utils';
 import IconEditDriver from '@/components/icons/EditDriver';
 import DeleteIcon from '@/components/icons/DeleteIcon';
+import { Button } from 'antd';
 
 export const ADDON_CARS = [
   'CAR_COM_AND',
@@ -80,8 +77,8 @@ function AddonAdditionalDriver({
                 No drivers added yet
               </p>
             )}
-            <SecondaryButton
-              className={`h-8 w-28 rounded-xl bg-[#00ADEF] text-xs font-semibold text-white ${drivers.length >= 3 ? 'border !border-[#d9d9d9] !bg-[#f5f5f5] !text-gray-300' : 'border border-[#00ADEF]'}`}
+            <Button
+              className={`h-8 w-28 rounded-xl text-xs font-semibold ${drivers.length >= 3 ? 'border border-[#d9d9d9] bg-[#f5f5f5] !text-gray-300' : 'border border-[#00ADEF] bg-[#00ADEF] text-white'}`}
               onClick={() => {
                 setEditingDriver(null);
                 setEditingIndex(null);
@@ -90,7 +87,7 @@ function AddonAdditionalDriver({
               disabled={isPending || drivers.length >= 3}
             >
               Add Driver
-            </SecondaryButton>
+            </Button>
           </div>
 
           {isShowAdditionDriver && (
@@ -157,18 +154,18 @@ function AddonAdditionalDriver({
             ))}
           </>
         )}
-        {!isRequired && (
+        {!isRequired && drivers.length >= 1 && (
           <div className='flex flex-row items-center justify-between'>
             <p className='text-sm font-semibold text-[#525252]'>
               {totalFee ? formatCurrency(totalFee) : 'SGD -'}
             </p>
-            <SecondaryButton
-              className='h-8 w-28 rounded-xl border !border-[#fd1212] py-0 leading-4 text-[#fd1212]'
+            <Button
+              className='h-8 w-28 rounded-xl border border-[#fd1212] py-0 text-sm font-semibold leading-4 text-[#fd1212]'
               disabled={isPending}
               onClick={() => setDrivers([])}
             >
               Remove
-            </SecondaryButton>
+            </Button>
           </div>
         )}
       </div>

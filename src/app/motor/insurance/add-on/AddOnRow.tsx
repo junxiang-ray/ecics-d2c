@@ -1,12 +1,9 @@
 'use client';
 
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import {
-  ArrowDownCircleIcon,
-  FinishIcon,
-} from '@/components/icons/add-on-icons';
+import { FinishIcon } from '@/components/icons/add-on-icons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -75,14 +72,14 @@ export default function AddOnRow({
 
   return (
     <div
-      className={clsx(
-        'relative rounded-xl border-[1px] p-4 md:min-h-[100px] md:border-[1.25px]',
-        {
-          'pt-6': isRecommended && status === 'new',
-          'border-[#11CE00] !bg-white shadow-md': status === 'completed',
-          'border-sky-600 md:border-sky-200': status === 'new',
-        },
-      )}
+      className={clsx('relative rounded-xl border-[2px] p-4 md:min-h-[100px]', {
+        'pt-6': isRecommended && status === 'new',
+        'border-[#11CE00] !bg-white shadow-sm':
+          status === 'completed' || isRequired || isIncluded,
+        'border-gray-200': status === 'new' && !isRequired && !isIncluded,
+        'border-[#17b1ee]':
+          !isRequired && !isIncluded && status === 'completed',
+      })}
     >
       {isMobile ? (
         <div className='w-full md:flex md:flex-row md:items-center md:justify-between'>

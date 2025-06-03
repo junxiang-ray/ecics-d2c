@@ -1,4 +1,3 @@
-import { PlusOutlined } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Drawer, Modal } from 'antd';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -13,14 +12,11 @@ import dayjs from 'dayjs';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { validateNRIC } from '@/libs/utils/validation-utils';
 
-import { DeleteIcon } from '@/components/icons/add-on-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 import RadioField from '@/components/ui/form/radiofield';
-
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-
 import {
   DRV_EXP_OPTIONS,
   GENDER_OPTIONS,
@@ -237,75 +233,89 @@ const AdditionDriver = ({
                 </p>
               </div>
 
-              <InputField
-                name={`drivers.${index}.name`}
-                label='Name as Per NRIC/FIN'
-                placeholder='Full name as per NRIC'
-                isRequired={true}
-              />
-              <InputField
-                name={`drivers.${index}.nric_or_fin`}
-                label='NRIC/FIN'
-                placeholder='Enter NRIC/FIN'
-                isRequired={true}
-              />
-              <DatePickerField
-                name={`drivers.${index}.date_of_birth`}
-                label='Date of Birth'
-                minDate={adjustDateInDayjs(
-                  dateToDayjs(policyStartDate as Date),
-                  -71,
-                  0,
-                  1,
-                )}
-                maxDate={adjustDateInDayjs(
-                  dateToDayjs(policyStartDate as Date),
-                  -18,
-                  0,
-                  0,
-                )}
-                defaultPickerValue={
-                  selectedDate ??
-                  adjustDateInDayjs(
-                    dateToDayjs(policyStartDate as Date),
-                    -27,
-                    0,
-                    0,
-                  )
-                }
-                isRequired={true}
-              />
-              <RadioField
-                name={`drivers.${index}.gender`}
-                label='Gender'
-                // placeholder='Select gender'
-                options={GENDER_OPTIONS}
-                isRequired={true}
-              />
-              <RadioField
-                name={`drivers.${index}.marital_status`}
-                label='Marital Status'
-                // placeholder='Select marital status'
-                options={MARITAL_STATUS_OPTIONS}
-                className='flex flex-col'
-                isRequired={true}
-              />
-              <DropdownField
-                name={`drivers.${index}.driving_experience`}
-                label='Driving Experience'
-                placeholder='Select driving experience'
-                options={DRV_EXP_OPTIONS}
-                isRequired={true}
-              />
-              <RadioField
-                name={`drivers.${index}.is_claim_in_3_years`}
-                label='Do you have a claim in the past 3 years?'
-                options={[
-                  { value: ClaimStatus.YES, text: 'Yes' },
-                  { value: ClaimStatus.NO, text: 'No' },
-                ]}
-                isRequired={true}
-              />
+              <div className='flex w-full flex-col gap-3 md:grid md:grid-cols-2 md:gap-5'>
+                <div className='flex flex-col gap-2'>
+                  <InputField
+                    name={`drivers.${index}.name`}
+                    label='Name as Per NRIC/FIN'
+                    placeholder='Full name as per NRIC'
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <InputField
+                    name={`drivers.${index}.nric_or_fin`}
+                    label='NRIC/FIN'
+                    placeholder='Enter NRIC/FIN'
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <DatePickerField
+                    name={`drivers.${index}.date_of_birth`}
+                    label='Date of Birth'
+                    minDate={adjustDateInDayjs(
+                      dateToDayjs(policyStartDate as Date),
+                      -71,
+                      0,
+                      1,
+                    )}
+                    maxDate={adjustDateInDayjs(
+                      dateToDayjs(policyStartDate as Date),
+                      -18,
+                      0,
+                      0,
+                    )}
+                    defaultPickerValue={
+                      selectedDate ??
+                      adjustDateInDayjs(
+                        dateToDayjs(policyStartDate as Date),
+                        -27,
+                        0,
+                        0,
+                      )
+                    }
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <RadioField
+                    name={`drivers.${index}.gender`}
+                    label='Gender'
+                    options={GENDER_OPTIONS}
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <RadioField
+                    name={`drivers.${index}.marital_status`}
+                    label='Marital Status'
+                    options={MARITAL_STATUS_OPTIONS}
+                    className='flex flex-col'
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <DropdownField
+                    name={`drivers.${index}.driving_experience`}
+                    label='Driving Experience'
+                    placeholder='Select driving experience'
+                    options={DRV_EXP_OPTIONS}
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <RadioField
+                    name={`drivers.${index}.is_claim_in_3_years`}
+                    label='Do you have a claim in the past 3 years?'
+                    options={[
+                      { value: ClaimStatus.YES, text: 'Yes' },
+                      { value: ClaimStatus.NO, text: 'No' },
+                    ]}
+                    isRequired={true}
+                  />
+                </div>
+              </div>
             </div>
           );
         })}
@@ -361,7 +371,7 @@ const AdditionDriver = ({
       keyboard={false}
       footer={null}
       centered
-      width={600}
+      width={765}
     >
       <div className='mb-14 h-[80vh] overflow-y-scroll'>{content}</div>
     </Modal>
