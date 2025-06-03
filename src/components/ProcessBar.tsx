@@ -54,11 +54,11 @@ export default function ProcessBar({
   const selectedStepsData = isManual ? stepsData : stepsDataSingPass;
 
   const steps: StepsProps['items'] = selectedStepsData.map(
-    ({ title, step }) => {
+    ({ title, step }, index) => {
       const stepStatus = getStepStatus(step, currentStep);
       const [firstWord, remaining] = splitText(title);
       return {
-        title: (
+        title: stepStatus === 'process' && (
           <p className='inline-block text-xs leading-4'>
             <span className='block'>{firstWord}</span>
             <span className='block'>{remaining}</span>
@@ -66,10 +66,19 @@ export default function ProcessBar({
         ),
         status: stepStatus,
         disabled: stepStatus === 'wait' || isFinalized,
-        icon:
-          stepStatus === 'wait' ? (
-            <div className='custom-step-wait'></div>
-          ) : undefined,
+        icon: (
+          <div
+            className={`custom-step-wait ${
+              stepStatus === 'finish'
+                ? 'border border-[#11CE00] bg-[#11CE00] text-white'
+                : stepStatus === 'process'
+                  ? 'border border-[#3498DB] bg-[#3498DB] text-white'
+                  : 'bg-[#F5F5F5] text-[#95A5A6]'
+            }`}
+          >
+            {index + 1}
+          </div>
+        ),
       };
     },
   );
