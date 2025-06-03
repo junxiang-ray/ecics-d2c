@@ -7,6 +7,9 @@
 }
 
 /* Finished step */
+.ant-steps-item-content {
+  margin: 0 !important;
+}
 .ant-steps-item-finish .ant-steps-item-title,
 .ant-steps-item-process .ant-steps-item-title {
   white-space: normal;
