@@ -79,7 +79,10 @@ export function PricingSummary({
                   icon={<ArrowBackIcon size={16} />}
                   shape='circle'
                   className='mr-[6px] border-none bg-gray-200 pt-[6px]'
-                  onClick={handleBack}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleBack?.();
+                  }}
                 />
                 <PrimaryButton
                   onClick={(e) => {
@@ -100,7 +103,10 @@ export function PricingSummary({
                 icon={<ArrowBackIcon size={16} />}
                 shape='circle'
                 className='border-none bg-gray-200 pt-[6px]'
-                onClick={handleBack}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBack?.();
+                }}
               />
               <div>
                 <p className='text-[12px] font-semibold md:text-[16px]'>
