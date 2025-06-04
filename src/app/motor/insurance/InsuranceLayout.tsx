@@ -119,7 +119,9 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
         >
           {partnerInfo?.partner_name && (
             <div className='flex items-center'>
-              <span className={`text-base font-bold ${isMobile ? '' : 'ml-4'}`}>
+              <span
+                className={`text-base font-bold ${isMobile ? 'text-center' : 'ml-4'}`}
+              >
                 {partnerInfo.partner_name}
               </span>
               <span className='mx-2 h-8 w-px bg-gray-300' />
@@ -134,16 +136,16 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
       </div>
 
       <div className='no-scroll-mobile mx-auto h-[135px] w-full items-center justify-center bg-white lg:max-w-[1280px]'>
-        {(partnerInfo?.partner_name || partnerInfo) && (
-          <div className='block h-16 md:hidden'>
-            <BusinessPartnerBar
-              businessName={partnerInfo ? 'Business Partner Name' : ''}
-              companyName={partnerInfo?.partner_name}
-              onBackClick={handleBack}
-              onSaveClick={handleSave}
-            />
-          </div>
-        )}
+        {/*{(partnerInfo?.partner_name || partnerInfo) && (*/}
+        {/*  <div className='block h-16 md:hidden'>*/}
+        {/*    <BusinessPartnerBar*/}
+        {/*      businessName={partnerInfo ? 'Business Partner Name' : ''}*/}
+        {/*      companyName={partnerInfo?.partner_name}*/}
+        {/*      onBackClick={handleBack}*/}
+        {/*      onSaveClick={handleSave}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*)}*/}
         <div className='relative flex w-full justify-center p-4 px-10 pb-0 lg:w-[1200px]'>
           {/* Reopen in Day 1.5 */}
           {/*<SecondaryButton*/}

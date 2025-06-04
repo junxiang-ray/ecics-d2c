@@ -386,7 +386,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           </div>
 
           {/* Vehicle Details */}
-          <div className={`w-full ${isMobile ? '' : 'mt-[14px]'}`}>
+          <div className={`w-full ${isMobile ? '' : 'mt-[40px]'}`}>
             <div
               className={`text-lg font-bold underline ${isMobile ? 'mt-[6px]' : ''}`}
             >
@@ -430,7 +430,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               </Form.Item>
             </div>
           </div>
-          <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+          <div className='mt-20 w-full bg-[#FFFEFF] md:mt-2'>
             <PricingSummary
               planFee={planFreeTotal}
               addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
