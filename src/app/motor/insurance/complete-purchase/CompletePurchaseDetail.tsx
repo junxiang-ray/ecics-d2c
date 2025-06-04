@@ -1,19 +1,15 @@
 'use client';
 
-import { Drawer } from 'antd';
+import { Button, Drawer } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-
 import { Option } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
-
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
-import { PrimaryButton } from '@/components/ui/buttons';
-
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -432,54 +428,59 @@ export default function CompletePurchaseDetail({
 
     return (
       <div className='w-full md:max-w-[400px]'>
-        {/* <div className='flex h-[50px] justify-end'>
-          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
-            Save
-          </div>
-        </div> */}
-        <div className='flex w-full flex-col gap-3 rounded-lg py-4 md:mt-6 md:border md:border-[#E4E4E4]'>
-          <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
+        <div className='flex w-full flex-col gap-3 rounded-lg md:mt-6 md:border md:border-[#E4E4E4] md:py-4'>
+          <p className='text-xl font-semibold leading-[30px] text-[#171A1F] md:text-center'>
             Premium Breakdown
           </p>
           <div className='flex w-full flex-col gap-4'>
-            <div className='flex flex-col gap-4 border-b border-[#E4E4E4] px-4 py-2'>
-              <div className='flex flex-row justify-between text-base leading-[30px] text-[#171A1F]'>
-                <p className=' font-normal'>
-                  {quote?.data?.selected_plan ?? ''}
-                </p>
-                <p>
-                  {formatCurrency(
-                    quote?.data?.review_info_premium?.price_plan ?? 0,
-                  )}
-                </p>
-              </div>
-              {quote?.promo_code && (
-                <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
-                  <p>Coupon Discount</p>
+            <div className='flex flex-col gap-4 py-2 md:px-4'>
+              <div className='flex flex-col gap-2'>
+                <p className='text-base font-bold text-[#303030]'>Plan</p>
+                <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
+                  <p>{quote?.data?.selected_plan ?? ''}</p>
                   <p>
-                    -
                     {formatCurrency(
-                      quote?.data?.review_info_premium?.coupon_discount ?? 0,
+                      quote?.data?.review_info_premium?.price_plan ?? 0,
                     )}
                   </p>
                 </div>
-              )}
+                {quote?.promo_code && (
+                  <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
+                    <p>Coupon Discount</p>
+                    <p>
+                      -
+                      {formatCurrency(
+                        quote?.data?.review_info_premium?.coupon_discount ?? 0,
+                      )}
+                    </p>
+                  </div>
+                )}
+              </div>
 
-              <div className='flex flex-col border-b border-[#E4E4E4] py-2'>
-                <p className='font-bold text-[#171A1F]'>Add-on:</p>
-                <div className='flex flex-col gap-1'>
+              <div className='flex flex-col gap-4 py-2'>
+                <p className='text-base font-bold text-[#303030]'>Add-on:</p>
+                <div className='flex flex-col gap-3'>
                   {quote?.data?.review_info_premium?.data_section_add_ons.map(
                     (addon: any) => (
                       <p
                         key={addon.title}
-                        className='flex flex-row justify-between'
+                        className='flex flex-row items-center justify-between'
                       >
-                        {addon.title}:{' '}
+                        <p className='flex flex-col'>
+                          {addon.title}
+                          {addon.optionLabel !== 'YES' && (
+                            <span className='ml-2 flex flex-row items-center gap-2'>
+                              <p className='h-[4px] w-[4px] rounded-full bg-[#303030]'></p>
+                              {addon.optionLabel} Coverage
+                            </span>
+                          )}
+                        </p>
                         <span>{formatCurrency(addon.feeSelected / tax)}</span>
                       </p>
                     ),
                   )}
                 </div>
+
                 <div>
                   {drivers && drivers.length > 0 && (
                     <div className=''>
@@ -494,7 +495,7 @@ export default function CompletePurchaseDetail({
                           <p>{driver.name}</p>
                           <p>
                             {index === 0
-                              ? 'Free'
+                              ? 'FREE'
                               : addonAdditionalDriver?.options?.[0]
                                     ?.premium_with_gst
                                 ? formatCurrency(
@@ -525,39 +526,41 @@ export default function CompletePurchaseDetail({
                 </div>
               </div>
 
-              <div className='flex flex-col gap-2 border-b border-[#E4E4E4] py-2 text-base font-normal leading-[30px] text-[#171A1F]'>
-                <div className='flex flex-row justify-between'>
-                  <p>Net Premium</p>
+              <div className='flex flex-col gap-1 rounded-lg py-2'>
+                <div className='flex flex-row justify-between text-base font-bold text-[#303030]'>
+                  <p>Sub-Total</p>
                   <p>
                     {formatCurrency(
                       quote?.data?.review_info_premium?.net_premium ?? 0,
                     )}
                   </p>
                 </div>
-                <div className='flex flex-row justify-between'>
+                <div className='flex flex-row justify-between text-base font-normal text-[#303030]'>
                   <p>GST</p>
                   <p>
                     {formatCurrency(quote?.data?.review_info_premium?.gst ?? 0)}
                   </p>
                 </div>
-              </div>
-              <div className='flex flex-row justify-between font-bold'>
-                <p>Total (including GST)</p>
-                <p>
-                  {formatCurrency(
-                    quote?.data?.review_info_premium?.total_final_price ?? 0,
-                  )}
-                </p>
+                <div className='flex flex-row justify-between text-base font-bold text-[#303030]'>
+                  <p>Total Premium</p>
+                  <p>
+                    {formatCurrency(
+                      quote?.data?.review_info_premium?.total_final_price ?? 0,
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <PrimaryButton
-              onClick={!isMobile ? onPay : onClosePopup}
-              loading={isPendingSave || isPendingPay}
-              className='mx-auto w-[80%] cursor-pointer rounded-lg px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
-            >
-              {isMobile ? 'Okay' : 'Pay'}
-            </PrimaryButton>
+            <div className='md:px-4'>
+              <Button
+                onClick={!isMobile ? onPay : onClosePopup}
+                loading={isPendingSave || isPendingPay}
+                className='mx-auto w-full cursor-pointer rounded-none border border-[#00ADEF] py-6 text-center text-base font-bold leading-[21px] text-[#00ADEF] md:px-4'
+              >
+                {isMobile ? 'Close Breakdown' : 'Pay'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
