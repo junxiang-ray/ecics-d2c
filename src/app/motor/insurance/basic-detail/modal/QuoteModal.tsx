@@ -3,8 +3,7 @@ import React from 'react';
 import MailIcon from '@/components/icons/MailIcon';
 import PhoneIcon from '@/components/icons/PhoneIcon';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import WarningIcon from '@/components/icons/WarningIcon';
-
+import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 interface QuoteModalProps {
   visible: boolean;
   onClick: () => void;
@@ -21,7 +20,7 @@ export const QuoteModal = ({
   const content = (
     <>
       <div className='flex flex-col gap-2'>
-        <WarningIcon size={70} />
+        <WarningTriangleIcon size={70} />
         <p className='text-center text-2xl font-normal leading-[32px] text-[#000000D9]'>
           Need Help with Your Quote?
         </p>
