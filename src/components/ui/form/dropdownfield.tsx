@@ -122,6 +122,7 @@ export const LongOptionDropdownField = ({
   options,
   disabled,
   renderOption,
+  isRequired,
   notFoundContent,
   ...props
 }: DropdownFieldProps) => {
@@ -184,7 +185,10 @@ export const LongOptionDropdownField = ({
             style={{ position: 'relative' }}
           >
             {label && (
-              <label className='text-base font-semibold'>{label}</label>
+              <label className='text-base font-semibold'>
+                {label}
+                {isRequired && <span className='text-red-500'>*</span>}
+              </label>
             )}
 
             <Input
