@@ -1,4 +1,3 @@
-import { PlusOutlined } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Drawer, Modal } from 'antd';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -13,14 +12,11 @@ import dayjs from 'dayjs';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { validateNRIC } from '@/libs/utils/validation-utils';
 
-import { DeleteIcon } from '@/components/icons/add-on-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 import RadioField from '@/components/ui/form/radiofield';
-
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-
 import {
   DRV_EXP_OPTIONS,
   GENDER_OPTIONS,
@@ -38,10 +34,16 @@ interface Props {
   setIsShowAdditionDriver: (value: boolean) => void;
   setDataDrivers: (data: any[]) => void;
   dataDrivers: any[];
+  allDrivers: any[];
+  editingIndex?: number | null;
   policyStartDate: Date;
 }
 
-const createSchema = (policyStartDate: Date) =>
+const createSchema = (
+  policyStartDate: Date,
+  allDrivers: any[],
+  editingIndex: number | null,
+) =>
   z.object({
     drivers: z
       .array(
@@ -108,28 +110,20 @@ const createSchema = (policyStartDate: Date) =>
         }),
       )
       .superRefine((drivers, ctx) => {
-        // Build a map of NRIC/FIN value => array of field indices with that value.
-        const nricMap: Record<string, number[]> = {};
-        drivers.forEach((driver, index) => {
-          const nric = driver.nric_or_fin;
-          if (nric) {
-            if (!nricMap[nric]) {
-              nricMap[nric] = [index];
-            } else {
-              nricMap[nric].push(index);
-            }
-          }
-        });
+        const existingNrics = allDrivers
+          .map((d, idx) =>
+            editingIndex !== null && idx === editingIndex
+              ? null
+              : d.nric_or_fin,
+          )
+          .filter(Boolean);
 
-        // Check duplicates: for any value that appears more than once, add a custom issue
-        Object.entries(nricMap).forEach(([nric, indices]) => {
-          if (indices.length > 1) {
-            indices.forEach((idx) => {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: 'NRIC/FIN must be unique',
-                path: [idx, 'nric_or_fin'],
-              });
+        drivers.forEach((driver, index) => {
+          if (existingNrics.includes(driver.nric_or_fin)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'NRIC/FIN must be unique',
+              path: [index, 'nric_or_fin'],
             });
           }
         });
@@ -143,6 +137,8 @@ const AdditionDriver = ({
   setDataDrivers,
   dataDrivers,
   policyStartDate,
+  allDrivers,
+  editingIndex,
 }: Props) => {
   const initDriver = {
     name: '',
@@ -154,8 +150,8 @@ const AdditionDriver = ({
     is_claim_in_3_years: ClaimStatus.NO,
   };
   const schema = useMemo(
-    () => createSchema(policyStartDate),
-    [policyStartDate],
+    () => createSchema(policyStartDate, allDrivers, editingIndex ?? null),
+    [policyStartDate, allDrivers, editingIndex],
   );
   const { isMobile } = useDeviceDetection();
 
@@ -165,8 +161,7 @@ const AdditionDriver = ({
       ? dayjs(driver.date_of_birth, 'DD/MM/YYYY').toDate()
       : null,
   }));
-  const initDrivers = dataDrivers.length === 0 ? [initDriver] : drivers;
-
+  const initDrivers = drivers.length === 0 ? [initDriver] : drivers;
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
@@ -227,84 +222,100 @@ const AdditionDriver = ({
           return (
             <div
               key={field.id}
-              className='flex w-full flex-col gap-3 rounded-lg border border-[#E5E5E5] bg-[#8189940F] px-4 py-2'
+              className='flex w-full flex-col gap-3 rounded-lg py-2 md:px-4'
               id={field.id}
             >
               <div className='flex w-full flex-row items-center justify-between'>
-                <p className='text-xl font-semibold text-[#080808]'>
-                  Additional Driver {index + 1}
+                <p className='w-full text-center text-xl font-semibold text-[#080808]'>
+                  {editingIndex !== null && editingIndex !== undefined
+                    ? 'Edit Additional Driver'
+                    : 'Add Additional Driver'}
                 </p>
-                <div className='mt-3'>
-                  {formValues.drivers.length > 1 && (
-                    <DeleteIcon
-                      className='cursor-pointer text-red-500'
-                      onClick={() => handleRemoveDriver(index)}
-                    />
-                  )}
-                </div>
               </div>
 
-              <InputField
-                name={`drivers.${index}.name`}
-                label='Name as Per NRIC/FIN'
-                placeholder='Enter your Name'
-              />
-              <InputField
-                name={`drivers.${index}.nric_or_fin`}
-                label='NRIC/FIN'
-                placeholder='Enter NRIC/FIN'
-              />
-              <DatePickerField
-                name={`drivers.${index}.date_of_birth`}
-                label='Date of Birth'
-                minDate={adjustDateInDayjs(
-                  dateToDayjs(policyStartDate as Date),
-                  -71,
-                  0,
-                  1,
-                )}
-                maxDate={adjustDateInDayjs(
-                  dateToDayjs(policyStartDate as Date),
-                  -18,
-                  0,
-                  0,
-                )}
-                defaultPickerValue={
-                  selectedDate ??
-                  adjustDateInDayjs(
-                    dateToDayjs(policyStartDate as Date),
-                    -27,
-                    0,
-                    0,
-                  )
-                }
-              />
-              <DropdownField
-                name={`drivers.${index}.gender`}
-                label='Gender'
-                placeholder='Select gender'
-                options={GENDER_OPTIONS}
-              />
-              <DropdownField
-                name={`drivers.${index}.marital_status`}
-                label='Marital Status'
-                placeholder='Select marital status'
-                options={MARITAL_STATUS_OPTIONS}
-              />
-              <DropdownField
-                name={`drivers.${index}.driving_experience`}
-                label='Driving Experience'
-                placeholder='Select driving experience'
-                options={DRV_EXP_OPTIONS}
-              />
-              <RadioField
-                name={`drivers.${index}.is_claim_in_3_years`}
-                label='Do you have a claim in the past 3 years?'
-                options={[
-                  { value: ClaimStatus.YES, text: 'Yes' },
-                  { value: ClaimStatus.NO, text: 'No' },
-                ]}
-              />
+              <div className='flex w-full flex-col gap-3 md:grid md:grid-cols-2 md:gap-5'>
+                <div className='flex flex-col gap-2'>
+                  <InputField
+                    name={`drivers.${index}.name`}
+                    label='Name as Per NRIC/FIN'
+                    placeholder='Full name as per NRIC'
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <InputField
+                    name={`drivers.${index}.nric_or_fin`}
+                    label='NRIC/FIN'
+                    placeholder='Enter NRIC/FIN'
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <DatePickerField
+                    name={`drivers.${index}.date_of_birth`}
+                    label='Date of Birth'
+                    minDate={adjustDateInDayjs(
+                      dateToDayjs(policyStartDate as Date),
+                      -71,
+                      0,
+                      1,
+                    )}
+                    maxDate={adjustDateInDayjs(
+                      dateToDayjs(policyStartDate as Date),
+                      -18,
+                      0,
+                      0,
+                    )}
+                    defaultPickerValue={
+                      selectedDate ??
+                      adjustDateInDayjs(
+                        dateToDayjs(policyStartDate as Date),
+                        -27,
+                        0,
+                        0,
+                      )
+                    }
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <RadioField
+                    name={`drivers.${index}.gender`}
+                    label='Gender'
+                    options={GENDER_OPTIONS}
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <RadioField
+                    name={`drivers.${index}.marital_status`}
+                    label='Marital Status'
+                    options={MARITAL_STATUS_OPTIONS}
+                    className='flex flex-col'
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <DropdownField
+                    name={`drivers.${index}.driving_experience`}
+                    label='Driving Experience'
+                    placeholder='Select driving experience'
+                    options={DRV_EXP_OPTIONS}
+                    isRequired={true}
+                  />
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <RadioField
+                    name={`drivers.${index}.is_claim_in_3_years`}
+                    label='Do you have a claim in the past 3 years?'
+                    options={[
+                      { value: ClaimStatus.YES, text: 'Yes' },
+                      { value: ClaimStatus.NO, text: 'No' },
+                    ]}
+                    isRequired={true}
+                  />
+                </div>
+              </div>
             </div>
           );
         })}
@@ -319,31 +330,21 @@ const AdditionDriver = ({
         className='flex h-full w-full flex-col gap-4 md:gap-8'
       >
         {_renderFormInput()}
-        {fields.length < 3 && (
-          <div className='flex flex-row justify-end'>
-            <button
-              className='flex flex-row items-center gap-2 rounded-md border border-[#00ADEF] px-4 py-2 text-sm font-normal text-[#00ADEF]'
-              onClick={handleAddDriver}
-              type='button'
-            >
-              <PlusOutlined />
-              <p>Add more driver</p>
-            </button>
-          </div>
-        )}
-        <div className='absolute bottom-0 left-0 flex w-full flex-row justify-between gap-4 rounded-md bg-[#DCDDDC4F] px-6 py-4 text-base font-bold leading-[21px]'>
+        <div className='absolute bottom-0 left-0 flex w-full flex-row justify-between gap-4 rounded-md bg-white px-6 py-4 text-base font-bold leading-[21px]'>
           <button
-            className='rounded-md border border-[#0096D8] bg-white px-8 py-2 text-[#00ADEF]'
+            className='rounded-md border border-[#525252] bg-white px-8 py-2 text-[#525252]'
             type='button'
             onClick={() => setIsShowAdditionDriver(false)}
           >
-            Cancel
+            Back
           </button>
           <button
             className='rounded-md bg-[#00ADEF] px-8 py-2 text-white'
             type='submit'
           >
-            Save
+            {editingIndex !== null && editingIndex !== undefined
+              ? 'Save'
+              : 'Add'}
           </button>
         </div>
       </form>
@@ -370,7 +371,7 @@ const AdditionDriver = ({
       keyboard={false}
       footer={null}
       centered
-      width={600}
+      width={765}
     >
       <div className='mb-14 h-[80vh] overflow-y-scroll'>{content}</div>
     </Modal>

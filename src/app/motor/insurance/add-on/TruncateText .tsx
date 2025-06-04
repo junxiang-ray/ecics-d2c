@@ -33,7 +33,7 @@ const TruncateText = ({
     : undefined;
 
   return (
-    <div style={{ minHeight: !expanded && !isMobile ? minHeight : undefined }}>
+    <div>
       <p
         ref={textRef}
         className={`
