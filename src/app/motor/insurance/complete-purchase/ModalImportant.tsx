@@ -3,6 +3,7 @@ import { Drawer, Modal } from 'antd';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 
 interface Props {
   isShowPopupImportant: boolean;
@@ -17,28 +18,31 @@ const ModalImportant = (props: Props) => {
   const { isMobile } = useDeviceDetection();
   const modalContent = (
     <div className='flex h-full flex-col justify-between md:p-4'>
-      <div className='mb-2 w-full text-center text-[16px] font-normal leading-[25px] text-[#000000] md:mb-10 md:text-[24px] md:font-semibold md:leading-[30px] md:text-[#171A1F]'>
-        Important Notice: Quote Recalculation
+      <WarningTriangleIcon size={70} />
+      <p className='text-center text-2xl font-normal leading-[32px]'>
+        Are you sure you want to go back?
+      </p>
+      <div className='mt-2 flex flex-col gap-4 text-center text-sm font-normal leading-[22px] text-[#00000073]'>
+        <p>
+          You are about to return to a previous step. Please note that modifying
+          any information may affect your quote, and a new quote will be
+          generated based on the updated details.
+        </p>
+        <p>Do you wish to proceed?</p>
       </div>
-
-      <div className='mt-2 rounded-lg bg-[#81899414] px-2 py-4 text-center text-[15px] font-[300] leading-[25px] text-[#000000]'>
-        Please note that any changes to these details will impact your quote,
-        and a new quote will be generated accordingly.
-      </div>
-
-      <div className='mt-6 flex w-full flex-col justify-center gap-2'>
-        <PrimaryButton
-          onClick={handleRedirect}
-          className='flex-1 py-2 text-white md:py-4'
-        >
-          Proceed
-        </PrimaryButton>
+      <div className='mt-6 flex w-full flex-row justify-between gap-2'>
         <SecondaryButton
-          className='flex-1 py-2 md:py-3'
+          className='max-w-[150px] flex-1 rounded-none border border-[#262626] py-6 text-[#262626] md:py-6'
           onClick={() => setIsShowPopupImportant(false)}
         >
           Cancel
         </SecondaryButton>
+        <PrimaryButton
+          onClick={handleRedirect}
+          className='max-w-[150px] flex-1 py-6 text-white md:py-6'
+        >
+          Proceed
+        </PrimaryButton>
       </div>
     </div>
   );
