@@ -1,12 +1,14 @@
 import { Radio, RadioProps } from 'antd';
 import React from 'react';
-import { DropdownOption } from './dropdownfield';
 import { Controller, useFormContext } from 'react-hook-form';
+
+import { DropdownOption } from './dropdownfield';
 
 interface RadioFieldProps extends RadioProps {
   name: string;
   label?: string;
   options: DropdownOption[];
+  isRequired?: boolean;
 }
 
 const RadioField = ({
@@ -14,6 +16,7 @@ const RadioField = ({
   label,
   options,
   className,
+  isRequired,
   ...props
 }: RadioFieldProps) => {
   const { control } = useFormContext();
@@ -25,17 +28,22 @@ const RadioField = ({
         control={control}
         render={({ field, fieldState }) => (
           <>
-            <span className='text-base font-semibold'>{label}</span>
+            <span className='text-base font-semibold'>
+              {label}
+              {isRequired && (
+                <span className='font-semibold text-[#C80F1E]'>*</span>
+              )}
+            </span>
             <Radio.Group
               {...props}
               {...field}
-              className={`flex w-full gap-1 ${className}`}
+              className={`grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:flex xl:gap-4 ${className}`}
             >
               {options.map((option) => (
                 <Radio
                   key={option.value}
                   value={option.value}
-                  className={`mr-0 w-full rounded-lg border py-2 ps-2 text-[13px] transition-colors ${
+                  className={`mr-0 flex-grow rounded-lg border py-2 ps-2 text-[13px] transition-colors ${
                     field.value === option.value
                       ? 'border-blue-400'
                       : 'border-gray-300'

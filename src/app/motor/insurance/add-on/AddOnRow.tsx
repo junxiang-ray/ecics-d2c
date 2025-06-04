@@ -1,12 +1,9 @@
 'use client';
 
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import {
-  ArrowDownCircleIcon,
-  FinishIcon,
-} from '@/components/icons/add-on-icons';
+import { FinishIcon } from '@/components/icons/add-on-icons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -17,6 +14,7 @@ export default function AddOnRow({
   status,
   isRecommended = false,
   isRequired = false,
+  isIncluded = false,
   children,
 }: {
   title: string | null;
@@ -24,67 +22,76 @@ export default function AddOnRow({
   status: Status;
   isRecommended?: boolean;
   isRequired?: boolean;
+  isIncluded?: boolean;
   children?: React.ReactNode;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const { isMobile } = useDeviceDetection();
 
-  useEffect(() => {
-    if (!isMobile) {
-      setIsOpen(true);
-    }
-  }, [isMobile]);
+  const _renderStatusItem = () => {
+    return (
+      <div>
+        {isRecommended && status === 'new' && (
+          <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1 md:static md:right-auto md:top-auto'>
+            <span className='text-white'>Recommended</span>
+          </div>
+        )}
+        {isRequired && (
+          <div className='absolute -top-4 right-3 rounded-full bg-[#FF9500] px-3 py-1 md:static md:right-auto md:top-auto'>
+            <span className='text-white'>Required</span>
+          </div>
+        )}
+        {isIncluded && (
+          <div className='absolute -top-4 right-3 rounded-full bg-[#11CE00] px-3 py-1 md:static md:right-auto md:top-auto'>
+            <span className='text-white'>Included</span>
+          </div>
+        )}
+      </div>
+    );
+  };
 
-  return (
-    <div
-      className={clsx(
-        'relative rounded-xl border-[1px] p-4 md:min-h-[212px] md:border-[1.25px] ',
-        {
-          'pt-6': isRecommended && status === 'new',
-          '!bg-[#0C8CE94D] shadow-md md:bg-[#00ADEF21]': status === 'completed',
-          'border-sky-600 md:border-sky-200': status === 'new',
-        },
-      )}
-    >
-      {isRecommended && status === 'new' && (
-        <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1'>
-          <span className='text-white'>Recommended</span>
-        </div>
-      )}
-      {isRequired && status === 'new' && (
-        <div className='absolute -top-4 right-3 rounded-full bg-sky-500 px-3 py-1'>
-          <span className='text-white'>Required</span>
-        </div>
-      )}
-      <div className='flex w-full items-center justify-between gap-4'>
-        {status === 'new' ? (
-          <div className='bg- flex items-center gap-4'>
+  const _renderTitleItem = () => {
+    return (
+      <div className='flex items-center justify-between gap-4'>
+        <div className='bg- flex items-center gap-4'>
+          {!isRequired && !isIncluded ? (
             <div className='flex h-9 w-9 justify-center rounded-[20px] border border-[#00ADEF] bg-[#00ADEF1A]'>
               {icon}
             </div>
-            <p className='font-bold'>{title}</p>
-          </div>
-        ) : (
-          <div className='flex items-center gap-4 rounded-full'>
-            <div className='flex items-center justify-center rounded-full bg-white p-[2px]'>
-              <FinishIcon
-                className='rounded-full bg-white text-sky-400'
-                size={28}
-              />
-            </div>
-            <p className='font-bold'>{title}</p>
-          </div>
-        )}
-        {isMobile && (
-          <ArrowDownCircleIcon
-            className={clsx('cursor-pointer text-brand-blue', {
-              'rotate-180': isOpen,
-              'rounded-full bg-white': status === 'completed',
-            })}
-            onClick={() => setIsOpen((prev) => !prev)}
-          />
-        )}
+          ) : (
+            <FinishIcon
+              className='rounded-full bg-white text-[#11CE00]'
+              size={28}
+            />
+          )}
+          <p className='font-bold'>{title}</p>
+        </div>
       </div>
+    );
+  };
+
+  return (
+    <div
+      className={clsx('relative rounded-xl border-[2px] p-4 md:min-h-[100px]', {
+        'pt-6': isRecommended && status === 'new',
+        'border-[#11CE00] !bg-white shadow-sm':
+          status === 'completed' || isRequired || isIncluded,
+        'border-gray-200': status === 'new' && !isRequired && !isIncluded,
+        'border-[#17b1ee]':
+          !isRequired && !isIncluded && status === 'completed',
+      })}
+    >
+      {isMobile ? (
+        <div className='w-full md:flex md:flex-row md:items-center md:justify-between'>
+          {_renderStatusItem()}
+          {_renderTitleItem()}
+        </div>
+      ) : (
+        <div className='flex items-center justify-between gap-4'>
+          {_renderTitleItem()}
+          {_renderStatusItem()}
+        </div>
+      )}
       {isOpen && <div className='pt-2'>{children}</div>}
     </div>
   );

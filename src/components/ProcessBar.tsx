@@ -1,8 +1,10 @@
 'use client';
 import { ProcessBarType } from '@/app/motor/insurance/InsuranceLayout';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 import type { StepsProps } from 'antd';
 import { Steps } from 'antd';
+import { useSearchParams } from 'next/navigation';
 
 interface ProcessBarProps {
   currentStep: ProcessBarType;
@@ -12,10 +14,18 @@ interface ProcessBarProps {
 }
 
 const stepsData = [
+  { step: StepProcessBar.POLICY_DETAILS, title: 'Basic Information' },
+  { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+  { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+  { step: StepProcessBar.PERSONAL_DETAIL, title: 'Details' },
+  { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+];
+
+const stepsDataSingPass = [
   { step: StepProcessBar.POLICY_DETAILS, title: 'Policy Details' },
   { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
-  { step: StepProcessBar.SELECT_ADD_ON, title: 'Select Add On' },
-  { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Complete Purchase' },
+  { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+  { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
 ];
 
 const getStepStatus = (step: StepProcessBar, currentStep: ProcessBarType) => {
@@ -40,24 +50,48 @@ export default function ProcessBar({
   companyName,
   isFinalized,
 }: ProcessBarProps) {
-  const steps: StepsProps['items'] = stepsData.map(({ title, step }) => {
-    const stepStatus = getStepStatus(step, currentStep);
-    const [firstWord, remaining] = splitText(title);
-    return {
-      title: (
-        <p className='inline-block text-xs leading-4'>
-          <span className='block'>{firstWord}</span>
-          <span className='block'>{remaining}</span>
-        </p>
-      ),
-      status: stepStatus,
-      disabled: stepStatus === 'wait' || isFinalized,
-      icon:
-        stepStatus === 'wait' ? (
-          <div className='custom-step-wait'></div>
-        ) : undefined,
-    };
-  });
+  const searchParams = useSearchParams();
+  const { isMobile } = useDeviceDetection();
+  const isManual = searchParams.get('manual') === 'true';
+  const selectedStepsData = isManual ? stepsData : stepsDataSingPass;
+
+  const steps: StepsProps['items'] = selectedStepsData.map(
+    ({ title, step }, index) => {
+      const stepStatus = getStepStatus(step, currentStep);
+      const [firstWord, remaining] = splitText(title);
+      return {
+        title: stepStatus === 'process' && (
+          <p className='inline-block text-xs leading-4'>
+            {isMobile ? (
+              <div className='mt-1'>
+                <span className='block text-[#00ADEF]'>{firstWord}</span>
+                <span className='block text-[#00ADEF]'>{remaining}</span>
+              </div>
+            ) : (
+              <span className='block text-[#00ADEF]'>
+                {firstWord} {remaining}
+              </span>
+            )}
+          </p>
+        ),
+        status: stepStatus,
+        disabled: stepStatus === 'wait' || isFinalized,
+        icon: (
+          <div
+            className={`custom-step-wait bg-red-500${
+              stepStatus === 'finish'
+                ? 'border border-[#11CE00] bg-[#2ECC71] text-white'
+                : stepStatus === 'process'
+                  ? 'border border-[#3498DB] bg-[#3498DB] text-white'
+                  : 'bg-[#F5F5F5] text-[#95A5A6]'
+            }`}
+          >
+            {index + 1}
+          </div>
+        ),
+      };
+    },
+  );
   return (
     <div className='w-full justify-center'>
       <Steps
