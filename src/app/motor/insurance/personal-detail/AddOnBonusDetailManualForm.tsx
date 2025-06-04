@@ -289,7 +289,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='name'
                   label='Full Name as per NRIC / FIN'
-                  requiredMark
+                  isRequired
                   placeholder='Enter Your Full Name as per NRIC/FIN'
                 />
               </Form.Item>
@@ -301,7 +301,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='nric'
                   label='NRIC/FIN'
-                  requiredMark
+                  isRequired
                   placeholder='Enter NRIC/FIN'
                 />
               </Form.Item>
@@ -324,7 +324,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <RadioField
                   name='maritalStatus'
                   label='Marital Status'
-                  requiredMark
+                  isRequired
                   options={MARITAL_STATUS_OPTIONS}
                 />
               </Form.Item>
@@ -335,7 +335,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               >
                 <InputField
                   name='address1'
-                  requiredMark
+                  isRequired
                   label='Address Line 1'
                   placeholder='Block number and street name'
                 />
@@ -370,7 +370,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='pinCode'
                   label='Postal Code'
-                  requiredMark
+                  isRequired
                   placeholder='6-digit Postal Code'
                   inputMode='numeric'
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -400,7 +400,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='chasisNumber'
                   label='Chassis Number'
-                  requiredMark
+                  isRequired
                   placeholder='Enter Chassis Number'
                 />
               </Form.Item>
@@ -412,7 +412,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='engineNumber'
                   label='Engine Number'
-                  requiredMark
+                  isRequired
                   placeholder='Enter Engine Number'
                 />
               </Form.Item>
@@ -424,7 +424,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='vehicleNumber'
                   label='Vehicle Number'
-                  requiredMark
+                  isRequired
                   placeholder='Enter Vehicle Number'
                 />
               </Form.Item>
