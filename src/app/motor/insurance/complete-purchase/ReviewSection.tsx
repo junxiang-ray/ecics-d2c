@@ -2,9 +2,6 @@
 
 import React, { useState } from 'react';
 
-import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
-import ArrowUpIcon from '@/components/icons/ArrowUpIcon';
-
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { useAppSelector } from '@/redux/store';
@@ -13,15 +10,16 @@ import ModalImportant from './ModalImportant';
 
 interface ReviewSectionProps {
   title: string;
-  description: string;
-  icon: React.ReactNode;
-  data: { title: string; value: any }[];
-  isExpanded: boolean;
-  onToggle: () => void;
+  description?: string;
+  icon?: React.ReactNode;
+  data: { title: string; value: any; coverage_amount?: string }[];
+  isExpanded?: boolean;
+  onToggle?: () => void;
   setShowModal: (showModal: boolean) => void;
   editRoute?: string;
   isPendingSave?: boolean;
   isPendingPay?: boolean;
+  sectionKey?: string;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
@@ -35,6 +33,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   editRoute,
   isPendingSave,
   isPendingPay,
+  sectionKey,
 }) => {
   const router = useRouterWithQuery();
   const isFinalized = useAppSelector(
@@ -64,7 +63,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         <div
           className={`border px-2 ${isExpanded ? 'w-full rounded-t-lg border-[#00ADEF] bg-[#F4FBFD]' : 'rounded-lg border-[#EDEDED]'}`}
         >
-          <div className='flex w-full flex-row  justify-between py-2'>
+          <div className='flex w-full flex-row justify-between py-2'>
             <div className='flex w-full flex-row items-center justify-between'>
               <div className='flex flex-row items-center gap-2'>
                 {!isExpanded && (
@@ -73,31 +72,26 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                   </div>
                 )}
                 <div className='flex flex-col pl-2'>
-                  <p className='text-base font-semibold'>{title}</p>
+                  <p className='text-lg font-semibold'>{title}</p>
                   {!isExpanded && (
                     <p className='text-[14px] font-normal'>{description}</p>
                   )}
                 </div>
               </div>
               <div onClick={onToggle} className='cursor-pointer'>
-                {isExpanded ? (
+                {isExpanded && !isFinalized && (
                   <div className='gap flex flex-row items-center'>
-                    {!isFinalized && (
-                      <p
-                        className='mr-2 font-bold'
-                        onClick={() => {
-                          if (!isPendingSave && !isPendingPay) {
-                            handleEditClick();
-                          }
-                        }}
-                      >
-                        Edit
-                      </p>
-                    )}
-                    <ArrowUpIcon className='text-[#00ADEF]' size={15} />
+                    <p
+                      className='mr-2 font-bold text-[#00ADEF]'
+                      onClick={() => {
+                        if (!isPendingSave && !isPendingPay) {
+                          handleEditClick();
+                        }
+                      }}
+                    >
+                      Edit
+                    </p>
                   </div>
-                ) : (
-                  <ArrowDownIcon className='text-[#00ADEF]' size={15} />
                 )}
               </div>
             </div>
@@ -106,19 +100,61 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       </div>
 
       {isExpanded && (
-        <div className='flex min-h-1 flex-col gap-2 px-4 pb-2'>
-          {data.map((item, index) =>
-            item.value === '' ? (
-              <div key={index} className='font-semibold'>
-                {item.title}
+        <div className='mt-[20px] flex min-h-1 flex-col gap-2 px-4 pb-2'>
+          <div
+            className={`grid grid-cols-1 text-start md:gap-4 ${sectionKey === 'addons' || sectionKey === 'policy_plan' ? '' : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}
+          >
+            {data.map((item, index) => (
+              <div
+                key={index}
+                className={`flex flex-col text-sm ${sectionKey === 'addons' ? 'rounded border p-[14px]' : 'p-2'}`}
+              >
+                {sectionKey === 'addons' ? (
+                  <>
+                    <div
+                      className={`-mx-[14px] flex flex-row justify-between px-[14px] ${
+                        item.coverage_amount ? 'border-b pb-2' : ''
+                      }`}
+                    >
+                      <div className='font-semibold'>{item.title}</div>
+                      <div>{item.value || '-'}</div>
+                    </div>
+
+                    {item.coverage_amount && (
+                      <div className='mt-2 pt-2'>
+                        <div className='text-gray-500'>Coverage Amount</div>
+                        <div className='font-semibold'>
+                          {item.coverage_amount}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div>{item.title}</div>
+                    <div className='font-semibold'>
+                      {item.value ? (
+                        sectionKey === 'policy_plan' &&
+                        item.title === 'Plan Details' ? (
+                          <ul className='list-inside list-disc'>
+                            {(item.value as string)
+                              .split(',')
+                              .map((part: string, idx: number) => (
+                                <li key={idx}>{part.trim()}</li>
+                              ))}
+                          </ul>
+                        ) : (
+                          item.value
+                        )
+                      ) : (
+                        '-'
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-            ) : (
-              <div key={index} className='flex flex-row justify-between'>
-                <p className='flex-[3]'>{item.title}</p>
-                <p className='flex-[2] text-end'>{item.value}</p>
-              </div>
-            ),
-          )}
+            ))}
+          </div>
         </div>
       )}
 

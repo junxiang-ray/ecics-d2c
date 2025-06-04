@@ -105,13 +105,32 @@ export const parsePhoneNumber = (raw: string) => {
   return { prefix, areaCode, nbr };
 };
 
-export const formatCurrency = (value: number | undefined) => {
-  if (value === undefined) {
-    return '';
-  }
-  return `SGD ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-};
-
 export const formatPromoCode = (code: string | null): string => {
   return code ? code.trim().toUpperCase() : '';
+};
+
+const formatNumberWithPrefix = (prefix: string, number: number): string => {
+  const formatted = number.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${prefix} ${formatted}`;
+};
+
+export const formatCurrency = (value: number | undefined): string => {
+  if (value === undefined) return '';
+  return formatNumberWithPrefix('SGD', value);
+};
+
+export const formatCurrencyString = (input: string): string => {
+  const match = input.match(/^([+-]?SGD)\s?([\d,]+)$/);
+  if (!match) return input;
+
+  const prefix = match[1];
+  const numberStr = match[2].replace(/,/g, '');
+  const number = parseFloat(numberStr);
+
+  if (isNaN(number)) return input;
+
+  return formatNumberWithPrefix(prefix, number);
 };
