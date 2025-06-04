@@ -330,7 +330,7 @@ const AdditionDriver = ({
         className='flex h-full w-full flex-col gap-4 md:gap-8'
       >
         {_renderFormInput()}
-        <div className='absolute bottom-0 left-0 flex w-full flex-row justify-between gap-4 rounded-md bg-white px-6 py-4 text-base font-bold leading-[21px]'>
+        <div className='absolute bottom-0 left-0 flex w-full flex-row justify-center gap-4 rounded-md bg-white px-6 py-4 text-base font-bold leading-[21px]'>
           <button
             className='rounded-md border border-[#525252] bg-white px-8 py-2 text-[#525252]'
             type='button'
@@ -373,7 +373,7 @@ const AdditionDriver = ({
       centered
       width={765}
     >
-      <div className='mb-14 h-[80vh] overflow-y-scroll'>{content}</div>
+      <div className='mb-14 max-h-[80vh] overflow-y-scroll'>{content}</div>
     </Modal>
   );
 };
