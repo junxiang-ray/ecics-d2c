@@ -7,16 +7,16 @@ import { DropdownOption } from './dropdownfield';
 interface RadioFieldProps extends RadioProps {
   name: string;
   label?: string;
-  requiredMark?: boolean;
   options: DropdownOption[];
+  isRequired?: boolean;
 }
 
 const RadioField = ({
   name,
   label,
-  requiredMark,
   options,
   className,
+  isRequired,
   ...props
 }: RadioFieldProps) => {
   const { control } = useFormContext();
@@ -30,7 +30,9 @@ const RadioField = ({
           <>
             <span className='text-base font-semibold'>
               {label}
-              {requiredMark && <span className='text-red-500'>*</span>}
+              {isRequired && (
+                <span className='font-semibold text-[#C80F1E]'>*</span>
+              )}
             </span>
             <Radio.Group
               {...props}
