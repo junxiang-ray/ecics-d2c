@@ -6,7 +6,9 @@ import InsuranceLayout from '../InsuranceLayout';
 function PlanPage({}) {
   return (
     <InsuranceLayout>
-      {({ onSave }) => <PlanDetail onSaveRegister={onSave} />}
+      {({ onSave, handleBack }) => (
+        <PlanDetail onSaveRegister={onSave} handleBack={handleBack} />
+      )}
     </InsuranceLayout>
   );
 }

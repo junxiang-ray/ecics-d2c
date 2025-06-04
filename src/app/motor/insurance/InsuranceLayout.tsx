@@ -40,7 +40,10 @@ function getStepFromRoute(route: string): ProcessBarType {
 interface InsuranceLayoutProps {
   children:
     | ReactNode
-    | ((props: { onSave: (fn: () => any) => void }) => ReactNode);
+    | ((props: {
+        onSave: (fn: () => any) => void;
+        handleBack: () => void;
+      }) => ReactNode);
 }
 
 function InsuranceLayout({ children }: InsuranceLayoutProps) {
@@ -184,6 +187,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
         {typeof children === 'function'
           ? children({
               onSave: (fn: () => any) => (childSaveRef.current = fn),
+              handleBack,
             })
           : children}
       </div>

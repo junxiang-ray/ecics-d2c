@@ -1,16 +1,15 @@
 'use client';
 
-import { Drawer } from 'antd';
+import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { Option } from '@/libs/types/quote';
-import { formatCurrency } from '@/libs/utils/utils';
+import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
-import BasicDetailsIcon from '@/components/icons/BasicDetailsIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
@@ -21,7 +20,6 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import ReviewDesktop from './ReviewDesktop';
 import ReviewSection from './ReviewSection';
 import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
 import { PricingSummary } from '../components/FeeBar';
@@ -43,8 +41,10 @@ function calculateFee(
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
+  handleBack,
 }: {
   onSaveRegister: (fn: () => any) => void;
+  handleBack: () => void;
 }) {
   const dispatch = useAppDispatch();
   const router = useRouterWithQuery();
@@ -66,6 +66,7 @@ export default function CompletePurchaseDetail({
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const quote = useAppSelector((state) => state.quote?.quote);
+  const quoteInfo = useAppSelector((state) => state.quote?.quote);
   const vehicleSelected = quote?.data?.vehicle_info_selected;
 
   const plan = quote?.data?.plans?.find(
@@ -106,6 +107,7 @@ export default function CompletePurchaseDetail({
   ).map((addon: any) => ({
     title: addon.title,
     value: formatCurrency(addon.feeSelected / 1.09),
+    coverage_amount: formatCurrencyString(addon.optionLabel),
   }));
 
   const addonsIncludedData = (
@@ -142,6 +144,10 @@ export default function CompletePurchaseDetail({
         { title: 'Gender', value: driver.gender },
         { title: 'Marital Status', value: driver.marital_status },
         { title: 'Driving Experience', value: driver.driving_experience },
+        {
+          title: 'Do you have a claim in the past 3 years',
+          value: driver.driving_experience,
+        },
       ];
 
       return {
@@ -154,35 +160,32 @@ export default function CompletePurchaseDetail({
     });
   };
 
-  const sharedDataMap: { [key: string]: { title: string; value: any }[] } = {
-    basic: [
+  const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
+  const plans = quote?.data?.plans || [];
+  const matchedPlan = plans.find(
+    (plan) => plan.title && plan.title.includes(selectedPlanTitle),
+  );
+  const addonsTitles =
+    matchedPlan?.addons?.map((addon) => addon.title).filter(Boolean) || [];
+
+  const sharedDataMap: {
+    [key: string]: { title: string; value: any; coverage_amount?: string }[];
+  } = {
+    personal: [
       {
-        title: 'Policy Start Date',
-        value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
+        title: 'Email Address',
+        value: quote?.data?.personal_info?.email || 'N/A',
       },
       {
-        title: 'Policy End Date',
-        value: quote?.data?.insurance_additional_info?.end_date,
+        title: 'Phone Number',
+        value: quote?.data?.personal_info?.phone,
       },
       {
-        title: 'No Claim Discount',
-        value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
+        title: 'Date of Birth',
+        value: quote?.data?.personal_info?.date_of_birth,
       },
-      {
-        title: 'Number of claims in last 3 years',
-        value: quote?.data?.insurance_additional_info?.no_of_claim,
-      },
-      { title: 'Vehicle financed by', value: quote?.company?.name || 'N/A' },
     ],
     vehicle: [
-      {
-        title: 'Vehicle Number',
-        value: vehicleSelected?.vehicle_number || 'N/A',
-      },
-      {
-        title: 'Year of Registration',
-        value: vehicleSelected?.first_registered_year || 'N/A',
-      },
       {
         title: 'Vehicle Make',
         value: vehicleSelected?.vehicle_make || 'N/A',
@@ -192,19 +195,18 @@ export default function CompletePurchaseDetail({
         value: vehicleSelected?.vehicle_model || 'N/A',
       },
       {
-        title: 'Chassis Number',
-        value: vehicleSelected?.chasis_number || 'N/A',
+        title: "Vehicle's Year of Registration",
+        value: vehicleSelected?.first_registered_year || 'N/A',
       },
       {
-        title: 'Engine Number',
-        value: vehicleSelected?.engine_number || 'N/A',
+        title: 'Vehicle Financed By',
+        value: quote?.company?.name || 'N/A',
       },
       // { title: 'Engine Capacity', value: 'N/A' },
       // { title: 'Power Rate', value: 'N/A' },
       // { title: 'Year of Manufacture', value: 'N/A' },
     ],
     policy: [
-      { title: 'Selected Plan', value: quote?.data?.selected_plan || 'N/A' },
       {
         title: 'Policy Start Date',
         value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
@@ -214,13 +216,54 @@ export default function CompletePurchaseDetail({
         value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
       },
     ],
+    driving_experiences: [
+      {
+        title: 'Years of Driving Experience',
+        value: quote?.data?.personal_info?.driving_experience || 'N/A',
+      },
+      {
+        title: 'Your No Claim Discount',
+        value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
+      },
+      {
+        title: 'Number of claims in the past 3 years',
+        value: quote?.data?.insurance_additional_info?.no_of_claim || 'N/A',
+      },
+    ],
+    vehicle_details: [
+      {
+        title: 'Chassis Number',
+        value: vehicleSelected?.chasis_number || 'N/A',
+      },
+      {
+        title: 'Engine Number',
+        value: vehicleSelected?.engine_number || 'N/A',
+      },
+      {
+        title: 'Vehicle Number',
+        value: vehicleSelected?.vehicle_number || 'N/A',
+      },
+    ],
+    policy_plan: [
+      {
+        title: 'Selected Plan',
+        value: selectedPlanTitle,
+      },
+      {
+        title: 'Plan Details',
+        value: addonsTitles.length > 0 ? addonsTitles.join(', ') : 'N/A',
+      },
+    ],
     addons:
       addonsSectionData.length === 0 && addonsIncludedData.length === 0
         ? [{ title: 'You have no Add Ons selected', value: '' }]
         : [...addonsSectionData, ...addonsIncludedData],
     driver: getAdditionalDriverData(quote?.data?.add_named_driver_info),
     owner: [
-      { title: 'Name', value: quote?.data?.personal_info?.name ?? 'N/A' },
+      {
+        title: 'Name as per NRIC',
+        value: quote?.data?.personal_info?.name ?? 'N/A',
+      },
       { title: 'NRIC/FIN', value: quote?.data?.personal_info?.nric ?? 'N/A' },
       { title: 'Gender', value: quote?.data?.personal_info?.gender ?? 'N/A' },
       {
@@ -252,40 +295,50 @@ export default function CompletePurchaseDetail({
 
   const sections = [
     {
-      key: 'basic',
-      title: 'Basic Details',
-      description: 'Policy Period NCD No. of claims',
-      icon: <BasicDetailsIcon className='text-white' />,
+      key: 'personal',
+      title: 'Personal Information',
     },
     {
       key: 'vehicle',
-      title: 'Vehicle Details',
+      title: 'Vehicle Information',
       description: `${vehicleSelected?.vehicle_make} ${vehicleSelected?.vehicle_model} ${vehicleSelected?.chasis_number}`,
       icon: <CarIcon className='text-white' />,
     },
     {
       key: 'policy',
-      title: 'Policy Plan',
+      title: 'Policy Start & End Date',
       description: `${plan?.title} Plan`,
       icon: <PolicyPlanIcon className='text-white' />,
     },
     {
+      key: 'driving_experiences',
+      title: 'Driving Experiences',
+    },
+    {
+      key: 'policy_plan',
+      title: 'Policy Plan',
+    },
+    {
       key: 'addons',
-      title: 'Add Ons Selected',
+      title: 'Add-ons',
       description: 'Additional Named Driver(s)',
       icon: <AddOnsSelectedIcon className='text-white' />,
+    },
+    {
+      key: 'vehicle_details',
+      title: 'Vehicle Details',
+    },
+    {
+      key: 'owner',
+      title: 'Personal Info (Main Driver)',
+      description: `${quote?.data?.personal_info?.name}  ${quote?.data?.vehicle_info_selected?.vehicle_number}`,
+      icon: <PersonIcon className='text-white' />,
     },
     {
       key: 'driver',
       title: 'Additional Driver Details',
       description: 'Steve Smith',
       icon: <AdditionalDriverDetailsIcon className='text-white' />,
-    },
-    {
-      key: 'owner',
-      title: 'Main Driver Details',
-      description: `${quote?.data?.personal_info?.name}  ${quote?.data?.vehicle_info_selected?.vehicle_number}`,
-      icon: <PersonIcon className='text-white' />,
     },
   ];
 
@@ -431,13 +484,13 @@ export default function CompletePurchaseDetail({
       quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
 
     return (
-      <div className='w-full md:max-w-[400px]'>
+      <div className='w-full'>
         {/* <div className='flex h-[50px] justify-end'>
-          <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
-            Save
-          </div>
-        </div> */}
-        <div className='flex w-full flex-col gap-3 rounded-lg py-4 md:mt-6 md:border md:border-[#E4E4E4]'>
+                  <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
+                    Save
+                  </div>
+                </div> */}
+        <div className='flex w-full flex-col gap-3 rounded-lg py-4 md:border md:border-[#E4E4E4]'>
           <p className='text-center text-xl font-semibold leading-[30px] text-[#171A1F]'>
             Premium Breakdown
           </p>
@@ -566,86 +619,105 @@ export default function CompletePurchaseDetail({
 
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
-      <div className='flex w-full max-w-[1200px] flex-col justify-center md:flex-row md:gap-10'>
+      <div
+        className={`flex w-full flex-col justify-center md:gap-10 ${isMobile ? 'pb-20 md:flex-row' : 'item-center max-w-[1280px] flex-col p-4 pb-28'}`}
+      >
         <div className='flex flex-col lg:flex-row'>
           <div className='flex-1'>
-            <h1 className='text-xl font-semibold text-[#080808] md:text-center md:text-[32px] md:font-bold md:leading-[48px] md:text-[#171A1F]'>
-              Review your details
-            </h1>
-
-            {sections.map((section) => {
+            <div className='pb-4 text-[16px] font-bold underline'>Summary</div>
+            {sections.map((section, index) => {
               if (section.key === 'driver') {
                 const drivers = getDriverSections(
                   quote?.data?.add_named_driver_info,
                 );
-                return drivers.map((driverSection) =>
-                  isMobile ? (
+                return drivers.map((driverSection) => (
+                  <ReviewSection
+                    key={driverSection.key}
+                    title={driverSection.title}
+                    description={driverSection.description}
+                    icon={driverSection.icon}
+                    data={driverSection.data}
+                    isExpanded={true}
+                    setShowModal={setShowModal}
+                    editRoute={ROUTES.INSURANCE.ADD_ON}
+                  />
+                ));
+              }
+
+              // Handle special case for policy_plan + addons on desktop
+              if (
+                !isMobile &&
+                section.key === 'policy_plan' &&
+                sections[index + 1]?.key === 'addons'
+              ) {
+                const policyData = sharedDataMap['policy_plan'] || [];
+                const addonsData = sharedDataMap['addons'] || [];
+
+                return (
+                  <div key='policy_plan_addons' className='flex gap-4'>
                     <ReviewSection
-                      key={driverSection.key}
-                      title={driverSection.title}
-                      description={driverSection.description}
-                      icon={driverSection.icon}
-                      data={driverSection.data}
-                      isExpanded={!!expandedSections[driverSection.key]}
-                      onToggle={() => handleEditClick(driverSection.key)}
+                      key='policy_plan'
+                      title='Policy Plan'
+                      description={section.description}
+                      data={policyData}
+                      isExpanded={true}
+                      sectionKey='policy_plan'
                       setShowModal={setShowModal}
-                      editRoute={ROUTES.INSURANCE.ADD_ON}
+                      editRoute={routerBySectionKey('policy_plan')}
                     />
-                  ) : (
-                    <ReviewDesktop
-                      key={driverSection.key}
-                      title={driverSection.title}
-                      data={driverSection.data}
+                    <ReviewSection
+                      key='addons'
+                      title='Add-ons'
+                      description={section.description}
+                      data={addonsData}
+                      isExpanded={true}
+                      sectionKey='addons'
                       setShowModal={setShowModal}
-                      editRoute={ROUTES.INSURANCE.ADD_ON}
-                      isPendingSave={isPendingSave}
-                      isPendingPay={isPendingPay}
+                      editRoute={routerBySectionKey('addons')}
                     />
-                  ),
+                  </div>
                 );
               }
 
-              return isMobile ? (
+              // Skip rendering 'addons' if already rendered with 'policy_plan'
+              if (
+                !isMobile &&
+                section.key === 'addons' &&
+                sections[index - 1]?.key === 'policy_plan'
+              ) {
+                return null;
+              }
+
+              return (
                 <ReviewSection
                   key={section.key}
                   title={section.title}
                   description={section.description}
                   icon={section.icon}
                   data={sharedDataMap[section.key] || []}
-                  isExpanded={!!expandedSections[section.key]}
-                  onToggle={() => handleEditClick(section.key)}
+                  isExpanded={true}
+                  sectionKey={section.key}
                   setShowModal={setShowModal}
                   editRoute={routerBySectionKey(section.key)}
-                />
-              ) : (
-                <ReviewDesktop
-                  key={section.key}
-                  title={section.title}
-                  data={sharedDataMap[section.key] || []}
-                  setShowModal={setShowModal}
-                  editRoute={routerBySectionKey(section.key)}
-                  isPendingSave={isPendingSave}
-                  isPendingPay={isPendingPay}
                 />
               );
             })}
           </div>
         </div>
-
-        {!isMobile && _renderPremium()}
       </div>
-      {isMobile && (
-        <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
-          <PricingSummary
-            planFee={planFreeTotal}
-            addonFee={totalAdditionFee}
-            discount={quote?.promo_code?.discount || 0}
-            loading={isPendingSave || isPendingPay}
-            title='Premium breakdown'
-            textButton='Pay'
-            onClick={onPay}
-            setIsShowPopupPremium={setIsShowPopupPremium}
-          />
+      <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
+        <PricingSummary
+          planFee={planFreeTotal}
+          addonFee={totalAdditionFee}
+          discount={quote?.promo_code?.discount || 0}
+          loading={isPendingSave || isPendingPay}
+          title='Premium breakdown'
+          textButton='Submit & Pay'
+          handleBack={handleBack}
+          onClick={onPay}
+          setIsShowPopupPremium={setIsShowPopupPremium}
+        />
+        {isMobile ? (
           <Drawer
             placement='bottom'
             open={isShowPopupPremium}
@@ -656,8 +728,21 @@ export default function CompletePurchaseDetail({
           >
             {_renderPremium()}
           </Drawer>
-        </div>
-      )}
+        ) : (
+          <Modal
+            open={isShowPopupPremium}
+            onCancel={() => setIsShowPopupPremium(false)}
+            closable={false}
+            maskClosable={true}
+            keyboard={true}
+            footer={null}
+            width={500}
+            centered
+          >
+            <div>{_renderPremium()}</div>
+          </Modal>
+        )}
+      </div>
     </div>
   );
 }
