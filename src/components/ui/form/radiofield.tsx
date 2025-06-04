@@ -7,6 +7,7 @@ interface RadioFieldProps extends RadioProps {
   name: string;
   label?: string;
   options: DropdownOption[];
+  isRequired?: boolean;
 }
 
 const RadioField = ({
@@ -14,6 +15,7 @@ const RadioField = ({
   label,
   options,
   className,
+  isRequired,
   ...props
 }: RadioFieldProps) => {
   const { control } = useFormContext();
@@ -25,7 +27,12 @@ const RadioField = ({
         control={control}
         render={({ field, fieldState }) => (
           <>
-            <span className='text-base font-semibold'>{label}</span>
+            <span className='text-base font-semibold'>
+              {label}
+              {isRequired && (
+                <span className='font-semibold text-[#C80F1E]'>*</span>
+              )}
+            </span>
             <Radio.Group
               {...props}
               {...field}
