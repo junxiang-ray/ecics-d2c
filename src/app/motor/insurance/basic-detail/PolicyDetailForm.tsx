@@ -30,7 +30,6 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 
-import { UnableQuote } from './modal/UnableQuote';
 import {
   DRV_EXP_OPTIONS,
   NCD_OPTIONS,
@@ -40,6 +39,7 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+import { QuoteModal } from './modal/QuoteModal';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -207,6 +207,7 @@ const PolicyDetailForm = ({
 
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
   const [showCSModal, setShowCSModal] = useState(false);
+  const [descriptionQuote, setDescriptionQuote] = useState('');
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
   const methods = useForm<FormData>({
@@ -262,12 +263,18 @@ const PolicyDetailForm = ({
   useEffect(() => {
     if (drvExp === NumberDriverExperience.LESS_THAN_2_YEARS) {
       setShowCSModal(true);
+      setDescriptionQuote(
+        'The listed driver has less than 2 years of driving experience',
+      );
     }
   }, [drvExp]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
       setShowCSModal(true);
+      setDescriptionQuote(
+        'The listed driver has reported more than 2 claims or claims exceeding SGD 20,000.',
+      );
     }
   }, [no_claim]);
 
@@ -688,9 +695,10 @@ const PolicyDetailForm = ({
           </PrimaryButton>
         </div>
       </div>
-      <UnableQuote
+      <QuoteModal
         onClick={() => setShowCSModal(false)}
         visible={showCSModal}
+        description={descriptionQuote}
       />
     </>
   );
