@@ -1,13 +1,16 @@
-import { Quote } from '@/libs/types/quote';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
 
+import { Quote } from '@/libs/types/quote';
+
 interface AppState {
   quote: Quote;
+  promoCodeError: { message: string } | null;
 }
 
 const initialState: AppState = {
   quote: {} as Quote,
+  promoCodeError: null,
 };
 
 const appSlice = createSlice({
@@ -20,10 +23,16 @@ const appSlice = createSlice({
     clearQuote(state) {
       state.quote = {} as Quote;
     },
+    setPromoCodeError(
+      state,
+      action: PayloadAction<{ message: string } | null>,
+    ) {
+      state.promoCodeError = action.payload;
+    },
   },
 });
 
-export const { updateQuote, clearQuote } = appSlice.actions;
+export const { updateQuote, clearQuote, setPromoCodeError } = appSlice.actions;
 
 export const useAddNamedDriverInfo = () => {
   return useSelector(
