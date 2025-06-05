@@ -10,6 +10,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
+import { useAppSelector } from '@/redux/store';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;
@@ -32,6 +33,10 @@ export const PromoCodeField = ({
   const { mutateAsync: verifyPromoCode, isPending } = useVerifyPromoCode();
   const [promoInfoSelected, setPromoInfoSelected] =
     useState<PromoCodeResponse | null>(null);
+  const promoCodeError = useAppSelector((state) => state.quote.promoCodeError);
+  const isPromoCodeNotApplicable =
+    promoCodeError?.message === 'Promo Code is invalid';
+
   const isValidPromoCode = promoInfoSelected?.data?.is_valid;
   const errorMessage = isValidPromoCode ? '' : promoInfoSelected?.message;
 
@@ -105,10 +110,25 @@ export const PromoCodeField = ({
               onClick={removePromoCode}
             />
           </div>
-          <span className='flex items-center text-sm text-[#52C41A]'>
-            <PromoTickIcon className='mr-2' size={24} />
-            {promoInfoSelected?.data?.discount}% OFF applied
-          </span>
+          {!isPromoCodeNotApplicable && (
+            <span className='flex items-center text-sm text-[#52C41A]'>
+              <PromoTickIcon className='mr-2' size={24} />
+              {promoInfoSelected?.data?.discount}% OFF applied
+            </span>
+          )}
+          {isPromoCodeNotApplicable && (
+            <div className='mt-[10px] flex items-center text-justify text-sm'>
+              <WarningTriangleIcon className='mr-2' size={24} />
+              <div className='text-[#FD1212]'>
+                <span>Promo Code Not Applicable</span>
+                <br />
+                <span className='text-justify font-normal'>
+                  This promo code is valid but doesn’t meet the required
+                  criteria. Please check the terms and conditions.
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
       {!isDisablePromoCode && !isValidPromoCode && (

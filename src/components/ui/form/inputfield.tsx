@@ -23,9 +23,11 @@ export const InputField = ({
         render={({ field, fieldState }) => (
           <>
             <span className='text-base font-semibold'>
-              {label}
-              {isRequired && (
-                <span className='font-semibold text-[#C80F1E]'>*</span>
+              {label && (
+                <label className='text-base font-semibold'>
+                  {label}
+                  {isRequired && <span className='text-red-500'>*</span>}
+                </label>
               )}
             </span>
             <Input
