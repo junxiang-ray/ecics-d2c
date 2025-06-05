@@ -8,6 +8,7 @@ export const ROUTES = {
     PERSONAL_DETAIL: '/motor/insurance/personal-detail',
     COMPLETE_PURCHASE: '/motor/insurance/complete-purchase',
   },
+  API_ERROR: '/motor/error-page',
   MOTOR: {
     LOGIN: '/motor',
     REVIEW_INFO_DETAIL: '/motor/review-info-detail',

@@ -1,10 +1,7 @@
 import { Drawer, Modal } from 'antd';
-
 import { PrimaryButton } from '@/components/ui/buttons';
-
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import WarningIcon from '@/components/icons/WarningIcon';
-
+import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 interface UnableQuoteModalProps {
   visible: boolean;
   onOk: () => void;
@@ -17,7 +14,7 @@ export const RequiredModal = ({ visible, onOk }: UnableQuoteModalProps) => {
     <>
       <div className='flex flex-col items-center justify-center gap-4'>
         <div>
-          <WarningIcon size={70} />
+          <WarningTriangleIcon size={70} />
         </div>
         <p className='text-center text-2xl font-normal leading-[32px] text-[#000000D9]'>
           Missing Additional Driver Information

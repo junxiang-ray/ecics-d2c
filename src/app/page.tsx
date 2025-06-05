@@ -3,9 +3,7 @@
 import { Spin } from 'antd';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-
 import { saveToSessionStorage } from '@/libs/utils/utils';
-
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES, STEP_TO_ROUTE } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';

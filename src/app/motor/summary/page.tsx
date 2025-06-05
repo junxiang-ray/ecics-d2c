@@ -8,7 +8,6 @@ import {
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
-
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
 import {
@@ -16,19 +15,14 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from '@/components/ui/buttons';
-
-import { ROUTES } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-
 import InfoCard from './InfoCard';
 
 export default function Summary() {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const key = searchParams.get('key') || '';
-  const router = useRouterWithQuery();
 
   const handleGoPersonal = () => {
     window.open(

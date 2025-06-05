@@ -15,12 +15,10 @@ import { ROUTES } from '@/constants/routes';
 import {
   useGenerateQuote,
   useGetHirePurchaseList,
-  useGetQuote,
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { setPromoCodeError, updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-
 import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
