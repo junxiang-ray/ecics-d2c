@@ -1,13 +1,11 @@
 'use client';
 
-import {
-  ArrowRightOutlined,
-  CopyOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
+import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
+
+import { formatQuestionYesNo } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
@@ -17,12 +15,17 @@ import {
   SecondaryButton,
 } from '@/components/ui/buttons';
 
-import { ROUTES } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 import InfoCard from './InfoCard';
+
+interface DocumentItem {
+  link: string;
+  title: string;
+  isEVModel: boolean;
+}
 
 export default function Summary() {
   const searchParams = useSearchParams();
@@ -43,9 +46,16 @@ export default function Summary() {
   const _renderCongratulation = () => {
     return (
       <div className='flex flex-col items-center gap-5'>
-        <CheckCircle size={48} />
-        <p className='text-base font-semibold leading-5 text-[#171A1F]'>
-          Congratulations! Your policy has been successfully purchased 🎉
+        {isMobile ? (
+          <CheckCircle size={48} />
+        ) : (
+          // <PromoTickIcon size={48}/>
+          <CheckCircle size={48} />
+        )}
+        <p className='text-center text-2xl font-normal leading-7 text-[#171A1F]'>
+          Payment Success!
+          <br />
+          Your coverage is now active and secured.
         </p>
       </div>
     );
@@ -91,19 +101,16 @@ export default function Summary() {
 
   const _renderDoc = (title: string, url: string) => {
     return (
-      <div className='flex h-full min-h-[150px] w-full flex-col items-start justify-between rounded border border-[#00ADEF] p-2'>
+      <div
+        className='flex h-full w-full cursor-pointer flex-row items-center justify-between p-2'
+        onClick={() => {
+          window.open(url, '_blank');
+        }}
+      >
         <DocDuplicate size={24} />
-        <p className='w-full cursor-pointer whitespace-normal break-words text-[11px] font-semibold'>
+        <p className='ml-2 flex-1 cursor-pointer whitespace-normal break-words text-[11px] font-semibold'>
           {title}
         </p>
-        <div
-          className='flex cursor-pointer flex-row gap-2 text-[10px] font-semibold text-[#00ADEF]'
-          onClick={() => {
-            window.open(url, '_blank');
-          }}
-        >
-          Read More <ArrowRightOutlined />
-        </div>
       </div>
     );
   };
@@ -119,11 +126,19 @@ export default function Summary() {
 
   const driversData = (quote?.data?.review_info_premium?.drivers || []).map(
     (driver: any) => [
-      { label: 'Name', value: driver.name || 'N/A' },
-      { label: 'Gender', value: driver.gender || 'N/A' },
+      { label: 'Name as per NRIC', value: driver.name || 'N/A' },
       { label: 'NRIC/FIN', value: driver.nric_or_fin || 'N/A' },
       { label: 'Date of Birth', value: driver.date_of_birth || 'N/A' },
+      { label: 'Gender', value: driver.gender || 'N/A' },
       { label: 'Marital Status', value: driver.marital_status || 'N/A' },
+      {
+        label: 'Driving Experience',
+        value: driver.driving_experience || 'N/A',
+      },
+      {
+        label: 'Do you have a claim in the past 3 years',
+        value: formatQuestionYesNo(driver.is_claim_in_3_years) || 'N/A',
+      },
     ],
   );
 
@@ -135,21 +150,62 @@ export default function Summary() {
     );
   }
 
+  const downloadFile = (url: string, fileName: string) => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleDownloadAll = () => {
+    const documents = (quote?.product_type?.documents || []) as DocumentItem[];
+
+    documents
+      .filter((doc) => !doc.isEVModel)
+      .forEach((doc) => {
+        const fileName = doc.title.replace(/\s+/g, '_') + '.pdf';
+        downloadFile(doc.link, fileName);
+      });
+  };
+
   return (
     <div className='flex w-full justify-center '>
       <div className='w-full max-w-[1280px]'>
         <div className='flex w-full flex-col items-center justify-center gap-6 px-6 py-4'>
           {_renderCongratulation()}
-          <p className='text-[15px] font-normal leading-5'>
-            A confirmation email with the policy details has been sent to your
-            registered email.
+          <p className='text-[15px] font-normal leading-5 text-[#9f9f9f]'>
+            A confirmation email with your policy document has been sent to your
+            registered email address.
           </p>
+          <div className='w-full bg-[#FAFAFA] p-4 md:max-w-[334px]'>
+            <p className='mb-2 text-center text-base font-semibold leading-5'>
+              All set! Your document is ready to go.
+            </p>
+            <div className='grid'>
+              {quote?.product_type.documents?.map((doc: any, index: number) => (
+                <div key={index}>{_renderDoc(doc.title, doc.link)}</div>
+              ))}
+            </div>
+            <div className='flex justify-center'>
+              <LinkButton
+                type='link'
+                className='text-sm font-semibold text-[#00ADEF]'
+                onClick={handleDownloadAll}
+              >
+                Download All
+              </LinkButton>
+            </div>
+          </div>
+          <div className='text-xl font-semibold'>Your Policy Summary</div>
           <div className='flex w-full flex-col items-center justify-center gap-6 md:max-w-[800px]'>
             <InfoCard
               title='Policy Details'
               data={[
                 {
-                  label: 'Plan Type',
+                  label: 'Selected Plan',
                   value: quote?.data?.selected_plan || 'N/A',
                 },
                 {
@@ -169,19 +225,78 @@ export default function Summary() {
               drivers={quote?.data?.review_info_premium?.drivers}
             />
             <InfoCard
+              title='Vehicle Details'
+              data={[
+                {
+                  label: 'Vehicle Number',
+                  value:
+                    quote?.data?.vehicle_info_selected?.vehicle_number || 'N/A',
+                },
+                {
+                  label: 'Vehicle Make',
+                  value:
+                    quote?.data?.vehicle_info_selected?.vehicle_make || 'N/A',
+                },
+                {
+                  label: 'Vehicle Model',
+                  value:
+                    quote?.data?.vehicle_info_selected?.vehicle_model || 'N/A',
+                },
+                {
+                  label: 'First Registration Date',
+                  value:
+                    quote?.data?.vehicle_info_selected?.first_registered_year ||
+                    'N/A',
+                },
+                {
+                  label: 'Years of Manufacture',
+                  value:
+                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                },
+                {
+                  label: 'Engine Number',
+                  value:
+                    quote?.data?.vehicle_info_selected?.engine_number || 'N/A',
+                },
+                {
+                  label: 'Chassis Number',
+                  value:
+                    quote?.data?.vehicle_info_selected?.chasis_number || 'N/A',
+                },
+                {
+                  label: 'Engine Capacity',
+                  value:
+                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                },
+                {
+                  label: 'Power Rate',
+                  value:
+                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                },
+              ]}
+            />
+            <InfoCard
               title='Insured Info'
               data={[
                 {
-                  label: 'Name',
+                  label: 'Name as per NRIC',
                   value: quote?.data?.personal_info?.name || 'N/A',
                 },
                 {
-                  label: 'Mobile Number',
-                  value: quote?.data?.personal_info?.phone || 'N/A',
+                  label: 'NRIC / FIN',
+                  value: quote?.data?.personal_info?.nric || 'N/A',
                 },
                 {
-                  label: 'Email',
-                  value: quote?.data?.personal_info?.email || 'N/A',
+                  label: 'Gender',
+                  value: quote?.data?.personal_info?.gender || 'N/A',
+                },
+                {
+                  label: 'Marital Status',
+                  value: quote?.data?.personal_info?.marital_status || 'N/A',
+                },
+                {
+                  label: 'Date of Birth',
+                  value: quote?.data?.personal_info?.date_of_birth || 'N/A',
                 },
                 {
                   label: 'Address Line 1',
@@ -199,6 +314,18 @@ export default function Summary() {
                     ? quote?.data?.personal_info?.address?.[2]
                     : 'N/A',
                 },
+                {
+                  label: 'Postal Code',
+                  value: quote?.data?.personal_info?.post_code || 'N/A',
+                },
+                {
+                  label: 'Email',
+                  value: quote?.data?.personal_info?.email || 'N/A',
+                },
+                {
+                  label: 'Mobile Number',
+                  value: quote?.data?.personal_info?.phone || 'N/A',
+                },
               ]}
             />
             {driversData.map((driver, index) => (
@@ -210,37 +337,27 @@ export default function Summary() {
             ))}
           </div>
           {/* {_renderRewarded()}
-          {_renderRewarded()}
-          {_renderCashBack()} */}
+                      {_renderRewarded()}
+                      {_renderCashBack()} */}
 
-          <div className='w-full md:max-w-[800px]'>
-            <p className='mb-2 text-base font-semibold leading-5'>
-              Documents Download
-            </p>
-            <div className='grid grid-cols-2 items-stretch gap-4 md:grid-cols-3'>
-              {quote?.product_type.documents?.map((doc: any, index: number) => (
-                <div key={index}>{_renderDoc(doc.title, doc.link)}</div>
-              ))}
-            </div>
-          </div>
-          {isMobile ? (
-            <div className='flex justify-center gap-4 bg-white pt-4 text-[16px]'>
-              <LinkButton
-                type='link'
-                className='font-bold text-[#00ADEF]'
-                onClick={handleGoPersonal}
-              >
-                Find out more about our other products!
-              </LinkButton>
-            </div>
-          ) : (
-            <PrimaryButton
-              className='w-full font-bold md:max-w-[800px]'
-              onClick={handleGoPersonal}
-            >
-              Find out more about our other products!
-            </PrimaryButton>
-          )}
+          {/*{isMobile ? (*/}
+          {/*    <div className='flex justify-center gap-4 bg-white pt-4 text-[16px]'>*/}
+          {/*        <LinkButton*/}
+          {/*            type='link'*/}
+          {/*            className='font-bold text-[#00ADEF]'*/}
+          {/*            onClick={handleGoPersonal}*/}
+          {/*        >*/}
+          {/*            Find out more about our other products!*/}
+          {/*        </LinkButton>*/}
+          {/*    </div>*/}
+          {/*) : (*/}
+          {/*    <PrimaryButton*/}
+          {/*        className='w-full font-bold md:max-w-[800px]'*/}
+          {/*        onClick={handleGoPersonal}*/}
+          {/*    >*/}
+          {/*        Find out more about our other products!*/}
+          {/*    </PrimaryButton>*/}
+          {/*)}*/}
         </div>
       </div>
     </div>

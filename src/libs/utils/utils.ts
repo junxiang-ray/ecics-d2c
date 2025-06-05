@@ -134,3 +134,12 @@ export const formatCurrencyString = (input: string): string => {
 
   return formatNumberWithPrefix(prefix, number);
 };
+
+export const formatQuestionYesNo = (
+  value: boolean | string | undefined | null,
+): string => {
+  if (typeof value === 'string') {
+    return value.toLowerCase() === 'true' ? 'Yes' : 'No';
+  }
+  return value ? 'Yes' : 'No';
+};

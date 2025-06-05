@@ -5,7 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { Option } from '@/libs/types/quote';
-import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
+import {
+  formatCurrency,
+  formatCurrencyString,
+  formatQuestionYesNo,
+} from '@/libs/utils/utils';
 
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
@@ -145,7 +149,7 @@ export default function CompletePurchaseDetail({
         { title: 'Driving Experience', value: driver.driving_experience },
         {
           title: 'Do you have a claim in the past 3 years',
-          value: driver.driving_experience,
+          value: formatQuestionYesNo(driver.is_claim_in_3_years),
         },
       ];
 
