@@ -1,8 +1,10 @@
-import { CloseOutlined, TagOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import { Button, Flex, Form, Input, InputProps } from 'antd';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import PromoTickIcon from '@/components/icons/PromoTickIcon';
+import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
 
 import { PromoCodeResponse } from '@/api/base-service/verify';
@@ -14,6 +16,7 @@ interface InputFieldProps extends InputProps {
   applyPromoCode: string;
   setApplyPromoCode: (promoCode: string) => void;
 }
+
 export interface PromoCodeModel {
   code: string;
   desc: string;
@@ -70,34 +73,43 @@ export const PromoCodeField = ({
   return (
     <div className='w-full'>
       {isDisablePromoCode && (
-        <div>
-          <Input disabled />
-          <span className='block pt-2 text-xs text-gray-400'>
-            Unable to apply Promo Code. Past claim founds.
-          </span>
+        <div className='mb-5 w-full border p-3 font-semibold shadow-xl md:ms-2'>
+          <div className='mb-3 w-full text-base'>Enter Promo Code</div>
+          <div className='flex items-center justify-between text-justify text-sm'>
+            <WarningTriangleIcon className='mr-2 shrink-0' size={24} />
+            <span className='text-justify font-light leading-snug'>
+              We regret to inform you that the promo code is not applicable if
+              <span className='font-bold'>
+                {' '}
+                you have made a claim within the past three years.
+              </span>
+            </span>
+          </div>
         </div>
       )}
       {!isDisablePromoCode && isValidPromoCode && (
-        <Flex
-          align='center'
-          className='mb-5 w-full justify-between rounded-md border border-blue-400 px-3 py-2'
-        >
-          <span className='text-base'>Promo Code</span>
-          <span className='inline-block px-3 sm:px-6'>
-            <span className='pr-1 text-sm font-semibold text-blue-400'>
-              {promoInfoSelected?.data.code}:
-            </span>
-            <span className='text-sm'>
-              {promoInfoSelected?.data?.discount}% off applied
-            </span>
+        <div className='mb-5 w-full border p-3 font-semibold shadow-xl md:ms-2'>
+          <div className='mb-3 w-full text-base'>Enter Promo Code</div>
+          <div className='mb-[10px] flex w-full items-center justify-between border border-gray-300 px-3 py-2'>
+            <div className='flex items-center gap-2'>
+              <span className='inline-block rounded px-3 py-1'>
+                <span className='text-base font-semibold text-[#52C41A]'>
+                  {promoInfoSelected?.data.code}
+                </span>
+              </span>
+            </div>
+            <Button
+              type='link'
+              icon={<CloseOutlined className='text-xl' />}
+              danger
+              onClick={removePromoCode}
+            />
+          </div>
+          <span className='flex items-center text-sm text-[#52C41A]'>
+            <PromoTickIcon className='mr-2' size={24} />
+            {promoInfoSelected?.data?.discount}% OFF applied
           </span>
-          <Button
-            type='link'
-            icon={<CloseOutlined />}
-            danger
-            onClick={removePromoCode}
-          />
-        </Flex>
+        </div>
       )}
       {!isDisablePromoCode && !isValidPromoCode && (
         <Form.Item
@@ -123,6 +135,7 @@ export const PromoCodeField = ({
             <SecondaryButton
               onClick={handleSubmitPromoCode}
               loading={isPending}
+              className='ml-[16px] w-[150px] shadow-md shadow-gray-400'
             >
               Apply
             </SecondaryButton>
@@ -133,14 +146,16 @@ export const PromoCodeField = ({
             </span>
           )}
           {isValidPromoCode && (
-            <div>
-              <span className='text-blue-400'>
-                <TagOutlined />
-              </span>
-              <span className='pl-1 text-green-500'>
-                Use {promoInfoSelected?.data.code} for{' '}
-                {promoInfoSelected?.data.discount}% off
-              </span>
+            <div className='mt-[10px] flex items-center text-justify text-sm'>
+              <WarningTriangleIcon className='mr-2' size={24} />
+              <div className='text-[#FD1212]'>
+                <span>Invalid Promo Code</span>
+                <br />
+                <span className='font-normal'>
+                  The promo code you entered is not valid. <br />
+                  Please check the code and try again.
+                </span>
+              </div>
             </div>
           )}
         </Form.Item>
