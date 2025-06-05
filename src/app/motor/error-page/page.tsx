@@ -1,10 +1,10 @@
 'use client';
 
-import { useAppSelector } from '@/redux/store';
-
 export default function ApiErrorPage() {
-  const error = useAppSelector((state) => state.error);
-
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
+  const status = params.get('status');
+  const message = params.get('message');
   return (
     <div
       className='relative flex min-h-screen w-full flex-col bg-white'
@@ -18,12 +18,12 @@ export default function ApiErrorPage() {
       <div className='max-w-[700px] px-4 pt-10 md:pl-24 md:pt-20'>
         <img src='/ecics.svg' alt='ecics logo' className='mb-8 h-10' />
         <p className='mb-2 w-full text-[32px] font-bold leading-[100%] text-[#000000]'>
-          {error.status} {error.message}
+          {status} {message}
         </p>
         <p className='mb-4 text-[20px] font-normal text-[#000000]'>
           Service is temporarily unavailable. Please try again shortly.
         </p>
-        <p className='mb-6 text-base font-normal text-[#00000073]'>
+        <p className='mb-6 text-base font-normal leading-[100%] text-[#00000073]'>
           Our team is ready to assist you—please don't hesitate to reach out and
           we'll do our best to resolve the issue as quickly as possible.
         </p>

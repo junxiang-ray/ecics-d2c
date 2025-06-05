@@ -2,13 +2,11 @@ import { configureStore } from '@reduxjs/toolkit';
 import appReducer from './slices/app.slice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import quoteReducer from './slices/quote.slice';
-import errorReducer from './slices/error.slice';
 
 const store = configureStore({
   reducer: {
     app: appReducer,
     quote: quoteReducer,
-    error: errorReducer,
   },
 });
 

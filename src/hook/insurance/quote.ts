@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
 import insurance from '@/api/base-service/insurance';
-import { useApiErrorHandler } from '../useApiErrorHandler';
 
 export const useGetQuote = (key: string) => {
   const fetchQuote = async () => {
@@ -17,7 +16,6 @@ export const useGetQuote = (key: string) => {
 };
 
 export const useGenerateQuote = () => {
-  const onError = useApiErrorHandler();
   const generateQuote = async (data: QuoteCreationPayload | any) => {
     const res = await insurance.generateQuote(data);
     return res.data.data;
@@ -26,12 +24,10 @@ export const useGenerateQuote = () => {
   return useMutation({
     mutationFn: generateQuote,
     mutationKey: ['generate-quote'],
-    onError,
   });
 };
 
 export const useSaveProposal = () => {
-  const onError = useApiErrorHandler();
   const saveProposal = async (data: ProposalPayload) => {
     const res = await insurance.saveProposal(data);
     return res.data.data;
@@ -39,12 +35,10 @@ export const useSaveProposal = () => {
   return useMutation({
     mutationFn: saveProposal,
     mutationKey: ['save-proposal'],
-    onError,
   });
 };
 
 export const useSaveQuote = () => {
-  const onError = useApiErrorHandler();
   const saveQuote = async ({
     key,
     data,
@@ -60,7 +54,6 @@ export const useSaveQuote = () => {
   return useMutation({
     mutationFn: saveQuote,
     mutationKey: ['save-quote'],
-    onError,
   });
 };
 
@@ -76,7 +69,6 @@ export const useGetHirePurchaseList = (product_type: string) => {
 };
 
 export const useRequestLogCar = () => {
-  const onError = useApiErrorHandler();
   const requestLogCar = async () => {
     const res = await insurance.requestLogCar();
     return res.data;
@@ -84,12 +76,10 @@ export const useRequestLogCar = () => {
   return useMutation({
     mutationFn: requestLogCar,
     mutationKey: ['log-car'],
-    onError,
   });
 };
 
 export const useSaveProposalFinalize = () => {
-  const onError = useApiErrorHandler();
   const saveProposalFinalize = async (key: string) => {
     const res = await insurance.saveProposalFinalize({ key });
     return res.data.data;
@@ -97,12 +87,10 @@ export const useSaveProposalFinalize = () => {
   return useMutation({
     mutationFn: saveProposalFinalize,
     mutationKey: ['save-proposal-finalize'],
-    onError,
   });
 };
 
 export const usePayment = () => {
-  const onError = useApiErrorHandler();
   const payment = async (key: string) => {
     const res = await insurance.payment({ key });
     return res.data.data;
@@ -110,6 +98,5 @@ export const usePayment = () => {
   return useMutation({
     mutationFn: payment,
     mutationKey: ['payload'],
-    onError,
   });
 };

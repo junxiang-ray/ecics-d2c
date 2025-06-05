@@ -7,14 +7,12 @@ import { saveToSessionStorage } from '@/libs/utils/utils';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES, STEP_TO_ROUTE } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
-import { useApiErrorHandler } from '@/hook/useApiErrorHandler';
 
 export default function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
-  const { data: quoteInfo, isLoading, isError, error } = useGetQuote(key);
-  const onError = useApiErrorHandler();
+  const { data: quoteInfo, isLoading } = useGetQuote(key);
 
   useEffect(() => {
     sessionStorage.clear();
@@ -40,12 +38,6 @@ export default function Home() {
       router.push(ROUTES.MOTOR.LOGIN);
     }
   }, [quoteInfo, isLoading]);
-
-  useEffect(() => {
-    if (isError && error) {
-      onError(error);
-    }
-  }, [isError, error, onError]);
 
   if (isLoading) {
     return (

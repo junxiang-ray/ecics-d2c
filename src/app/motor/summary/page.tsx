@@ -7,8 +7,7 @@ import {
 } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect } from 'react';
-
+import React from 'react';
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
 import {
@@ -16,11 +15,9 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from '@/components/ui/buttons';
-
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import InfoCard from './InfoCard';
-import { useApiErrorHandler } from '@/hook/useApiErrorHandler';
 
 export default function Summary() {
   const searchParams = useSearchParams();
@@ -35,14 +32,7 @@ export default function Summary() {
     );
   };
 
-  const { data: quote, isLoading, isError, error } = useGetQuote(key);
-  const onError = useApiErrorHandler();
-
-  useEffect(() => {
-    if (isError && error) {
-      onError(error);
-    }
-  }, [isError, error, onError]);
+  const { data: quote, isLoading } = useGetQuote(key);
 
   const _renderCongratulation = () => {
     return (
