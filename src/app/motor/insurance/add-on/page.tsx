@@ -6,9 +6,7 @@ import InsuranceLayout from '../InsuranceLayout';
 export default function AddonPage() {
   return (
     <InsuranceLayout>
-      {({ onSave, handleBack }) => (
-        <AddOnDetail onSaveRegister={onSave} handleBack={handleBack} />
-      )}
+      {({ onSave }) => <AddOnDetail onSaveRegister={onSave} />}
     </InsuranceLayout>
   );
 }

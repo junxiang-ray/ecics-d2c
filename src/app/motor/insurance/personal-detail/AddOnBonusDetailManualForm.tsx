@@ -17,6 +17,7 @@ import { InputField } from '@/components/ui/form/inputfield';
 import RadioField from '@/components/ui/form/radiofield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -132,12 +133,12 @@ type FormData = z.infer<ReturnType<typeof createSchema>>;
 
 interface Props {
   onSaveRegister: (fn: () => any) => void;
-  handleBack?: () => void;
 }
 
 const AddOnBonusDetailManualForm = (props: Props) => {
-  const { onSaveRegister, handleBack } = props;
+  const { onSaveRegister } = props;
   const dispatch = useAppDispatch();
+  const { handleBack } = useInsurance();
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const quoteInfo = useAppSelector((state) => state.quote.quote);

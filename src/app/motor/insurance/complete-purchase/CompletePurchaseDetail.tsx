@@ -13,6 +13,7 @@ import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -41,13 +42,12 @@ function calculateFee(
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
-  handleBack,
 }: {
   onSaveRegister: (fn: () => any) => void;
-  handleBack: () => void;
 }) {
   const dispatch = useAppDispatch();
   const router = useRouterWithQuery();
+  const { handleBack } = useInsurance();
 
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;

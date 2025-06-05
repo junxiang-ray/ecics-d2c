@@ -20,6 +20,7 @@ import {
   RoadSideIcon,
 } from '@/components/icons/add-on-icons';
 
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
@@ -157,13 +158,12 @@ function calculateFee(
 
 function AddOnDetail({
   onSaveRegister,
-  handleBack,
 }: {
   onSaveRegister: (fn: () => any) => void;
-  handleBack?: () => void;
 }) {
   const searchParams = useSearchParams();
   const router = useRouterWithQuery();
+  const { handleBack } = useInsurance();
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
   const quoteInfo = useAppSelector((state) => state.quote.quote);

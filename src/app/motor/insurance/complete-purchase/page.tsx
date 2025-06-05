@@ -15,12 +15,7 @@ export default function PolicyDetailPage({
 
   return (
     <InsuranceLayout>
-      {({ onSave, handleBack }) => (
-        <CompletePurchaseDetail
-          onSaveRegister={onSave}
-          handleBack={handleBack}
-        />
-      )}
+      {({ onSave }) => <CompletePurchaseDetail onSaveRegister={onSave} />}
     </InsuranceLayout>
   );
 }
