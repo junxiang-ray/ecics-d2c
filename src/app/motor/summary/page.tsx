@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
@@ -17,18 +17,15 @@ import {
   SecondaryButton,
 } from '@/components/ui/buttons';
 
-import { ROUTES } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-
 import InfoCard from './InfoCard';
+import { useApiErrorHandler } from '@/hook/useApiErrorHandler';
 
 export default function Summary() {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const key = searchParams.get('key') || '';
-  const router = useRouterWithQuery();
 
   const handleGoPersonal = () => {
     window.open(
@@ -38,7 +35,14 @@ export default function Summary() {
     );
   };
 
-  const { data: quote, isLoading } = useGetQuote(key);
+  const { data: quote, isLoading, isError, error } = useGetQuote(key);
+  const onError = useApiErrorHandler();
+
+  useEffect(() => {
+    if (isError && error) {
+      onError(error);
+    }
+  }, [isError, error, onError]);
 
   const _renderCongratulation = () => {
     return (
