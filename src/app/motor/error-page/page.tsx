@@ -17,7 +17,7 @@ export default function ApiErrorPage() {
     >
       <div className='max-w-[700px] px-4 pt-10 md:pl-24 md:pt-20'>
         <img src='/ecics.svg' alt='ecics logo' className='mb-8 h-10' />
-        <p className='mb-2 w-full text-[32px] font-bold text-[#000000]'>
+        <p className='mb-2 w-full text-[32px] font-bold leading-[100%] text-[#000000]'>
           {error.status} {error.message}
         </p>
         <p className='mb-4 text-[20px] font-normal text-[#000000]'>
