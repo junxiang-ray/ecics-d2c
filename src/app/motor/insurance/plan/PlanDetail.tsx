@@ -15,6 +15,7 @@ import { formatCurrency } from '@/libs/utils/utils';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -33,13 +34,13 @@ export interface FormatPlan extends Plan {
 
 function PlanDetail({
   onSaveRegister,
-  handleBack,
 }: {
   onSaveRegister: (fn: () => any) => void;
-  handleBack: () => void;
 }) {
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
+  const { handleBack } = useInsurance();
+
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
   const { isMobile } = useDeviceDetection();

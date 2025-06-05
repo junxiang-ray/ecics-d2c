@@ -14,8 +14,10 @@ import {
 
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import RadioField from '@/components/ui/form/radiofield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -32,7 +34,6 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '../basic-detail/options';
 import { PricingSummary } from '../components/FeeBar';
-import RadioField from '@/components/ui/form/radiofield';
 
 const createSchema = (listNric: any[] | undefined) =>
   z.object({
@@ -137,6 +138,7 @@ interface Props {
 const AddOnBonusDetailManualForm = (props: Props) => {
   const { onSaveRegister } = props;
   const dispatch = useAppDispatch();
+  const { handleBack } = useInsurance();
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const quoteInfo = useAppSelector((state) => state.quote.quote);
@@ -313,6 +315,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <RadioField
                   name='gender'
                   label='Gender'
+                  isRequired
                   options={GENDER_OPTIONS}
                 />
               </Form.Item>
@@ -436,7 +439,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
               discount={quoteInfo?.promo_code?.discount || 0}
               title='Premium breakdown'
-              textButton='Continue'
+              textButton='Next'
+              handleBack={handleBack}
               onClick={methods.handleSubmit(handleSubmit)}
               setIsShowPopupPremium={setIsShowPopupPremium}
               loading={isPending}

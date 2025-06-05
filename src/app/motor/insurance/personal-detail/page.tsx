@@ -1,7 +1,7 @@
 'use client';
 
-import InsuranceLayout from '../InsuranceLayout';
 import AddOnBonusDetailManualForm from './AddOnBonusDetailManualForm';
+import InsuranceLayout from '../InsuranceLayout';
 
 export default function AddonPage() {
   return (

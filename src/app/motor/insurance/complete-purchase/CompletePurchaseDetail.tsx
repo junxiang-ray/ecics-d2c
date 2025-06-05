@@ -3,18 +3,23 @@
 import { Button, Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+
 import { Option } from '@/libs/types/quote';
 import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
+
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
+
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 import ReviewSection from './ReviewSection';
 import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
 import { PricingSummary } from '../components/FeeBar';
@@ -36,13 +41,12 @@ function calculateFee(
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
-  handleBack,
 }: {
   onSaveRegister: (fn: () => any) => void;
-  handleBack: () => void;
 }) {
   const dispatch = useAppDispatch();
   const router = useRouterWithQuery();
+  const { handleBack } = useInsurance();
 
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;
