@@ -1,12 +1,9 @@
 'use client';
 
-import { Drawer, Modal } from 'antd';
+import { Button, Drawer, Modal } from 'antd';
 
 import { Addon, AddOnIncludedInPlan, Quote } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
-
-import { PrimaryButton } from '@/components/ui/buttons';
-
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface Props {
@@ -42,33 +39,47 @@ const ModalPremium = (props: Props) => {
   const isMobile = useDeviceDetection();
   const _renderPremium = () => {
     return (
-      <div className='flex max-h-[70svh] flex-col gap-6 overflow-y-auto'>
+      <div className='flex max-h-[70svh] flex-col gap-4 overflow-y-auto'>
         <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
           Premium Breakdown
         </p>
-        <div className='flex flex-col gap-6'>
-          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
-            <div className='flex flex-row justify-between font-semibold '>
+        <div className='flex flex-col gap-4'>
+          <div className='flex flex-col gap-2'>
+            <p className='text-base font-bold text-[#303030]'>Plan</p>
+            <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
               <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
               <p>{formatCurrency(pricePlanMain)}</p>
             </div>
-
             {quoteInfo?.promo_code && (
-              <div className='flex flex-row justify-between text-sm font-bold text-[#00ADEF]'>
+              <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
                 <p>Coupon Discount</p>
                 <p>-{formatCurrency(couponDiscount)}</p>
               </div>
             )}
           </div>
-          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2 text-sm font-semibold text-[#303030]'>
-            <p>Add-on:</p>
+
+          <div className='flex flex-col gap-2 rounded-lg py-2 text-sm font-semibold text-[#303030]'>
+            <p className='text-base font-bold text-[#303030]'>Add-on:</p>
             <div>
-              {dataSelectedAddOn?.map((addon: any) => (
-                <p key={addon.title} className='flex flex-row justify-between'>
-                  {addon.title}:{' '}
-                  <span>{formatCurrency(addon.feeSelected / tax)}</span>
-                </p>
-              ))}
+              <div className='flex flex-col gap-3'>
+                {dataSelectedAddOn?.map((addon: any) => (
+                  <p
+                    key={addon.title}
+                    className='flex flex-row items-center justify-between gap-10 font-normal text-[#303030]'
+                  >
+                    <p className='flex flex-col'>
+                      {addon.title}
+                      {addon.optionLabel !== 'YES' && (
+                        <span className='ml-2 flex flex-row items-center gap-2'>
+                          <p className='h-[4px] w-[4px] rounded-full bg-[#303030]'></p>
+                          {addon.optionLabel} Coverage
+                        </span>
+                      )}
+                    </p>
+                    <span>{formatCurrency(addon.feeSelected / tax)}</span>
+                  </p>
+                ))}
+              </div>
               {drivers && drivers.length > 0 && (
                 <div className='mt-4'>
                   <p className='text-sm font-semibold text-[#303030]'>
@@ -77,12 +88,12 @@ const ModalPremium = (props: Props) => {
                   {drivers.map((driver, index) => (
                     <div
                       key={index}
-                      className='flex flex-row items-center justify-between text-sm text-[#636262]'
+                      className='flex flex-row items-center justify-between font-normal text-[#303030]'
                     >
                       <p>{driver.name}</p>
                       <p>
                         {index === 0
-                          ? 'Free'
+                          ? 'FREE'
                           : addonAdditionalDriver?.options?.[0]
                                 ?.premium_with_gst
                             ? formatCurrency(
@@ -107,23 +118,27 @@ const ModalPremium = (props: Props) => {
               )}
             </div>
           </div>
-          <div className='flex flex-col gap-2 rounded-lg bg-[#81899414] px-4 py-2'>
-            <div className='flex flex-row justify-between text-sm font-semibold text-[#303030]'>
+          <div className='flex flex-col gap-1 rounded-lg py-2'>
+            <div className='flex flex-row justify-between text-base font-bold text-[#303030]'>
+              <p>Sub-Total</p>
+              <p>{formatCurrency(netPremium)}</p>
+            </div>
+            <div className='flex flex-row justify-between text-base font-normal text-[#303030]'>
               <p>GST</p>
               <p>{formatCurrency(gst)}</p>
             </div>
-            <div className='flex flex-row justify-between text-sm font-bold text-[#303030]'>
-              <p>Net Premium</p>
-              <p>{formatCurrency(netPremium)}</p>
+            <div className='flex flex-row justify-between text-base font-bold text-[#303030]'>
+              <p>Total Premium</p>
+              <p>{formatCurrency(netPremium + gst)}</p>
             </div>
           </div>
         </div>
-        <PrimaryButton
-          className='w-full cursor-pointer rounded-lg bg-[#00ADEF] px-4 py-3 text-center text-base font-bold leading-[21px] text-white'
+        <Button
+          className='w-full rounded-none border border-[#00ADEF] bg-white py-6 text-center text-base font-bold !text-[#00ADEF]'
           onClick={() => setIsShowPopupPremium(false)}
         >
-          Okay
-        </PrimaryButton>
+          Close Breakdown
+        </Button>
       </div>
     );
   };
@@ -152,7 +167,7 @@ const ModalPremium = (props: Props) => {
           width={500}
           centered
         >
-          <div>{_renderPremium()}</div>
+          {_renderPremium()}
         </Modal>
       )}
     </>
