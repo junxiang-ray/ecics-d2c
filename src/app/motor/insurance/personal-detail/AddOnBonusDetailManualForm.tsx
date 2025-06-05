@@ -315,6 +315,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <RadioField
                   name='gender'
                   label='Gender'
+                  isRequired
                   options={GENDER_OPTIONS}
                 />
               </Form.Item>
