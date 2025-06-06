@@ -23,11 +23,11 @@ import { InsuranceLayoutContext } from './InsuranceLayoutContext';
 
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
-  [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
-  [StepProcessBar.SELECT_PLAN]: ROUTES.INSURANCE.PLAN,
-  [StepProcessBar.SELECT_ADD_ON]: ROUTES.INSURANCE.ADD_ON,
-  [StepProcessBar.PERSONAL_DETAIL]: ROUTES.INSURANCE.PERSONAL_DETAIL,
-  [StepProcessBar.COMPLETE_PURCHASE]: ROUTES.INSURANCE.COMPLETE_PURCHASE,
+  [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE_MAID.BASIC_DETAIL,
+  [StepProcessBar.SELECT_PLAN]: ROUTES.INSURANCE_MAID.PLAN,
+  [StepProcessBar.SELECT_ADD_ON]: ROUTES.INSURANCE_MAID.ADD_ON,
+  [StepProcessBar.PERSONAL_DETAIL]: ROUTES.INSURANCE_MAID.PERSONAL_DETAIL,
+  [StepProcessBar.COMPLETE_PURCHASE]: ROUTES.INSURANCE_MAID.COMPLETE_PURCHASE,
 };
 
 function getStepFromRoute(route: string): ProcessBarType {
@@ -55,7 +55,6 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
-
   const isFinalized = useAppSelector(
     (state) => state.quote.quote?.is_finalized,
   );
@@ -160,7 +159,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
             {/*</SecondaryButton>*/}
             <div>
               <div className='mb-[20px] text-center text-[24px] font-bold'>
-                Car Insurance Quotation
+                Maid Insurance Quotation
               </div>
               <div className='md:w-[520px]'>
                 <ProcessBar

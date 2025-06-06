@@ -594,7 +594,7 @@ const PolicyDetailForm = ({
               </>
             )}
 
-            <div className='mt-6 w-full justify-items-center border border-[#F0F0F0] shadow-xl'>
+            <div className='mt-6 w-full justify-items-center'>
               <div className='w-[90vw] md:w-96'>
                 <PromoCodeField
                   placeholder='Enter promo code'
