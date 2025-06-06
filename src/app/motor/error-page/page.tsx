@@ -1,10 +1,20 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 export default function ApiErrorPage() {
-  const search = window.location.search;
-  const params = new URLSearchParams(search);
-  const status = params.get('status');
-  const message = params.get('message');
+  const [status, setStatus] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const search = window.location.search;
+      const params = new URLSearchParams(search);
+      setStatus(params.get('status'));
+      setMessage(params.get('message'));
+    }
+  }, []);
+
   return (
     <div
       className='relative flex min-h-screen w-full flex-col bg-white'
