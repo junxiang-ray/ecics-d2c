@@ -1,7 +1,10 @@
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { NextRequest, NextResponse } from 'next/server';
 import logger from '@/app/api/libs/logger';
-import { saveProposalForCar } from './save-proposal.service';
+import {
+  saveProposalForCar,
+  saveProposalForMaid,
+} from './save-proposal.service';
 
 export async function POST(
   req: NextRequest,
@@ -17,6 +20,8 @@ export async function POST(
   switch (productName) {
     case PRODUCT_NAME.CAR:
       return saveProposalForCar(body);
+    case PRODUCT_NAME.MAID:
+      return saveProposalForMaid(body);
     default:
       return NextResponse.json(
         { error: 'Unsupported product' },

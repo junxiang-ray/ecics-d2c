@@ -243,6 +243,7 @@ model Plan {
   order            Int?
   benefits         Benefit[]
   addons           Addon[]
+  is_display       Boolean   @default(true)
   created_at       DateTime  @default(now())
   updated_at       DateTime  @default(now()) @updatedAt
 
