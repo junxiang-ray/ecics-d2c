@@ -33,6 +33,7 @@ import {
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
+import { QuoteModal } from './modal/QuoteModal';
 import {
   DRV_EXP_OPTIONS,
   NCD_OPTIONS,
@@ -42,7 +43,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { QuoteModal } from './modal/QuoteModal';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -67,6 +67,14 @@ const singpassFlowFields = {
       (date) => dayjs(date).isSameOrBefore(dayjs().add(90, 'days'), 'day'),
       { message: 'Start date cannot be later than 90 days from today' },
     ),
+  [MOTOR_QUOTE.hire_purchase]: z.date({
+    required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
+  }),
+  [MOTOR_QUOTE.other_hire_purchase]: z.date({
+    required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
+  }),
   [MOTOR_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
