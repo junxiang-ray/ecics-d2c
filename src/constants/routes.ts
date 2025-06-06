@@ -17,7 +17,7 @@ export const ROUTES = {
     PERSONAL_DETAIL: '/maid/insurance/personal-detail',
     COMPLETE_PURCHASE: '/maid/insurance/complete-purchase',
   },
-  API_ERROR: '/motor/error-page',
+  API_ERROR: '/error-page',
   MOTOR: {
     LOGIN: '/motor',
     REVIEW_INFO_DETAIL: '/motor/review-info-detail',

@@ -26,7 +26,7 @@ baseClient.interceptors.response.use(
     const status = error?.response?.status;
     const message = error?.response?.statusText;
     if (status === 500 || status === 503) {
-      window.location.href = `/motor/error-page?status=${status}&message=${encodeURIComponent(message)}`;
+      window.location.href = `/error-page?status=${status}&message=${encodeURIComponent(message)}`;
     }
     if (error.response) {
       console.error('API Error:', error.response.data);
