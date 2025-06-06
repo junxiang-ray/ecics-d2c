@@ -2,13 +2,8 @@
 
 import { usePathname, useSearchParams } from 'next/navigation';
 import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
-
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
-
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import ProcessBar from '@/components/ProcessBar';
-import { SecondaryButton } from '@/components/ui/buttons';
-
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -16,10 +11,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-
-import ModalImportant from './complete-purchase/ModalImportant';
-import BusinessPartnerBar from './components/BusinessPartnerBar';
-import { InsuranceLayoutContext } from './InsuranceLayoutContext';
+import { InsuranceLayoutContext } from '@/app/motor/insurance/InsuranceLayoutContext';
 
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {
@@ -137,26 +129,7 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
         </div>
 
         <div className='no-scroll-mobile mx-auto h-[135px] w-full items-center justify-center bg-white lg:max-w-[1280px]'>
-          {/*{(partnerInfo?.partner_name || partnerInfo) && (*/}
-          {/*  <div className='block h-16 md:hidden'>*/}
-          {/*    <BusinessPartnerBar*/}
-          {/*      businessName={partnerInfo ? 'Business Partner Name' : ''}*/}
-          {/*      companyName={partnerInfo?.partner_name}*/}
-          {/*      onBackClick={handleBack}*/}
-          {/*      onSaveClick={handleSave}*/}
-          {/*    />*/}
-          {/*  </div>*/}
-          {/*)}*/}
           <div className='relative flex w-full justify-center p-4 px-10 pb-0 lg:w-[1200px]'>
-            {/* Reopen in Day 1.5 */}
-            {/*<SecondaryButton*/}
-            {/*    icon={<ArrowBackIcon size={11}/>}*/}
-            {/*    // className='hidden w-32 rounded-sm md:block' //for save button exist*/}
-            {/*    className='absolute left-10 top-4 hidden w-32 rounded-sm md:block'*/}
-            {/*    onClick={handleBack}*/}
-            {/*>*/}
-            {/*    Back*/}
-            {/*</SecondaryButton>*/}
             <div>
               <div className='mb-[20px] text-center text-[24px] font-bold'>
                 Maid Insurance Quotation
@@ -170,14 +143,6 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
                 />
               </div>
             </div>
-            <div></div>
-            {/* Reopen in Day 1.5 */}
-            {/* <PrimaryButton
-                        className='hidden w-32 rounded-sm md:block'
-                        onClick={handleSave}
-                      >
-                        Save
-                      </PrimaryButton> */}
           </div>
         </div>
 
@@ -188,13 +153,6 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
               })
             : children}
         </div>
-        {isShowPopupImportant && (
-          <ModalImportant
-            isShowPopupImportant={isShowPopupImportant}
-            handleRedirect={() => router.push(ROUTES.INSURANCE.BASIC_DETAIL)}
-            setIsShowPopupImportant={setIsShowPopupImportant}
-          />
-        )}
       </>
     </InsuranceLayoutContext.Provider>
   );

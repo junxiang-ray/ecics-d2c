@@ -2,15 +2,12 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-
 import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
-
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-
-import LimitedPeriodOffer from './LimitedPeriodOffer';
-import MyInfoLoginSection from './MyInfoLoginSection';
+import MyInfoLoginSection from '../motor/MyInfoLoginSection';
+import LimitedPeriodOffer from '../motor/LimitedPeriodOffer';
 
 const MotorPage = () => {
   const { isMobile } = useDeviceDetection();
@@ -39,7 +36,7 @@ const MotorPage = () => {
 
   if (isMobile) {
     return (
-      <div className='relative min-h-[100svh]'>
+      <div className='relative min-h-[100svh] bg-red-500'>
         <img
           className='h-full w-full object-cover'
           src='/login_bg_singpass.png'
@@ -87,16 +84,6 @@ const MotorPage = () => {
             Get a quote with your <br />
             <span className='ml-[4px] text-red-logo'>Personal Details</span>
           </div>
-          {/*<div className='mt-4 text-center text-lg font-semibold text-[#00adef]'>*/}
-          {/*    Get an instant quote with*/}
-          {/*    <span className='text-red-logo'> Myinfo</span> login*/}
-          {/*</div>*/}
-          {/*<div className='mt-4 text-center'>*/}
-          {/*  <span>*/}
-          {/*    Save time by securely retrieving your personal and vehicle details*/}
-          {/*    directly from Myinfo*/}
-          {/*  </span>*/}
-          {/*</div>*/}
           <MyInfoLoginSection
             promoCode={promoCodeDefault}
             partnerCode={partnerCode}

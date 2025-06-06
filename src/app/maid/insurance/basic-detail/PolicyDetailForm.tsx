@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, Spin } from 'antd';
+import { Button, Form, Spin } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -30,17 +30,14 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 
-import { UnableQuote } from './modal/UnableQuote';
+import RadioField from '@/components/ui/form/radiofield';
 import {
-  DRV_EXP_OPTIONS,
-  NCD_OPTIONS,
-  NO_CLAIM_OPTIONS,
   NumberClaim,
   NumberDriverExperience,
-  REG_YEAR_OPTIONS,
-} from './options';
-import { PromoCodeField } from '../components/PromoCode';
-import RadioField from '@/components/ui/form/radiofield';
+} from '@/app/motor/insurance/basic-detail/options';
+import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
+import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
+import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuote';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -305,39 +302,6 @@ const PolicyDetailForm = ({
     methods.setValue(MOTOR_QUOTE.end_date, defaultEndDate.toDate());
     methods.trigger([MOTOR_QUOTE.end_date], { shouldFocus: false });
   };
-
-  // const hire_purchase_section = (
-  //   <div>
-  //     <Form.Item
-  //       name={MOTOR_QUOTE.hire_purchase}
-  //       validateStatus={errors[MOTOR_QUOTE.hire_purchase] ? 'error' : ''}
-  //       className='mb-1'
-  //     >
-  //       <LongOptionDropdownField
-  //         name={MOTOR_QUOTE.hire_purchase}
-  //         label='Vehicle Financed By'
-  //         placeholder='Select name of finance company'
-  //         options={hirePurchaseOptions}
-  //         showSearch
-  //       />
-  //     </Form.Item>
-
-  //     {hire_purchase === ID_OPTION_OTHER ? (
-  //       <Form.Item
-  //         name={MOTOR_QUOTE.other_hire_purchase}
-  //         validateStatus={
-  //           errors[MOTOR_QUOTE.other_hire_purchase] ? 'error' : ''
-  //         }
-  //         className='pt-1'
-  //       >
-  //         <InputField
-  //           name={MOTOR_QUOTE.other_hire_purchase}
-  //           placeholder='Please enter your hire purchase company'
-  //         />
-  //       </Form.Item>
-  //     ) : null}
-  //   </div>
-  // );
 
   const handleSubmit = (value: FormData) => {
     let vehicle_info_selected;
@@ -609,32 +573,32 @@ const PolicyDetailForm = ({
           </div>
         </Form>
       </FormProvider>
-      {/* <div className='fixed bottom-0 mt-6 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-3'>
-        <div className='w-full sm:col-span-1 sm:col-start-2'>
-          <Form.Item>
+      <div
+        className={`fixed bottom-0 w-full bg-white px-2`}
+        style={{ zIndex: 100 }}
+      >
+        <div className='mx-auto w-full max-w-[1200px]'>
+          <div className='flex w-full items-center justify-between py-3'>
+            <Button
+              color='cyan'
+              icon={<ArrowBackIcon size={16} />}
+              shape='circle'
+              className='border-none bg-gray-200 pt-[6px]'
+              onClick={(e) => {
+                e.stopPropagation();
+                // handleBack?.();
+              }}
+            />
             <PrimaryButton
               loading={isLoading}
-              className='w-full'
+              className='ml-[6px] w-[90vw] bg-[#52C41A] md:w-40'
               onClick={() => {
                 form.submit();
               }}
             >
               Generate Quote
             </PrimaryButton>
-          </Form.Item>
-        </div>
-      </div> */}
-      <div className='fixed bottom-0 w-full bg-white' style={{ zIndex: 100 }}>
-        <div className='flex w-full justify-center py-3'>
-          <PrimaryButton
-            loading={isLoading}
-            className='w-[90vw] md:w-96'
-            onClick={() => {
-              form.submit();
-            }}
-          >
-            Generate Quote
-          </PrimaryButton>
+          </div>
         </div>
       </div>
       <UnableQuote
