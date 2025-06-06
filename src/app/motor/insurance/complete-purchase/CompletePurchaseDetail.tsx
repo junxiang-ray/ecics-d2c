@@ -8,7 +8,7 @@ import { Option } from '@/libs/types/quote';
 import {
   formatCurrency,
   formatCurrencyString,
-  formatQuestionYesNo,
+  formatBooleanToYesNo,
 } from '@/libs/utils/utils';
 
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
@@ -157,7 +157,7 @@ export default function CompletePurchaseDetail({
         { title: 'Driving Experience', value: driver.driving_experience },
         {
           title: 'Do you have a claim in the past 3 years',
-          value: formatQuestionYesNo(driver.is_claim_in_3_years),
+          value: formatBooleanToYesNo(driver.is_claim_in_3_years),
         },
       ];
 

@@ -351,7 +351,7 @@ const PolicyDetailForm = ({
   };
 
   const hire_purchase_section = (
-    <div>
+    <>
       <Form.Item
         name={MOTOR_QUOTE.hire_purchase}
         validateStatus={errors[MOTOR_QUOTE.hire_purchase] ? 'error' : ''}
@@ -367,22 +367,23 @@ const PolicyDetailForm = ({
         />
       </Form.Item>
 
-      {hire_purchase === ID_OPTION_OTHER ? (
+      {hire_purchase === ID_OPTION_OTHER && (
         <Form.Item
           name={MOTOR_QUOTE.other_hire_purchase}
           validateStatus={
             errors[MOTOR_QUOTE.other_hire_purchase] ? 'error' : ''
           }
-          className='pt-1'
+          className='mb-1'
         >
           <InputField
             name={MOTOR_QUOTE.other_hire_purchase}
+            label='Your Hire Purchase Company'
             isRequired
             placeholder='Please enter your hire purchase company'
           />
         </Form.Item>
-      ) : null}
-    </div>
+      )}
+    </>
   );
 
   const handleSubmit = (value: FormData) => {

@@ -2,13 +2,15 @@
 
 import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
+import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import {
   formatCurrency,
   formatCurrencyString,
-  formatQuestionYesNo,
+  formatBooleanToYesNo,
 } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
@@ -150,7 +152,7 @@ export default function Summary() {
       },
       {
         label: 'Do you have a claim in the past 3 years',
-        value: formatQuestionYesNo(driver.is_claim_in_3_years) || 'N/A',
+        value: formatBooleanToYesNo(driver.is_claim_in_3_years) || 'N/A',
       },
     ],
   );
@@ -163,25 +165,37 @@ export default function Summary() {
     );
   }
 
-  const downloadFile = (url: string, fileName: string) => {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
+  const handleDownloadAll = async (
+    documents: { link: string; title: string }[],
+  ) => {
+    if (!documents || documents.length === 0) {
+      console.warn('No documents to download');
+      return;
+    }
+    const zip = new JSZip();
 
-  const handleDownloadAll = () => {
-    const documents = (quote?.product_type?.documents || []) as DocumentItem[];
+    await Promise.all(
+      documents.map(async (doc, index) => {
+        try {
+          const response = await fetch(doc.link);
+          console.log('response', response);
+          if (!response.ok) throw new Error(`Failed to fetch ${doc.link}`);
+          const blob = await response.blob();
 
-    documents
-      .filter((doc) => !doc.isEVModel)
-      .forEach((doc) => {
-        const fileName = doc.title.replace(/\s+/g, '_') + '.pdf';
-        downloadFile(doc.link, fileName);
-      });
+          const fileExtension = doc.link.split('.').pop() || 'pdf';
+          const safeTitle = doc.title.replace(/[/\\?%*:|"<>]/g, '-');
+
+          const filename = `${safeTitle}.${fileExtension}`;
+
+          zip.file(filename, blob);
+        } catch (error) {
+          console.error(`Can not install ${doc.link}:`, error);
+        }
+      }),
+    );
+
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    saveAs(zipBlob, 'ECICS-documents.zip');
   };
 
   const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
@@ -214,7 +228,7 @@ export default function Summary() {
               <LinkButton
                 type='link'
                 className='text-sm font-semibold text-[#00ADEF]'
-                onClick={handleDownloadAll}
+                onClick={() => handleDownloadAll(quote?.product_type.documents)}
               >
                 Download All
               </LinkButton>
