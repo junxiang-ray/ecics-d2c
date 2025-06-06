@@ -11,8 +11,14 @@ import {
   applyAddlDriverLogic,
   applyLouAndCcLogic,
   mappingAddonByPlan,
+  mappingAddonForMaid,
 } from '@/app/api/utils/quote.helpers';
-import { saveQuoteProposalDTO } from './save-proposal.dto';
+import {
+  saveQuoteProposalDTO,
+  saveQuoteProposalForMaidDTO,
+} from './save-proposal.dto';
+import { convertDate } from '@/app/api/utils/date.helper';
+import { MAID_INSURANCE } from '@/app/api/constants/maid.insurance';
 
 export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;
@@ -158,6 +164,115 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
       quote_finalize_from_ISP: resSaveProposal,
       is_finalized: true,
       payment_id: resSaveProposal.data?.payment_id || '',
+    },
+  });
+
+  return successRes({
+    message: 'Proposal saved successfully',
+    data: resSaveProposal.data,
+  });
+}
+
+export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
+  const { key, selected_plan, selected_addons, personal_info, maid_info } =
+    data;
+
+  const quoteInfo = await prisma.quote.findFirst({
+    where: {
+      key: key,
+    },
+  });
+
+  if (!quoteInfo) {
+    return ErrNotFound('Quote not found');
+  }
+
+  const { quote_id, policy_id, proposal_id } = quoteInfo;
+  const [
+    quote_insured_dob_day,
+    quote_insured_dob_month,
+    quote_insured_dob_year,
+  ] = convertDate(data.personal_info.date_of_birth);
+  const [nationalInfo, companyInfo] = await Promise.all([
+    prisma.countryNationality.findFirst({
+      where: {
+        name: data.personal_info.nationality,
+      },
+    }),
+    prisma.company.findFirst({
+      where: {
+        name: data.maid_info.company_name,
+      },
+    }),
+  ]);
+
+  if (!nationalInfo) {
+    return ErrNotFound('Nationality not found');
+  }
+
+  if (!companyInfo) {
+    return ErrNotFound('Company not found');
+  }
+
+  const payload: any = {
+    product_id: process.env.PRODUCT_MAID_ID || '',
+    policy_id: policy_id,
+    quote_id: quote_id,
+    proposal_id: proposal_id,
+    plan: selected_plan,
+    quote_employer_name: personal_info.name,
+    quote_employer_nric: personal_info.nric,
+    quote_insured_dob_day: quote_insured_dob_day,
+    quote_insured_dob_month: quote_insured_dob_month,
+    quote_insured_dob_year: quote_insured_dob_year,
+    quote_employer_nationality: nationalInfo.name,
+    quote_employer_address_line1: personal_info.address?.[0] || '',
+    quote_employer_address_line2: personal_info.address?.[1] || '',
+    quote_employer_address_line3: personal_info.address?.[2] || '',
+    quote_employer_postal_code: personal_info.post_code || '',
+    quote_maid_name: maid_info.name,
+    quote_maid_work_permit_no: maid_info.fin,
+    quote_maid_passport_no: maid_info.passport_number,
+    quote_previous_insurer: maid_info.company_name,
+    quote_previous_insurer_others: maid_info.company_name_other,
+    quote_employed_by_proposer: maid_info.hasHelperWorked12Months,
+    __finalize: 1,
+    redirect_url: `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MAID_WEBSITE}?key=${key}`,
+    return_baseurl: process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL,
+  };
+
+  const convertedAddons = Object.entries(mappingAddonForMaid).map(
+    ([oldKey, newId]) => {
+      const value = selected_addons[oldKey];
+      return value === 'YES' ? { id: newId } : { id: newId, option: value };
+    },
+  );
+
+  payload.add_ons = convertedAddons;
+  logger.info(`Payload for save proposal for maid: ${JSON.stringify(payload)}`);
+
+  const resSaveProposal = await handleApiCallToISP(
+    `${MAID_INSURANCE.PREFIX_ENDPOINT}/proposal_finalize`,
+    payload,
+  );
+
+  logger.info(
+    `Response from save proposal: ${JSON.stringify(resSaveProposal)}`,
+  );
+
+  if (resSaveProposal.status !== 0) {
+    return ErrFromISPRes('Failed to save proposal');
+  }
+
+  await prisma.quote.update({
+    where: {
+      id: quoteInfo.id,
+    },
+    data: {
+      quote_finalize_from_ISP: resSaveProposal,
+      is_finalized: true,
+      payment_id: resSaveProposal.data?.payment_id || '',
+      company_id: companyInfo.id,
     },
   });
 
