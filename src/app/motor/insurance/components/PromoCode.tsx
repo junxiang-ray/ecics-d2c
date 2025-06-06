@@ -84,7 +84,7 @@ export const PromoCodeField = ({
             <WarningTriangleIcon className='mr-2 shrink-0' size={24} />
             <span className='text-justify font-light leading-snug'>
               We regret to inform you that the promo code is not applicable if
-              <span className='font-bold'>
+              <span className='font-bold underline'>
                 {' '}
                 you have made a claim within the past three years.
               </span>

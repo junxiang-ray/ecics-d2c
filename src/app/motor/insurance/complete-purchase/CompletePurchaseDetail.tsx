@@ -107,11 +107,19 @@ export default function CompletePurchaseDetail({
 
   const addonsSectionData = (
     quote?.data?.review_info_premium?.data_section_add_ons || []
-  ).map((addon: any) => ({
-    title: addon.title,
-    value: formatCurrency(addon.feeSelected / 1.09),
-    coverage_amount: formatCurrencyString(addon.optionLabel),
-  }));
+  ).map((addon: any) => {
+    const baseData = {
+      title: addon.title,
+      value: formatCurrency(addon.feeSelected / 1.09),
+    };
+    if (addon.optionLabel !== 'YES') {
+      return {
+        ...baseData,
+        coverage_amount: formatCurrencyString(addon.optionLabel),
+      };
+    }
+    return baseData;
+  });
 
   const addonsIncludedData = (
     quote?.data?.review_info_premium?.add_ons_included_in_this_plan || []
@@ -669,7 +677,7 @@ export default function CompletePurchaseDetail({
                 const addonsData = sharedDataMap['addons'] || [];
 
                 return (
-                  <div key='policy_plan_addons' className='flex gap-4'>
+                  <div key='policy_plan' className='flex gap-4'>
                     <ReviewSection
                       key='policy_plan'
                       title='Policy Plan'

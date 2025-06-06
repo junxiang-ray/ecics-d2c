@@ -5,10 +5,15 @@ import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
-import { formatQuestionYesNo } from '@/libs/utils/utils';
+import {
+  formatCurrency,
+  formatCurrencyString,
+  formatQuestionYesNo,
+} from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
+import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 import { LinkButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useGetQuote } from '@/hook/insurance/quote';
@@ -111,12 +116,26 @@ export default function Summary() {
 
   const addonsSectionData = (
     quote?.data?.review_info_premium?.data_section_add_ons || []
-  ).map((addon: any) => ({
-    title: addon.title,
-    value: addon.optionLabel,
+  ).map((addon: any) => {
+    const baseData = {
+      title: addon.title,
+      value: formatCurrency(addon.feeSelected / 1.09),
+    };
+    if (addon.optionLabel !== 'YES') {
+      return {
+        ...baseData,
+        coverage_amount: formatCurrencyString(addon.optionLabel),
+      };
+    }
+    return baseData;
+  });
+
+  const addonsIncludedData = (
+    quote?.data?.review_info_premium?.add_ons_included_in_this_plan || []
+  ).map((item: any) => ({
+    title: item.add_on_name,
+    value: 'Included',
   }));
-  const AddOnIncludedInPlan =
-    quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
 
   const driversData = (quote?.data?.review_info_premium?.drivers || []).map(
     (driver: any) => [
@@ -165,6 +184,14 @@ export default function Summary() {
       });
   };
 
+  const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
+  const plans = quote?.data?.plans || [];
+  const matchedPlan = plans.find(
+    (plan) => plan.title && plan.title.includes(selectedPlanTitle),
+  );
+  const addonsTitles =
+    matchedPlan?.addons?.map((addon) => addon.title).filter(Boolean) || [];
+
   return (
     <div className='flex w-full justify-center '>
       <div className='w-full max-w-[1280px]'>
@@ -200,7 +227,7 @@ export default function Summary() {
               data={[
                 {
                   label: 'Selected Plan',
-                  value: quote?.data?.selected_plan || 'N/A',
+                  value: selectedPlanTitle,
                 },
                 {
                   label: 'Policy Start Date',
@@ -212,11 +239,44 @@ export default function Summary() {
                   value:
                     quote?.data?.insurance_additional_info?.end_date || 'N/A',
                 },
+                {
+                  label: 'Plan Details',
+                  value:
+                    addonsTitles.length > 0 ? addonsTitles.join(', ') : 'N/A',
+                },
+                {
+                  label: 'Add-ons',
+                  value: [...addonsSectionData, ...addonsIncludedData],
+                },
               ]}
-              extraTitle='Add Ons:'
-              extraData={addonsSectionData}
-              addOnIncludedInPlan={AddOnIncludedInPlan}
-              drivers={quote?.data?.review_info_premium?.drivers}
+              extraData={
+                <PremiumBreakdownContent
+                  isSummaryScreen={true}
+                  quoteInfo={quote}
+                  dataSelectedAddOn={
+                    quote?.data?.review_info_premium?.data_section_add_ons
+                  }
+                  drivers={quote?.data?.review_info_premium?.drivers ?? []}
+                  addonAdditionalDriver={
+                    quote?.data?.review_info_premium?.addon_additional_driver
+                  }
+                  pricePlanMain={
+                    quote?.data?.review_info_premium?.price_plan ?? 0
+                  }
+                  couponDiscount={
+                    quote?.data?.review_info_premium?.coupon_discount ?? 0
+                  }
+                  tax={1.09}
+                  gst={quote?.data?.review_info_premium?.gst ?? 0}
+                  netPremium={
+                    quote?.data?.review_info_premium?.net_premium ?? 0
+                  }
+                  addonsIncluded={
+                    quote?.data?.review_info_premium
+                      ?.add_ons_included_in_this_plan
+                  }
+                />
+              }
             />
             <InfoCard
               title='Vehicle Details'
