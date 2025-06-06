@@ -8,9 +8,9 @@ import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import {
+  formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
-  formatBooleanToYesNo,
 } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
