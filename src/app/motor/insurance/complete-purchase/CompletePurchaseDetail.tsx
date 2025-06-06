@@ -487,14 +487,14 @@ export default function CompletePurchaseDetail({
       quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
 
     return (
-      <div className='w-full'>
+      <div className='max-h-[70svh] w-full overflow-y-auto bg-white'>
         {/* <div className='flex h-[50px] justify-end'>
                   <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
                     Save
                   </div>
                 </div> */}
-        <div className='flex w-full flex-col gap-3 rounded-lg md:py-4'>
-          <p className='text-xl font-semibold leading-[30px] text-[#171A1F] md:text-center'>
+        <div className='flex w-full flex-col gap-3 rounded-lg '>
+          <p className='sticky top-0 bg-white pb-2 text-xl font-semibold leading-[30px] text-[#171A1F] md:px-4'>
             Premium Breakdown
           </p>
           <div className='flex w-full flex-col gap-4'>
@@ -617,13 +617,13 @@ export default function CompletePurchaseDetail({
               </div>
             </div>
 
-            <div className='md:px-4'>
+            <div className='sticky bottom-0 z-10 md:px-4'>
               <Button
-                onClick={!isMobile ? onPay : onClosePopup}
+                onClick={onClosePopup}
                 loading={isPendingSave || isPendingPay}
                 className='mx-auto w-full cursor-pointer rounded-none border border-[#00ADEF] py-6 text-center text-base font-bold leading-[21px] text-[#00ADEF] md:px-4'
               >
-                {isMobile ? 'Close Breakdown' : 'Pay'}
+                Close Breakdown
               </Button>
             </div>
           </div>
@@ -739,7 +739,7 @@ export default function CompletePurchaseDetail({
             onClose={() => setIsShowPopupPremium(false)}
             closable={false}
             height='auto'
-            className='max-h-[70svh] w-full overflow-y-auto rounded-t-xl'
+            className='w-full rounded-t-xl'
           >
             {_renderPremium()}
           </Drawer>

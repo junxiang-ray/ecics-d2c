@@ -50,7 +50,7 @@ export function ErrFromISPRes(message: string) {
   const res: BaseResponse = {
     message,
   };
-  return NextResponse.json(res, { status: STATUS_CODE.BAD_REQUEST });
+  return NextResponse.json(res, { status: STATUS_CODE.ERROR_FROM_ISP });
 }
 
 export function ErrBadRequest(message: string) {

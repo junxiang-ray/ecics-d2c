@@ -1,7 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-
 import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
-
 import insurance from '@/api/base-service/insurance';
 
 export const useGetQuote = (key: string) => {

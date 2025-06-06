@@ -9,15 +9,10 @@ import { formatQuestionYesNo } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
-import {
-  LinkButton,
-  PrimaryButton,
-  SecondaryButton,
-} from '@/components/ui/buttons';
+import { LinkButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 import InfoCard from './InfoCard';
 
@@ -31,7 +26,6 @@ export default function Summary() {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const key = searchParams.get('key') || '';
-  const router = useRouterWithQuery();
 
   const handleGoPersonal = () => {
     window.open(
@@ -337,8 +331,8 @@ export default function Summary() {
             ))}
           </div>
           {/* {_renderRewarded()}
-                      {_renderRewarded()}
-                      {_renderCashBack()} */}
+          {_renderRewarded()}
+          {_renderCashBack()} */}
 
           {/*{isMobile ? (*/}
           {/*    <div className='flex justify-center gap-4 bg-white pt-4 text-[16px]'>*/}

@@ -39,8 +39,8 @@ const ModalPremium = (props: Props) => {
   const isMobile = useDeviceDetection();
   const _renderPremium = () => {
     return (
-      <div className='flex max-h-[70svh] flex-col gap-4 overflow-y-auto'>
-        <p className='text-xl font-semibold leading-[30px] text-[#171A1F]'>
+      <div className='flex flex-col gap-4 overflow-y-auto'>
+        <p className='sticky top-0 z-10 bg-white pb-2 pt-2 text-xl font-semibold leading-[30px] text-[#171A1F]'>
           Premium Breakdown
         </p>
         <div className='flex flex-col gap-4'>
@@ -133,12 +133,14 @@ const ModalPremium = (props: Props) => {
             </div>
           </div>
         </div>
-        <Button
-          className='w-full rounded-none border border-[#00ADEF] bg-white py-6 text-center text-base font-bold !text-[#00ADEF]'
-          onClick={() => setIsShowPopupPremium(false)}
-        >
-          Close Breakdown
-        </Button>
+        <div className='sticky bottom-0 z-10 bg-white pt-2'>
+          <Button
+            className='w-full rounded-none border border-[#00ADEF] bg-white py-6 text-center text-base font-bold !text-[#00ADEF]'
+            onClick={() => setIsShowPopupPremium(false)}
+          >
+            Close Breakdown
+          </Button>
+        </div>
       </div>
     );
   };
