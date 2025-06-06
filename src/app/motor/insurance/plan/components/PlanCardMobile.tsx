@@ -7,6 +7,8 @@ import { formatCurrency } from '@/libs/utils/utils';
 import CrossMarkIcon from '@/components/icons/CrossMark';
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
 
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import { FormatPlan } from '../PlanDetail';
 
 function PlanCardMobile({
@@ -20,8 +22,12 @@ function PlanCardMobile({
   setSelectedPlan: (plan: FormatPlan | null) => void;
   isSaving: boolean;
 }) {
+  const { isMobile } = useDeviceDetection();
+
   return (
-    <div className='flex flex-col gap-2'>
+    <div
+      className={`flex gap-2 ${isMobile ? 'flex-col pb-28' : 'flex-row pb-10'}`}
+    >
       {plans.map((plan, index) => {
         const isRecommended = plan.is_recommended;
         const activeFeatures = plan.benefits
@@ -31,10 +37,14 @@ function PlanCardMobile({
           .filter((feature) => !feature.is_active)
           .sort((a, b) => a.order - b.order);
         const active = selectedPlan?.id === plan.id;
+
         return (
           <div
             className={clsx(
               'relative mt-3 rounded-md border p-6 shadow-md',
+              isMobile
+                ? ''
+                : 'flex min-h-[400px] flex-1 flex-col justify-between',
               active
                 ? 'border-plan-blue bg-plan-blue'
                 : 'border-secondaryBlue bg-white',
@@ -43,14 +53,14 @@ function PlanCardMobile({
             onClick={!isSaving ? () => setSelectedPlan(plan) : undefined}
           >
             {isRecommended && (
-              <div className='absolute -top-3 right-4 rounded-full bg-sky-500 px-3 py-1'>
-                <span className='text-white'>Recommended</span>
+              <div className='absolute -top-3 left-4 rounded-full bg-[#FF9500] px-3 py-1'>
+                <span className='text-white'>Most Popular</span>
               </div>
             )}
             <div className='text-lg font-bold text-[#080808]'>{plan.title}</div>
             {activeFeatures.map((feature, index) => (
               <div className='mt-4 flex items-start gap-2' key={index}>
-                <TickCircleIcon size={12} className='mt-[6px]' />
+                <TickCircleIcon size={12} className='mt-[6px] text-green-600' />
                 <div dangerouslySetInnerHTML={{ __html: feature.name }} />
               </div>
             ))}
@@ -58,7 +68,7 @@ function PlanCardMobile({
               <div className='mt-4 flex items-start' key={index}>
                 <CrossMarkIcon
                   size={15}
-                  className='mr-1 mt-[6px] text-[#00ADEF]'
+                  className='mr-1 mt-[6px] text-[#FD1212]'
                 />
                 <div
                   className='text-[#1E1E1E61]'

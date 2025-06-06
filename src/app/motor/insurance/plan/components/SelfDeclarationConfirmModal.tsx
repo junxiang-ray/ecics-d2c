@@ -1,10 +1,8 @@
 'use client';
 
-import { Checkbox, Drawer, Modal } from 'antd';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { useState } from 'react';
+import { Drawer, Modal } from 'antd';
 
-import { PrimaryButton } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -18,13 +16,8 @@ function SelfDeclarationConfirmModal({
   onCancel?: () => void;
 }) {
   const { isMobile } = useDeviceDetection();
-  const [isChecked, setIsChecked] = useState(false);
 
-  const handleCheckboxChange = (e: CheckboxChangeEvent) => {
-    setIsChecked(e.target.checked);
-  };
-
-  const handleOkayClick = () => {
+  const handleConfirmClick = () => {
     onOk();
   };
 
@@ -55,30 +48,25 @@ function SelfDeclarationConfirmModal({
               You have not had 3 or more claims made against your car insurance.
             </li>
           </ul>
+          <div className='mt-[4px] text-justify font-semibold'>
+            By proceeding, you acknowledge that you have read and meet all of
+            the above eligibility criteria.
+          </div>
         </div>
       </div>
-      <div className='mt-4 flex items-start gap-2 text-sm'>
-        <Checkbox
-          className='custom-checkbox'
-          checked={isChecked}
-          onChange={handleCheckboxChange}
-          id='self-declaration-checkbox'
-        />
-        <label
-          className='cursor-pointer text-justify font-semibold'
-          htmlFor='self-declaration-checkbox'
-        >
-          I confirm that I have read and meet all the above eligibility
-          criteria.
-        </label>
-      </div>
       <div className='mt-6 flex justify-center'>
-        <PrimaryButton
-          onClick={handleOkayClick}
-          className='w-full py-3 text-base font-semibold text-white'
-          disabled={!isChecked}
+        <SecondaryButton
+          onClick={onCancel}
+          danger
+          className='mr-[10px] w-full py-3 text-base font-semibold'
         >
-          Okay
+          Back
+        </SecondaryButton>
+        <PrimaryButton
+          onClick={handleConfirmClick}
+          className='ml-[10px] w-full bg-[#34C759] py-3 text-base font-semibold text-white'
+        >
+          Confirm
         </PrimaryButton>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { Modal } from 'antd';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Addon, Option } from '@/libs/types/quote';
@@ -20,6 +20,7 @@ import {
   RoadSideIcon,
 } from '@/components/icons/add-on-icons';
 
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
@@ -162,6 +163,7 @@ function AddOnDetail({
 }) {
   const searchParams = useSearchParams();
   const router = useRouterWithQuery();
+  const { handleBack } = useInsurance();
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
   const quoteInfo = useAppSelector((state) => state.quote.quote);
@@ -411,22 +413,30 @@ function AddOnDetail({
     handleOkay();
   };
 
+  const ref = useRef<HTMLDivElement>(null);
+  const scrollToAdditionalDriver = () => {
+    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className='flex w-full flex-col items-center'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
           {/* Edit bar - hide for now */}
           {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-                  <HeaderVehicleInfo
-                    vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                    insuranceAdditionalInfo={
-                      quoteInfo?.data.insurance_additional_info
-                    }
-                    selectPlan={quoteInfo?.data.selected_plan}
-                    isShowScreen={true}
-                  />
-                </div> */}
-          <div className='mt-4 flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3'>
+                                  <HeaderVehicleInfo
+                                    vehicleInfo={quoteInfo?.data.vehicle_info_selected}
+                                    insuranceAdditionalInfo={
+                                      quoteInfo?.data.insurance_additional_info
+                                    }
+                                    selectPlan={quoteInfo?.data.selected_plan}
+                                    isShowScreen={true}
+                                  />
+                                </div> */}
+          <p className='mt-4 text-base font-bold underline' ref={ref}>
+            Select Add-ons
+          </p>
+          <div className='mt-4 flex flex-col gap-6 md:gap-10'>
             {addonAdditionalDriver && (
               <AddonAdditionalDriver
                 addon={addonAdditionalDriver}
@@ -445,6 +455,7 @@ function AddOnDetail({
                 title={addon.add_on_name}
                 icon={<RoadSideIcon className='text-brand-blue' />}
                 status='completed'
+                isIncluded={true}
               >
                 <TruncateText text={addon.add_on_desc} />
                 <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />
@@ -492,14 +503,15 @@ function AddOnDetail({
       </div>
 
       {!isShowBonusDetail && (
-        <div className='mt-6 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+        <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
           <PricingSummary
             planFee={premiumWithGst}
             addonFee={totalAddonFee}
             discount={quoteInfo?.promo_code?.discount || 0}
             title='Premium breakdown'
-            textButton='Continue'
+            textButton='Next'
             onClick={handleContinue}
+            handleBack={handleBack}
             setIsShowPopupPremium={setIsShowPopupPremium}
             loading={isPending}
           />
@@ -510,6 +522,7 @@ function AddOnDetail({
           visible={isShowRequireModal}
           onOk={() => {
             setIsShowRequireModal(false);
+            scrollToAdditionalDriver();
           }}
         />
       )}

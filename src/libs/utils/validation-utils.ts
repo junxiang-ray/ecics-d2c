@@ -1,8 +1,7 @@
 export function validateNRIC(params: any[]): boolean {
   if (!params || !params[0] || typeof params[0] !== 'string') return false;
   const nricInput = params[0].toUpperCase();
-  if (!nricInput) return true;
-  if (nricInput.length === 1) return false;
+  if (!nricInput || nricInput.length !== 9) return false;
   if (nricInput.includes(' ')) return false;
 
   const chars = nricInput.split('');

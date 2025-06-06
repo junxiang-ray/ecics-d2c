@@ -14,8 +14,10 @@ import {
 
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import RadioField from '@/components/ui/form/radiofield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -136,6 +138,7 @@ interface Props {
 const AddOnBonusDetailManualForm = (props: Props) => {
   const { onSaveRegister } = props;
   const dispatch = useAppDispatch();
+  const { handleBack } = useInsurance();
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const quoteInfo = useAppSelector((state) => state.quote.quote);
@@ -274,10 +277,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           {/*</div>*/}
 
           {/* Personal Details */}
-          <div
-            className={`w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm ${isMobile ? '' : 'mt-[14px]'}`}
-          >
-            <div className={`text-lg font-bold ${isMobile ? 'mt-[28px]' : ''}`}>
+          <div className={`w-full ${isMobile ? '' : 'mt-[14px]'}`}>
+            <div
+              className={`text-lg font-bold underline ${isMobile ? 'mt-[28px]' : ''}`}
+            >
               Enter Personal Details
             </div>
             <div className='grid gap-y-2 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
@@ -287,8 +290,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               >
                 <InputField
                   name='name'
-                  label='Name as Per NRIC/FIN'
-                  placeholder='Enter your Name'
+                  label='Full Name as per NRIC / FIN'
+                  isRequired
+                  placeholder='Enter Your Full Name as per NRIC/FIN'
                 />
               </Form.Item>
 
@@ -299,6 +303,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='nric'
                   label='NRIC/FIN'
+                  isRequired
                   placeholder='Enter NRIC/FIN'
                 />
               </Form.Item>
@@ -307,10 +312,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='gender'
                 validateStatus={errors['gender'] ? 'error' : ''}
               >
-                <DropdownField
+                <RadioField
                   name='gender'
                   label='Gender'
-                  placeholder='Select gender'
+                  isRequired
                   options={GENDER_OPTIONS}
                 />
               </Form.Item>
@@ -319,10 +324,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 name='maritalStatus'
                 validateStatus={errors['maritalStatus'] ? 'error' : ''}
               >
-                <DropdownField
+                <RadioField
                   name='maritalStatus'
                   label='Marital Status'
-                  placeholder='Select marital status'
+                  isRequired
                   options={MARITAL_STATUS_OPTIONS}
                 />
               </Form.Item>
@@ -333,6 +338,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               >
                 <InputField
                   name='address1'
+                  isRequired
                   label='Address Line 1'
                   placeholder='Block number and street name'
                 />
@@ -367,7 +373,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='pinCode'
                   label='Postal Code'
-                  placeholder='Enter Postal Code'
+                  isRequired
+                  placeholder='6-digit Postal Code'
                   inputMode='numeric'
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const onlyNums = e.target.value.replace(/\D/g, '');
@@ -382,10 +389,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           </div>
 
           {/* Vehicle Details */}
-          <div
-            className={`w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm ${isMobile ? '' : 'mt-[14px]'}`}
-          >
-            <div className={`text-lg font-bold ${isMobile ? 'mt-[6px]' : ''}`}>
+          <div className={`w-full ${isMobile ? '' : 'mt-[40px]'}`}>
+            <div
+              className={`text-lg font-bold underline ${isMobile ? 'mt-[6px]' : ''}`}
+            >
               Enter Vehicle Details
             </div>
             <div className='grid gap-y-2 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
@@ -396,6 +403,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='chasisNumber'
                   label='Chassis Number'
+                  isRequired
                   placeholder='Enter Chassis Number'
                 />
               </Form.Item>
@@ -408,7 +416,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                   name='engineNumber'
                   label='Engine Number'
                   placeholder='Enter Engine Number'
-                  required={false}
                 />
               </Form.Item>
 
@@ -419,18 +426,20 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 <InputField
                   name='vehicleNumber'
                   label='Vehicle Number'
+                  isRequired
                   placeholder='Enter Vehicle Number'
                 />
               </Form.Item>
             </div>
           </div>
-          <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+          <div className='mt-20 w-full bg-[#FFFEFF] md:mt-2'>
             <PricingSummary
               planFee={planFreeTotal}
               addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
               discount={quoteInfo?.promo_code?.discount || 0}
               title='Premium breakdown'
-              textButton='Continue'
+              textButton='Next'
+              handleBack={handleBack}
               onClick={methods.handleSubmit(handleSubmit)}
               setIsShowPopupPremium={setIsShowPopupPremium}
               loading={isPending}

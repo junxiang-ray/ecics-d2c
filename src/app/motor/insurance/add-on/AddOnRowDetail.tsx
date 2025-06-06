@@ -1,15 +1,13 @@
 'use client';
 
 import { memo, useEffect, useState } from 'react';
-
 import { formatCurrency } from '@/libs/utils/utils';
-
 import { SecondaryButton } from '@/components/ui/buttons';
 import { AddOnDropDownField } from '@/components/ui/form/dropdownfield';
-
 import { AddOnFormat } from './AddonDetail';
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
+import { Button } from 'antd';
 
 function AddOnRowDetail({
   addon,
@@ -103,7 +101,7 @@ function AddOnRowDetail({
                   {formatCurrency(addon.feeSelected ?? 0)}
                 </p>
                 <SecondaryButton
-                  className='black h-8 w-28 rounded-md !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
+                  className='black h-8 w-28 rounded-xl !border-[#00ADEF] border-[0.5] py-0 leading-4 text-[#1E1E1E]'
                   onClick={() => handleAddAddonSelect(addon)}
                   disabled={isPending}
                 >
@@ -118,7 +116,7 @@ function AddOnRowDetail({
                 {formatCurrency(addon.feeSelected ?? 0)}
               </p>
               <SecondaryButton
-                className='black h-8 w-28 rounded-md'
+                className='black h-8 w-28 rounded-xl'
                 onClick={() => handleAddAddonCheckbox(addon)}
                 disabled={isPending}
               >
@@ -136,13 +134,13 @@ function AddOnRowDetail({
             <p className='font-semibold leading-[20px] text-[#333333]'>
               <span>{formatCurrency(addon.feeAdded)}</span>
             </p>
-            <SecondaryButton
-              className='h-8 w-28 rounded-md py-0 leading-4 text-red-500'
+            <Button
+              className='h-8 w-28 rounded-xl border border-[#FD1212] py-0 text-sm font-semibold leading-4 text-[#fd1212]'
               onClick={() => handleRemoveAddon(addon)}
               disabled={isPending}
             >
               Remove
-            </SecondaryButton>
+            </Button>
           </div>
         </>
       )}
