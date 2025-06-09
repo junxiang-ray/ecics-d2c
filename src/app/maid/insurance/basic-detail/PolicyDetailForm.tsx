@@ -16,7 +16,6 @@ import { formatPromoCode } from '@/libs/utils/utils';
 
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
-  DropdownField,
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
@@ -41,9 +40,6 @@ import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuot
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
-
-const sryMsg =
-  'Please contact us for assistance at +65 6206 5588 or customerservice@ecics.com.sg';
 
 const singpassFlowFields = {
   [MOTOR_QUOTE.start_date]: z
@@ -86,54 +82,13 @@ const nonSingpassFlowFields = {
   }),
 };
 const ID_OPTION_OTHER = 2; //-- Others (Not Available in this list) --
+
 const createSchema = (isSingpassFlow: boolean) => {
   const baseSchema = z.object(
     isSingpassFlow ? singpassFlowFields : nonSingpassFlowFields,
   );
 
-  return baseSchema
-    .refine(
-      (data) => {
-        const startDate = data[MOTOR_QUOTE.start_date];
-        const endDate = data[MOTOR_QUOTE.end_date];
-        if (!startDate || !endDate) {
-          return false;
-        }
-        const minEndDate = adjustDateInDayjs(
-          dateToDayjs(startDate as Date),
-          0,
-          10,
-          -1,
-        );
-        return dayjs(endDate as Date).isSameOrAfter(minEndDate);
-      },
-      {
-        message:
-          'Policy end date must be at least 10 months after the start date',
-        path: [MOTOR_QUOTE.end_date],
-      },
-    )
-    .refine(
-      (data) => {
-        const startDate = data[MOTOR_QUOTE.start_date];
-        const endDate = data[MOTOR_QUOTE.end_date];
-        if (!startDate || !endDate) {
-          return false;
-        }
-        const maxEndDate = adjustDateInDayjs(
-          dateToDayjs(startDate as Date),
-          0,
-          18,
-          -1,
-        );
-        return dayjs(endDate as Date).isSameOrBefore(maxEndDate);
-      },
-      {
-        message:
-          'Policy end date cannot be more than 18 months after the start date',
-        path: [MOTOR_QUOTE.end_date],
-      },
-    );
+  return baseSchema;
 };
 
 const nonSingpassSchema = z.object(nonSingpassFlowFields);
@@ -288,9 +243,16 @@ const PolicyDetailForm = ({
     });
   }, [methods, onSaveRegister]);
 
+  useEffect(() => {
+    if (!start_date || !policyDuration) return;
+    const months = Number(policyDuration);
+    const endDate = dayjs(start_date).add(months, 'month').toDate();
+    methods.setValue(MOTOR_QUOTE.end_date, endDate, { shouldValidate: true });
+  }, [start_date, policyDuration, methods]);
+
   const handleChangeDob = () => {
-    methods.setValue(MOTOR_QUOTE.start_date, null as any);
-    methods.setValue(MOTOR_QUOTE.end_date, null as any);
+    // methods.setValue(MOTOR_QUOTE.start_date, null as any);
+    // methods.setValue(MOTOR_QUOTE.end_date, null as any);
   };
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
@@ -352,28 +314,32 @@ const PolicyDetailForm = ({
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
   const minPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const minEligibleDate = adjustDateInDayjs(dobDayjs, 26, 0, 0);
-    const today = dayjs();
-    return today.isAfter(minEligibleDate) ? today : minEligibleDate;
-  }, [date_of_birth]);
-  const maxPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const maxEligibleDate = adjustDateInDayjs(dobDayjs, 71, 0, -1);
-    const today = adjustDateInDayjs(dayjs(), 0, 0, 90);
-    return today?.isBefore(maxEligibleDate) ? today : maxEligibleDate;
-  }, [date_of_birth]);
+    return dayjs().add(6, 'day');
+  }, []);
 
-  const minPolicyEndDate = useMemo(() => {
-    const startDateDayjs = dateToDayjs(start_date);
-    const minEligibleDate = adjustDateInDayjs(startDateDayjs, 0, 10, -1);
-    return minEligibleDate;
+  const maxPolicyStartDate = useMemo(() => {
+    return dayjs().add(90, 'day');
+  }, []);
+
+  const minDob = useMemo(() => {
+    if (!start_date) return undefined;
+    return dayjs(start_date).subtract(23, 'year');
   }, [start_date]);
-  const maxPolicyEndDate = useMemo(() => {
-    const startDateDayjs = dateToDayjs(start_date);
-    const maxEligibleDate = adjustDateInDayjs(startDateDayjs, 0, 18, -1);
-    return maxEligibleDate;
+
+  const maxDob = useMemo(() => {
+    if (!start_date) return undefined;
+    return dayjs(start_date).subtract(60, 'year').add(1, 'day');
   }, [start_date]);
+
+  useEffect(() => {
+    if (!start_date || !date_of_birth) return;
+    const dob = dayjs(date_of_birth);
+    if (dob.isAfter(minDob, 'day') || dob.isBefore(maxDob, 'day')) {
+      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
+        shouldValidate: true,
+      });
+    }
+  }, [start_date, date_of_birth, minDob, maxDob, methods]);
 
   const HELPER_TYPE_OPTIONS = [
     { value: 'new', text: 'New Maid' },
@@ -513,9 +479,7 @@ const PolicyDetailForm = ({
                         <DatePickerField
                           label='Policy End Date'
                           name={MOTOR_QUOTE.end_date}
-                          minDate={minPolicyEndDate}
-                          maxDate={maxPolicyEndDate}
-                          disabled={!start_date || isLoading}
+                          disabled
                           isRequired={true}
                         />
                       </Form.Item>
@@ -546,8 +510,10 @@ const PolicyDetailForm = ({
                         <DatePickerField
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
-                          minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
-                          maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
+                          // minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
+                          // maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
+                          minDate={maxDob}
+                          maxDate={minDob}
                           onChange={handleChangeDob}
                           isRequired={true}
                         />
