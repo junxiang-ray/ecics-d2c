@@ -177,7 +177,7 @@ export default function CompletePurchaseDetail({
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
   const addonsTitles =
-    matchedPlan?.addons?.map((addon) => addon.title).filter(Boolean) || [];
+    matchedPlan?.benefits?.map((benefit) => benefit.name).filter(Boolean) || [];
 
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
@@ -674,6 +674,7 @@ export default function CompletePurchaseDetail({
                 sections[index + 1]?.key === 'addons'
               ) {
                 const policyData = sharedDataMap['policy_plan'] || [];
+                console.log('policyData', policyData);
                 const addonsData = sharedDataMap['addons'] || [];
 
                 return (
