@@ -497,6 +497,13 @@ export default function CompletePurchaseDetail({
     const AddOnIncludedInPlan =
       quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
 
+    const hasAddons =
+      quote?.data?.review_info_premium?.data_section_add_ons?.length > 0;
+    const hasDrivers = drivers && drivers.length > 0;
+    const hasIncludedAddOns =
+      AddOnIncludedInPlan && AddOnIncludedInPlan.length > 0;
+    const hasAnyContent = hasAddons || hasDrivers || hasIncludedAddOns;
+
     return (
       <div className='max-h-[70svh] w-full overflow-y-auto bg-white'>
         {/* <div className='flex h-[50px] justify-end'>
@@ -532,75 +539,84 @@ export default function CompletePurchaseDetail({
                   </div>
                 )}
               </div>
+              {hasAnyContent && (
+                <div className='flex flex-col py-2'>
+                  {hasAddons && (
+                    <div className='gap-4'>
+                      <p className='text-base font-bold text-[#303030]'>
+                        Add-onnn:
+                      </p>
+                      <div className='flex flex-col gap-3'>
+                        {quote?.data?.review_info_premium?.data_section_add_ons.map(
+                          (addon: any) => (
+                            <p
+                              key={addon.title}
+                              className='flex flex-row items-center justify-between'
+                            >
+                              <p className='flex flex-col'>
+                                {addon.title}
+                                {addon.optionLabel !== 'YES' && (
+                                  <span className='ml-2 flex flex-row items-center gap-2'>
+                                    <p className='h-[4px] w-[4px] rounded-full bg-[#303030]'></p>
+                                    {addon.optionLabel} Coverage
+                                  </span>
+                                )}
+                              </p>
+                              <span>
+                                {formatCurrency(addon.feeSelected / tax)}
+                              </span>
+                            </p>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  )}
 
-              <div className='flex flex-col gap-4 py-2'>
-                <p className='text-base font-bold text-[#303030]'>Add-on:</p>
-                <div className='flex flex-col gap-3'>
-                  {quote?.data?.review_info_premium?.data_section_add_ons.map(
-                    (addon: any) => (
-                      <p
-                        key={addon.title}
-                        className='flex flex-row items-center justify-between'
-                      >
-                        <p className='flex flex-col'>
-                          {addon.title}
-                          {addon.optionLabel !== 'YES' && (
-                            <span className='ml-2 flex flex-row items-center gap-2'>
-                              <p className='h-[4px] w-[4px] rounded-full bg-[#303030]'></p>
-                              {addon.optionLabel} Coverage
-                            </span>
-                          )}
+                  <div>
+                    {hasDrivers && (
+                      <div className='gap-4'>
+                        <p className='my-1 text-sm font-semibold text-[#303030]'>
+                          Additional Named Driver(s)
                         </p>
-                        <span>{formatCurrency(addon.feeSelected / tax)}</span>
-                      </p>
-                    ),
-                  )}
+                        {drivers.map((driver, index) => (
+                          <div
+                            key={index}
+                            className='flex flex-row items-center justify-between text-sm text-[#636262]'
+                          >
+                            <p>{driver.name}</p>
+                            <p>
+                              {index === 0
+                                ? 'FREE'
+                                : addonAdditionalDriver?.options?.[0]
+                                      ?.premium_with_gst
+                                  ? formatCurrency(
+                                      addonAdditionalDriver.options[0]
+                                        .premium_with_gst / 1.09,
+                                    )
+                                  : ''}{' '}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    {hasIncludedAddOns && (
+                      <div className='mt-4 flex flex-col gap-2'>
+                        {AddOnIncludedInPlan.map((item, index) => (
+                          <div
+                            key={index}
+                            className='flex flex-row items-center justify-between'
+                          >
+                            <span>{item.add_on_name}</span>
+                            <span>INCLUDED</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-
-                <div>
-                  {drivers && drivers.length > 0 && (
-                    <div className=''>
-                      <p className='my-1 text-sm font-semibold text-[#303030]'>
-                        Additional Named Driver(s)
-                      </p>
-                      {drivers.map((driver, index) => (
-                        <div
-                          key={index}
-                          className='flex flex-row items-center justify-between text-sm text-[#636262]'
-                        >
-                          <p>{driver.name}</p>
-                          <p>
-                            {index === 0
-                              ? 'FREE'
-                              : addonAdditionalDriver?.options?.[0]
-                                    ?.premium_with_gst
-                                ? formatCurrency(
-                                    addonAdditionalDriver.options[0]
-                                      .premium_with_gst / 1.09,
-                                  )
-                                : ''}{' '}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  {AddOnIncludedInPlan && AddOnIncludedInPlan.length > 0 && (
-                    <div className='mt-4 flex flex-col gap-2'>
-                      {AddOnIncludedInPlan.map((item, index) => (
-                        <div
-                          key={index}
-                          className='flex flex-row items-center justify-between'
-                        >
-                          <span>{item.add_on_name}</span>
-                          <span>INCLUDED</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              )}
 
               <div className='flex flex-col gap-1 rounded-lg py-2'>
                 <div className='flex flex-row justify-between text-base font-bold text-[#303030]'>

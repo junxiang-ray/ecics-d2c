@@ -11,8 +11,7 @@ jobs:
   build:
     name: 🚀 Build
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: postgres://neondb_owner:npg_MJa3rWqG4LRK@ep-steep-resonance-a10i3eec-pooler.ap-southeast-1.aws.neon.tech/ecics_dev?sslmode=require&schema=public
+
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
