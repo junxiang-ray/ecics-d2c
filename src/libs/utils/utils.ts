@@ -134,3 +134,15 @@ export const formatCurrencyString = (input: string): string => {
 
   return formatNumberWithPrefix(prefix, number);
 };
+
+/**
+ * Returns 'Yes' if the value is true or the string 'true' (case-insensitive), otherwise returns 'No'.
+ */
+export const formatBooleanToYesNo = (
+  value: boolean | string | undefined | null,
+): string => {
+  if (typeof value === 'string') {
+    return value.toLowerCase() === 'true' ? 'Yes' : 'No';
+  }
+  return value ? 'Yes' : 'No';
+};
