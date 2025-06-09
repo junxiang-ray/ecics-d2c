@@ -1,3 +1,4 @@
+import { ROUTES } from '@/constants/routes';
 import axios from 'axios';
 
 const baseClient = axios.create({
@@ -26,7 +27,7 @@ baseClient.interceptors.response.use(
     const status = error?.response?.status;
     const message = error?.response?.statusText;
     if (status === 500 || status === 503) {
-      window.location.href = `/motor/error-page?status=${status}&message=${encodeURIComponent(message)}`;
+      window.location.href = `${ROUTES.API_ERROR}?status=${status}&message=${encodeURIComponent(message)}`;
     }
     if (error.response) {
       console.error('API Error:', error.response.data);

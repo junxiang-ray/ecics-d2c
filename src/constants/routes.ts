@@ -8,7 +8,16 @@ export const ROUTES = {
     PERSONAL_DETAIL: '/motor/insurance/personal-detail',
     COMPLETE_PURCHASE: '/motor/insurance/complete-purchase',
   },
-  API_ERROR: '/motor/error-page',
+  INSURANCE_MAID: {
+    BASIC_DETAIL: '/maid/insurance/basic-detail',
+    BASIC_DETAIL_SINGPASS: '/maid/insurance/basic-detail?manual=false',
+    BASIC_DETAIL_MANUAL: '/maid/insurance/basic-detail?manual=true',
+    PLAN: '/maid/insurance/plan',
+    ADD_ON: '/maid/insurance/add-on',
+    PERSONAL_DETAIL: '/maid/insurance/personal-detail',
+    COMPLETE_PURCHASE: '/maid/insurance/complete-purchase',
+  },
+  API_ERROR: '/error-page',
   MOTOR: {
     LOGIN: '/motor',
     REVIEW_INFO_DETAIL: '/motor/review-info-detail',
