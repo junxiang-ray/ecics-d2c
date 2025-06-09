@@ -352,3 +352,15 @@ export function applyLouAndCcLogic(value: string) {
     };
   }
 }
+
+export const mappingAddonForMaid = {
+  MAID_DELU_WOCI: 'quote_mom_bond',
+  MAID_DELU_OME: 'quote_opt_op',
+  MAID_DELU_WOCP: 'quote_opt_co_payment',
+  MAID_CLASS_WOCI: 'quote_mom_bond',
+  MAID_CLASS_OME: 'quote_opt_op',
+  MAID_CLASS_WOCP: 'quote_opt_co_payment',
+  MAID_EXCLU_WOCI: 'quote_mom_bond',
+  MAID_EXCLU_OME: 'quote_opt_op',
+  MAID_EXCLU_WOCP: 'quote_opt_co_payment',
+};

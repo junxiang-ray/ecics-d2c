@@ -178,6 +178,7 @@ model PaymentResult {
 model CountryNationality {
   id         Int      @id @default(autoincrement())
   name       String
+  group_name String?
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
@@ -243,6 +244,7 @@ model Plan {
   order            Int?
   benefits         Benefit[]
   addons           Addon[]
+  is_display       Boolean   @default(true)
   created_at       DateTime  @default(now())
   updated_at       DateTime  @default(now()) @updatedAt
 
