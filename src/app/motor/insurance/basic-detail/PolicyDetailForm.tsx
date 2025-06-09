@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -53,16 +53,12 @@ const sryMsg =
 const singpassFlowFields = {
   [MOTOR_QUOTE.hire_purchase]: z.number({
     required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.other_hire_purchase]: z.string().optional(),
-  // [MOTOR_QUOTE.hire_purchase]: z.number({
-  //   required_error: 'This field is required',
-  //   invalid_type_error: 'This field is required',
-  // }),
-  // [MOTOR_QUOTE.other_hire_purchase]: z.string({
-  //   required_error: 'This field is required',
-  //   invalid_type_error: 'This field is required',
-  // }),
+  [MOTOR_QUOTE.other_hire_purchase]: z.string({
+    required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
+  }),
   [MOTOR_QUOTE.start_date]: z
     .date({
       required_error: 'This field is required',
@@ -395,10 +391,9 @@ const PolicyDetailForm = ({
   );
 
   const handleSubmit = (value: FormData) => {
-    console.log('1');
     let vehicle_info_selected;
     let personal_info;
-    console.log('1323');
+
     if (!isSingpassFlow) {
       vehicle_info_selected = {
         vehicle_make: value[MOTOR_QUOTE.vehicle_make],
@@ -757,7 +752,7 @@ const PolicyDetailForm = ({
         className={`fixed bottom-0 w-full bg-white px-2 ${isMobile ? 'px-2' : ''}`}
         style={{ zIndex: 100 }}
       >
-        <div className='mx-auto w-full max-w-[1200px]'>
+        <div className='mx-auto h-[95px] w-full max-w-[1200px] place-content-center'>
           <div className='flex w-full items-center justify-between py-3'>
             <Button
               color='cyan'
