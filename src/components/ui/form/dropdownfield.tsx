@@ -21,12 +21,11 @@ export interface DropdownOption {
   text: string;
 }
 
-interface OptionType {
+export interface OptionType {
   value: string;
   label: JSX.Element;
 }
-
-interface AddOnRadioGroupFieldProps {
+interface AddOnDropDownFieldProps {
   options: OptionType[];
   selectedOption: string;
   handleSelectOption: (value: string) => void;
@@ -268,28 +267,29 @@ export const LongOptionDropdownField = ({
   );
 };
 
-export const AddOnRadioGroupField = ({
+export const AddOnDropDownField = ({
   options,
   selectedOption,
   handleSelectOption,
   isPending,
-}: AddOnRadioGroupFieldProps) => {
+}: AddOnDropDownFieldProps) => {
   return (
-    <Radio.Group
+    <Select
+      style={{ width: 120 }}
+      className='[&_.ant-select-selector]:border-0.5 w-28 [&_.ant-select-selector]:border-[#00ADEF]'
+      options={options}
       value={selectedOption}
-      onChange={(e) => handleSelectOption(e.target.value)}
+      placeholder='Select'
+      onChange={(value) => handleSelectOption(value)}
+      placement='bottomRight'
+      dropdownStyle={{
+        minWidth: 112,
+        width: 'fit-content',
+        maxWidth: '100vw',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+      }}
       disabled={isPending}
-      className='flex flex-col gap-2 md:flex-row md:gap-4'
-    >
-      {options.map((option) => (
-        <Radio
-          key={option.value}
-          value={option.value}
-          className='!text-sm !font-normal'
-        >
-          {option.label}
-        </Radio>
-      ))}
-    </Radio.Group>
+    />
   );
 };

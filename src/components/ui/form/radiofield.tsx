@@ -2,7 +2,7 @@ import { Radio, RadioProps } from 'antd';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { DropdownOption } from './dropdownfield';
+import { DropdownOption, OptionType } from './dropdownfield';
 
 interface RadioFieldProps extends RadioProps {
   name: string;
@@ -11,7 +11,7 @@ interface RadioFieldProps extends RadioProps {
   isRequired?: boolean;
 }
 
-const RadioField = ({
+export const RadioField = ({
   name,
   label,
   options,
@@ -65,4 +65,35 @@ const RadioField = ({
   );
 };
 
-export default RadioField;
+interface AddOnRadioGroupFieldProps {
+  options: OptionType[];
+  selectedOption: string;
+  handleSelectOption: (value: string) => void;
+  isPending: boolean;
+}
+
+export const AddOnRadioGroupField = ({
+  options,
+  selectedOption,
+  handleSelectOption,
+  isPending,
+}: AddOnRadioGroupFieldProps) => {
+  return (
+    <Radio.Group
+      value={selectedOption}
+      onChange={(e) => handleSelectOption(e.target.value)}
+      disabled={isPending}
+      className='flex flex-col gap-2 md:flex-row md:gap-4'
+    >
+      {options.map((option) => (
+        <Radio
+          key={option.value}
+          value={option.value}
+          className='!text-sm !font-normal'
+        >
+          {option.label}
+        </Radio>
+      ))}
+    </Radio.Group>
+  );
+};

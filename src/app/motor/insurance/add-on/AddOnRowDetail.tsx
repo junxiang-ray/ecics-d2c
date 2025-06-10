@@ -3,11 +3,11 @@
 import { memo, useEffect, useState } from 'react';
 import { formatCurrency } from '@/libs/utils/utils';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { AddOnRadioGroupField } from '@/components/ui/form/dropdownfield';
 import { AddOnFormat } from './AddonDetail';
 import AddOnRow from './AddOnRow';
 import TruncateText from './TruncateText ';
 import { Button } from 'antd';
+import { AddOnRadioGroupField } from '@/components/ui/form/radiofield';
 
 function AddOnRowDetail({
   addon,
