@@ -8,11 +8,13 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 type LimitedPeriodOfferProps = {
   promoCode: string;
   promoCodeData: PromoCodeResponse;
+  isMaid?: boolean;
 };
 
 const LimitedPeriodOffer = ({
   promoCode,
   promoCodeData,
+  isMaid,
 }: LimitedPeriodOfferProps) => {
   const { isMobile } = useDeviceDetection();
   const description = promoCodeData?.data?.description;
@@ -24,12 +26,30 @@ const LimitedPeriodOffer = ({
         style={{ borderLeft: '8px solid #C80F1E' }}
       >
         <div className='mb-[8px] text-2xl font-bold leading-[100%]'>
-          Fuel Your Savings – But Only If You’re Fast!
+          {isMaid
+            ? 'Fuel Your Savings – But Only If You’re Fast!'
+            : 'Don’t Let This Deal Dust Off Without You!'}
         </div>
         <div className='text-justify text-sm'>
-          Just 50 spots left to save{' '}
-          <span className='font-bold'>{promoCodeData?.data?.discount}%</span> on
-          Car Insurance. Use the code below before this deal runs out of road.
+          {isMaid ? (
+            <>
+              Snag{' '}
+              <span className='font-bold'>
+                {promoCodeData?.data?.discount}% OFF
+              </span>{' '}
+              Maid Insurance for the next 50 employers. Use the code and tidy up
+              your savings!
+            </>
+          ) : (
+            <>
+              Just 50 spots left to save{' '}
+              <span className='font-bold'>
+                {promoCodeData?.data?.discount}%
+              </span>{' '}
+              on Car Insurance. Use the code below before this deal runs out of
+              road.
+            </>
+          )}
         </div>
         {description && (
           <div className='mt-2 text-[14px] text-base font-bold'>
