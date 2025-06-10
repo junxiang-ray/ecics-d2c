@@ -178,7 +178,6 @@ export default function Summary() {
       documents.map(async (doc, index) => {
         try {
           const response = await fetch(doc.link);
-          console.log('response', response);
           if (!response.ok) throw new Error(`Failed to fetch ${doc.link}`);
           const blob = await response.blob();
 

@@ -95,13 +95,13 @@ export default function CompletePurchaseDetail({
     ) {
       return ROUTES.INSURANCE.BASIC_DETAIL;
     }
-    if (['addons', 'vehicle_details', 'owner'].includes(key)) {
+    if (['vehicle_details', 'owner'].includes(key)) {
       return ROUTES.INSURANCE.PERSONAL_DETAIL;
     }
     if (key === 'policy_plan') {
       return ROUTES.INSURANCE.PLAN;
     }
-    if (key === 'driver') {
+    if (['addons', 'driver'].includes(key)) {
       return ROUTES.INSURANCE.ADD_ON;
     }
     return undefined;
