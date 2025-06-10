@@ -146,7 +146,7 @@ function PlanDetail({
 
       <div className='mt-4 w-full md:flex md:flex-row md:justify-center'>
         <div className='fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
-          <div className='flex w-full items-center justify-between border-t-2 bg-white p-4 py-2 md:max-w-5xl md:border-none md:py-4'>
+          <div className='flex w-full items-center justify-between border-t-2 bg-white p-4 py-2 md:max-w-7xl md:border-none md:py-4'>
             {isMobile ? (
               <div className='flex w-full flex-col items-center gap-3'>
                 <div className='flex w-full items-center justify-between text-center'>

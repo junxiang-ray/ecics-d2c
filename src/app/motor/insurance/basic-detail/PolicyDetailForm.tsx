@@ -1,29 +1,28 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Form, Spin } from 'antd';
+import { Form, Spin } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
 
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownField,
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
-import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
+import { PricingSummary } from '@/app/motor/insurance/components/FeeBar';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
@@ -33,6 +32,7 @@ import {
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
+import { QuoteModal } from './modal/QuoteModal';
 import {
   DRV_EXP_OPTIONS,
   NCD_OPTIONS,
@@ -42,7 +42,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { QuoteModal } from './modal/QuoteModal';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -53,6 +52,7 @@ const sryMsg =
 const singpassFlowFields = {
   [MOTOR_QUOTE.hire_purchase]: z.number({
     required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
   }),
   [MOTOR_QUOTE.other_hire_purchase]: z.string().optional(),
   [MOTOR_QUOTE.start_date]: z
@@ -175,7 +175,20 @@ const createSchema = (isSingpassFlow: boolean) => {
           'Policy end date cannot be more than 18 months after the start date',
         path: [MOTOR_QUOTE.end_date],
       },
-    );
+    )
+    .superRefine((data, ctx) => {
+      if (data[MOTOR_QUOTE.hire_purchase] === ID_OPTION_OTHER) {
+        const value = data[MOTOR_QUOTE.other_hire_purchase];
+
+        if (typeof value !== 'string' || !value.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'This field is required',
+            path: [MOTOR_QUOTE.other_hire_purchase],
+          });
+        }
+      }
+    });
 };
 
 const nonSingpassSchema = z.object(nonSingpassFlowFields);
@@ -244,7 +257,7 @@ const PolicyDetailForm = ({
   const { data: modelOptions, isLoading: isLoadingModelOptions } =
     useGetVehicleModels(vehicleMakeId as string);
 
-  const handleBack = () => {
+  const handleBackLogin = () => {
     router.push(ROUTES.MOTOR.LOGIN);
   };
 
@@ -267,6 +280,12 @@ const PolicyDetailForm = ({
   useEffect(() => {
     setApplyPromoCode(initPromoCode);
   }, [initPromoCode]);
+
+  useEffect(() => {
+    if (hire_purchase !== ID_OPTION_OTHER) {
+      methods.setValue(MOTOR_QUOTE.other_hire_purchase, '');
+    }
+  }, [hire_purchase]);
 
   // to open Customer Service Modal - Unable to provide quote online
   useEffect(() => {
@@ -351,7 +370,7 @@ const PolicyDetailForm = ({
   };
 
   const hire_purchase_section = (
-    <div>
+    <>
       <Form.Item
         name={MOTOR_QUOTE.hire_purchase}
         validateStatus={errors[MOTOR_QUOTE.hire_purchase] ? 'error' : ''}
@@ -367,22 +386,23 @@ const PolicyDetailForm = ({
         />
       </Form.Item>
 
-      {hire_purchase === ID_OPTION_OTHER ? (
+      {hire_purchase === ID_OPTION_OTHER && (
         <Form.Item
           name={MOTOR_QUOTE.other_hire_purchase}
           validateStatus={
             errors[MOTOR_QUOTE.other_hire_purchase] ? 'error' : ''
           }
-          className='pt-1'
+          className='mb-1'
         >
           <InputField
             name={MOTOR_QUOTE.other_hire_purchase}
+            label='Your Hire Purchase Company'
             isRequired
             placeholder='Please enter your hire purchase company'
           />
         </Form.Item>
-      ) : null}
-    </div>
+      )}
+    </>
   );
 
   const handleSubmit = (value: FormData) => {
@@ -531,20 +551,6 @@ const PolicyDetailForm = ({
                           onChange={handleChangeDob}
                         />
                       </Form.Item>
-
-                      {/*<Form.Item*/}
-                      {/*    name={MOTOR_QUOTE.owner_drv_exp}*/}
-                      {/*    validateStatus={*/}
-                      {/*      errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''*/}
-                      {/*    }*/}
-                      {/*>*/}
-                      {/*  <DropdownField*/}
-                      {/*      name={MOTOR_QUOTE.owner_drv_exp}*/}
-                      {/*      label='Years of Driving Experience'*/}
-                      {/*      placeholder="Select your driver's experience (Years)"*/}
-                      {/*      options={DRV_EXP_OPTIONS}*/}
-                      {/*  />*/}
-                      {/*</Form.Item>*/}
                     </div>
                   </div>
 
@@ -687,30 +693,6 @@ const PolicyDetailForm = ({
                     disabled={!start_date || isLoading}
                   />
                 </Form.Item>
-
-                {/*<Form.Item name={MOTOR_QUOTE.owner_ncd}>*/}
-                {/*  <DropdownField*/}
-                {/*    name={MOTOR_QUOTE.owner_ncd}*/}
-                {/*    label='No Claim Discount'*/}
-                {/*    placeholder='Select your current NCD'*/}
-                {/*    options={NCD_OPTIONS}*/}
-                {/*  ></DropdownField>*/}
-                {/*</Form.Item>*/}
-
-                {/*<Form.Item*/}
-                {/*  name={MOTOR_QUOTE.owner_no_of_claims}*/}
-                {/*  validateStatus={*/}
-                {/*    errors[MOTOR_QUOTE.owner_no_of_claims] ? 'error' : ''*/}
-                {/*  }*/}
-                {/*>*/}
-                {/*  <DropdownField*/}
-                {/*    name={MOTOR_QUOTE.owner_no_of_claims}*/}
-                {/*    label='Number of claims in the past 3 years'*/}
-                {/*    placeholder='Select number of claims'*/}
-                {/*    options={NO_CLAIM_OPTIONS}*/}
-                {/*  />*/}
-                {/*</Form.Item>*/}
-
                 {isSingpassFlow ? hire_purchase_section : null}
               </div>
             </div>
@@ -728,48 +710,19 @@ const PolicyDetailForm = ({
           </div>
         </Form>
       </FormProvider>
-      {/* <div className='fixed bottom-0 mt-6 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-3'>
-        <div className='w-full sm:col-span-1 sm:col-start-2'>
-          <Form.Item>
-            <PrimaryButton
-              loading={isLoading}
-              className='w-full'
-              onClick={() => {
-                form.submit();
-              }}
-            >
-              Generate Quote
-            </PrimaryButton>
-          </Form.Item>
-        </div>
-      </div> */}
       <div
         className={`fixed bottom-0 w-full bg-white px-2 ${isMobile ? 'px-2' : ''}`}
         style={{ zIndex: 100 }}
       >
-        <div className='mx-auto w-full max-w-[1200px]'>
-          <div className='flex w-full items-center justify-between py-3'>
-            <Button
-              color='cyan'
-              icon={<ArrowBackIcon size={16} />}
-              shape='circle'
-              className='border-none bg-gray-200 pt-[6px]'
-              onClick={(e) => {
-                e.stopPropagation();
-                handleBack?.();
-              }}
-            />
-            <PrimaryButton
-              loading={isLoading}
-              className='ml-[6px] w-[90vw] bg-[#52C41A] md:w-40'
-              onClick={() => {
-                form.submit();
-              }}
-            >
-              Generate Quote
-            </PrimaryButton>
-          </div>
-        </div>
+        <PricingSummary
+          loading={isLoading}
+          isBasicDetailScreen={true}
+          textButton='Generate Quote'
+          handleBack={handleBackLogin}
+          onClick={() => {
+            form.submit();
+          }}
+        />
       </div>
       <QuoteModal
         onClick={() => setShowCSModal(false)}

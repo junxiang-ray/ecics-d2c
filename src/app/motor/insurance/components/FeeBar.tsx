@@ -9,9 +9,10 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useAppSelector } from '@/redux/store';
 
 export function PricingSummary({
-  planFee,
+  isBasicDetailScreen,
+  planFee = 0,
   addonFee = 0,
-  discount, // 10% = 10, 0% = 0
+  discount = 0, // 10% = 10, 0% = 0
   title,
   textButton,
   onClick,
@@ -19,9 +20,10 @@ export function PricingSummary({
   setIsShowPopupPremium,
   loading,
 }: {
-  planFee: number;
+  isBasicDetailScreen?: boolean;
+  planFee?: number;
   addonFee?: number;
-  discount: number;
+  discount?: number;
   title?: string;
   textButton?: string;
   loading?: boolean;
@@ -37,42 +39,46 @@ export function PricingSummary({
 
   return (
     <div
-      className='w-full cursor-pointer md:flex md:flex-row md:justify-center'
+      className={`w-full md:flex md:flex-row md:justify-center ${isBasicDetailScreen ? '' : 'cursor-pointer'}`}
       onClick={() => setIsShowPopupPremium?.(true)}
     >
       <div className='item-center fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
-        <div className='w-full border-t-2 bg-white px-4 py-2 md:max-w-[1000px] md:border-none md:py-4'>
+        <div
+          className={`w-full border-t-2 bg-white px-4 md:border-none md:py-4 ${isBasicDetailScreen ? 'py-3 md:max-w-[1240px]' : 'py-2 md:max-w-[1000px]'}`}
+        >
           {isMobile ? (
             <div className='flex w-full flex-col items-center gap-3'>
-              <div className='flex w-full items-center justify-between'>
-                <div>
-                  <p className='max-w-[150px] text-[12px] font-semibold md:text-[16px]'>
-                    {selectedPlan}
-                  </p>
-                  <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
-                    {title}
-                  </p>
+              {!isBasicDetailScreen && (
+                <div className='flex w-full items-center justify-between'>
+                  <div>
+                    <p className='max-w-[150px] text-[12px] font-semibold md:text-[16px]'>
+                      {selectedPlan}
+                    </p>
+                    <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
+                      {title}
+                    </p>
+                  </div>
+                  <div className='flex flex-col gap-1'>
+                    <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
+                      {discount > 0 && (
+                        <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
+                          {formatCurrency(notDiscountFee)}
+                        </span>
+                      )}
+                      <div className=''>
+                        <span className='text-[18px] font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
+                          {discountFee
+                            ? formatCurrency(Number(discountFee.toFixed(2)))
+                            : ''}{' '}
+                        </span>
+                        <p className='text-[12px] font-semibold text-[#323743]'>
+                          (inclusive of GST)
+                        </p>
+                      </div>
+                    </p>
+                  </div>
                 </div>
-                <div className='flex flex-col gap-1'>
-                  <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
-                    {discount > 0 && (
-                      <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
-                        {formatCurrency(notDiscountFee)}
-                      </span>
-                    )}
-                    <div className=''>
-                      <span className='text-[18px] font-semibold text-[#323743] md:text-3xl md:font-bold md:text-[#1B223C]'>
-                        {discountFee
-                          ? formatCurrency(Number(discountFee.toFixed(2)))
-                          : ''}{' '}
-                      </span>
-                      <p className='text-[12px] font-semibold text-[#323743]'>
-                        (inclusive of GST)
-                      </p>
-                    </div>
-                  </p>
-                </div>
-              </div>
+              )}
               <div className='flex w-full items-center'>
                 <Button
                   color='cyan'
@@ -108,40 +114,43 @@ export function PricingSummary({
                   handleBack?.();
                 }}
               />
-              <div>
-                <p className='text-[12px] font-semibold md:text-[16px]'>
-                  {selectedPlan}
-                </p>
-                <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
-                  {title}
-                </p>
-              </div>
-              <div className='flex flex-col gap-1'>
-                <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
-                  {discount > 0 && (
-                    <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
-                      {formatCurrency(notDiscountFee)}
-                    </span>
-                  )}
+              {!isBasicDetailScreen && (
+                <>
                   <div>
-                    <span className='text-[18px] font-semibold text-[#323743] md:text-2xl md:font-bold md:text-[#1B223C]'>
-                      {discountFee
-                        ? formatCurrency(Number(discountFee.toFixed(2)))
-                        : ''}{' '}
-                    </span>
-                    <p className='text-[12px] font-semibold text-[#323743]'>
-                      (inclusive of GST)
+                    <p className='text-[12px] font-semibold md:text-[16px]'>
+                      {selectedPlan}
+                    </p>
+                    <p className='text-[12px] font-semibold text-[#0096D8] md:text-[16px]'>
+                      {title}
                     </p>
                   </div>
-                </p>
-              </div>
-
+                  <div className='flex flex-col gap-1'>
+                    <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
+                      {discount > 0 && (
+                        <span className='text-[14px] font-normal text-[#FF0004] line-through md:text-[20px] md:text-[#EF0000]'>
+                          {formatCurrency(notDiscountFee)}
+                        </span>
+                      )}
+                      <div>
+                        <span className='text-[18px] font-semibold text-[#323743] md:text-2xl md:font-bold md:text-[#1B223C]'>
+                          {discountFee
+                            ? formatCurrency(Number(discountFee.toFixed(2)))
+                            : ''}{' '}
+                        </span>
+                        <p className='text-[12px] font-semibold text-[#323743]'>
+                          (inclusive of GST)
+                        </p>
+                      </div>
+                    </p>
+                  </div>
+                </>
+              )}
               <PrimaryButton
                 onClick={(e) => {
                   e.stopPropagation();
                   onClick && onClick();
                 }}
-                className='bg-[#52C41A] px-1 leading-4 text-white md:mt-5 md:w-40'
+                className={`bg-[#52C41A] px-1 leading-4 text-white md:w-40 ${isBasicDetailScreen ? 'md:mb-2.5 md:mt-2.5' : 'md:mt-5'}`}
                 loading={loading}
               >
                 {textButton || 'Continue'}

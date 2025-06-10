@@ -1,16 +1,21 @@
 'use client';
 
-import { Button, Drawer, Modal } from 'antd';
+import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Option } from '@/libs/types/quote';
-import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
+import {
+  formatBooleanToYesNo,
+  formatCurrency,
+  formatCurrencyString,
+} from '@/libs/utils/utils';
 
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
+import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
@@ -65,7 +70,6 @@ export default function CompletePurchaseDetail({
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const quote = useAppSelector((state) => state.quote?.quote);
-  const quoteInfo = useAppSelector((state) => state.quote?.quote);
   const vehicleSelected = quote?.data?.vehicle_info_selected;
 
   const plan = quote?.data?.plans?.find(
@@ -86,28 +90,38 @@ export default function CompletePurchaseDetail({
     toggleSection(key);
   };
   const routerBySectionKey = (key: string) => {
-    switch (key) {
-      case 'basic':
-      case 'vehicle':
-      case 'policy':
-        return ROUTES.INSURANCE.BASIC_DETAIL;
-      case 'addons':
-      case 'driver':
-        return ROUTES.INSURANCE.ADD_ON;
-      case 'owner':
-        return ROUTES.INSURANCE.PERSONAL_DETAIL;
-      default:
-        return undefined;
+    if (
+      ['personal', 'vehicle', 'policy', 'driving_experiences'].includes(key)
+    ) {
+      return ROUTES.INSURANCE.BASIC_DETAIL;
     }
+    if (['vehicle_details', 'owner'].includes(key)) {
+      return ROUTES.INSURANCE.PERSONAL_DETAIL;
+    }
+    if (key === 'policy_plan') {
+      return ROUTES.INSURANCE.PLAN;
+    }
+    if (['addons', 'driver'].includes(key)) {
+      return ROUTES.INSURANCE.ADD_ON;
+    }
+    return undefined;
   };
 
   const addonsSectionData = (
     quote?.data?.review_info_premium?.data_section_add_ons || []
-  ).map((addon: any) => ({
-    title: addon.title,
-    value: formatCurrency(addon.feeSelected / 1.09),
-    coverage_amount: formatCurrencyString(addon.optionLabel),
-  }));
+  ).map((addon: any) => {
+    const baseData = {
+      title: addon.title,
+      value: formatCurrency(addon.feeSelected / 1.09),
+    };
+    if (addon.optionLabel !== 'YES') {
+      return {
+        ...baseData,
+        coverage_amount: formatCurrencyString(addon.optionLabel),
+      };
+    }
+    return baseData;
+  });
 
   const addonsIncludedData = (
     quote?.data?.review_info_premium?.add_ons_included_in_this_plan || []
@@ -145,7 +159,7 @@ export default function CompletePurchaseDetail({
         { title: 'Driving Experience', value: driver.driving_experience },
         {
           title: 'Do you have a claim in the past 3 years',
-          value: driver.driving_experience,
+          value: formatBooleanToYesNo(driver.is_claim_in_3_years),
         },
       ];
 
@@ -165,7 +179,10 @@ export default function CompletePurchaseDetail({
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
   const addonsTitles =
-    matchedPlan?.addons?.map((addon) => addon.title).filter(Boolean) || [];
+    matchedPlan?.benefits
+      ?.filter((benefit) => benefit.is_active)
+      .map((benefit) => benefit.name)
+      .filter(Boolean) || [];
 
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
@@ -474,159 +491,25 @@ export default function CompletePurchaseDetail({
     (quote?.data?.review_info_premium?.total_final_price || 0) -
     (totalAdditionFee || 0);
 
-  const _renderPremium = () => {
-    const tax = 1.09;
-    const drivers = quote?.data?.review_info_premium?.drivers;
-    const addonAdditionalDriver =
-      quote?.data?.review_info_premium?.addon_additional_driver;
-    const AddOnIncludedInPlan =
-      quote?.data?.review_info_premium?.add_ons_included_in_this_plan;
-
-    return (
-      <div className='max-h-[70svh] w-full overflow-y-auto bg-white'>
-        {/* <div className='flex h-[50px] justify-end'>
-                  <div className='flex w-[150px] cursor-pointer items-center justify-center border border-[#00ADEF] py-3 font-normal'>
-                    Save
-                  </div>
-                </div> */}
-        <div className='flex w-full flex-col gap-3 rounded-lg '>
-          <p className='sticky top-0 bg-white pb-2 text-xl font-semibold leading-[30px] text-[#171A1F] md:px-4'>
-            Premium Breakdown
-          </p>
-          <div className='flex w-full flex-col gap-4'>
-            <div className='flex flex-col gap-4 py-2 md:px-4'>
-              <div className='flex flex-col gap-2'>
-                <p className='text-base font-bold text-[#303030]'>Plan</p>
-                <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
-                  <p>{quote?.data?.selected_plan ?? ''}</p>
-                  <p>
-                    {formatCurrency(
-                      quote?.data?.review_info_premium?.price_plan ?? 0,
-                    )}
-                  </p>
-                </div>
-                {quote?.promo_code && (
-                  <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
-                    <p>Coupon Discount</p>
-                    <p>
-                      -
-                      {formatCurrency(
-                        quote?.data?.review_info_premium?.coupon_discount ?? 0,
-                      )}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className='flex flex-col gap-4 py-2'>
-                <p className='text-base font-bold text-[#303030]'>Add-on:</p>
-                <div className='flex flex-col gap-3'>
-                  {quote?.data?.review_info_premium?.data_section_add_ons.map(
-                    (addon: any) => (
-                      <p
-                        key={addon.title}
-                        className='flex flex-row items-center justify-between'
-                      >
-                        <p className='flex flex-col'>
-                          {addon.title}
-                          {addon.optionLabel !== 'YES' && (
-                            <span className='ml-2 flex flex-row items-center gap-2'>
-                              <p className='h-[4px] w-[4px] rounded-full bg-[#303030]'></p>
-                              {addon.optionLabel} Coverage
-                            </span>
-                          )}
-                        </p>
-                        <span>{formatCurrency(addon.feeSelected / tax)}</span>
-                      </p>
-                    ),
-                  )}
-                </div>
-
-                <div>
-                  {drivers && drivers.length > 0 && (
-                    <div className=''>
-                      <p className='my-1 text-sm font-semibold text-[#303030]'>
-                        Additional Named Driver(s)
-                      </p>
-                      {drivers.map((driver, index) => (
-                        <div
-                          key={index}
-                          className='flex flex-row items-center justify-between text-sm text-[#636262]'
-                        >
-                          <p>{driver.name}</p>
-                          <p>
-                            {index === 0
-                              ? 'FREE'
-                              : addonAdditionalDriver?.options?.[0]
-                                    ?.premium_with_gst
-                                ? formatCurrency(
-                                    addonAdditionalDriver.options[0]
-                                      .premium_with_gst / 1.09,
-                                  )
-                                : ''}{' '}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  {AddOnIncludedInPlan && AddOnIncludedInPlan.length > 0 && (
-                    <div className='mt-4 flex flex-col gap-2'>
-                      {AddOnIncludedInPlan.map((item, index) => (
-                        <div
-                          key={index}
-                          className='flex flex-row items-center justify-between'
-                        >
-                          <span>{item.add_on_name}</span>
-                          <span>INCLUDED</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className='flex flex-col gap-1 rounded-lg py-2'>
-                <div className='flex flex-row justify-between text-base font-bold text-[#303030]'>
-                  <p>Sub-Total</p>
-                  <p>
-                    {formatCurrency(
-                      quote?.data?.review_info_premium?.net_premium ?? 0,
-                    )}
-                  </p>
-                </div>
-                <div className='flex flex-row justify-between text-base font-normal text-[#303030]'>
-                  <p>GST</p>
-                  <p>
-                    {formatCurrency(quote?.data?.review_info_premium?.gst ?? 0)}
-                  </p>
-                </div>
-                <div className='flex flex-row justify-between text-base font-bold text-[#303030]'>
-                  <p>Total Premium</p>
-                  <p>
-                    {formatCurrency(
-                      quote?.data?.review_info_premium?.total_final_price ?? 0,
-                    )}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className='sticky bottom-0 z-10 md:px-4'>
-              <Button
-                onClick={onClosePopup}
-                loading={isPendingSave || isPendingPay}
-                className='mx-auto w-full cursor-pointer rounded-none border border-[#00ADEF] py-6 text-center text-base font-bold leading-[21px] text-[#00ADEF] md:px-4'
-              >
-                Close Breakdown
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const _renderPremiumBreakdownContent = (
+    <PremiumBreakdownContent
+      quoteInfo={quote}
+      dataSelectedAddOn={quote?.data?.review_info_premium?.data_section_add_ons}
+      drivers={quote?.data?.review_info_premium?.drivers ?? []}
+      addonAdditionalDriver={
+        quote?.data?.review_info_premium?.addon_additional_driver
+      }
+      pricePlanMain={quote?.data?.review_info_premium?.price_plan ?? 0}
+      couponDiscount={quote?.data?.review_info_premium?.coupon_discount ?? 0}
+      tax={1.09}
+      gst={quote?.data?.review_info_premium?.gst ?? 0}
+      netPremium={quote?.data?.review_info_premium?.net_premium ?? 0}
+      addonsIncluded={
+        quote?.data?.review_info_premium?.add_ons_included_in_this_plan
+      }
+      onClose={() => setIsShowPopupPremium(false)}
+    />
+  );
 
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
@@ -665,7 +548,7 @@ export default function CompletePurchaseDetail({
                 const addonsData = sharedDataMap['addons'] || [];
 
                 return (
-                  <div key='policy_plan_addons' className='flex gap-4'>
+                  <div key='policy_plan' className='flex gap-4'>
                     <ReviewSection
                       key='policy_plan'
                       title='Policy Plan'
@@ -737,7 +620,7 @@ export default function CompletePurchaseDetail({
             height='auto'
             className='w-full rounded-t-xl'
           >
-            {_renderPremium()}
+            {_renderPremiumBreakdownContent}
           </Drawer>
         ) : (
           <Modal
@@ -750,7 +633,7 @@ export default function CompletePurchaseDetail({
             width={500}
             centered
           >
-            <div>{_renderPremium()}</div>
+            <div>{_renderPremiumBreakdownContent}</div>
           </Modal>
         )}
       </div>

@@ -266,6 +266,12 @@ export async function getQuouteForMaid(data: generateQuoteForMaidDTO) {
           maid_info: {
             ...data.maid_info,
           },
+          insurance_other_info: {
+            maid_type: data.maid_type,
+            plan_period: data.plan_period,
+            start_date: data.start_date,
+            end_date: data.end_date,
+          },
         },
         partner_code: data?.partner_code || '',
         expiration_date: new Date(quoteInfoRes.quote.quote_expiry_date),
