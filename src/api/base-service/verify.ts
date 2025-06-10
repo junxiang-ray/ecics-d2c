@@ -1,6 +1,7 @@
 import { PromoCode } from '@/libs/types/quote';
 
 import {
+  API_GET_LIST_NATIONAL,
   API_GET_LIST_VEHICLE_MAKES,
   API_GET_LIST_VEHICLE_MODELS,
   API_POST_CHECK_VEHICLE,
@@ -37,6 +38,14 @@ export interface VehicleResponse {
   name: string;
 }
 
+export interface NationalResponse {
+  message: string;
+  data: {
+    id: string;
+    name: string;
+  }[];
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   verifyPartnerCode(partner_code: string) {
@@ -56,5 +65,9 @@ export default {
 
   postCheckVehicle(payload: { vehicle_make: string; vehicle_model: string }) {
     return baseClient.post<any>(`${API_POST_CHECK_VEHICLE}`, payload);
+  },
+
+  getNationality() {
+    return baseClient.get<NationalResponse>(`${API_GET_LIST_NATIONAL}`);
   },
 };

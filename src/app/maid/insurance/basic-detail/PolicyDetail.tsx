@@ -1,25 +1,17 @@
 'use client';
 
-import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-
 import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
-
-import { DropdownOption } from '@/components/ui/form/dropdownfield';
-
-import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
-import {
-  useGenerateQuote,
-  useGetHirePurchaseList,
-} from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { setPromoCodeError, updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import PolicyDetailForm from './PolicyDetailForm';
+import { useGenerateMaidQuote } from '@/hook/insurance/maidQuote';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;
@@ -39,54 +31,57 @@ export const PolicyDetail = ({
 
   const [key, setKey] = useState(initKey);
 
-  const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
-  const quoteInfo = useAppSelector((state) => state.quote?.quote);
-  const { mutateAsync: generateQuote, isPending } = useGenerateQuote();
-
+  const quoteInfo = useAppSelector((state) => state.maidQuote?.maidQuote);
+  const { mutateAsync: generateMaidQuote, isPending } = useGenerateMaidQuote();
   const userInfo = quoteInfo?.data?.personal_info;
-  const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
-  const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
-  const savedPromoCode = quoteInfo?.promo_code;
+  // const maidInfo = quoteInfo.data.maid_info;
+  // const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
+  // const selectedVehicle = quoteInfo?.data?.vehicle_info_selected;
+  // const savedPromoCode = quoteInfo?.promo_code;
 
-  const dateOfBirth = userInfo?.date_of_birth
-    ? dayjs(userInfo?.date_of_birth, 'DD/MM/YYYY').toDate()
-    : undefined;
-  const startData = insuranceInfo?.start_date
-    ? dayjs(insuranceInfo?.start_date, 'DD/MM/YYYY').toDate()
-    : undefined;
-  const endDate = insuranceInfo?.end_date
-    ? dayjs(insuranceInfo?.end_date, 'DD/MM/YYYY').toDate()
-    : undefined;
+  console.log(quoteInfo, 'chinh888');
+  // const dateOfBirth = userInfo?.date_of_birth
+  //   ? dayjs(userInfo?.date_of_birth, 'DD/MM/YYYY').toDate()
+  //   : undefined;
+  // const startData = insuranceInfo?.start_date
+  //   ? dayjs(insuranceInfo?.start_date, 'DD/MM/YYYY').toDate()
+  //   : undefined;
+  // const endDate = insuranceInfo?.end_date
+  //   ? dayjs(insuranceInfo?.end_date, 'DD/MM/YYYY').toDate()
+  //   : undefined;
 
   const initialValues = {
-    [MOTOR_QUOTE.promo_code]: savedPromoCode?.code ?? promo_code ?? '',
-    [MOTOR_QUOTE.start_date]: startData,
-    [MOTOR_QUOTE.end_date]: endDate,
-    [MOTOR_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? undefined,
-    [MOTOR_QUOTE.owner_no_of_claims]: insuranceInfo?.no_of_claim ?? undefined,
+    // [MAID_QUOTE.promo_code]: savedPromoCode?.code ?? promo_code ?? '',
+    // [MAID_QUOTE.start_date]: startData,
+    // [MAID_QUOTE.end_date]: endDate,
+    // [MAID_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? undefined,
+    // [MAID_QUOTE.owner_no_of_claims]: insuranceInfo?.no_of_claim ?? undefined,
 
-    [MOTOR_QUOTE.email]: userInfo?.email ?? '',
-    [MOTOR_QUOTE.mobile]: userInfo?.phone ?? '',
-    [MOTOR_QUOTE.owner_dob]: dateOfBirth,
-    [MOTOR_QUOTE.owner_drv_exp]: userInfo?.driving_experience ?? undefined,
+    // [MAID_QUOTE.email]: userInfo?.email ?? '',
+    // [MAID_QUOTE.mobile]: userInfo?.phone ?? '',
+    // [MAID_QUOTE.owner_dob]: dateOfBirth,
+    // [MAID_QUOTE.owner_drv_exp]: userInfo?.driving_experience ?? undefined,
 
-    [MOTOR_QUOTE.vehicle_make]: selectedVehicle?.vehicle_make ?? undefined,
-    [MOTOR_QUOTE.vehicle_model]: selectedVehicle?.vehicle_model ?? undefined,
-    [MOTOR_QUOTE.reg_yyyy]: selectedVehicle?.first_registered_year ?? undefined,
-    [MOTOR_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
-    [MOTOR_QUOTE.other_hire_purchase]:
-      quoteInfo?.company_name_other ?? undefined,
+    // [MAID_QUOTE.vehicle_make]: selectedVehicle?.vehicle_make ?? undefined,
+    // [MAID_QUOTE.vehicle_model]: selectedVehicle?.vehicle_model ?? undefined,
+    // [MAID_QUOTE.reg_yyyy]: selectedVehicle?.first_registered_year ?? undefined,
+    // [MAID_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
+    // [MAID_QUOTE.other_hire_purchase]:
+    //   quoteInfo?.company_name_other ?? undefined,
+    [MAID_QUOTE.email]: userInfo?.email ?? '',
+    [MAID_QUOTE.mobile]: userInfo?.phone ?? '',
+    // [MAID_QUOTE.maid_type]:
   };
 
   // Options for Dropdown
-  const hirePurchaseListFormatted: DropdownOption[] = [
-    ...(Array.isArray(hirePurchaseList)
-      ? hirePurchaseList.map((item: any) => ({
-          value: item.id,
-          text: item.name,
-        }))
-      : []),
-  ];
+  // const hirePurchaseListFormatted: DropdownOption[] = [
+  //   ...(Array.isArray(hirePurchaseList)
+  //     ? hirePurchaseList.map((item: any) => ({
+  //         value: item.id,
+  //         text: item.name,
+  //       }))
+  //     : []),
+  // ];
 
   useEffect(() => {
     const keyQuote = generateKeyAndAttachToUrl(initKey);
@@ -96,11 +91,7 @@ export const PolicyDetail = ({
   const onSubmit: SubmitHandler<FormData> = async (data: any) => {
     dispatch(setPromoCodeError(null));
     let payload: any;
-    const updateLoadVehicle = {
-      ...selectedVehicle,
-      ...data?.vehicle_info_selected,
-    };
-    payload = { ...data, vehicle_info_selected: updateLoadVehicle, key: key };
+    payload = { ...data, key: key };
 
     if (isSingPassFlow && userInfo) {
       // data from Singpass
@@ -119,14 +110,16 @@ export const PolicyDetail = ({
       payload = {
         ...payload,
         personal_info: personal_info,
-        vehicle_info_selected: selectedVehicle,
+        // vehicle_info_selected: selectedVehicle,
       };
     }
-    generateQuote(payload)
+    console.log(payload, '6666');
+    generateMaidQuote(payload)
       .then((res) => {
+        console.log(res, 'chinh777');
         if (res) {
-          dispatch(updateQuote(res));
-          router.push(ROUTES.INSURANCE.PLAN);
+          dispatch(updateMaidQuote(res));
+          // router.push(ROUTES.INSURANCE_MAID.PLAN);
         }
       })
       .catch((err) => {
@@ -161,7 +154,6 @@ export const PolicyDetail = ({
         )} */}
         <PolicyDetailForm
           onSubmit={onSubmit}
-          hirePurchaseOptions={hirePurchaseListFormatted}
           isSingpassFlow={isSingPassFlow}
           isLoading={isPending}
           initialValues={initialValues}

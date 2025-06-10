@@ -84,3 +84,15 @@ export const usePostCheckVehicle = (onUnmatch: () => void) => {
     },
   });
 };
+
+export const useGetNationality = () => {
+  const fetchNational = async () => {
+    const res = await verify.getNationality();
+    return res.data.data;
+  };
+
+  return useQuery({
+    queryFn: fetchNational,
+    queryKey: ['nationalities'],
+  });
+};
