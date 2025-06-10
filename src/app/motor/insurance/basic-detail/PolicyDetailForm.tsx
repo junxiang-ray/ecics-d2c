@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Form, Spin } from 'antd';
+import { Form, Spin } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -14,16 +14,15 @@ import { z } from 'zod';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
 
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownField,
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
-import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
+import { PricingSummary } from '@/app/motor/insurance/components/FeeBar';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
@@ -258,7 +257,7 @@ const PolicyDetailForm = ({
   const { data: modelOptions, isLoading: isLoadingModelOptions } =
     useGetVehicleModels(vehicleMakeId as string);
 
-  const handleBack = () => {
+  const handleBackLogin = () => {
     router.push(ROUTES.MOTOR.LOGIN);
   };
 
@@ -715,29 +714,15 @@ const PolicyDetailForm = ({
         className={`fixed bottom-0 w-full bg-white px-2 ${isMobile ? 'px-2' : ''}`}
         style={{ zIndex: 100 }}
       >
-        <div className='mx-auto h-[95px] w-full max-w-[1200px] place-content-center'>
-          <div className='flex w-full items-center justify-between py-3'>
-            <Button
-              color='cyan'
-              icon={<ArrowBackIcon size={16} />}
-              shape='circle'
-              className='border-none bg-gray-200 pt-[6px]'
-              onClick={(e) => {
-                e.stopPropagation();
-                handleBack?.();
-              }}
-            />
-            <PrimaryButton
-              loading={isLoading}
-              className='ml-[6px] w-[90vw] bg-[#52C41A] md:w-40'
-              onClick={() => {
-                form.submit();
-              }}
-            >
-              Generate Quote
-            </PrimaryButton>
-          </div>
-        </div>
+        <PricingSummary
+          loading={isLoading}
+          isBasicDetailScreen={true}
+          textButton='Generate Quote'
+          handleBack={handleBackLogin}
+          onClick={() => {
+            form.submit();
+          }}
+        />
       </div>
       <QuoteModal
         onClick={() => setShowCSModal(false)}
