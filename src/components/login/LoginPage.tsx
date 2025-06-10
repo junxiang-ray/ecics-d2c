@@ -8,6 +8,7 @@ import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
 import LimitedPeriodOffer from '@/components/login/LimitedPeriodOffer';
 import MyInfoLoginSection from '@/components/login/MyInfoLoginSection';
 
+import { Product } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -17,7 +18,9 @@ const LoginPage = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const isMaid = pathname.startsWith('/maid');
+  const productType: Product = pathname.startsWith('/maid')
+    ? Product.MAID
+    : Product.CAR;
 
   const partnerCode = searchParams.get('partner_code') || '';
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
@@ -42,10 +45,12 @@ const LoginPage = () => {
   const showPromo =
     !!promoCodeDefault && promoCodeData?.data?.is_valid === true;
 
-  const bgTop = isMaid ? '/maid_bg_top.svg' : '/login_bg_top.svg';
-  const bgMobile = isMaid
-    ? '/login_bg_singpass_maid.png'
-    : '/login_bg_singpass.png';
+  const bgTop =
+    productType === Product.MAID ? '/maid_bg_top.svg' : '/login_bg_top.svg';
+  const bgMobile =
+    productType === Product.MAID
+      ? '/login_bg_singpass_maid.png'
+      : '/login_bg_singpass.png';
 
   if (isMobile) {
     return (
@@ -64,13 +69,13 @@ const LoginPage = () => {
         <MyInfoLoginSection
           promoCode={promoCodeDefault}
           partnerCode={partnerCode}
-          isMaid={isMaid}
+          productType={productType}
         />
         {showPromo && (
           <LimitedPeriodOffer
             promoCode={promoCodeDefault}
             promoCodeData={promoCodeData}
-            isMaid={isMaid}
+            productType={productType}
           />
         )}
         <img
@@ -100,13 +105,13 @@ const LoginPage = () => {
           <MyInfoLoginSection
             promoCode={promoCodeDefault}
             partnerCode={partnerCode}
-            isMaid={isMaid}
+            productType={productType}
           />
           {showPromo && (
             <LimitedPeriodOffer
               promoCode={promoCodeDefault}
               promoCodeData={promoCodeData}
-              isMaid={isMaid}
+              productType={productType}
             />
           )}
         </div>

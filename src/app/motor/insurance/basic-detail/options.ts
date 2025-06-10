@@ -1,5 +1,10 @@
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
+export enum Product {
+  MAID = 'maid',
+  CAR = 'car',
+}
+
 export enum NumberClaim {
   NEVER = '0',
   ONE_CLAIM_LESS_THAN_10K = '1 claim ≤$10k',
