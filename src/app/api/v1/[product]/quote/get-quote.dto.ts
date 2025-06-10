@@ -53,6 +53,7 @@ export const generateQuoteForMaidSchema = z.object({
   maid_type: z.string(),
   plan_period: z.string(),
   start_date: z.string().regex(REGEX_VALUES.DATE_OF_BIRTH),
+  end_date: z.string().regex(REGEX_VALUES.DATE_OF_BIRTH),
   promo_code: z.string().optional(),
   partner_code: z.string().optional(),
   personal_info: z.any().optional(),
