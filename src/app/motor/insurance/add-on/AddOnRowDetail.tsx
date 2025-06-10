@@ -97,7 +97,7 @@ function AddOnRowDetail({
                     isPending={isPending}
                   />
                 </div>
-                <div className='flex items-center justify-between gap-2 pt-2 text-[14px] font-semibold leading-5'>
+                <div className='flex items-center justify-between gap-2  text-[14px] font-semibold leading-5'>
                   <p className='text-[#525252]'>
                     {formatCurrency(addon.feeSelected ?? 0)}
                   </p>
@@ -113,7 +113,7 @@ function AddOnRowDetail({
             </>
           )}
           {addon.type === 'checkbox' && (
-            <div className='flex items-center justify-between gap-2 pt-2 text-[14px] font-semibold leading-5 md:justify-end'>
+            <div className='flex items-center justify-between gap-2 text-[14px] font-semibold leading-5 md:justify-end'>
               <p className='text-[#525252]'>
                 {formatCurrency(addon.feeSelected ?? 0)}
               </p>
