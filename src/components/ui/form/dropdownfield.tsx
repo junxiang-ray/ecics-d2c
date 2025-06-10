@@ -1,4 +1,4 @@
-import { Input, Select, SelectProps } from 'antd';
+import { Input, Radio, Select, SelectProps } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -21,11 +21,10 @@ export interface DropdownOption {
   text: string;
 }
 
-interface OptionType {
+export interface OptionType {
   value: string;
   label: JSX.Element;
 }
-
 interface AddOnDropDownFieldProps {
   options: OptionType[];
   selectedOption: string;

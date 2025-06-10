@@ -436,45 +436,45 @@ function AddOnDetail({
           <p className='mt-4 text-base font-bold underline' ref={ref}>
             Select Add-ons
           </p>
-          <div className='mt-4 flex flex-col gap-6 md:gap-10'>
-            {addonAdditionalDriver && (
-              <AddonAdditionalDriver
-                addon={addonAdditionalDriver}
-                drivers={drivers}
-                setDrivers={setDrivers}
-                policyStartDate={
-                  quoteInfo?.data.insurance_additional_info?.start_date ??
-                  dayjs().format('DD/MM/YYYY')
-                }
-                isPending={isPending}
-              />
-            )}
-            {plan?.add_ons_included_in_this_plan?.map((addon) => (
-              <AddOnRow
-                key={addon.add_on_id}
-                title={addon.add_on_name}
-                icon={<RoadSideIcon className='text-brand-blue' />}
-                status='completed'
-                isIncluded={true}
-              >
-                <TruncateText text={addon.add_on_desc} />
-                <hr className='my-2 border-t border-dashed border-[#00ADEFB2]' />
-                <p>Included in Plan</p>
-              </AddOnRow>
-            ))}
-            {addonsFormatted.map((addon) => {
-              return (
-                <AddOnRowDetail
-                  key={addon.code}
-                  addon={addon}
-                  addonsAdded={addonsAdded}
-                  setAddonsAdded={setAddonsAdded}
-                  addonsSelected={addonsSelected}
-                  setAddonsSelected={setAddonsSelected}
+          <div className='flex flex-col items-center'>
+            <div className='mt-4 flex flex-col gap-6 md:max-w-[950px] md:gap-10'>
+              {addonAdditionalDriver && (
+                <AddonAdditionalDriver
+                  addon={addonAdditionalDriver}
+                  drivers={drivers}
+                  setDrivers={setDrivers}
+                  policyStartDate={
+                    quoteInfo?.data.insurance_additional_info?.start_date ??
+                    dayjs().format('DD/MM/YYYY')
+                  }
                   isPending={isPending}
                 />
-              );
-            })}
+              )}
+              {plan?.add_ons_included_in_this_plan?.map((addon) => (
+                <AddOnRow
+                  key={addon.add_on_id}
+                  title={addon.add_on_name}
+                  icon={<RoadSideIcon className='text-brand-blue' />}
+                  status='completed'
+                  isIncluded={true}
+                >
+                  <TruncateText text={addon.add_on_desc} />
+                </AddOnRow>
+              ))}
+              {addonsFormatted.map((addon) => {
+                return (
+                  <AddOnRowDetail
+                    key={addon.code}
+                    addon={addon}
+                    addonsAdded={addonsAdded}
+                    setAddonsAdded={setAddonsAdded}
+                    addonsSelected={addonsSelected}
+                    setAddonsSelected={setAddonsSelected}
+                    isPending={isPending}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
         <Modal

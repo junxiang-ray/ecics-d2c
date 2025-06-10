@@ -65,7 +65,7 @@ function AddonAdditionalDriver({
       status={status}
     >
       <TruncateText text={addon.description} />
-      <div className='my-2 border-t border-dashed border-[#00ADEFB2]' />
+      <div className='my-2 border-t border-dashed border-[#F0F0F0]' />
       <div className='flex flex-col gap-2'>
         <div
           className={`pb-4 ${drivers.length > 0 ? 'flex flex-row items-center justify-between' : 'flex flex-col gap-4 '}`}
