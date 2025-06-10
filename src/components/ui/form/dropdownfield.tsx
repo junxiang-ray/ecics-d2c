@@ -1,4 +1,4 @@
-import { Input, Select, SelectProps } from 'antd';
+import { Input, Radio, Select, SelectProps } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -26,7 +26,7 @@ interface OptionType {
   label: JSX.Element;
 }
 
-interface AddOnDropDownFieldProps {
+interface AddOnRadioGroupFieldProps {
   options: OptionType[];
   selectedOption: string;
   handleSelectOption: (value: string) => void;
@@ -268,29 +268,28 @@ export const LongOptionDropdownField = ({
   );
 };
 
-export const AddOnDropDownField = ({
+export const AddOnRadioGroupField = ({
   options,
   selectedOption,
   handleSelectOption,
   isPending,
-}: AddOnDropDownFieldProps) => {
+}: AddOnRadioGroupFieldProps) => {
   return (
-    <Select
-      style={{ width: 120 }}
-      className='[&_.ant-select-selector]:border-0.5 w-28 [&_.ant-select-selector]:border-[#00ADEF]'
-      options={options}
+    <Radio.Group
       value={selectedOption}
-      placeholder='Select'
-      onChange={(value) => handleSelectOption(value)}
-      placement='bottomRight'
-      dropdownStyle={{
-        minWidth: 112,
-        width: 'fit-content',
-        maxWidth: '100vw',
-        whiteSpace: 'normal',
-        wordBreak: 'break-word',
-      }}
+      onChange={(e) => handleSelectOption(e.target.value)}
       disabled={isPending}
-    />
+      className='flex flex-col gap-2 md:flex-row md:gap-4'
+    >
+      {options.map((option) => (
+        <Radio
+          key={option.value}
+          value={option.value}
+          className='!text-sm !font-normal'
+        >
+          {option.label}
+        </Radio>
+      ))}
+    </Radio.Group>
   );
 };
