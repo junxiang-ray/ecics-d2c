@@ -55,10 +55,7 @@ const singpassFlowFields = {
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.other_hire_purchase]: z.string({
-    required_error: 'This field is required',
-    invalid_type_error: 'This field is required',
-  }),
+  [MOTOR_QUOTE.other_hire_purchase]: z.string().optional(),
   [MOTOR_QUOTE.start_date]: z
     .date({
       required_error: 'This field is required',
@@ -179,7 +176,20 @@ const createSchema = (isSingpassFlow: boolean) => {
           'Policy end date cannot be more than 18 months after the start date',
         path: [MOTOR_QUOTE.end_date],
       },
-    );
+    )
+    .superRefine((data, ctx) => {
+      if (data[MOTOR_QUOTE.hire_purchase] === ID_OPTION_OTHER) {
+        const value = data[MOTOR_QUOTE.other_hire_purchase];
+
+        if (typeof value !== 'string' || !value.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'This field is required',
+            path: [MOTOR_QUOTE.other_hire_purchase],
+          });
+        }
+      }
+    });
 };
 
 const nonSingpassSchema = z.object(nonSingpassFlowFields);
@@ -271,6 +281,12 @@ const PolicyDetailForm = ({
   useEffect(() => {
     setApplyPromoCode(initPromoCode);
   }, [initPromoCode]);
+
+  useEffect(() => {
+    if (hire_purchase !== ID_OPTION_OTHER) {
+      methods.setValue(MOTOR_QUOTE.other_hire_purchase, '');
+    }
+  }, [hire_purchase]);
 
   // to open Customer Service Modal - Unable to provide quote online
   useEffect(() => {
@@ -536,20 +552,6 @@ const PolicyDetailForm = ({
                           onChange={handleChangeDob}
                         />
                       </Form.Item>
-
-                      {/*<Form.Item*/}
-                      {/*    name={MOTOR_QUOTE.owner_drv_exp}*/}
-                      {/*    validateStatus={*/}
-                      {/*      errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''*/}
-                      {/*    }*/}
-                      {/*>*/}
-                      {/*  <DropdownField*/}
-                      {/*      name={MOTOR_QUOTE.owner_drv_exp}*/}
-                      {/*      label='Years of Driving Experience'*/}
-                      {/*      placeholder="Select your driver's experience (Years)"*/}
-                      {/*      options={DRV_EXP_OPTIONS}*/}
-                      {/*  />*/}
-                      {/*</Form.Item>*/}
                     </div>
                   </div>
 
@@ -692,30 +694,6 @@ const PolicyDetailForm = ({
                     disabled={!start_date || isLoading}
                   />
                 </Form.Item>
-
-                {/*<Form.Item name={MOTOR_QUOTE.owner_ncd}>*/}
-                {/*  <DropdownField*/}
-                {/*    name={MOTOR_QUOTE.owner_ncd}*/}
-                {/*    label='No Claim Discount'*/}
-                {/*    placeholder='Select your current NCD'*/}
-                {/*    options={NCD_OPTIONS}*/}
-                {/*  ></DropdownField>*/}
-                {/*</Form.Item>*/}
-
-                {/*<Form.Item*/}
-                {/*  name={MOTOR_QUOTE.owner_no_of_claims}*/}
-                {/*  validateStatus={*/}
-                {/*    errors[MOTOR_QUOTE.owner_no_of_claims] ? 'error' : ''*/}
-                {/*  }*/}
-                {/*>*/}
-                {/*  <DropdownField*/}
-                {/*    name={MOTOR_QUOTE.owner_no_of_claims}*/}
-                {/*    label='Number of claims in the past 3 years'*/}
-                {/*    placeholder='Select number of claims'*/}
-                {/*    options={NO_CLAIM_OPTIONS}*/}
-                {/*  />*/}
-                {/*</Form.Item>*/}
-
                 {isSingpassFlow ? hire_purchase_section : null}
               </div>
             </div>
@@ -733,21 +711,6 @@ const PolicyDetailForm = ({
           </div>
         </Form>
       </FormProvider>
-      {/* <div className='fixed bottom-0 mt-6 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-3'>
-        <div className='w-full sm:col-span-1 sm:col-start-2'>
-          <Form.Item>
-            <PrimaryButton
-              loading={isLoading}
-              className='w-full'
-              onClick={() => {
-                form.submit();
-              }}
-            >
-              Generate Quote
-            </PrimaryButton>
-          </Form.Item>
-        </div>
-      </div> */}
       <div
         className={`fixed bottom-0 w-full bg-white px-2 ${isMobile ? 'px-2' : ''}`}
         style={{ zIndex: 100 }}
