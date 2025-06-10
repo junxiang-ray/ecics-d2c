@@ -235,7 +235,7 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
     quote_maid_passport_no: maid_info.passport_number,
     quote_previous_insurer: maid_info.company_name,
     quote_previous_insurer_others: maid_info.company_name_other,
-    quote_employed_by_proposer: maid_info.hasHelperWorked12Months,
+    quote_employed_by_proposer: maid_info.has_helper_worked_12_months,
     __finalize: 1,
     redirect_url: `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MAID_WEBSITE}?key=${key}`,
     return_baseurl: process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL,
