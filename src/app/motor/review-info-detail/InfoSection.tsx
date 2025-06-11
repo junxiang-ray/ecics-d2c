@@ -25,10 +25,8 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import { ReviewInfoForm } from './ReviewInfoDetail';
 import { UnableQuote } from '../insurance/basic-detail/modal/UnableQuote';
-import {
-  DRIVE_EXP_OPTIONS,
-  MARITAL_STATUS_OPTIONS,
-} from '../insurance/basic-detail/options';
+import { MARITAL_STATUS_OPTIONS } from '../insurance/basic-detail/options';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 type VehicleInfo = {
   vehicle_number: string;
@@ -631,18 +629,22 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                       <div className='text-sm font-bold'>
                         Driving Experience
                       </div>
-                      <DropdownField
+                      <InputNumberField
                         name='qualified_driving_license'
-                        placeholder='Select driving experience year'
-                        options={DRIVE_EXP_OPTIONS}
+                        placeholder='Enter experience (Years)'
                         onChange={(value) => {
                           handlePersonalInfoInputChange(
                             'qualified_driving_license',
                             value,
                             setShowContactModal,
                           );
-                          methods.setValue('qualified_driving_license', value);
+                          methods.setValue(
+                            'qualified_driving_license',
+                            value ? String(value) : '',
+                          );
                         }}
+                        min={0}
+                        max={60}
                       />
                     </>
                   )}

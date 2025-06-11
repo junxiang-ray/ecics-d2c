@@ -13,16 +13,14 @@ import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { validateNRIC } from '@/libs/utils/validation-utils';
 
 import { DatePickerField } from '@/components/ui/form/datepicker';
-import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import {
-  DRV_EXP_OPTIONS,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
-  NumberDriverExperience,
 } from '../basic-detail/options';
 import { RadioField } from '@/components/ui/form/radiofield';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 enum ClaimStatus {
   YES = 'true',
@@ -90,12 +88,12 @@ const createSchema = (
             required_error: 'Marital status is required',
             invalid_type_error: 'Marital status is required',
           }),
-          driving_experience: z
-            .string({
-              required_error: 'Driving experience field is required',
-              invalid_type_error: 'Driving experience field is required',
+          driving_experience: z.coerce
+            .number({
+              required_error: 'This field is required',
+              invalid_type_error: 'This field is required',
             })
-            .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
+            .min(2, {
               message:
                 'Invalid driving experience. Driver must have at least 2 years of driving experience.',
             }),
@@ -296,12 +294,13 @@ const AdditionDriver = ({
                   />
                 </div>
                 <div className='flex flex-col gap-2'>
-                  <DropdownField
+                  <InputNumberField
                     name={`drivers.${index}.driving_experience`}
                     label='Driving Experience'
-                    placeholder='Select driving experience'
-                    options={DRV_EXP_OPTIONS}
+                    placeholder='Enter experience (Years)'
                     isRequired={true}
+                    min={0}
+                    max={60}
                   />
                 </div>
                 <div className='flex flex-col gap-2'>

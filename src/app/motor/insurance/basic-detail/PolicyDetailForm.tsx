@@ -34,7 +34,6 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import { QuoteModal } from './modal/QuoteModal';
 import {
-  DRV_EXP_OPTIONS,
   NCD_OPTIONS,
   NO_CLAIM_OPTIONS,
   NumberClaim,
@@ -42,6 +41,7 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -102,15 +102,14 @@ const nonSingpassFlowFields = {
     ),
   [MOTOR_QUOTE.owner_dob]: z.date({
     required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.owner_drv_exp]: z
-    .string({
+  [MOTOR_QUOTE.owner_drv_exp]: z.coerce
+    .number({
       required_error: 'This field is required',
       invalid_type_error: 'This field is required',
     })
-    .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
-      message: sryMsg,
-    }),
+    .min(2, { message: sryMsg }),
   [MOTOR_QUOTE.vehicle_make]: z
     .string({
       required_error: 'This field is required',
@@ -238,7 +237,7 @@ const PolicyDetailForm = ({
 
   const {
     watch,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = methods;
 
   // input field change
@@ -246,7 +245,7 @@ const PolicyDetailForm = ({
   const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
-  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as string;
+  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
 
   const { data: makeOptions } = useGetVehicleMakes();
@@ -289,13 +288,16 @@ const PolicyDetailForm = ({
 
   // to open Customer Service Modal - Unable to provide quote online
   useEffect(() => {
-    if (drvExp === NumberDriverExperience.LESS_THAN_2_YEARS) {
+    if (
+      touchedFields[MOTOR_QUOTE.owner_drv_exp] &&
+      drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
+    ) {
       setShowCSModal(true);
       setDescriptionQuote(
         'The listed driver has less than 2 years of driving experience',
       );
     }
-  }, [drvExp]);
+  }, [drvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
@@ -623,14 +625,17 @@ const PolicyDetailForm = ({
                     errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''
                   }
                 >
-                  <DropdownField
+                  <InputNumberField
                     name={MOTOR_QUOTE.owner_drv_exp}
                     label='Years of Driving Experience'
                     isRequired
-                    placeholder="Select your driver's experience (Years)"
-                    options={DRV_EXP_OPTIONS}
+                    placeholder='Enter experience (Years)'
+                    type='number'
+                    min={0}
+                    max={60}
                   />
                 </Form.Item>
+
                 <Form.Item name={MOTOR_QUOTE.owner_ncd}>
                   <DropdownField
                     name={MOTOR_QUOTE.owner_ncd}
