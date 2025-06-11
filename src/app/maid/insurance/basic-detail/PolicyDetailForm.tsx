@@ -76,15 +76,23 @@ const nonSingpassFlowFields = {
   [MAID_QUOTE.maid_dob]: z.date({
     required_error: 'This field is required',
   }),
-  [MAID_QUOTE.maid_type]: z.string({
-    required_error: 'This field is required',
-  }),
-  [MAID_QUOTE.plan_period]: z.string({
-    required_error: 'This field is required',
-  }),
-  [MAID_QUOTE.nationality]: z.string({
-    required_error: 'This field is required',
-  }),
+  [MAID_QUOTE.maid_type]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
+
+  [MAID_QUOTE.plan_period]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
+
+  [MAID_QUOTE.nationality]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
 };
 
 const createSchema = (isSingpassFlow: boolean) => {
@@ -414,7 +422,12 @@ const PolicyDetailForm = ({
                         />
                       </Form.Item>
 
-                      <Form.Item name={MAID_QUOTE.nationality}>
+                      <Form.Item
+                        name={MAID_QUOTE.nationality}
+                        validateStatus={
+                          errors[MAID_QUOTE.nationality] ? 'error' : ''
+                        }
+                      >
                         <LongOptionDropdownField
                           name={MAID_QUOTE.nationality}
                           label='Nationality'
