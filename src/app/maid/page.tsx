@@ -1,4 +1,4 @@
-import LoginPage from '@/components/login/LoginPage';
+import LoginPage from '@/components/page/login/LoginPage';
 
 export default function MaidPage() {
   return <LoginPage />;
