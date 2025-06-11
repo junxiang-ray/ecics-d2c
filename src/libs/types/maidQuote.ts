@@ -45,15 +45,23 @@ export interface MaidQuote {
   product_type_id: number | null;
   promo_code_id: string | null;
   promo_code: any | null;
+  end_date: string;
 }
 
 export interface MaidQuoteData {
   plans?: Plan[];
   personal_info: PersonalInfo;
   maid_info: MaidInfo;
+  insurance_other_info: InsuranceOtherInfo;
 }
 
 export interface MaidInfo {
   nationality: string;
   date_of_birth: string;
+}
+
+export interface InsuranceOtherInfo {
+  maid_type: string;
+  plan_period: string;
+  start_date: string;
 }

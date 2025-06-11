@@ -10,10 +10,8 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
-
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownOption,
@@ -30,7 +28,6 @@ import RadioField from '@/components/ui/form/radiofield';
 import {
   HELPER_TYPE_OPTIONS,
   NumberClaim,
-  NumberDriverExperience,
   POLICY_DURATION_OPTIONS,
 } from '@/app/motor/insurance/basic-detail/options';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
@@ -94,7 +91,6 @@ const createSchema = (isSingpassFlow: boolean) => {
   const baseSchema = z.object(
     isSingpassFlow ? singpassFlowFields : nonSingpassFlowFields,
   );
-
   return baseSchema;
 };
 
@@ -124,9 +120,7 @@ const PolicyDetailForm = ({
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
-  console.log(initialValues, 'chinh123333');
   const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
-
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
   const [showCSModal, setShowCSModal] = useState(false);
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
@@ -148,13 +142,10 @@ const PolicyDetailForm = ({
   const start_date = watch(MAID_QUOTE.start_date) as Date;
   const maid_dob = watch(MAID_QUOTE.maid_dob) as Date;
   const no_claim = watch(MAID_QUOTE.owner_no_of_claims) as string;
-  const drvExp = watch(MAID_QUOTE.owner_drv_exp) as string;
   const nationality = watch(MAID_QUOTE.nationality) as string;
   const helperType = watch(MAID_QUOTE.maid_type) as string;
   const policyDuration = watch(MAID_QUOTE.plan_period) as string;
-
   const { data: nationalOptions } = useGetNationality();
-
   const nationalOptionsFormatted: DropdownOption[] = useMemo(() => {
     if (!nationalOptions) return [];
     return nationalOptions?.map((item: any) => ({
@@ -162,6 +153,30 @@ const PolicyDetailForm = ({
       value: item.name,
     }));
   }, [nationalOptions]);
+
+  const planPeriodText =
+    POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)?.text ||
+    policyDuration;
+
+  const minDob = useMemo(() => {
+    if (!start_date) return undefined;
+    return dayjs(start_date).subtract(23, 'year');
+  }, [start_date]);
+
+  const maxDob = useMemo(() => {
+    if (!start_date) return undefined;
+    return dayjs(start_date).subtract(60, 'year').add(1, 'day');
+  }, [start_date]);
+
+  const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
+
+  const minPolicyStartDate = useMemo(() => {
+    return dayjs().add(6, 'day');
+  }, []);
+
+  const maxPolicyStartDate = useMemo(() => {
+    return dayjs().add(90, 'day');
+  }, []);
 
   useEffect(() => {
     if (helperType === 'New Maid') {
@@ -173,20 +188,6 @@ const PolicyDetailForm = ({
     setApplyPromoCode(initPromoCode);
   }, [initPromoCode]);
 
-  // to open CustoHelper Type*
-  // useEffect(() => {
-  //   if (drvExp === NumberDriverExperience.LESS_THAN_2_YEARS) {
-  //     setShowCSModal(true);
-  //   }
-  // }, [drvExp]);
-
-  // useEffect(() => {
-  //   if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
-  //     setShowCSModal(true);
-  //   }
-  // }, [no_claim]);
-
-  // Register onSave callback to collect current form values
   useEffect(() => {
     onSaveRegister(() => {
       const value = methods.getValues();
@@ -209,25 +210,19 @@ const PolicyDetailForm = ({
           email: value[MAID_QUOTE.email],
         };
       }
-
       const payload = {
         key: key,
+        maid_type: helperType,
+        plan_period: planPeriodText,
+        start_date: dayjs(value[MAID_QUOTE.start_date] as Date).format(
+          'DD/MM/YYYY',
+        ),
         partner_code: partnerCode,
         promo_code: applyPromoCode,
-        company_id: value[MAID_QUOTE.hire_purchase],
-        company_name_other: value[MAID_QUOTE.other_hire_purchase] || '',
         personal_info: personal_info,
-        vehicle_info_selected: vehicle_info_selected,
-        insurance_additional_info: {
-          no_claim_discount: value[MAID_QUOTE.owner_ncd],
-          no_of_claim: value[MAID_QUOTE.owner_no_of_claims],
-          start_date: dayjs(value[MAID_QUOTE.start_date] as Date).format(
-            'DD/MM/YYYY',
-          ),
-          end_date: dayjs(value[MAID_QUOTE.end_date] as Date).format(
-            'DD/MM/YYYY',
-          ),
-          last_claim_amount: value[MAID_QUOTE.owner_claim_amount],
+        maid_info: {
+          nationality: nationality,
+          date_of_birth: dayjs(maid_dob).format('DD/MM/YYYY'),
         },
       };
       return payload;
@@ -241,6 +236,16 @@ const PolicyDetailForm = ({
     methods.setValue(MAID_QUOTE.end_date, endDate, { shouldValidate: true });
   }, [start_date, policyDuration, methods]);
 
+  useEffect(() => {
+    if (!start_date || !maid_dob) return;
+    const dob = dayjs(maid_dob);
+    if (dob.isAfter(minDob, 'day') || dob.isBefore(maxDob, 'day')) {
+      methods.setValue(MAID_QUOTE.maid_dob, undefined, {
+        shouldValidate: true,
+      });
+    }
+  }, [start_date, maid_dob, minDob, maxDob, methods]);
+
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
     const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
@@ -253,26 +258,17 @@ const PolicyDetailForm = ({
   };
 
   const handleSubmit = (value: FormData) => {
-    let vehicle_info_selected;
     let personal_info;
     const planPeriodText =
       POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)
         ?.text || policyDuration;
     if (!isSingpassFlow) {
-      // vehicle_info_selected = {
-      //   vehicle_make: value[MAID_QUOTE.vehicle_make],
-      //   vehicle_model: value[MAID_QUOTE.vehicle_model],
-      //   first_registered_year: value[MAID_QUOTE.reg_yyyy] as string,
-      // };
-
       personal_info = {
         phone: value[MAID_QUOTE.mobile],
         email: value[MAID_QUOTE.email],
       };
     }
-    const noOfClaim = value[MAID_QUOTE.owner_no_of_claims];
-    const promoCode =
-      noOfClaim === NumberClaim.NEVER ? formatPromoCode(applyPromoCode) : '';
+
     const payload = {
       key: key,
       maid_type: helperType,
@@ -281,7 +277,7 @@ const PolicyDetailForm = ({
         'DD/MM/YYYY',
       ),
       partner_code: partnerCode,
-      promo_code: promoCode,
+      promo_code: applyPromoCode,
       personal_info: personal_info,
       maid_info: {
         nationality: nationality,
@@ -289,38 +285,7 @@ const PolicyDetailForm = ({
       },
     };
     onSubmit(payload);
-    console.log(payload, 'chinh123');
   };
-
-  const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
-
-  const minPolicyStartDate = useMemo(() => {
-    return dayjs().add(6, 'day');
-  }, []);
-
-  const maxPolicyStartDate = useMemo(() => {
-    return dayjs().add(90, 'day');
-  }, []);
-
-  const minDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(23, 'year');
-  }, [start_date]);
-
-  const maxDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(60, 'year').add(1, 'day');
-  }, [start_date]);
-
-  useEffect(() => {
-    if (!start_date || !maid_dob) return;
-    const dob = dayjs(maid_dob);
-    if (dob.isAfter(minDob, 'day') || dob.isBefore(maxDob, 'day')) {
-      methods.setValue(MAID_QUOTE.maid_dob, undefined, {
-        shouldValidate: true,
-      });
-    }
-  }, [start_date, maid_dob, minDob, maxDob, methods]);
 
   return (
     <>
@@ -344,7 +309,7 @@ const PolicyDetailForm = ({
                     <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
                       Your Contact Details
                     </div>
-                    <div className='mb-6 flex flex-col gap-6'>
+                    <div className='mb-6 flex flex-col gap-6 md:flex-row'>
                       <Form.Item
                         name={MAID_QUOTE.email}
                         validateStatus={errors[MAID_QUOTE.email] ? 'error' : ''}
@@ -388,22 +353,25 @@ const PolicyDetailForm = ({
                     </div>
                     <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
                       <Form.Item
-                        name={MAID_QUOTE.email}
-                        validateStatus={errors[MAID_QUOTE.email] ? 'error' : ''}
+                        name={MAID_QUOTE.maid_type}
+                        validateStatus={
+                          errors[MAID_QUOTE.maid_type] ? 'error' : ''
+                        }
                       >
                         <RadioField
                           name={MAID_QUOTE.maid_type}
                           label='Helper Type'
                           options={HELPER_TYPE_OPTIONS}
                           className='flex flex-col'
-                          // noBorder
                           isRequired={true}
                         />
                       </Form.Item>
 
                       <Form.Item
-                        name={MAID_QUOTE.email}
-                        validateStatus={errors[MAID_QUOTE.email] ? 'error' : ''}
+                        name={MAID_QUOTE.plan_period}
+                        validateStatus={
+                          errors[MAID_QUOTE.plan_period] ? 'error' : ''
+                        }
                       >
                         <RadioField
                           name={MAID_QUOTE.plan_period}

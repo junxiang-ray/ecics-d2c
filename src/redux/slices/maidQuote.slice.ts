@@ -21,22 +21,15 @@ const appSlice = createSlice({
     clearMaidQuote(state) {
       state.maidQuote = {} as MaidQuote;
     },
-    // setPromoCodeError(
-    //   state,
-    //   action: PayloadAction<{ message: string } | null>,
-    // ) {
-    //   state.promoCodeError = action.payload;
-    // },
+    setPromoCodeError(
+      state,
+      action: PayloadAction<{ message: string } | null>,
+    ) {
+      state.promoCodeError = action.payload;
+    },
   },
 });
 
 export const { updateMaidQuote, clearMaidQuote } = appSlice.actions;
-
-// export const useAddNamedDriverInfo = () => {
-//   return useSelector(
-//     (state: { quote: AppState }) =>
-//       state.quote.quote?.data?.add_named_driver_info,
-//   );
-// };
 
 export default appSlice.reducer;

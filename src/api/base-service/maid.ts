@@ -10,7 +10,7 @@ import {
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  getQuoteByKey(key: string) {
+  getMaidQuoteByKey(key: string) {
     return baseClient.get<MaidQuoteResponse>(`${API_GET_QUOTE_BY_KEY}` + key);
   },
   generateMaidQuote(data: MaidQuoteCreationPayload) {
