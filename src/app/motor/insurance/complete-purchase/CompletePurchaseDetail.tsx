@@ -11,13 +11,13 @@ import {
   formatCurrencyString,
 } from '@/libs/utils/utils';
 
+import { useInsurance } from '@/components/context/InsuranceLayoutContext';
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
-import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';

@@ -1,8 +1,10 @@
 'use client';
+
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { ReactNode, useEffect } from 'react';
 import { date } from 'zod';
+
 import { useGetQuote } from '@/hook/insurance/quote';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch } from '@/redux/store';

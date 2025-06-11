@@ -5,6 +5,7 @@ import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
+import { InsuranceLayoutContext } from '@/components/context/InsuranceLayoutContext';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import ProcessBar from '@/components/ProcessBar';
 import { SecondaryButton } from '@/components/ui/buttons';
@@ -19,7 +20,6 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import ModalImportant from './complete-purchase/ModalImportant';
 import BusinessPartnerBar from './components/BusinessPartnerBar';
-import { InsuranceLayoutContext } from './InsuranceLayoutContext';
 
 export type ProcessBarType = StepProcessBar | undefined;
 const stepToRoute: Record<StepProcessBar, string> = {

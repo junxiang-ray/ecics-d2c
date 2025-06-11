@@ -12,11 +12,12 @@ import {
   validateNRIC,
 } from '@/libs/utils/validation-utils';
 
+import { useInsurance } from '@/components/context/InsuranceLayoutContext';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { RadioField } from '@/components/ui/form/radiofield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -33,7 +34,6 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '../basic-detail/options';
 import { PricingSummary } from '../components/FeeBar';
-import { RadioField } from '@/components/ui/form/radiofield';
 
 const createSchema = (listNric: any[] | undefined) =>
   z.object({
