@@ -3,23 +3,24 @@
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { ReactNode, useEffect } from 'react';
-import { date } from 'zod';
+
+import { useGetQuote } from '@/hook/insurance/quote';
+import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch } from '@/redux/store';
-import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useGetMaidQuote } from '@/hook/insurance/maidQuote';
+
 interface InsuranceLayoutProps {
   children: ReactNode;
 }
 
-const InsuranceLayout = ({ children }: InsuranceLayoutProps) => {
+const InsuranceQuoteLoaderLayout = ({ children }: InsuranceLayoutProps) => {
   const params = useSearchParams();
   const dispatch = useAppDispatch();
   const key = params.get('key') || '';
-  const { data, isLoading } = useGetMaidQuote(key);
+  const { data, isLoading } = useGetQuote(key);
 
   useEffect(() => {
-    if (!date || !data) return;
-    dispatch(updateMaidQuote(data));
+    if (!data) return;
+    dispatch(updateQuote(data));
   }, [data]);
 
   if (isLoading) {
@@ -33,4 +34,4 @@ const InsuranceLayout = ({ children }: InsuranceLayoutProps) => {
   return <div className='insurance-layout'>{children}</div>;
 };
 
-export default InsuranceLayout;
+export default InsuranceQuoteLoaderLayout;
