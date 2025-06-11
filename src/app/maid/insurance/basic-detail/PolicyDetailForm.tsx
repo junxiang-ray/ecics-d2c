@@ -29,10 +29,7 @@ import {
   useGetVehicleModels,
 } from '@/hook/insurance/common';
 
-import {
-  NumberClaim,
-  NumberDriverExperience,
-} from '@/app/motor/insurance/basic-detail/options';
+import { NumberClaim } from '@/app/motor/insurance/basic-detail/options';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuote';
@@ -181,13 +178,6 @@ const PolicyDetailForm = ({
   useEffect(() => {
     setApplyPromoCode(initPromoCode);
   }, [initPromoCode]);
-
-  // to open Customer Service Modal - Unable to provide quote online
-  useEffect(() => {
-    if (drvExp === NumberDriverExperience.LESS_THAN_2_YEARS) {
-      setShowCSModal(true);
-    }
-  }, [drvExp]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
