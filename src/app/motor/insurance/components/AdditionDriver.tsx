@@ -5,6 +5,7 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { useEffect, useMemo } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 import dayjs from 'dayjs';
@@ -15,14 +16,16 @@ import { validateNRIC } from '@/libs/utils/validation-utils';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { RadioField } from '@/components/ui/form/radiofield';
+
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import {
   DRV_EXP_OPTIONS,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
   NumberDriverExperience,
 } from '../basic-detail/options';
-import { RadioField } from '@/components/ui/form/radiofield';
 
 enum ClaimStatus {
   YES = 'true',

@@ -20,6 +20,9 @@ import {
   RepairIcon,
   RoadSideIcon,
 } from '@/components/icons/add-on-icons';
+import { PricingSummary } from '@/components/page/FeeBar';
+import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
+import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -30,10 +33,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRow from './AddOnRow';
 import AddOnRowDetail from './AddOnRowDetail';
-import ModalPremium from './ModalPremium';
-import TruncateText from './TruncateText ';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
-import { PricingSummary } from '../components/FeeBar';
 
 export const mapIconToTypeAddOn = [
   {

@@ -27,7 +27,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import ReviewSection from './ReviewSection';
 import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
-import { PricingSummary } from '../components/FeeBar';
+import { PricingSummary } from '@/components/page/FeeBar';
 
 function calculateFee(
   option: Option,
