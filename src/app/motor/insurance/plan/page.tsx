@@ -1,13 +1,13 @@
 'use client';
 
 import PlanDetail from './PlanDetail';
-import InsuranceLayout from '../InsuranceLayout';
+import MotorInsuranceLayout from '../MotorInsuranceLayout';
 
 function PlanPage({}) {
   return (
-    <InsuranceLayout>
+    <MotorInsuranceLayout>
       {({ onSave }) => <PlanDetail onSaveRegister={onSave} />}
-    </InsuranceLayout>
+    </MotorInsuranceLayout>
   );
 }
 

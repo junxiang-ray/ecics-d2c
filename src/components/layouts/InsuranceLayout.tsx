@@ -2,8 +2,13 @@
 
 import { usePathname, useSearchParams } from 'next/navigation';
 import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
+
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
+
+import { InsuranceLayoutContext } from '@/components/contexts/InsuranceLayoutContext';
 import ProcessBar from '@/components/ProcessBar';
+
+import ModalImportant from '@/app/motor/insurance/complete-purchase/ModalImportant';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -11,32 +16,24 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { InsuranceLayoutContext } from '@/app/motor/insurance/InsuranceLayoutContext';
 
 export type ProcessBarType = StepProcessBar | undefined;
-const stepToRoute: Record<StepProcessBar, string> = {
-  [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE_MAID.BASIC_DETAIL,
-  [StepProcessBar.SELECT_PLAN]: ROUTES.INSURANCE_MAID.PLAN,
-  [StepProcessBar.SELECT_ADD_ON]: ROUTES.INSURANCE_MAID.ADD_ON,
-  [StepProcessBar.PERSONAL_DETAIL]: ROUTES.INSURANCE_MAID.PERSONAL_DETAIL,
-  [StepProcessBar.COMPLETE_PURCHASE]: ROUTES.INSURANCE_MAID.COMPLETE_PURCHASE,
-};
 
-function getStepFromRoute(route: string): ProcessBarType {
-  const entry = Object.entries(stepToRoute).find(
-    ([_, value]) => value === route,
-  );
-  return entry ? (entry[0] as unknown as StepProcessBar) : undefined;
-}
-
-// Define props so that children can either be a node or a render function that accepts a registration callback.
 interface InsuranceLayoutProps {
   children:
     | ReactNode
     | ((props: { onSave: (fn: () => any) => void }) => ReactNode);
+  stepToRoute: Record<StepProcessBar, string>;
+  headerTitle: string;
+  redirectToLoginPath?: string;
 }
 
-function InsuranceLayout({ children }: InsuranceLayoutProps) {
+function InsuranceLayout({
+  children,
+  stepToRoute,
+  headerTitle,
+  redirectToLoginPath,
+}: InsuranceLayoutProps) {
   const router = useRouterWithQuery();
   const pathName = usePathname();
   const params = useSearchParams();
@@ -47,10 +44,18 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
+
   const isFinalized = useAppSelector(
     (state) => state.quote.quote?.is_finalized,
   );
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
+
+  const getStepFromRoute = (route: string): ProcessBarType => {
+    const entry = Object.entries(stepToRoute).find(
+      ([_, value]) => value === route,
+    );
+    return entry ? (entry[0] as unknown as StepProcessBar) : undefined;
+  };
 
   useLayoutEffect(() => {
     const currentStep = getStepFromRoute(pathName);
@@ -73,16 +78,12 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
 
   const handleBack = () => {
     if (currentStep === undefined) return;
-    if (currentStep === StepProcessBar.SELECT_PLAN) {
+    if (currentStep === StepProcessBar.SELECT_PLAN || isFinalized) {
       setIsShowPopupImportant(true);
       return;
     }
-    if (isFinalized) {
-      setIsShowPopupImportant(true);
-      return;
-    }
-    if (currentStep === StepProcessBar.POLICY_DETAILS) {
-      router.push(ROUTES.MOTOR.LOGIN, { preserveQuery: false });
+    if (currentStep === StepProcessBar.POLICY_DETAILS && redirectToLoginPath) {
+      router.push(redirectToLoginPath, { preserveQuery: false });
       return;
     }
     const previousStep = currentStep - 1;
@@ -129,10 +130,29 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
         </div>
 
         <div className='no-scroll-mobile mx-auto h-[135px] w-full items-center justify-center bg-white lg:max-w-[1280px]'>
+          {/*{(partnerInfo?.partner_name || partnerInfo) && (*/}
+          {/*  <div className='block h-16 md:hidden'>*/}
+          {/*    <BusinessPartnerBar*/}
+          {/*      businessName={partnerInfo ? 'Business Partner Name' : ''}*/}
+          {/*      companyName={partnerInfo?.partner_name}*/}
+          {/*      onBackClick={handleBack}*/}
+          {/*      onSaveClick={handleSave}*/}
+          {/*    />*/}
+          {/*  </div>*/}
+          {/*)}*/}
           <div className='relative flex w-full justify-center p-4 px-10 pb-0 lg:w-[1200px]'>
+            {/* Reopen in Day 1.5 */}
+            {/*<SecondaryButton*/}
+            {/*    icon={<ArrowBackIcon size={11}/>}*/}
+            {/*    // className='hidden w-32 rounded-sm md:block' //for save button exist*/}
+            {/*    className='absolute left-10 top-4 hidden w-32 rounded-sm md:block'*/}
+            {/*    onClick={handleBack}*/}
+            {/*>*/}
+            {/*    Back*/}
+            {/*</SecondaryButton>*/}
             <div>
               <div className='mb-[20px] text-center text-[24px] font-bold'>
-                Maid Insurance Quotation
+                {headerTitle}
               </div>
               <div className='md:w-[520px]'>
                 <ProcessBar
@@ -143,16 +163,31 @@ function InsuranceLayout({ children }: InsuranceLayoutProps) {
                 />
               </div>
             </div>
+            <div></div>
+            {/* Reopen in Day 1.5 */}
+            {/* <PrimaryButton
+                        className='hidden w-32 rounded-sm md:block'
+                        onClick={handleSave}
+                      >
+                        Save
+                      </PrimaryButton> */}
           </div>
         </div>
 
-        <div className='mx-auto flex h-[calc(100svh-265px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-130px)]'>
+        <div className='mx-auto flex h-[calc(100svh-265px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-240px)]'>
           {typeof children === 'function'
             ? children({
                 onSave: (fn: () => any) => (childSaveRef.current = fn),
               })
             : children}
         </div>
+        {isShowPopupImportant && (
+          <ModalImportant
+            isShowPopupImportant={isShowPopupImportant}
+            handleRedirect={() => router.push(ROUTES.INSURANCE.BASIC_DETAIL)}
+            setIsShowPopupImportant={setIsShowPopupImportant}
+          />
+        )}
       </>
     </InsuranceLayoutContext.Provider>
   );

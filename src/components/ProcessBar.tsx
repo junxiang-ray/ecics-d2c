@@ -1,10 +1,14 @@
 'use client';
-import { ProcessBarType } from '@/app/motor/insurance/InsuranceLayout';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { StepProcessBar } from '@/libs/enums/processBarEnums';
+
 import type { StepsProps } from 'antd';
 import { Steps } from 'antd';
 import { useSearchParams } from 'next/navigation';
+
+import { StepProcessBar } from '@/libs/enums/processBarEnums';
+
+import { ProcessBarType } from '@/components/layouts/InsuranceLayout';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface ProcessBarProps {
   currentStep: ProcessBarType;

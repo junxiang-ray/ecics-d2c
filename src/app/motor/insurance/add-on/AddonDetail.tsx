@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Addon, Option } from '@/libs/types/quote';
 
+import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 // import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import {
   AddIcon,
@@ -20,7 +21,6 @@ import {
   RoadSideIcon,
 } from '@/components/icons/add-on-icons';
 
-import { useInsurance } from '@/app/motor/insurance/InsuranceLayoutContext';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';

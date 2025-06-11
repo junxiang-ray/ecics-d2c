@@ -16,6 +16,10 @@ export const ROUTES = {
     LOGIN: '/motor',
     REVIEW_INFO_DETAIL: '/motor/review-info-detail',
   },
+  MAID: {
+    LOGIN: '/maid',
+    REVIEW_INFO_DETAIL: '/maid/review-info-detail',
+  },
 };
 
 export const STEP_TO_ROUTE: Record<number, string> = {
