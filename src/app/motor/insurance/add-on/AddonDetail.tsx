@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Addon, Option } from '@/libs/types/quote';
 
-import { useInsurance } from '@/components/context/InsuranceLayoutContext';
+import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 // import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
 import {
   AddIcon,

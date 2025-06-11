@@ -1,7 +1,7 @@
 'use client';
 
 import CompletePurchaseDetail from './CompletePurchaseDetail';
-import InsuranceLayout from '../InsuranceLayout';
+import MotorInsuranceLayout from '../MotorInsuranceLayout';
 
 interface PolicyDetailPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -14,8 +14,8 @@ export default function PolicyDetailPage({
   const isManual = params?.manual === 'true' ? true : false;
 
   return (
-    <InsuranceLayout>
+    <MotorInsuranceLayout>
       {({ onSave }) => <CompletePurchaseDetail onSaveRegister={onSave} />}
-    </InsuranceLayout>
+    </MotorInsuranceLayout>
   );
 }

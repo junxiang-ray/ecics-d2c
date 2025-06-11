@@ -11,7 +11,7 @@ import {
   formatCurrencyString,
 } from '@/libs/utils/utils';
 
-import { useInsurance } from '@/components/context/InsuranceLayoutContext';
+import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';

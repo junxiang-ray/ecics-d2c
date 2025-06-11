@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 
 import { PolicyDetail } from './PolicyDetail';
-import InsuranceLayout from '../InsuranceLayout';
+import MaidInsuranceLayout from '../MaidInsuranceLayout';
 
 export default function PolicyDetailPage() {
   const params = useSearchParams();
@@ -11,10 +11,10 @@ export default function PolicyDetailPage() {
   const isManual = manual === 'true' ? true : false;
 
   return (
-    <InsuranceLayout>
+    <MaidInsuranceLayout>
       {({ onSave }) => (
         <PolicyDetail onSaveRegister={onSave} isSingPassFlow={!isManual} />
       )}
-    </InsuranceLayout>
+    </MaidInsuranceLayout>
   );
 }

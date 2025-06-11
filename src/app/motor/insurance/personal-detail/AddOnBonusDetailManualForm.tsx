@@ -12,7 +12,7 @@ import {
   validateNRIC,
 } from '@/libs/utils/validation-utils';
 
-import { useInsurance } from '@/components/context/InsuranceLayoutContext';
+import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';

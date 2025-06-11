@@ -12,7 +12,7 @@ import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
 
-import { useInsurance } from '@/components/context/InsuranceLayoutContext';
+import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
