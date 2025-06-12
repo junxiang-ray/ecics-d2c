@@ -19,3 +19,5 @@ export const API_GET_LIST_NATIONAL = '/nationalities';
 export const API_POST_VERIFY_RESTRICTED_USER = '/customer-info';
 
 export const API_GET_PAYMENT_SUMMARY_DATA = '/payment-summary';
+
+export const API_POST_ZIP_FILES_DOWNLOAD = '/zip-files';

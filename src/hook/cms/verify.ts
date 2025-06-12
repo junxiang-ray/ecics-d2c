@@ -1,5 +1,6 @@
-import verify from '@/api/cms-service/verify';
 import { useMutation, useQuery } from '@tanstack/react-query';
+
+import verify from '@/api/cms-service/verify';
 
 export const useVerifyRestrictedUser = () => {
   const fetchRestrictedUser = async ({
@@ -25,7 +26,7 @@ export const useVerifyRestrictedUser = () => {
 export const useGetPaymentSummaryData = (product_type: string) => {
   const fetchPaymentSummary = async () => {
     const res = await verify.getPaymentSummaryData(product_type);
-    return res.data.data;
+    return res.data;
   };
 
   return useQuery({

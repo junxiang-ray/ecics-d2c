@@ -1,13 +1,12 @@
 import { useState } from 'react';
 
 import EditIcon from '@/components/icons/EditIcon';
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { useAppSelector } from '@/redux/store';
-
-import ModalImportant from './ModalImportant';
 
 interface Props {
   title: string;
@@ -28,7 +27,7 @@ const ReviewDesktop = (props: Props) => {
   );
 
   const handleEditClick = () => {
-    if (editRoute === ROUTES.INSURANCE.BASIC_DETAIL) {
+    if (editRoute === ROUTES.INSURANCE_MAID.BASIC_DETAIL) {
       setIsShowPopupImportant(true);
     } else {
       handleRedirect();

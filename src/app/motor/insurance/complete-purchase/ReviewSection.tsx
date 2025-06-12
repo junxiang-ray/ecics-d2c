@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
+
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { useAppSelector } from '@/redux/store';
-
-import ModalImportant from './ModalImportant';
 
 interface ReviewSectionProps {
   title: string;

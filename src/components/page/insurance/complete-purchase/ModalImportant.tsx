@@ -1,9 +1,9 @@
 import { Drawer, Modal } from 'antd';
 
+import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 
 interface Props {
   isShowPopupImportant: boolean;

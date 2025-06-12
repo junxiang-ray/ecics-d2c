@@ -1,9 +1,11 @@
-import cmsService from './api.config';
 import {
   API_GET_PAYMENT_SUMMARY_DATA,
   API_POST_VERIFY_RESTRICTED_USER,
 } from '@/constants/api.constant';
 
+import cmsService from './api.config';
+
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   verifyRestrictedUser({
     vehicle_registration_number,
@@ -18,8 +20,13 @@ export default {
     });
   },
   getPaymentSummaryData(product_type: string) {
+    const token = process.env.NEXT_PUBLIC_API_CMS_TOKEN;
+
     return cmsService.get(`${API_GET_PAYMENT_SUMMARY_DATA}`, {
       params: { product_type },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
   },
 };
