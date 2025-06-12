@@ -297,186 +297,195 @@ const PolicyDetailForm = ({
 
   return (
     <>
-      <FormProvider {...methods}>
-        <Form
-          form={form}
-          scrollToFirstError={{
-            behavior: 'smooth',
-            block: 'center',
-          }}
-          onFinish={methods.handleSubmit(handleSubmit)}
-          disabled={isLoading}
-          className=' mb-16 flex w-full flex-col items-center px-4'
-          {...props}
-        >
-          <div className='max-w-[1200px]'>
-            {!isSingpassFlow && (
-              <>
-                <div className='relative w-full' style={{ zIndex: '99' }}>
-                  <div className='flex flex-col'>
-                    <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
-                      Your Contact Details
-                    </div>
-                    <div className='mb-6 flex flex-col gap-6 md:flex-row'>
-                      <Form.Item
-                        name={MAID_QUOTE.email}
-                        validateStatus={errors[MAID_QUOTE.email] ? 'error' : ''}
-                      >
-                        <InputField
+      <div className='flex w-full justify-center'>
+        <FormProvider {...methods}>
+          <Form
+            form={form}
+            scrollToFirstError={{
+              behavior: 'smooth',
+              block: 'center',
+            }}
+            onFinish={methods.handleSubmit(handleSubmit)}
+            disabled={isLoading}
+            className='mb-16 flex w-full max-w-[1200px] flex-col px-4 md:px-0'
+            {...props}
+          >
+            <div className='w-full'>
+              {!isSingpassFlow && (
+                <>
+                  <div className='relative w-full' style={{ zIndex: '99' }}>
+                    <div className='flex flex-col'>
+                      <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
+                        Your Contact Details
+                      </div>
+                      <div className='mb-6 flex w-full flex-col gap-4 md:flex-row'>
+                        <Form.Item
                           name={MAID_QUOTE.email}
-                          label='Email Address'
-                          placeholder='Enter Your Email Address'
-                          isRequired={true}
-                        />
-                      </Form.Item>
+                          validateStatus={
+                            errors[MAID_QUOTE.email] ? 'error' : ''
+                          }
+                        >
+                          <InputField
+                            name={MAID_QUOTE.email}
+                            label='Email Address'
+                            placeholder='Enter Your Email Address'
+                            isRequired={true}
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        name={MAID_QUOTE.mobile}
-                        validateStatus={
-                          errors[MAID_QUOTE.mobile] ? 'error' : ''
-                        }
-                      >
-                        <InputField
+                        <Form.Item
                           name={MAID_QUOTE.mobile}
-                          label='Mobile Number'
-                          placeholder='Enter Your Mobile Number'
-                          onChange={(
-                            e: React.ChangeEvent<HTMLInputElement>,
-                          ) => {
-                            const onlyNums = e.target.value.replace(/\D/g, '');
-                            methods.setValue(MAID_QUOTE.mobile, onlyNums, {
-                              shouldValidate: true,
-                            });
-                          }}
-                          value={String(watch(MAID_QUOTE.mobile) ?? '')}
-                          isRequired={true}
-                        />
-                      </Form.Item>
+                          validateStatus={
+                            errors[MAID_QUOTE.mobile] ? 'error' : ''
+                          }
+                        >
+                          <InputField
+                            name={MAID_QUOTE.mobile}
+                            label='Mobile Number'
+                            placeholder='Enter Your Mobile Number'
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>,
+                            ) => {
+                              const onlyNums = e.target.value.replace(
+                                /\D/g,
+                                '',
+                              );
+                              methods.setValue(MAID_QUOTE.mobile, onlyNums, {
+                                shouldValidate: true,
+                              });
+                            }}
+                            value={String(watch(MAID_QUOTE.mobile) ?? '')}
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
-                      Helper’s Information
-                    </div>
-                    <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
-                      <Form.Item
-                        name={MAID_QUOTE.maid_type}
-                        validateStatus={
-                          errors[MAID_QUOTE.maid_type] ? 'error' : ''
-                        }
-                      >
-                        <RadioField
+                    <div>
+                      <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
+                        Helper’s Information
+                      </div>
+                      <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+                        <Form.Item
                           name={MAID_QUOTE.maid_type}
-                          label='Helper Type'
-                          options={HELPER_TYPE_OPTIONS}
-                          className='flex flex-col'
-                          isRequired={true}
-                        />
-                      </Form.Item>
+                          validateStatus={
+                            errors[MAID_QUOTE.maid_type] ? 'error' : ''
+                          }
+                        >
+                          <RadioField
+                            name={MAID_QUOTE.maid_type}
+                            label='Helper Type'
+                            options={HELPER_TYPE_OPTIONS}
+                            className='flex flex-col'
+                            isRequired={true}
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        name={MAID_QUOTE.plan_period}
-                        validateStatus={
-                          errors[MAID_QUOTE.plan_period] ? 'error' : ''
-                        }
-                      >
-                        <RadioField
+                        <Form.Item
                           name={MAID_QUOTE.plan_period}
-                          label='Policy Duration'
-                          options={POLICY_DURATION_OPTIONS}
-                          isRequired={true}
-                          disabled={helperType === 'New Maid'}
-                        />
-                      </Form.Item>
+                          validateStatus={
+                            errors[MAID_QUOTE.plan_period] ? 'error' : ''
+                          }
+                        >
+                          <RadioField
+                            name={MAID_QUOTE.plan_period}
+                            label='Policy Duration'
+                            options={POLICY_DURATION_OPTIONS}
+                            isRequired={true}
+                            disabled={helperType === 'New Maid'}
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        name={MAID_QUOTE.start_date}
-                        validateStatus={
-                          errors[MAID_QUOTE.start_date] ? 'error' : ''
-                        }
-                      >
-                        <DatePickerField
+                        <Form.Item
                           name={MAID_QUOTE.start_date}
-                          label='Policy Start Date'
-                          minDate={minPolicyStartDate}
-                          maxDate={maxPolicyStartDate}
-                          onChange={handleChangeStartDate}
-                          disabledDate={(current) => {
-                            return current && current < dayjs().startOf('day');
-                          }}
-                          isRequired={true}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={MAID_QUOTE.end_date}
-                        validateStatus={
-                          errors[MAID_QUOTE.end_date] ? 'error' : ''
-                        }
-                      >
-                        <DatePickerField
-                          label='Policy End Date'
+                          validateStatus={
+                            errors[MAID_QUOTE.start_date] ? 'error' : ''
+                          }
+                        >
+                          <DatePickerField
+                            name={MAID_QUOTE.start_date}
+                            label='Policy Start Date'
+                            minDate={minPolicyStartDate}
+                            maxDate={maxPolicyStartDate}
+                            onChange={handleChangeStartDate}
+                            disabledDate={(current) => {
+                              return (
+                                current && current < dayjs().startOf('day')
+                              );
+                            }}
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                        <Form.Item
                           name={MAID_QUOTE.end_date}
-                          disabled
-                          isRequired={true}
-                        />
-                      </Form.Item>
+                          validateStatus={
+                            errors[MAID_QUOTE.end_date] ? 'error' : ''
+                          }
+                        >
+                          <DatePickerField
+                            label='Policy End Date'
+                            name={MAID_QUOTE.end_date}
+                            disabled
+                            isRequired={true}
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        name={MAID_QUOTE.nationality}
-                        validateStatus={
-                          errors[MAID_QUOTE.nationality] ? 'error' : ''
-                        }
-                      >
-                        <LongOptionDropdownField
+                        <Form.Item
                           name={MAID_QUOTE.nationality}
-                          label='Nationality'
-                          placeholder='Select Helpers Nationality'
-                          options={nationalOptionsFormatted}
-                          onChange={() => {
-                            // Reset model when make changes
-                            methods.setValue(
-                              MAID_QUOTE.vehicle_model,
-                              null as any,
-                            );
-                          }}
-                          showSearch
-                          isRequired={true}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={MAID_QUOTE.maid_dob}
-                        validateStatus={
-                          errors[MAID_QUOTE.maid_dob] ? 'error' : ''
-                        }
-                      >
-                        <DatePickerField
+                          validateStatus={
+                            errors[MAID_QUOTE.nationality] ? 'error' : ''
+                          }
+                        >
+                          <LongOptionDropdownField
+                            name={MAID_QUOTE.nationality}
+                            label='Nationality'
+                            placeholder='Select Helpers Nationality'
+                            options={nationalOptionsFormatted}
+                            onChange={() => {
+                              // Reset model when make changes
+                              methods.setValue(
+                                MAID_QUOTE.vehicle_model,
+                                null as any,
+                              );
+                            }}
+                            showSearch
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                        <Form.Item
                           name={MAID_QUOTE.maid_dob}
-                          label='Date of birth'
-                          minDate={maxDob}
-                          maxDate={minDob}
-                          isRequired={true}
-                        />
-                      </Form.Item>
+                          validateStatus={
+                            errors[MAID_QUOTE.maid_dob] ? 'error' : ''
+                          }
+                        >
+                          <DatePickerField
+                            name={MAID_QUOTE.maid_dob}
+                            label='Date of birth'
+                            minDate={maxDob}
+                            maxDate={minDob}
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            <div className='mt-6 w-full justify-items-center'>
-              <div className='w-[90vw] md:w-96'>
-                <PromoCodeField
-                  placeholder='Enter promo code'
-                  applyPromoCode={applyPromoCode}
-                  setApplyPromoCode={setApplyPromoCode}
-                  isDisablePromoCode={!isEnablePromoCode}
-                />
+              <div className='mt-6 w-full justify-items-center'>
+                <div className='w-[90vw] md:w-96'>
+                  <PromoCodeField
+                    placeholder='Enter promo code'
+                    applyPromoCode={applyPromoCode}
+                    setApplyPromoCode={setApplyPromoCode}
+                    isDisablePromoCode={!isEnablePromoCode}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </Form>
-      </FormProvider>
+          </Form>
+        </FormProvider>
+      </div>
       <div
         className={`fixed bottom-0 w-full bg-white px-2`}
         style={{ zIndex: 100 }}
