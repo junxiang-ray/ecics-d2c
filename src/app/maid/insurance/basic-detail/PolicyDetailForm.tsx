@@ -31,8 +31,8 @@ import {
 } from '@/app/motor/insurance/basic-detail/options';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
-import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuote';
 import { RadioField } from '@/components/ui/form/radiofield';
+import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -132,6 +132,7 @@ const PolicyDetailForm = ({
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
   const [showCSModal, setShowCSModal] = useState(false);
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
+  const [descriptionQuote, setDescriptionQuote] = useState('');
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -253,6 +254,16 @@ const PolicyDetailForm = ({
       });
     }
   }, [start_date, maid_dob, minDob, maxDob, methods]);
+
+  useEffect(() => {
+    if (!maid_dob) return;
+    const dob = dayjs(maid_dob);
+    const now = dayjs();
+    if (dob.isBefore(now.subtract(60, 'year'))) {
+      setDescriptionQuote('The listed helper is above 60 years of age.');
+      setShowCSModal(true);
+    }
+  }, [maid_dob]);
 
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
@@ -480,6 +491,7 @@ const PolicyDetailForm = ({
                     applyPromoCode={applyPromoCode}
                     setApplyPromoCode={setApplyPromoCode}
                     isDisablePromoCode={!isEnablePromoCode}
+                    isMaid={true}
                   />
                 </div>
               </div>
@@ -515,9 +527,10 @@ const PolicyDetailForm = ({
           </div>
         </div>
       </div>
-      <UnableQuote
+      <QuoteModal
         onClick={() => setShowCSModal(false)}
         visible={showCSModal}
+        description={descriptionQuote}
       />
     </>
   );

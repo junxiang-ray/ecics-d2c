@@ -53,6 +53,7 @@ export interface MaidQuoteData {
   personal_info: PersonalInfo;
   maid_info: MaidInfo;
   insurance_other_info: InsuranceOtherInfo;
+  selected_plan: string;
 }
 
 export interface MaidInfo {

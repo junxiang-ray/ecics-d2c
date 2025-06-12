@@ -44,19 +44,19 @@ function PlanDetail({
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
 
-  const quoteInfo = useAppSelector((state) => state.quote?.quote);
+  const maidQuoteInfo = useAppSelector((state) => state.maidQuote?.maidQuote);
   const {
     mutateAsync: saveQuote,
     isPending: isSaving,
     isSuccess,
   } = useSaveQuote();
 
-  const plans = quoteInfo?.data?.plans ?? [];
+  const plans = maidQuoteInfo?.data?.plans ?? [];
 
   useEffect(() => {
     onSaveRegister(() => {
       const data = {
-        ...quoteInfo?.data,
+        ...maidQuoteInfo?.data,
         current_step: UserStep.SELECT_PLAN,
         selected_plan: selectedPlan?.title,
         key: key,
@@ -67,18 +67,18 @@ function PlanDetail({
 
   const plansFormatted: FormatPlan[] = plans.map((plan) => ({
     ...plan,
-    discount: quoteInfo?.promo_code?.discount ?? 0,
+    discount: maidQuoteInfo?.promo_code?.discount ?? 0,
     currentPrice:
       plan.premium_with_gst /
-      (1 - (quoteInfo?.promo_code?.discount ?? 0) / 100),
-    promoCode: quoteInfo?.promo_code?.code ?? '',
+      (1 - (maidQuoteInfo?.promo_code?.discount ?? 0) / 100),
+    promoCode: maidQuoteInfo?.promo_code?.code ?? '',
   }));
 
   useEffect(() => {
     if (!plansFormatted.length) return;
-    if (quoteInfo?.data?.selected_plan) {
+    if (maidQuoteInfo?.data?.selected_plan) {
       const selectedPlan = plansFormatted.find(
-        (plan) => plan.title === quoteInfo?.data?.selected_plan,
+        (plan) => plan.title === maidQuoteInfo?.data?.selected_plan,
       );
       if (selectedPlan) {
         setSelectedPlan(selectedPlan);
@@ -94,7 +94,7 @@ function PlanDetail({
 
   const choicePlan = (plan: FormatPlan | null) => {
     const data = {
-      ...quoteInfo?.data,
+      ...maidQuoteInfo?.data,
       selected_plan: plan?.title,
       key: key,
     };

@@ -23,19 +23,19 @@ export const useVerifyPartnerCode = (partner_code: string) => {
   });
 };
 
-export const useVerifyPromoCode = () => {
+export const useVerifyPromoCode = (product_type: string) => {
   const fetchQuote = async (promo_code: string) => {
     const formattedPromoCode = formatPromoCode(promo_code);
     const res = await verify.verifyPromoCode({
       promo_code: formattedPromoCode,
-      product_type: 'car',
+      product_type,
     });
     return res.data;
   };
 
   return useMutation({
     mutationFn: fetchQuote,
-    mutationKey: ['promo'],
+    mutationKey: ['promo', product_type],
   });
 };
 
