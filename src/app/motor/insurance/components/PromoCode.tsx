@@ -17,7 +17,7 @@ interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;
   applyPromoCode: string;
   setApplyPromoCode: (promoCode: string) => void;
-  isMaid?: boolean;
+  product_type?: string;
 }
 
 export interface PromoCodeModel {
@@ -29,12 +29,12 @@ export const PromoCodeField = ({
   isDisablePromoCode,
   applyPromoCode,
   setApplyPromoCode,
-  isMaid,
+  product_type,
   ...props
 }: InputFieldProps) => {
   const { control, getValues, setValue } = useFormContext();
   const { mutateAsync: verifyPromoCode, isPending } = useVerifyPromoCode(
-    isMaid ? Product.MAID : Product.CAR,
+    product_type === Product.MAID ? Product.MAID : Product.CAR,
   );
   const [promoInfoSelected, setPromoInfoSelected] =
     useState<PromoCodeResponse | null>(null);

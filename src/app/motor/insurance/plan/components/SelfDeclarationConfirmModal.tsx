@@ -5,17 +5,18 @@ import { Drawer, Modal } from 'antd';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { Product } from '../../basic-detail/options';
 
 function SelfDeclarationConfirmModal({
   visible,
   onOk,
   onCancel,
-  isMaid,
+  product_type,
 }: {
   visible: boolean;
   onOk: () => void;
   onCancel?: () => void;
-  isMaid?: boolean;
+  product_type?: string;
 }) {
   const { isMobile } = useDeviceDetection();
 
@@ -135,7 +136,7 @@ function SelfDeclarationConfirmModal({
         height='auto'
         className='rounded-t-xl'
       >
-        {isMaid ? contentMaid : content}
+        {product_type === Product.MAID ? contentMaid : content}
       </Drawer>
     );
   }
@@ -151,7 +152,7 @@ function SelfDeclarationConfirmModal({
       footer={null}
       centered
     >
-      {isMaid ? contentMaid : content}
+      {product_type === Product.MAID ? contentMaid : content}
     </Modal>
   );
 }

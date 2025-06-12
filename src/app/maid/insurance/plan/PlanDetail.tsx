@@ -20,8 +20,9 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import PlanCardMobile from '@/app/motor/insurance/plan/components/PlanCardMobile';
 import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
+import PlanMaid from './PlanMaid';
+import { Product } from '@/app/motor/insurance/basic-detail/options';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -115,12 +116,11 @@ function PlanDetail({
             Select a plan
           </div>
           <div className='mx-4'>
-            <PlanCardMobile
+            <PlanMaid
               plans={plansFormatted}
               selectedPlan={selectedPlan}
               setSelectedPlan={setSelectedPlan}
               isSaving={isSaving}
-              isMaid={true}
             />
           </div>
         </div>
@@ -222,7 +222,7 @@ function PlanDetail({
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}
         onCancel={() => setShowConfirmDeclaration(false)}
-        isMaid={true}
+        product_type={Product.MAID}
       />
     </div>
   );

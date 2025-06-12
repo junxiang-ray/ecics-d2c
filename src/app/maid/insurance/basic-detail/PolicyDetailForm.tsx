@@ -28,11 +28,11 @@ import {
   HELPER_TYPE_OPTIONS,
   NumberClaim,
   POLICY_DURATION_OPTIONS,
+  Product,
 } from '@/app/motor/insurance/basic-detail/options';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { RadioField } from '@/components/ui/form/radiofield';
-import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -479,7 +479,7 @@ const PolicyDetailForm = ({
                     applyPromoCode={applyPromoCode}
                     setApplyPromoCode={setApplyPromoCode}
                     isDisablePromoCode={!isEnablePromoCode}
-                    isMaid={true}
+                    product_type={Product.MAID}
                   />
                 </div>
               </div>
