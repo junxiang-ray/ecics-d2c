@@ -5,15 +5,18 @@ import { Drawer, Modal } from 'antd';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { ProductType } from '../../basic-detail/options';
 
 function SelfDeclarationConfirmModal({
   visible,
   onOk,
   onCancel,
+  product_type,
 }: {
   visible: boolean;
   onOk: () => void;
   onCancel?: () => void;
+  product_type: string;
 }) {
   const { isMobile } = useDeviceDetection();
 
@@ -72,6 +75,57 @@ function SelfDeclarationConfirmModal({
     </div>
   );
 
+  const contentMaid = (
+    <div className='flex flex-col gap-6'>
+      <p className='text-center text-2xl font-normal leading-[32px] text-[#000000D9]'>
+        Declaration and Undertaking
+      </p>
+      <div className='flex flex-col gap-2 px-2'>
+        <ol className='list-decimal text-sm font-normal leading-[18px] text-[#969696]'>
+          <li>
+            In consideration of ECICS Limited (the “Insurer”) agreeing at my/our
+            request to issue a Letter of Guarantee for the sum of Singapore
+            Dollars Five Thousand Only (S$5,000) to the Ministry of Manpower,
+            Singapore as security for the duty and satisfactory observance and
+            performance of all conditionals under the Security Bond
+          </li>
+          <li>
+            I/We hereby jointly and severally irrevocably and unconditionally
+            agree and undertake for myself/ourselves and my/our heirs executors
+            administrators assigns and successors that:
+          </li>
+          <li>
+            1. As a continuing obligation I/we shall indemnify and keep
+            indemnified the Insurer from and against all claims, demands,
+            payment, actions, suits, proceedings, losses, expenses including
+            legal costs on an indemnity basis and
+          </li>
+        </ol>
+      </div>
+      <div className='flex flex-col gap-4'>
+        <p className='text-sm font-semibold text-[#000000]'>
+          By proceeding, you acknowledge that you have read and agree to the
+          statements above.
+        </p>
+        <div className='flex flex-row justify-between'>
+          <SecondaryButton
+            onClick={onCancel}
+            danger
+            className='mr-[10px] w-full rounded-none py-3 text-base font-semibold'
+          >
+            Disagree
+          </SecondaryButton>
+          <PrimaryButton
+            onClick={handleConfirmClick}
+            className='ml-[10px] w-full bg-[#34C759] py-3 text-base font-semibold text-white'
+          >
+            Agree
+          </PrimaryButton>
+        </div>
+      </div>
+    </div>
+  );
+
   if (isMobile) {
     return (
       <Drawer
@@ -82,7 +136,7 @@ function SelfDeclarationConfirmModal({
         height='auto'
         className='rounded-t-xl'
       >
-        {content}
+        {product_type === ProductType.MAID ? contentMaid : content}
       </Drawer>
     );
   }
@@ -98,7 +152,7 @@ function SelfDeclarationConfirmModal({
       footer={null}
       centered
     >
-      {content}
+      {product_type === ProductType.MAID ? contentMaid : content}
     </Modal>
   );
 }

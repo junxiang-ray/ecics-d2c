@@ -8,7 +8,7 @@ import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
 import LimitedPeriodOffer from '@/components/page/login/LimitedPeriodOffer';
 import MyInfoLoginSection from '@/components/page/login/MyInfoLoginSection';
 
-import { Product } from '@/app/motor/insurance/basic-detail/options';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -18,9 +18,9 @@ const LoginPage = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const productType: Product = pathname.startsWith('/maid')
-    ? Product.MAID
-    : Product.CAR;
+  const productType: ProductType = pathname.startsWith('/maid')
+    ? ProductType.MAID
+    : ProductType.CAR;
 
   const partnerCode = searchParams.get('partner_code') || '';
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
@@ -33,8 +33,8 @@ const LoginPage = () => {
       saveToLocalStorage({ [PROMO_CODE]: promoCodeDefault });
     }
   }, [partnerCode, promoCodeDefault]);
-
-  const { mutate: verifyPromoCode, data: promoCodeData } = useVerifyPromoCode();
+  const { mutate: verifyPromoCode, data: promoCodeData } =
+    useVerifyPromoCode(productType);
 
   useEffect(() => {
     if (promoCodeDefault) {
@@ -46,9 +46,9 @@ const LoginPage = () => {
     !!promoCodeDefault && promoCodeData?.data?.is_valid === true;
 
   const bgTop =
-    productType === Product.MAID ? '/maid_bg_top.svg' : '/login_bg_top.svg';
+    productType === ProductType.MAID ? '/maid_bg_top.svg' : '/login_bg_top.svg';
   const bgMobile =
-    productType === Product.MAID
+    productType === ProductType.MAID
       ? '/login_bg_singpass_maid.png'
       : '/login_bg_singpass.png';
 
