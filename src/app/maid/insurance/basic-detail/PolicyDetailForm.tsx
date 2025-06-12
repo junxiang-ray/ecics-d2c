@@ -307,7 +307,7 @@ const PolicyDetailForm = ({
             }}
             onFinish={methods.handleSubmit(handleSubmit)}
             disabled={isLoading}
-            className='mb-16 flex w-full max-w-[1200px] flex-col px-4 md:px-0'
+            className='mb-16 flex w-full max-w-[1200px] flex-col px-4 sm:px-4 md:px-0'
             {...props}
           >
             <div className='w-full'>
@@ -316,58 +316,55 @@ const PolicyDetailForm = ({
                   <div className='relative w-full' style={{ zIndex: '99' }}>
                     <div className='flex flex-col'>
                       <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
-                        Your Contact Details
+                        Contact Info
                       </div>
-                      <div className='mb-6 flex w-full flex-col gap-4 md:flex-row md:gap-6'>
-                        <div className='md:min-w-[384px]'>
-                          <Form.Item
+                      <div className='mb-6 grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6'>
+                        <Form.Item
+                          name={MAID_QUOTE.email}
+                          validateStatus={
+                            errors[MAID_QUOTE.email] ? 'error' : ''
+                          }
+                        >
+                          <InputField
                             name={MAID_QUOTE.email}
-                            validateStatus={
-                              errors[MAID_QUOTE.email] ? 'error' : ''
-                            }
-                          >
-                            <InputField
-                              name={MAID_QUOTE.email}
-                              label='Email Address'
-                              placeholder='Enter Your Email Address'
-                              isRequired={true}
-                            />
-                          </Form.Item>
-                        </div>
+                            label='Email Address'
+                            placeholder='Enter Your Email Address'
+                            isRequired={true}
+                          />
+                        </Form.Item>
 
-                        <div className='md:min-w-[384px]'>
-                          <Form.Item
+                        <Form.Item
+                          name={MAID_QUOTE.mobile}
+                          validateStatus={
+                            errors[MAID_QUOTE.mobile] ? 'error' : ''
+                          }
+                        >
+                          <InputField
                             name={MAID_QUOTE.mobile}
-                            validateStatus={
-                              errors[MAID_QUOTE.mobile] ? 'error' : ''
-                            }
-                          >
-                            <InputField
-                              name={MAID_QUOTE.mobile}
-                              label='Mobile Number'
-                              placeholder='Enter Your Mobile Number'
-                              onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>,
-                              ) => {
-                                const onlyNums = e.target.value.replace(
-                                  /\D/g,
-                                  '',
-                                );
-                                methods.setValue(MAID_QUOTE.mobile, onlyNums, {
-                                  shouldValidate: true,
-                                });
-                              }}
-                              value={String(watch(MAID_QUOTE.mobile) ?? '')}
-                              isRequired={true}
-                            />
-                          </Form.Item>
-                        </div>
+                            label='Mobile Number'
+                            placeholder='Enter Your Mobile Number'
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>,
+                            ) => {
+                              const onlyNums = e.target.value.replace(
+                                /\D/g,
+                                '',
+                              );
+                              methods.setValue(MAID_QUOTE.mobile, onlyNums, {
+                                shouldValidate: true,
+                              });
+                            }}
+                            value={String(watch(MAID_QUOTE.mobile) ?? '')}
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                        <div></div>
                       </div>
                     </div>
 
                     <div>
                       <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
-                        Helper’s Information
+                        Basic Information
                       </div>
                       <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
                         <Form.Item
@@ -380,7 +377,7 @@ const PolicyDetailForm = ({
                             name={MAID_QUOTE.maid_type}
                             label='Helper Type'
                             options={HELPER_TYPE_OPTIONS}
-                            className='flex flex-col'
+                            className='flex w-full !flex-col'
                             isRequired={true}
                           />
                         </Form.Item>
