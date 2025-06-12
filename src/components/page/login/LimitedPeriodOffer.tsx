@@ -3,13 +3,13 @@
 import CouponIcon from '@/components/icons/CouponIcon';
 
 import { PromoCodeResponse } from '@/api/base-service/verify';
-import { Product } from '@/app/motor/insurance/basic-detail/options';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 type LimitedPeriodOfferProps = {
   promoCode: string;
   promoCodeData: PromoCodeResponse;
-  productType: Product;
+  productType: ProductType;
 };
 
 const LimitedPeriodOffer = ({
@@ -19,7 +19,7 @@ const LimitedPeriodOffer = ({
 }: LimitedPeriodOfferProps) => {
   const { isMobile } = useDeviceDetection();
   const description = promoCodeData?.data?.description;
-  const isMaid = productType === Product.MAID;
+  const isMaid = productType === ProductType.MAID;
 
   return (
     <div className='relative z-10 mx-auto max-w-md px-4'>

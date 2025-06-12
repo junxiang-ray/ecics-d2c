@@ -1,6 +1,6 @@
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
-export enum Product {
+export enum ProductType {
   MAID = 'maid',
   CAR = 'car',
 }

@@ -28,7 +28,7 @@ import {
   HELPER_TYPE_OPTIONS,
   NumberClaim,
   POLICY_DURATION_OPTIONS,
-  Product,
+  ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
@@ -479,7 +479,7 @@ const PolicyDetailForm = ({
                     applyPromoCode={applyPromoCode}
                     setApplyPromoCode={setApplyPromoCode}
                     isDisablePromoCode={!isEnablePromoCode}
-                    product_type={Product.MAID}
+                    product_type={ProductType.MAID}
                   />
                 </div>
               </div>

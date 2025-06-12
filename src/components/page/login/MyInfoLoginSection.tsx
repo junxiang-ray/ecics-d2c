@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { LinkButton, PrimaryButton } from '@/components/ui/buttons';
 
-import { Product } from '@/app/motor/insurance/basic-detail/options';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useRequestLogin } from '@/hook/auth/login';
 import { useRequestLogCar } from '@/hook/insurance/quote';
@@ -14,7 +14,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 interface MyInfoLoginSectionProps {
   promoCode?: string;
   partnerCode?: string;
-  productType: Product;
+  productType: ProductType;
 }
 
 const MyInfoLoginSection = ({
@@ -25,7 +25,7 @@ const MyInfoLoginSection = ({
   const router = useRouter();
   const { isMobile } = useDeviceDetection();
   const [isUserActive, setIsUserActive] = useState(false);
-  const isMaid = productType === Product.MAID;
+  const isMaid = productType === ProductType.MAID;
 
   const { mutate: requestLogin } = useRequestLogin();
   const { mutate: requestLogCar } = useRequestLogCar();

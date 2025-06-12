@@ -25,6 +25,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
+import { ProductType } from '../basic-detail/options';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -230,6 +231,7 @@ function PlanDetail({
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}
         onCancel={() => setShowConfirmDeclaration(false)}
+        product_type={ProductType.CAR}
       />
     </div>
   );

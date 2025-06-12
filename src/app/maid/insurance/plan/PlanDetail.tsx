@@ -3,9 +3,6 @@
 import { Button } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
@@ -22,7 +19,7 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
 import PlanMaid from './PlanMaid';
-import { Product } from '@/app/motor/insurance/basic-detail/options';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -222,7 +219,7 @@ function PlanDetail({
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}
         onCancel={() => setShowConfirmDeclaration(false)}
-        product_type={Product.MAID}
+        product_type={ProductType.MAID}
       />
     </div>
   );

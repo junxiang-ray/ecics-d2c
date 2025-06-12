@@ -39,6 +39,7 @@ import {
   NO_CLAIM_OPTIONS,
   NumberClaim,
   NumberDriverExperience,
+  ProductType,
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
@@ -704,6 +705,7 @@ const PolicyDetailForm = ({
                   applyPromoCode={applyPromoCode}
                   setApplyPromoCode={setApplyPromoCode}
                   isDisablePromoCode={!isEnablePromoCode}
+                  product_type={ProductType.CAR}
                 />
               </div>
             </div>

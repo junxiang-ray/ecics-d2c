@@ -11,13 +11,13 @@ import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useAppSelector } from '@/redux/store';
-import { Product } from '../basic-detail/options';
+import { ProductType } from '../basic-detail/options';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;
   applyPromoCode: string;
   setApplyPromoCode: (promoCode: string) => void;
-  product_type?: string;
+  product_type: string;
 }
 
 export interface PromoCodeModel {
@@ -33,9 +33,8 @@ export const PromoCodeField = ({
   ...props
 }: InputFieldProps) => {
   const { control, getValues, setValue } = useFormContext();
-  const { mutateAsync: verifyPromoCode, isPending } = useVerifyPromoCode(
-    product_type === Product.MAID ? Product.MAID : Product.CAR,
-  );
+  const { mutateAsync: verifyPromoCode, isPending } =
+    useVerifyPromoCode(product_type);
   const [promoInfoSelected, setPromoInfoSelected] =
     useState<PromoCodeResponse | null>(null);
   const promoCodeError = useAppSelector((state) => state.quote.promoCodeError);
