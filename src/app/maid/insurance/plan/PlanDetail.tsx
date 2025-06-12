@@ -12,14 +12,14 @@ import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
-import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
 import PlanMaid from './PlanMaid';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -44,10 +44,10 @@ function PlanDetail({
 
   const maidQuoteInfo = useAppSelector((state) => state.maidQuote?.maidQuote);
   const {
-    mutateAsync: saveQuote,
+    mutateAsync: saveMaidQuote,
     isPending: isSaving,
     isSuccess,
-  } = useSaveQuote();
+  } = useSaveMaidQuote();
 
   const plans = maidQuoteInfo?.data?.plans ?? [];
 
@@ -96,11 +96,11 @@ function PlanDetail({
       selected_plan: plan?.title,
       key: key,
     };
-    saveQuote({ key, data, is_sending_email: false }).then((res) => {
+    saveMaidQuote({ key, data, is_sending_email: false }).then((res) => {
       if (res) {
-        dispatch(updateQuote(res));
+        dispatch(updateMaidQuote(res));
       }
-      router.push(ROUTES.INSURANCE.ADD_ON);
+      router.push(ROUTES.INSURANCE_MAID.ADD_ON);
     });
     setShowConfirmDeclaration(false);
   };
