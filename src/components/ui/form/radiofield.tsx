@@ -37,7 +37,7 @@ export const RadioField = ({
             <Radio.Group
               {...props}
               {...field}
-              className={`grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:flex xl:gap-4 ${className}`}
+              className={`grid w-full grid-cols-1 gap-2 xl:flex xl:gap-4 ${className}`}
             >
               {options.map((option) => (
                 <Radio

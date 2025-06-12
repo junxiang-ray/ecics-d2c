@@ -1,16 +1,19 @@
 'use client';
 
+import { Button } from 'antd';
 import dayjs from 'dayjs';
 import { memo, useState } from 'react';
+
 import { AddNamedDriverInfo, Addon } from '@/libs/types/quote';
-import { PersonIcon } from '@/components/icons/add-on-icons';
-import AddOnRow from './AddOnRow';
-import TruncateText from './TruncateText ';
-import AdditionDriver from '../components/AdditionDriver';
 import { formatCurrency } from '@/libs/utils/utils';
-import IconEditDriver from '@/components/icons/EditDriver';
+
+import { PersonIcon } from '@/components/icons/add-on-icons';
 import DeleteIcon from '@/components/icons/DeleteIcon';
-import { Button } from 'antd';
+import IconEditDriver from '@/components/icons/EditDriver';
+import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
+
+import AddOnRow from './AddOnRow';
+import AdditionDriver from '../components/AdditionDriver';
 
 export const ADDON_CARS = [
   'CAR_COM_AND',

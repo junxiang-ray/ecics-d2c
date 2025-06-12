@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 
 import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
 
-import LimitedPeriodOffer from '@/components/login/LimitedPeriodOffer';
-import MyInfoLoginSection from '@/components/login/MyInfoLoginSection';
+import LimitedPeriodOffer from '@/components/page/login/LimitedPeriodOffer';
+import MyInfoLoginSection from '@/components/page/login/MyInfoLoginSection';
 
 import { Product } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';

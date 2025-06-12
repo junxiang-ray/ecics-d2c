@@ -22,18 +22,18 @@ import {
 } from '@/components/icons/add-on-icons';
 import { PricingSummary } from '@/components/page/FeeBar';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
+// import { RequiredModal } from '../basic-detail/modal/RequireModal';
 import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
+import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import AddOnRow from './AddOnRow';
 import AddOnRowDetail from './AddOnRowDetail';
-import { RequiredModal } from '../basic-detail/modal/RequireModal';
 
 export const mapIconToTypeAddOn = [
   {
@@ -167,7 +167,7 @@ function AddOnDetail({
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
   const quoteInfo = useAppSelector((state) => state.quote.quote);
-
+  console.log('quoteInfo.data?.selected_plan', quoteInfo.data?.selected_plan);
   const isManual = searchParams.get('manual') === 'true';
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [drivers, setDrivers] = useState<any[]>([]);
@@ -360,14 +360,6 @@ function AddOnDetail({
       addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
     }
 
-    if (addonAdditionalDriver?.code) {
-      const isExistDriver =
-        drivers.every((driver) => driver.nric_or_fin) && drivers.length;
-      addonsAdd[addonAdditionalDriver.code] = isExistDriver
-        ? 'drivers_age_from_27_to_70'
-        : 'NO';
-    }
-
     const data: any = {
       key: key,
       selected_addons: addonsAdd,
@@ -380,7 +372,6 @@ function AddOnDetail({
         gst: gst,
         total_final_price: totalFinalPrice,
         drivers: drivers,
-        addon_additional_driver: addonAdditionalDriver,
         add_ons_included_in_this_plan: plan?.add_ons_included_in_this_plan,
         total_addon_free: totalAddonFee,
       },
@@ -438,18 +429,6 @@ function AddOnDetail({
           </p>
           <div className='flex flex-col items-center'>
             <div className='mt-4 flex flex-col gap-6 md:max-w-[950px] md:gap-10'>
-              {addonAdditionalDriver && (
-                <AddonAdditionalDriver
-                  addon={addonAdditionalDriver}
-                  drivers={drivers}
-                  setDrivers={setDrivers}
-                  policyStartDate={
-                    quoteInfo?.data.insurance_additional_info?.start_date ??
-                    dayjs().format('DD/MM/YYYY')
-                  }
-                  isPending={isPending}
-                />
-              )}
               {plan?.add_ons_included_in_this_plan?.map((addon) => (
                 <AddOnRow
                   key={addon.add_on_id}
@@ -517,15 +496,15 @@ function AddOnDetail({
           />
         </div>
       )}
-      {isShowRequireModal && (
-        <RequiredModal
-          visible={isShowRequireModal}
-          onOk={() => {
-            setIsShowRequireModal(false);
-            scrollToAdditionalDriver();
-          }}
-        />
-      )}
+      {/*{isShowRequireModal && (*/}
+      {/*  <RequiredModal*/}
+      {/*    visible={isShowRequireModal}*/}
+      {/*    onOk={() => {*/}
+      {/*      setIsShowRequireModal(false);*/}
+      {/*      scrollToAdditionalDriver();*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*)}*/}
     </div>
   );
 }

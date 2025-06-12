@@ -13,7 +13,8 @@ import {
 } from '@/libs/utils/validation-utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
-import { DropdownField } from '@/components/ui/form/dropdownfield';
+import { PricingSummary } from '@/components/page/FeeBar';
+import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
@@ -26,14 +27,12 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote, useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import ModalPremium from '../add-on/ModalPremium';
 import { RenewalModal } from '../basic-detail/modal/RenewalModal';
 import { UnableQuote } from '../basic-detail/modal/UnableQuote';
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from '../basic-detail/options';
-import { PricingSummary } from '../components/FeeBar';
 
 const createSchema = (listNric: any[] | undefined) =>
   z.object({

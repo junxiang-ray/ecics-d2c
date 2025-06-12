@@ -5,17 +5,10 @@ import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Option } from '@/libs/types/quote';
-import {
-  formatBooleanToYesNo,
-  formatCurrency,
-  formatCurrencyString,
-} from '@/libs/utils/utils';
+import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
-import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
-import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
-import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
-import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
+import { PricingSummary } from '@/components/page/FeeBar';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { ROUTES } from '@/constants/routes';
@@ -27,7 +20,6 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import ReviewSection from './ReviewSection';
 import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
-import { PricingSummary } from '@/components/page/FeeBar';
 
 function calculateFee(
   option: Option,
@@ -101,7 +93,7 @@ export default function CompletePurchaseDetail({
     if (key === 'policy_plan') {
       return ROUTES.INSURANCE.PLAN;
     }
-    if (['addons', 'driver'].includes(key)) {
+    if (['addons'].includes(key)) {
       return ROUTES.INSURANCE.ADD_ON;
     }
     return undefined;
@@ -130,49 +122,6 @@ export default function CompletePurchaseDetail({
     value: 'Included',
   }));
 
-  const getAdditionalDriverData = (drivers: any[] = []) => {
-    return drivers.flatMap((driver, index) => [
-      {
-        title: `Additional Driver ${index + 1}`,
-        value: '',
-        isTitleOnly: true,
-      },
-      {
-        title: 'Name',
-        value: driver.name,
-      },
-      {
-        title: 'NRIC/FIN',
-        value: driver.nric_or_fin,
-      },
-    ]);
-  };
-
-  const getDriverSections = (drivers: any[] = []) => {
-    return drivers.map((driver, index) => {
-      const data = [
-        { title: 'Name as Per NRIC/FIN', value: driver.name },
-        { title: 'NRIC/FIN', value: driver.nric_or_fin },
-        { title: 'Date of Birth', value: driver.date_of_birth },
-        { title: 'Gender', value: driver.gender },
-        { title: 'Marital Status', value: driver.marital_status },
-        { title: 'Driving Experience', value: driver.driving_experience },
-        {
-          title: 'Do you have a claim in the past 3 years',
-          value: formatBooleanToYesNo(driver.is_claim_in_3_years),
-        },
-      ];
-
-      return {
-        key: `driver-${index}`,
-        title: `Additional Driver ${index + 1}`,
-        description: driver.name,
-        icon: <AdditionalDriverDetailsIcon className='text-white' />,
-        data,
-      };
-    });
-  };
-
   const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
   const plans = quote?.data?.plans || [];
   const matchedPlan = plans.find(
@@ -187,77 +136,44 @@ export default function CompletePurchaseDetail({
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
   } = {
-    personal: [
+    helper_details: [
       {
-        title: 'Email Address',
-        value: quote?.data?.personal_info?.email || 'N/A',
+        title: 'Helper’s Full Name',
+        value: 'N/A',
       },
       {
-        title: 'Phone Number',
-        value: quote?.data?.personal_info?.phone,
+        title: 'FIN',
+        value: 'N/A',
+      },
+      {
+        title: 'Passport Number',
+        value: 'N/A',
+      },
+      {
+        title: 'Has the helper been employed by you for more than 12 months?',
+        value: 'N/A',
+      },
+      {
+        title: 'Previous Insurer Name',
+        value: 'N/A',
+      },
+      {
+        title: 'Other Insurer Name',
+        value: 'N/A',
+      },
+    ],
+    helper_basic_information: [
+      {
+        title: 'Helper Type',
+        value: 'N/A',
+      },
+      {
+        title: 'Nationality',
+        value: 'N/A',
       },
       {
         title: 'Date of Birth',
-        value: quote?.data?.personal_info?.date_of_birth,
-      },
-    ],
-    vehicle: [
-      {
-        title: 'Vehicle Make',
-        value: vehicleSelected?.vehicle_make || 'N/A',
-      },
-      {
-        title: 'Vehicle Model',
-        value: vehicleSelected?.vehicle_model || 'N/A',
-      },
-      {
-        title: "Vehicle's Year of Registration",
         value: vehicleSelected?.first_registered_year || 'N/A',
-      },
-      {
-        title: 'Vehicle Financed By',
-        value: quote?.company?.name || 'N/A',
-      },
-      // { title: 'Engine Capacity', value: 'N/A' },
-      // { title: 'Power Rate', value: 'N/A' },
-      // { title: 'Year of Manufacture', value: 'N/A' },
-    ],
-    policy: [
-      {
-        title: 'Policy Start Date',
-        value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
-      },
-      {
-        title: 'Policy End Date',
-        value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
-      },
-    ],
-    driving_experiences: [
-      {
-        title: 'Years of Driving Experience',
-        value: quote?.data?.personal_info?.driving_experience || 'N/A',
-      },
-      {
-        title: 'Your No Claim Discount',
-        value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
-      },
-      {
-        title: 'Number of claims in the past 3 years',
-        value: quote?.data?.insurance_additional_info?.no_of_claim || 'N/A',
-      },
-    ],
-    vehicle_details: [
-      {
-        title: 'Chassis Number',
-        value: vehicleSelected?.chasis_number || 'N/A',
-      },
-      {
-        title: 'Engine Number',
-        value: vehicleSelected?.engine_number || 'N/A',
-      },
-      {
-        title: 'Vehicle Number',
-        value: vehicleSelected?.vehicle_number || 'N/A',
       },
     ],
     policy_plan: [
@@ -274,18 +190,31 @@ export default function CompletePurchaseDetail({
       addonsSectionData.length === 0 && addonsIncludedData.length === 0
         ? [{ title: 'You have no Add Ons selected', value: '' }]
         : [...addonsSectionData, ...addonsIncludedData],
-    driver: getAdditionalDriverData(quote?.data?.add_named_driver_info),
+    policy: [
+      {
+        title: 'Policy Start Date',
+        value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
+      },
+      {
+        title: 'Policy End Date',
+        value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
+      },
+      {
+        title: 'Policy Duration',
+        value: 'N/A',
+      },
+    ],
     owner: [
       {
         title: 'Name as per NRIC',
         value: quote?.data?.personal_info?.name ?? 'N/A',
       },
-      { title: 'NRIC/FIN', value: quote?.data?.personal_info?.nric ?? 'N/A' },
-      { title: 'Gender', value: quote?.data?.personal_info?.gender ?? 'N/A' },
       {
-        title: 'Marital Status',
-        value: quote?.data?.personal_info?.marital_status ?? 'N/A',
+        title: 'Date of Birth',
+        value: quote?.data?.personal_info?.date_of_birth ?? 'N/A',
       },
+      { title: 'NRIC/FIN', value: quote?.data?.personal_info?.nric ?? 'N/A' },
+      { title: 'Nationality', value: 'N/A' },
       {
         title: 'Address Line 1',
         value: quote?.data?.personal_info?.address?.[0] ?? 'N/A',
@@ -307,28 +236,26 @@ export default function CompletePurchaseDetail({
         value: quote?.data?.personal_info?.post_code ?? 'N/A',
       },
     ],
+    personal: [
+      {
+        title: 'Email Address',
+        value: quote?.data?.personal_info?.email || 'N/A',
+      },
+      {
+        title: 'Phone Number',
+        value: quote?.data?.personal_info?.phone,
+      },
+    ],
   };
 
   const sections = [
     {
-      key: 'personal',
-      title: 'Personal Information',
+      key: 'helper_details',
+      title: 'Helper’s Details',
     },
     {
-      key: 'vehicle',
-      title: 'Vehicle Information',
-      description: `${vehicleSelected?.vehicle_make} ${vehicleSelected?.vehicle_model} ${vehicleSelected?.chasis_number}`,
-      icon: <CarIcon className='text-white' />,
-    },
-    {
-      key: 'policy',
-      title: 'Policy Start & End Date',
-      description: `${plan?.title} Plan`,
-      icon: <PolicyPlanIcon className='text-white' />,
-    },
-    {
-      key: 'driving_experiences',
-      title: 'Driving Experiences',
+      key: 'helper_basic_information',
+      title: 'Helper’s Basic Information',
     },
     {
       key: 'policy_plan',
@@ -337,24 +264,18 @@ export default function CompletePurchaseDetail({
     {
       key: 'addons',
       title: 'Add-ons',
-      description: 'Additional Named Driver(s)',
-      icon: <AddOnsSelectedIcon className='text-white' />,
     },
     {
-      key: 'vehicle_details',
-      title: 'Vehicle Details',
+      key: 'policy',
+      title: 'Policy Start & End Date',
     },
     {
       key: 'owner',
-      title: 'Personal Info (Main Driver)',
-      description: `${quote?.data?.personal_info?.name}  ${quote?.data?.vehicle_info_selected?.vehicle_number}`,
-      icon: <PersonIcon className='text-white' />,
+      title: 'Employer Details',
     },
     {
-      key: 'driver',
-      title: 'Additional Driver Details',
-      description: 'Steve Smith',
-      icon: <AdditionalDriverDetailsIcon className='text-white' />,
+      key: 'personal',
+      title: 'Contact Info',
     },
   ];
 
@@ -394,7 +315,6 @@ export default function CompletePurchaseDetail({
   }, [plan]);
 
   useEffect(() => {
-    // setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
     setAddonsAdded(defaultAddonsAdded);
     setAddonsSelected(defaultAddonsSelected);
   }, [defaultAddonsAdded, defaultAddonsSelected]);
@@ -416,7 +336,7 @@ export default function CompletePurchaseDetail({
       key: key,
       selected_plan: quote?.data?.selected_plan,
       selected_addons: quote?.data?.selected_addons,
-      add_named_driver_info: quote?.data?.add_named_driver_info,
+      // add_named_driver_info: quote?.data?.add_named_driver_info,
     };
     saveProposal(data).then((res) => {
       if (!res?.final_premium) return;
@@ -433,7 +353,7 @@ export default function CompletePurchaseDetail({
   const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
     // map the icon to the addon
     const iconMatched = mapIconToTypeAddOn.find(
-      (item) => item.code === addon.code,
+      (item: any) => item.code === addon.code,
     );
 
     // For feeAdded use the "addonsAdded" defaults
@@ -520,24 +440,6 @@ export default function CompletePurchaseDetail({
           <div className='flex-1'>
             <div className='pb-4 text-[16px] font-bold underline'>Summary</div>
             {sections.map((section, index) => {
-              if (section.key === 'driver') {
-                const drivers = getDriverSections(
-                  quote?.data?.add_named_driver_info,
-                );
-                return drivers.map((driverSection) => (
-                  <ReviewSection
-                    key={driverSection.key}
-                    title={driverSection.title}
-                    description={driverSection.description}
-                    icon={driverSection.icon}
-                    data={driverSection.data}
-                    isExpanded={true}
-                    setShowModal={setShowModal}
-                    editRoute={ROUTES.INSURANCE.ADD_ON}
-                  />
-                ));
-              }
-
               // Handle special case for policy_plan + addons on desktop
               if (
                 !isMobile &&
@@ -552,7 +454,6 @@ export default function CompletePurchaseDetail({
                     <ReviewSection
                       key='policy_plan'
                       title='Policy Plan'
-                      description={section.description}
                       data={policyData}
                       isExpanded={true}
                       sectionKey='policy_plan'
@@ -562,7 +463,6 @@ export default function CompletePurchaseDetail({
                     <ReviewSection
                       key='addons'
                       title='Add-ons'
-                      description={section.description}
                       data={addonsData}
                       isExpanded={true}
                       sectionKey='addons'
@@ -586,8 +486,6 @@ export default function CompletePurchaseDetail({
                 <ReviewSection
                   key={section.key}
                   title={section.title}
-                  description={section.description}
-                  icon={section.icon}
                   data={sharedDataMap[section.key] || []}
                   isExpanded={true}
                   sectionKey={section.key}

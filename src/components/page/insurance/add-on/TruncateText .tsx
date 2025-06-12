@@ -7,7 +7,8 @@ interface TruncateTextProps {
   lines?: number;
   className?: string;
 }
-const TruncateText = ({
+
+export const TruncateText = ({
   text,
   lines = 3,
   className = '',

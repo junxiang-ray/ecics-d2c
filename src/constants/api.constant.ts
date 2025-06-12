@@ -13,3 +13,5 @@ export const API_POST_CHECK_VEHICLE = '/check-vehicle';
 export const API_GET_QUOTE_BY_KEY = '/quote/';
 
 export const API_SAVE_QUOTE = '/quote/save';
+
+export const API_GET_LIST_NATIONAL = '/nationalities';
