@@ -130,9 +130,7 @@ const PolicyDetailForm = ({
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
-  const [showCSModal, setShowCSModal] = useState(false);
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
-  const [descriptionQuote, setDescriptionQuote] = useState('');
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -254,16 +252,6 @@ const PolicyDetailForm = ({
       });
     }
   }, [start_date, maid_dob, minDob, maxDob, methods]);
-
-  useEffect(() => {
-    if (!maid_dob) return;
-    const dob = dayjs(maid_dob);
-    const now = dayjs();
-    if (dob.isBefore(now.subtract(60, 'year'))) {
-      setDescriptionQuote('The listed helper is above 60 years of age.');
-      setShowCSModal(true);
-    }
-  }, [maid_dob]);
 
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
@@ -527,11 +515,6 @@ const PolicyDetailForm = ({
           </div>
         </div>
       </div>
-      <QuoteModal
-        onClick={() => setShowCSModal(false)}
-        visible={showCSModal}
-        description={descriptionQuote}
-      />
     </>
   );
 };
