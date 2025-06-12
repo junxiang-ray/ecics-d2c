@@ -138,7 +138,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                         item.title === 'Plan Details' ? (
                           <ul className='list-inside list-disc'>
                             {(item.value as string)
-                              .split(/,(?!\d{3}\b)/)
+                              .split(/,(?!\d)/)
                               .map((part: string, idx: number) => (
                                 <li key={idx}>{part.trim()}</li>
                               ))}

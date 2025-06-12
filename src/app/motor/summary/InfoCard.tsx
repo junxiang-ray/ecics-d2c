@@ -68,7 +68,7 @@ const InfoCard = (props: Props) => {
                       <p className='text-sm text-gray-600'>{item.label}</p>
                       {typeof item.value === 'string' && (
                         <ul className='mt-1 space-y-1 text-sm font-semibold text-black'>
-                          {item.value.split(',').map((val, idx) => (
+                          {item.value.split(/,(?!\d)/).map((val, idx) => (
                             <li
                               key={idx}
                               className='list-none before:mr-2 before:text-base before:text-black before:content-["·"]'

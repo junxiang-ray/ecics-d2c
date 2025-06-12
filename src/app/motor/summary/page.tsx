@@ -22,6 +22,8 @@ import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoCard from './InfoCard';
+import { useGetPaymentSummaryData } from '@/hook/cms/verify';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 interface DocumentItem {
   link: string;
@@ -43,6 +45,19 @@ export default function Summary() {
   };
 
   const { data: quote, isLoading } = useGetQuote(key);
+
+  //Call api GetPaymentSummaryData
+  const productType = quote?.product_type?.name;
+  const isElectric = quote?.is_electric_model;
+  let paymentType: ProductType | undefined;
+  if (productType === ProductType.MAID) {
+    paymentType = ProductType.MAID;
+  } else if (productType === ProductType.CAR) {
+    paymentType = isElectric ? ProductType.EVCAR : ProductType.CAR;
+  }
+  const { data: PaymentSummaryData } = useGetPaymentSummaryData(
+    paymentType ?? '',
+  );
 
   const _renderCongratulation = () => {
     return (
@@ -203,7 +218,10 @@ export default function Summary() {
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
   const addonsTitles =
-    matchedPlan?.addons?.map((addon) => addon.title).filter(Boolean) || [];
+    matchedPlan?.benefits
+      ?.filter((benefit) => benefit.is_active)
+      .map((benefit) => benefit.name)
+      .filter(Boolean) || [];
 
   return (
     <div className='flex w-full justify-center '>
@@ -318,7 +336,8 @@ export default function Summary() {
                 {
                   label: 'Years of Manufacture',
                   value:
-                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                    quote?.data?.vehicle_info_selected?.year_of_manufacture ||
+                    'N/A',
                 },
                 {
                   label: 'Engine Number',
@@ -333,12 +352,13 @@ export default function Summary() {
                 {
                   label: 'Engine Capacity',
                   value:
-                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                    quote?.data?.vehicle_info_selected?.engine_capacity ||
+                    'N/A',
                 },
                 {
                   label: 'Power Rate',
                   value:
-                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                    quote?.data?.vehicle_info_selected?.power_rate || 'N/A',
                 },
               ]}
             />
