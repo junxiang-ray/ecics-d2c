@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Form, Spin } from 'antd';
+import { Button, Form } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -10,10 +10,8 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
-
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownOption,
@@ -22,14 +20,16 @@ import {
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import { MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
-import {
-  useGetVehicleMakes,
-  useGetVehicleModels,
-} from '@/hook/insurance/common';
+import { useGetNationality } from '@/hook/insurance/common';
 
-import { NumberClaim } from '@/app/motor/insurance/basic-detail/options';
+import {
+  HELPER_TYPE_OPTIONS,
+  NumberClaim,
+  POLICY_DURATION_OPTIONS,
+} from '@/app/motor/insurance/basic-detail/options';
+
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuote';
@@ -39,7 +39,7 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
 const singpassFlowFields = {
-  [MOTOR_QUOTE.start_date]: z
+  [MAID_QUOTE.start_date]: z
     .date({
       required_error: 'This field is required',
       invalid_type_error: 'This field is required',
@@ -51,21 +51,21 @@ const singpassFlowFields = {
       (date) => dayjs(date).isSameOrBefore(dayjs().add(90, 'days'), 'day'),
       { message: 'Start date cannot be later than 90 days from today' },
     ),
-  [MOTOR_QUOTE.end_date]: z.date({
+  [MAID_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.promo_code]: z.string().optional(),
+  [MAID_QUOTE.promo_code]: z.string().optional(),
 };
 
 const nonSingpassFlowFields = {
   ...singpassFlowFields,
-  [MOTOR_QUOTE.email]: z
+  [MAID_QUOTE.email]: z
     .string({
       required_error: 'This field is required',
     })
     .regex(emailRegex, 'Please enter a valid email address.'),
-  [MOTOR_QUOTE.mobile]: z
+  [MAID_QUOTE.mobile]: z
     .string({
       required_error: 'This field is required',
     })
@@ -74,17 +74,32 @@ const nonSingpassFlowFields = {
       phoneRegex,
       "Please enter an 8-digit number starting with '8' or '9'.",
     ),
-  [MOTOR_QUOTE.owner_dob]: z.date({
+  [MAID_QUOTE.maid_dob]: z.date({
     required_error: 'This field is required',
   }),
+  [MAID_QUOTE.maid_type]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
+
+  [MAID_QUOTE.plan_period]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
+
+  [MAID_QUOTE.nationality]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
 };
-const ID_OPTION_OTHER = 2; //-- Others (Not Available in this list) --
 
 const createSchema = (isSingpassFlow: boolean) => {
   const baseSchema = z.object(
     isSingpassFlow ? singpassFlowFields : nonSingpassFlowFields,
   );
-
   return baseSchema;
 };
 
@@ -97,7 +112,6 @@ type FormData = NonSingpassFlowFields | SingpassFlowFields;
 interface PolicyDetailProps extends FormProps {
   onSubmit: (value: any) => void;
   onSaveRegister: (fn: () => any) => void;
-  hirePurchaseOptions: DropdownOption[];
   isSingpassFlow: boolean;
   isLoading?: boolean;
 }
@@ -105,7 +119,6 @@ interface PolicyDetailProps extends FormProps {
 const PolicyDetailForm = ({
   onSubmit,
   onSaveRegister,
-  hirePurchaseOptions,
   isSingpassFlow = false,
   initialValues,
   isLoading = false,
@@ -116,8 +129,7 @@ const PolicyDetailForm = ({
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
-  const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
-
+  const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
   const [showCSModal, setShowCSModal] = useState(false);
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
@@ -136,180 +148,24 @@ const PolicyDetailForm = ({
   } = methods;
 
   // input field change
-  const start_date = watch(MOTOR_QUOTE.start_date) as Date;
-  const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
-  const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
-  const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
-  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as string;
-  const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
-  const helperType = watch('helperType');
-  const policyDuration = watch('policyDuration');
-
-  const { data: makeOptions } = useGetVehicleMakes();
-  const vehicleMakeId = makeOptions?.find(
-    (item: any) => item.name === vehicle_make,
-  )?.id;
-
-  const { data: modelOptions, isLoading: isLoadingModelOptions } =
-    useGetVehicleModels(vehicleMakeId as string);
-
-  const makeOptionsFormatted: DropdownOption[] = useMemo(() => {
-    if (!makeOptions) return [];
-    return makeOptions?.map((item: any) => ({
+  const start_date = watch(MAID_QUOTE.start_date) as Date;
+  const maid_dob = watch(MAID_QUOTE.maid_dob) as Date;
+  const no_claim = watch(MAID_QUOTE.owner_no_of_claims) as string;
+  const nationality = watch(MAID_QUOTE.nationality) as string;
+  const helperType = watch(MAID_QUOTE.maid_type) as string;
+  const policyDuration = watch(MAID_QUOTE.plan_period) as string;
+  const { data: nationalOptions } = useGetNationality();
+  const nationalOptionsFormatted: DropdownOption[] = useMemo(() => {
+    if (!nationalOptions) return [];
+    return nationalOptions?.map((item: any) => ({
       text: item.name,
       value: item.name,
     }));
-  }, [makeOptions]);
+  }, [nationalOptions]);
 
-  const modelOptionsFormatted: DropdownOption[] = useMemo(() => {
-    if (!modelOptions) return [];
-    return modelOptions?.map((item: any) => ({
-      text: item.name,
-      value: item.name,
-    }));
-  }, [modelOptions]);
-
-  useEffect(() => {
-    if (helperType === 'new') {
-      methods.setValue('policyDuration', '26', { shouldValidate: true });
-    }
-  }, [helperType, methods]);
-
-  useEffect(() => {
-    setApplyPromoCode(initPromoCode);
-  }, [initPromoCode]);
-
-  useEffect(() => {
-    if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
-      setShowCSModal(true);
-    }
-  }, [no_claim]);
-
-  // Register onSave callback to collect current form values
-  useEffect(() => {
-    onSaveRegister(() => {
-      const value = methods.getValues();
-      let vehicle_info_selected;
-      let personal_info;
-
-      if (!isSingpassFlow) {
-        vehicle_info_selected = {
-          vehicle_make: value[MOTOR_QUOTE.vehicle_make],
-          vehicle_model: value[MOTOR_QUOTE.vehicle_model],
-          first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
-        };
-
-        personal_info = {
-          date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
-            'DD/MM/YYYY',
-          ),
-          driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
-          phone: value[MOTOR_QUOTE.mobile],
-          email: value[MOTOR_QUOTE.email],
-        };
-      }
-
-      const payload = {
-        key: key,
-        partner_code: partnerCode,
-        promo_code: applyPromoCode,
-        company_id: value[MOTOR_QUOTE.hire_purchase],
-        company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
-        personal_info: personal_info,
-        vehicle_info_selected: vehicle_info_selected,
-        insurance_additional_info: {
-          no_claim_discount: value[MOTOR_QUOTE.owner_ncd],
-          no_of_claim: value[MOTOR_QUOTE.owner_no_of_claims],
-          start_date: dayjs(value[MOTOR_QUOTE.start_date] as Date).format(
-            'DD/MM/YYYY',
-          ),
-          end_date: dayjs(value[MOTOR_QUOTE.end_date] as Date).format(
-            'DD/MM/YYYY',
-          ),
-          last_claim_amount: value[MOTOR_QUOTE.owner_claim_amount],
-        },
-      };
-      return payload;
-    });
-  }, [methods, onSaveRegister]);
-
-  useEffect(() => {
-    if (!start_date || !policyDuration) return;
-    const months = Number(policyDuration);
-    const endDate = dayjs(start_date).add(months, 'month').toDate();
-    methods.setValue(MOTOR_QUOTE.end_date, endDate, { shouldValidate: true });
-  }, [start_date, policyDuration, methods]);
-
-  const handleChangeDob = () => {
-    // methods.setValue(MOTOR_QUOTE.start_date, null as any);
-    // methods.setValue(MOTOR_QUOTE.end_date, null as any);
-  };
-  const handleChangeStartDate = (date: any) => {
-    const startDate = dateToDayjs(date?.toDate());
-    const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
-    if (!defaultEndDate) {
-      methods.setValue(MOTOR_QUOTE.end_date, null as any);
-      return;
-    }
-    methods.setValue(MOTOR_QUOTE.end_date, defaultEndDate.toDate());
-    methods.trigger([MOTOR_QUOTE.end_date], { shouldFocus: false });
-  };
-
-  const handleSubmit = (value: FormData) => {
-    let vehicle_info_selected;
-    let personal_info;
-
-    if (!isSingpassFlow) {
-      vehicle_info_selected = {
-        vehicle_make: value[MOTOR_QUOTE.vehicle_make],
-        vehicle_model: value[MOTOR_QUOTE.vehicle_model],
-        first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
-      };
-
-      personal_info = {
-        date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
-          'DD/MM/YYYY',
-        ),
-        driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
-        phone: value[MOTOR_QUOTE.mobile],
-        email: value[MOTOR_QUOTE.email],
-      };
-    }
-    const noOfClaim = value[MOTOR_QUOTE.owner_no_of_claims];
-    const promoCode =
-      noOfClaim === NumberClaim.NEVER ? formatPromoCode(applyPromoCode) : '';
-    const payload = {
-      key: key,
-      partner_code: partnerCode,
-      promo_code: promoCode,
-      company_id: value[MOTOR_QUOTE.hire_purchase],
-      company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
-      personal_info: personal_info,
-      vehicle_info_selected: vehicle_info_selected,
-      insurance_additional_info: {
-        no_claim_discount: value[MOTOR_QUOTE.owner_ncd],
-        no_of_claim: value[MOTOR_QUOTE.owner_no_of_claims],
-        start_date: dayjs(value[MOTOR_QUOTE.start_date] as Date).format(
-          'DD/MM/YYYY',
-        ),
-        end_date: dayjs(value[MOTOR_QUOTE.end_date] as Date).format(
-          'DD/MM/YYYY',
-        ),
-      },
-    };
-    // onSubmit(payload);
-    console.log(payload, 'chinh123');
-  };
-
-  const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
-
-  const minPolicyStartDate = useMemo(() => {
-    return dayjs().add(6, 'day');
-  }, []);
-
-  const maxPolicyStartDate = useMemo(() => {
-    return dayjs().add(90, 'day');
-  }, []);
+  const planPeriodText =
+    POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)?.text ||
+    policyDuration;
 
   const minDob = useMemo(() => {
     if (!start_date) return undefined;
@@ -321,214 +177,317 @@ const PolicyDetailForm = ({
     return dayjs(start_date).subtract(60, 'year').add(1, 'day');
   }, [start_date]);
 
+  const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
+
+  const minPolicyStartDate = useMemo(() => {
+    return dayjs().add(6, 'day');
+  }, []);
+
+  const maxPolicyStartDate = useMemo(() => {
+    return dayjs().add(90, 'day');
+  }, []);
+
   useEffect(() => {
-    if (!start_date || !date_of_birth) return;
-    const dob = dayjs(date_of_birth);
+    if (helperType === 'New Maid') {
+      methods.setValue(MAID_QUOTE.plan_period, '26', { shouldValidate: true });
+    }
+  }, [helperType, methods]);
+
+  useEffect(() => {
+    setApplyPromoCode(initPromoCode);
+  }, [initPromoCode]);
+
+  useEffect(() => {
+    onSaveRegister(() => {
+      const value = methods.getValues();
+      let vehicle_info_selected;
+      let personal_info;
+
+      if (!isSingpassFlow) {
+        vehicle_info_selected = {
+          vehicle_make: value[MAID_QUOTE.vehicle_make],
+          vehicle_model: value[MAID_QUOTE.vehicle_model],
+          first_registered_year: value[MAID_QUOTE.reg_yyyy] as string,
+        };
+
+        personal_info = {
+          date_of_birth: dayjs(value[MAID_QUOTE.owner_dob] as Date).format(
+            'DD/MM/YYYY',
+          ),
+          driving_experience: value[MAID_QUOTE.owner_drv_exp],
+          phone: value[MAID_QUOTE.mobile],
+          email: value[MAID_QUOTE.email],
+        };
+      }
+      const payload = {
+        key: key,
+        maid_type: helperType,
+        plan_period: planPeriodText,
+        start_date: dayjs(value[MAID_QUOTE.start_date] as Date).format(
+          'DD/MM/YYYY',
+        ),
+        partner_code: partnerCode,
+        promo_code: applyPromoCode,
+        personal_info: personal_info,
+        maid_info: {
+          nationality: nationality,
+          date_of_birth: dayjs(maid_dob).format('DD/MM/YYYY'),
+        },
+      };
+      return payload;
+    });
+  }, [methods, onSaveRegister]);
+
+  useEffect(() => {
+    if (!start_date || !policyDuration) return;
+    const months = Number(policyDuration);
+    const endDate = dayjs(start_date).add(months, 'month').toDate();
+    methods.setValue(MAID_QUOTE.end_date, endDate, { shouldValidate: true });
+  }, [start_date, policyDuration, methods]);
+
+  useEffect(() => {
+    if (!start_date || !maid_dob) return;
+    const dob = dayjs(maid_dob);
     if (dob.isAfter(minDob, 'day') || dob.isBefore(maxDob, 'day')) {
-      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
+      methods.setValue(MAID_QUOTE.maid_dob, undefined, {
         shouldValidate: true,
       });
     }
-  }, [start_date, date_of_birth, minDob, maxDob, methods]);
+  }, [start_date, maid_dob, minDob, maxDob, methods]);
 
-  const HELPER_TYPE_OPTIONS = [
-    { value: 'new', text: 'New Maid' },
-    { value: 'renewal', text: 'Renewal Maid' },
-    { value: 'transfer', text: 'Transfer Maid' },
-  ];
+  const handleChangeStartDate = (date: any) => {
+    const startDate = dateToDayjs(date?.toDate());
+    const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
+    if (!defaultEndDate) {
+      methods.setValue(MAID_QUOTE.end_date, null as any);
+      return;
+    }
+    methods.setValue(MAID_QUOTE.end_date, defaultEndDate.toDate());
+    methods.trigger([MAID_QUOTE.end_date], { shouldFocus: false });
+  };
 
-  const POLICY_DURATION_OPTIONS = [
-    { value: '26', text: '26 Months' },
-    { value: '14', text: '14 Months' },
-  ];
+  const handleSubmit = (value: FormData) => {
+    let personal_info;
+    const planPeriodText =
+      POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)
+        ?.text || policyDuration;
+    if (!isSingpassFlow) {
+      personal_info = {
+        phone: value[MAID_QUOTE.mobile],
+        email: value[MAID_QUOTE.email],
+      };
+    }
+
+    const payload = {
+      key: key,
+      maid_type: helperType,
+      plan_period: planPeriodText,
+      start_date: dayjs(value[MAID_QUOTE.start_date] as Date).format(
+        'DD/MM/YYYY',
+      ),
+      partner_code: partnerCode,
+      promo_code: applyPromoCode,
+      personal_info: personal_info,
+      maid_info: {
+        nationality: nationality,
+        date_of_birth: dayjs(maid_dob).format('DD/MM/YYYY'),
+      },
+    };
+    onSubmit(payload);
+  };
 
   return (
     <>
-      <FormProvider {...methods}>
-        <Form
-          form={form}
-          scrollToFirstError={{
-            behavior: 'smooth',
-            block: 'center',
-          }}
-          onFinish={methods.handleSubmit(handleSubmit)}
-          disabled={isLoading}
-          className=' mb-16 flex w-full flex-col items-center px-4'
-          {...props}
-        >
-          <div className='max-w-[1200px]'>
-            {!isSingpassFlow && (
-              <>
-                <div className='relative w-full' style={{ zIndex: '99' }}>
-                  <div className='flex flex-col'>
-                    <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
-                      Your Contact Details
-                    </div>
-                    {/* <div className='grid sm:grid-cols-3 sm:gap-x-6 gap-y-8'> */}
-                    <div className='mb-6 flex flex-col gap-6'>
-                      <Form.Item
-                        name={MOTOR_QUOTE.email}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.email] ? 'error' : ''
-                        }
-                      >
-                        <InputField
-                          name={MOTOR_QUOTE.email}
-                          label='Email Address'
-                          placeholder='Enter Your Email Address'
-                          isRequired={true}
-                        />
-                      </Form.Item>
+      <div className='flex w-full justify-center'>
+        <FormProvider {...methods}>
+          <Form
+            form={form}
+            scrollToFirstError={{
+              behavior: 'smooth',
+              block: 'center',
+            }}
+            onFinish={methods.handleSubmit(handleSubmit)}
+            disabled={isLoading}
+            className='mb-16 flex w-full max-w-[1200px] flex-col px-4 sm:px-4 md:px-0'
+            {...props}
+          >
+            <div className='w-full'>
+              {!isSingpassFlow && (
+                <>
+                  <div className='relative w-full' style={{ zIndex: '99' }}>
+                    <div className='flex flex-col'>
+                      <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
+                        Contact Info
+                      </div>
+                      <div className='mb-6 grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6'>
+                        <Form.Item
+                          name={MAID_QUOTE.email}
+                          validateStatus={
+                            errors[MAID_QUOTE.email] ? 'error' : ''
+                          }
+                        >
+                          <InputField
+                            name={MAID_QUOTE.email}
+                            label='Email Address'
+                            placeholder='Enter Your Email Address'
+                            isRequired={true}
+                          />
+                        </Form.Item>
 
-                      <Form.Item
-                        name={MOTOR_QUOTE.mobile}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.mobile] ? 'error' : ''
-                        }
-                      >
-                        <InputField
-                          name={MOTOR_QUOTE.mobile}
-                          label='Mobile Number'
-                          placeholder='Enter Your Mobile Number'
-                          onChange={(
-                            e: React.ChangeEvent<HTMLInputElement>,
-                          ) => {
-                            const onlyNums = e.target.value.replace(/\D/g, '');
-                            methods.setValue(MOTOR_QUOTE.mobile, onlyNums, {
-                              shouldValidate: true,
-                            });
-                          }}
-                          value={String(watch(MOTOR_QUOTE.mobile) ?? '')}
-                          isRequired={true}
-                        />
-                      </Form.Item>
+                        <Form.Item
+                          name={MAID_QUOTE.mobile}
+                          validateStatus={
+                            errors[MAID_QUOTE.mobile] ? 'error' : ''
+                          }
+                        >
+                          <InputField
+                            name={MAID_QUOTE.mobile}
+                            label='Mobile Number'
+                            placeholder='Enter Your Mobile Number'
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>,
+                            ) => {
+                              const onlyNums = e.target.value.replace(
+                                /\D/g,
+                                '',
+                              );
+                              methods.setValue(MAID_QUOTE.mobile, onlyNums, {
+                                shouldValidate: true,
+                              });
+                            }}
+                            value={String(watch(MAID_QUOTE.mobile) ?? '')}
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                        <div></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
+                        Basic Information
+                      </div>
+                      <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+                        <Form.Item
+                          name={MAID_QUOTE.maid_type}
+                          validateStatus={
+                            errors[MAID_QUOTE.maid_type] ? 'error' : ''
+                          }
+                        >
+                          <RadioField
+                            name={MAID_QUOTE.maid_type}
+                            label='Helper Type'
+                            options={HELPER_TYPE_OPTIONS}
+                            className='flex w-full !flex-col'
+                            isRequired={true}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          name={MAID_QUOTE.plan_period}
+                          validateStatus={
+                            errors[MAID_QUOTE.plan_period] ? 'error' : ''
+                          }
+                        >
+                          <RadioField
+                            name={MAID_QUOTE.plan_period}
+                            label='Policy Duration'
+                            options={POLICY_DURATION_OPTIONS}
+                            isRequired={true}
+                            disabled={helperType === 'New Maid'}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          name={MAID_QUOTE.start_date}
+                          validateStatus={
+                            errors[MAID_QUOTE.start_date] ? 'error' : ''
+                          }
+                        >
+                          <DatePickerField
+                            name={MAID_QUOTE.start_date}
+                            label='Policy Start Date'
+                            minDate={minPolicyStartDate}
+                            maxDate={maxPolicyStartDate}
+                            onChange={handleChangeStartDate}
+                            disabledDate={(current) => {
+                              return (
+                                current && current < dayjs().startOf('day')
+                              );
+                            }}
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          name={MAID_QUOTE.end_date}
+                          validateStatus={
+                            errors[MAID_QUOTE.end_date] ? 'error' : ''
+                          }
+                        >
+                          <DatePickerField
+                            label='Policy End Date'
+                            name={MAID_QUOTE.end_date}
+                            disabled
+                            isRequired={true}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          name={MAID_QUOTE.nationality}
+                          validateStatus={
+                            errors[MAID_QUOTE.nationality] ? 'error' : ''
+                          }
+                        >
+                          <LongOptionDropdownField
+                            name={MAID_QUOTE.nationality}
+                            label='Nationality'
+                            placeholder='Select Helpers Nationality'
+                            options={nationalOptionsFormatted}
+                            onChange={() => {
+                              // Reset model when make changes
+                              methods.setValue(
+                                MAID_QUOTE.vehicle_model,
+                                null as any,
+                              );
+                            }}
+                            showSearch
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          name={MAID_QUOTE.maid_dob}
+                          validateStatus={
+                            errors[MAID_QUOTE.maid_dob] ? 'error' : ''
+                          }
+                        >
+                          <DatePickerField
+                            name={MAID_QUOTE.maid_dob}
+                            label='Date of birth'
+                            minDate={maxDob}
+                            maxDate={minDob}
+                            isRequired={true}
+                          />
+                        </Form.Item>
+                      </div>
                     </div>
                   </div>
+                </>
+              )}
 
-                  <div>
-                    <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
-                      Helper’s Information
-                    </div>
-                    <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
-                      <Form.Item
-                        name={MOTOR_QUOTE.email}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.email] ? 'error' : ''
-                        }
-                      >
-                        <RadioField
-                          name='helperType'
-                          label='Helper Type'
-                          options={HELPER_TYPE_OPTIONS}
-                          className='flex flex-col'
-                          // noBorder
-                          isRequired={true}
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={MOTOR_QUOTE.email}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.email] ? 'error' : ''
-                        }
-                      >
-                        <RadioField
-                          name='policyDuration'
-                          label='Policy Duration'
-                          options={POLICY_DURATION_OPTIONS}
-                          // noBorder
-                          isRequired={true}
-                          disabled={helperType === 'new'}
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={MOTOR_QUOTE.start_date}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.start_date] ? 'error' : ''
-                        }
-                      >
-                        <DatePickerField
-                          name={MOTOR_QUOTE.start_date}
-                          label='Policy Start Date'
-                          minDate={minPolicyStartDate}
-                          maxDate={maxPolicyStartDate}
-                          onChange={handleChangeStartDate}
-                          disabledDate={(current) => {
-                            return current && current < dayjs().startOf('day');
-                          }}
-                          isRequired={true}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={MOTOR_QUOTE.end_date}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.end_date] ? 'error' : ''
-                        }
-                      >
-                        <DatePickerField
-                          label='Policy End Date'
-                          name={MOTOR_QUOTE.end_date}
-                          disabled
-                          isRequired={true}
-                        />
-                      </Form.Item>
-
-                      <Form.Item name={MOTOR_QUOTE.vehicle_make}>
-                        <LongOptionDropdownField
-                          name={MOTOR_QUOTE.vehicle_make}
-                          label='Nationality'
-                          placeholder='Select Helper’s Nationality'
-                          options={makeOptionsFormatted}
-                          onChange={() => {
-                            // Reset model when make changes
-                            methods.setValue(
-                              MOTOR_QUOTE.vehicle_model,
-                              null as any,
-                            );
-                          }}
-                          showSearch
-                          isRequired={true}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        name={MOTOR_QUOTE.owner_dob}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
-                        }
-                      >
-                        <DatePickerField
-                          name={MOTOR_QUOTE.owner_dob}
-                          label='Date of birth'
-                          // minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
-                          // maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
-                          minDate={maxDob}
-                          maxDate={minDob}
-                          onChange={handleChangeDob}
-                          isRequired={true}
-                        />
-                      </Form.Item>
-                    </div>
-                  </div>
+              <div className='mt-6 w-full justify-items-center'>
+                <div className='w-[90vw] md:w-96'>
+                  <PromoCodeField
+                    placeholder='Enter promo code'
+                    applyPromoCode={applyPromoCode}
+                    setApplyPromoCode={setApplyPromoCode}
+                    isDisablePromoCode={!isEnablePromoCode}
+                  />
                 </div>
-              </>
-            )}
-
-            <div className='mt-6 w-full justify-items-center'>
-              <div className='w-[90vw] md:w-96'>
-                <PromoCodeField
-                  placeholder='Enter promo code'
-                  applyPromoCode={applyPromoCode}
-                  setApplyPromoCode={setApplyPromoCode}
-                  isDisablePromoCode={!isEnablePromoCode}
-                  // promoCode='MAID15'
-                  // textPromoCode='Use MAID15 for 15% off'
-                />
               </div>
             </div>
-          </div>
-        </Form>
-      </FormProvider>
+          </Form>
+        </FormProvider>
+      </div>
       <div
         className={`fixed bottom-0 w-full bg-white px-2`}
         style={{ zIndex: 100 }}

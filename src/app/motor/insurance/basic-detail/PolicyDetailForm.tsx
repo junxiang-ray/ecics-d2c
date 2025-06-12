@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
 
+import { PricingSummary } from '@/components/page/FeeBar';
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownField,
@@ -22,7 +23,6 @@ import {
 } from '@/components/ui//form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import { PricingSummary } from '@/app/motor/insurance/components/FeeBar';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
