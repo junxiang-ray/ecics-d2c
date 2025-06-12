@@ -28,10 +28,10 @@ import {
   HELPER_TYPE_OPTIONS,
   NumberClaim,
   POLICY_DURATION_OPTIONS,
+  ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
-import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuote';
 import { RadioField } from '@/components/ui/form/radiofield';
 
 dayjs.extend(isSameOrAfter);
@@ -130,7 +130,6 @@ const PolicyDetailForm = ({
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
-  const [showCSModal, setShowCSModal] = useState(false);
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
   const methods = useForm<FormData>({
@@ -480,6 +479,7 @@ const PolicyDetailForm = ({
                     applyPromoCode={applyPromoCode}
                     setApplyPromoCode={setApplyPromoCode}
                     isDisablePromoCode={!isEnablePromoCode}
+                    product_type={ProductType.MAID}
                   />
                 </div>
               </div>
@@ -515,10 +515,6 @@ const PolicyDetailForm = ({
           </div>
         </div>
       </div>
-      <UnableQuote
-        onClick={() => setShowCSModal(false)}
-        visible={showCSModal}
-      />
     </>
   );
 };

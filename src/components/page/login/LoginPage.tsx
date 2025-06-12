@@ -33,8 +33,8 @@ const LoginPage = () => {
       saveToLocalStorage({ [PROMO_CODE]: promoCodeDefault });
     }
   }, [partnerCode, promoCodeDefault]);
-
-  const { mutate: verifyPromoCode, data: promoCodeData } = useVerifyPromoCode();
+  const { mutate: verifyPromoCode, data: promoCodeData } =
+    useVerifyPromoCode(productType);
 
   useEffect(() => {
     if (promoCodeDefault) {

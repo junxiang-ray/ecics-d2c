@@ -1,13 +1,8 @@
 'use client';
 
-// import HeaderVehicleInfo from './components/HeaderVehicleInfo';
-// import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
 import { Button } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
@@ -22,10 +17,9 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-
-import PlanCardMobile from './components/PlanCardMobile';
-import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
-import { ProductType } from '../basic-detail/options';
+import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
+import PlanMaid from './PlanMaid';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -48,19 +42,19 @@ function PlanDetail({
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
 
-  const quoteInfo = useAppSelector((state) => state.quote?.quote);
+  const maidQuoteInfo = useAppSelector((state) => state.maidQuote?.maidQuote);
   const {
     mutateAsync: saveQuote,
     isPending: isSaving,
     isSuccess,
   } = useSaveQuote();
 
-  const plans = quoteInfo?.data?.plans ?? [];
+  const plans = maidQuoteInfo?.data?.plans ?? [];
 
   useEffect(() => {
     onSaveRegister(() => {
       const data = {
-        ...quoteInfo?.data,
+        ...maidQuoteInfo?.data,
         current_step: UserStep.SELECT_PLAN,
         selected_plan: selectedPlan?.title,
         key: key,
@@ -71,18 +65,18 @@ function PlanDetail({
 
   const plansFormatted: FormatPlan[] = plans.map((plan) => ({
     ...plan,
-    discount: quoteInfo?.promo_code?.discount ?? 0,
+    discount: maidQuoteInfo?.promo_code?.discount ?? 0,
     currentPrice:
       plan.premium_with_gst /
-      (1 - (quoteInfo?.promo_code?.discount ?? 0) / 100),
-    promoCode: quoteInfo?.promo_code?.code ?? '',
+      (1 - (maidQuoteInfo?.promo_code?.discount ?? 0) / 100),
+    promoCode: maidQuoteInfo?.promo_code?.code ?? '',
   }));
 
   useEffect(() => {
     if (!plansFormatted.length) return;
-    if (quoteInfo?.data?.selected_plan) {
+    if (maidQuoteInfo?.data?.selected_plan) {
       const selectedPlan = plansFormatted.find(
-        (plan) => plan.title === quoteInfo?.data?.selected_plan,
+        (plan) => plan.title === maidQuoteInfo?.data?.selected_plan,
       );
       if (selectedPlan) {
         setSelectedPlan(selectedPlan);
@@ -98,7 +92,7 @@ function PlanDetail({
 
   const choicePlan = (plan: FormatPlan | null) => {
     const data = {
-      ...quoteInfo?.data,
+      ...maidQuoteInfo?.data,
       selected_plan: plan?.title,
       key: key,
     };
@@ -113,29 +107,13 @@ function PlanDetail({
 
   return (
     <div className='flex w-full flex-col justify-center md:mb-16'>
-      {/* hidden for now */}
-      {/* <div className='py-4 md:hidden'>
-                <HeaderVehicleInfoMobile
-                  vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                />
-              </div> */}
       <div className='flex flex-col items-center justify-center'>
         <div className='w-full max-w-[1280px]'>
           <div className='mx-4 pb-4 text-[16px] font-bold underline'>
             Select a plan
           </div>
-          {/* hidden for now */}
-          {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4'>
-                        <HeaderVehicleInfo
-                          vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                          insuranceAdditionalInfo={
-                            quoteInfo?.data.insurance_additional_info
-                          }
-                        />
-                      </div> */}
-          {/* UI for Mobile and Desktop (updated*/}
           <div className='mx-4'>
-            <PlanCardMobile
+            <PlanMaid
               plans={plansFormatted}
               selectedPlan={selectedPlan}
               setSelectedPlan={setSelectedPlan}
@@ -150,25 +128,30 @@ function PlanDetail({
           <div className='flex w-full items-center justify-between border-t-2 bg-white p-4 py-2 md:max-w-7xl md:border-none md:py-4'>
             {isMobile ? (
               <div className='flex w-full flex-col items-center gap-3'>
-                <div className='flex w-full items-center justify-between text-center'>
-                  <p className='mr-[4px] max-w-[150px] text-start text-[16px] font-semibold text-[#323743]'>
-                    {selectedPlan?.title}
-                  </p>
-                  {!!selectedPlan?.discount && (
-                    <span className='text-[14px] font-normal text-[#FF0004] line-through decoration-1 md:text-2xl md:text-[#EF0000]'>
-                      {formatCurrency(selectedPlan?.currentPrice)}
-                    </span>
-                  )}
-                  <div className='ml-[4px]'>
-                    <p className='text-[18px] font-bold text-[#1B223C]'>
-                      {formatCurrency(selectedPlan?.premium_with_gst)}
+                <div className='flex w-full justify-between px-2'>
+                  <div>
+                    <p className='text-base font-semibold text-[#080808]'>
+                      {selectedPlan?.title} Plan
                     </p>
-                    <p className='text-[12px] font-semibold text-[#323743]'>
+                  </div>
+
+                  <div className='flex flex-col gap-2'>
+                    <div className='flex flex-row items-center gap-2'>
+                      {!!selectedPlan?.discount && (
+                        <span className='ps-4 text-sm font-normal text-[#FF0004] line-through decoration-1'>
+                          {formatCurrency(selectedPlan?.currentPrice)}
+                        </span>
+                      )}
+                      <p className='text-lg font-bold text-[#323743]'>
+                        {formatCurrency(selectedPlan?.premium_with_gst)}
+                      </p>
+                    </div>
+                    <p className='flex w-full justify-end text-xs font-semibold text-[#323743]'>
                       (inclusive of GST)
                     </p>
                   </div>
                 </div>
-                <div className='flex w-full items-center'>
+                <div className='flex w-full items-center gap-4'>
                   <Button
                     color='cyan'
                     icon={<ArrowBackIcon size={16} />}
@@ -195,20 +178,25 @@ function PlanDetail({
                   className='border-none bg-gray-200 pt-[6px]'
                   onClick={handleBack}
                 />
-                <div className='flex items-center gap-4 px-2'>
-                  <p className='text-lg font-semibold text-[#323743]'>
-                    {selectedPlan?.title}
-                  </p>
-                  {!!selectedPlan?.discount && (
-                    <span className='ps-4 text-[18px] font-normal text-[#FF0004] line-through decoration-1'>
-                      {formatCurrency(selectedPlan?.currentPrice)}
-                    </span>
-                  )}
-                  <div className='flex flex-col gap-1'>
-                    <p className='text-3xl font-bold text-[#1B223C]'>
-                      {formatCurrency(selectedPlan?.premium_with_gst)}
+                <div className='flex gap-20 px-2'>
+                  <div>
+                    <p className='text-2xl font-semibold text-[#080808]'>
+                      {selectedPlan?.title} Plan
                     </p>
-                    <p className='font-semibold text-[#323743]'>
+                  </div>
+
+                  <div className='flex flex-col gap-2'>
+                    <div className='flex flex-row items-center gap-2'>
+                      {!!selectedPlan?.discount && (
+                        <span className='ps-4 text-sm font-normal text-[#FF0004] line-through decoration-1'>
+                          {formatCurrency(selectedPlan?.currentPrice)}
+                        </span>
+                      )}
+                      <p className='text-lg font-bold text-[#323743]'>
+                        {formatCurrency(selectedPlan?.premium_with_gst)}
+                      </p>
+                    </div>
+                    <p className='flex w-full justify-end text-xs font-semibold text-[#323743]'>
                       (inclusive of GST)
                     </p>
                   </div>
@@ -231,7 +219,7 @@ function PlanDetail({
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}
         onCancel={() => setShowConfirmDeclaration(false)}
-        product_type={ProductType.CAR}
+        product_type={ProductType.MAID}
       />
     </div>
   );
