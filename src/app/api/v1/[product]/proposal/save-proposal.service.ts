@@ -241,12 +241,14 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
     return_baseurl: process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL,
   };
 
-  const convertedAddons = Object.entries(mappingAddonForMaid).map(
-    ([oldKey, newId]) => {
-      const value = selected_addons[oldKey];
-      return value === 'YES' ? { id: newId } : { id: newId, option: value };
-    },
-  );
+  const convertedAddons = Object.entries(mappingAddonForMaid)
+    .map(([oldKey, newId]) => {
+      if (oldKey in selected_addons && selected_addons[oldKey] !== 'NO') {
+        const value = selected_addons[oldKey];
+        return value === 'YES' ? { id: newId } : { id: newId, option: value };
+      }
+    })
+    .filter(Boolean);
 
   payload.add_ons = convertedAddons;
   logger.info(`Payload for save proposal for maid: ${JSON.stringify(payload)}`);
