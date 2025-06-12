@@ -167,7 +167,6 @@ function AddOnDetail({
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
   const quoteInfo = useAppSelector((state) => state.quote.quote);
-  console.log('quoteInfo.data?.selected_plan', quoteInfo.data?.selected_plan);
   const isManual = searchParams.get('manual') === 'true';
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [drivers, setDrivers] = useState<any[]>([]);

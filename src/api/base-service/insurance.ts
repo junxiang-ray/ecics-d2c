@@ -8,6 +8,7 @@ import {
 import {
   API_GET_QUOTE_BY_KEY,
   API_POST_PERSONAL_INFO_SAVE,
+  API_POST_ZIP_FILES_DOWNLOAD,
   API_SAVE_QUOTE,
 } from '@/constants/api.constant';
 
@@ -46,5 +47,10 @@ export default {
   },
   payment(data: { key: string }) {
     return baseClient.post<any>('/payment', data);
+  },
+  postZipFilesDownload(data: { documents: string[] }) {
+    return baseClient.post<Blob>(`${API_POST_ZIP_FILES_DOWNLOAD}`, data, {
+      responseType: 'blob',
+    });
   },
 };

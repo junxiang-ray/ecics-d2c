@@ -75,6 +75,7 @@ export interface VehicleMakeResponse {
     group_name: string;
   }[];
 }
+
 export interface VehicleModelResponse {
   message: string;
   data: {
@@ -95,11 +96,13 @@ export interface VehicleCheckResponse {
   };
 }
 
-export interface ClassInfo {
-  class: {
-    value: string;
-  };
-  issuedate: {
-    value: string;
-  };
+export interface DocumentItem {
+  id: number;
+  url: string;
+}
+
+export interface PaymentDocument {
+  id: number;
+  text: string;
+  document: DocumentItem[];
 }
