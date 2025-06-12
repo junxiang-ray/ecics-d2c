@@ -318,46 +318,50 @@ const PolicyDetailForm = ({
                       <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
                         Your Contact Details
                       </div>
-                      <div className='mb-6 flex w-full flex-col gap-4 md:flex-row'>
-                        <Form.Item
-                          name={MAID_QUOTE.email}
-                          validateStatus={
-                            errors[MAID_QUOTE.email] ? 'error' : ''
-                          }
-                        >
-                          <InputField
+                      <div className='mb-6 flex w-full flex-col gap-4 md:flex-row md:gap-6'>
+                        <div className='md:min-w-[384px]'>
+                          <Form.Item
                             name={MAID_QUOTE.email}
-                            label='Email Address'
-                            placeholder='Enter Your Email Address'
-                            isRequired={true}
-                          />
-                        </Form.Item>
+                            validateStatus={
+                              errors[MAID_QUOTE.email] ? 'error' : ''
+                            }
+                          >
+                            <InputField
+                              name={MAID_QUOTE.email}
+                              label='Email Address'
+                              placeholder='Enter Your Email Address'
+                              isRequired={true}
+                            />
+                          </Form.Item>
+                        </div>
 
-                        <Form.Item
-                          name={MAID_QUOTE.mobile}
-                          validateStatus={
-                            errors[MAID_QUOTE.mobile] ? 'error' : ''
-                          }
-                        >
-                          <InputField
+                        <div className='md:min-w-[384px]'>
+                          <Form.Item
                             name={MAID_QUOTE.mobile}
-                            label='Mobile Number'
-                            placeholder='Enter Your Mobile Number'
-                            onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>,
-                            ) => {
-                              const onlyNums = e.target.value.replace(
-                                /\D/g,
-                                '',
-                              );
-                              methods.setValue(MAID_QUOTE.mobile, onlyNums, {
-                                shouldValidate: true,
-                              });
-                            }}
-                            value={String(watch(MAID_QUOTE.mobile) ?? '')}
-                            isRequired={true}
-                          />
-                        </Form.Item>
+                            validateStatus={
+                              errors[MAID_QUOTE.mobile] ? 'error' : ''
+                            }
+                          >
+                            <InputField
+                              name={MAID_QUOTE.mobile}
+                              label='Mobile Number'
+                              placeholder='Enter Your Mobile Number'
+                              onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>,
+                              ) => {
+                                const onlyNums = e.target.value.replace(
+                                  /\D/g,
+                                  '',
+                                );
+                                methods.setValue(MAID_QUOTE.mobile, onlyNums, {
+                                  shouldValidate: true,
+                                });
+                              }}
+                              value={String(watch(MAID_QUOTE.mobile) ?? '')}
+                              isRequired={true}
+                            />
+                          </Form.Item>
+                        </div>
                       </div>
                     </div>
 
