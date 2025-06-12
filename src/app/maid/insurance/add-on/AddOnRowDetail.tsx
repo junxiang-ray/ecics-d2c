@@ -1,16 +1,13 @@
 'use client';
 
-import { Button } from 'antd';
 import { memo, useEffect, useState } from 'react';
-
 import { formatCurrency } from '@/libs/utils/utils';
-
-import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 import { SecondaryButton } from '@/components/ui/buttons';
-import { AddOnRadioGroupField } from '@/components/ui/form/radiofield';
-
 import { AddOnFormat } from './AddonDetail';
 import AddOnRow from './AddOnRow';
+import { Button } from 'antd';
+import { AddOnRadioGroupField } from '@/components/ui/form/radiofield';
+import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
 function AddOnRowDetail({
   addon,
