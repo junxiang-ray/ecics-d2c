@@ -301,10 +301,11 @@ const AdditionDriver = ({
                   <InputNumberField
                     name={`drivers.${index}.driving_experience`}
                     label='Driving Experience'
-                    placeholder='Enter experience (Years)'
+                    placeholder='Enter driving experience'
                     isRequired={true}
                     min={0}
                     max={60}
+                    suffix='year(s)'
                   />
                 </div>
                 <div className='flex flex-col gap-2'>

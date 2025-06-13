@@ -156,7 +156,10 @@ export default function CompletePurchaseDetail({
         { title: 'Date of Birth', value: driver.date_of_birth },
         { title: 'Gender', value: driver.gender },
         { title: 'Marital Status', value: driver.marital_status },
-        { title: 'Driving Experience', value: driver.driving_experience },
+        {
+          title: 'Driving Experience',
+          value: `${driver.driving_experience} years`,
+        },
         {
           title: 'Do you have a claim in the past 3 years',
           value: formatBooleanToYesNo(driver.is_claim_in_3_years),
@@ -235,7 +238,9 @@ export default function CompletePurchaseDetail({
     driving_experiences: [
       {
         title: 'Years of Driving Experience',
-        value: quote?.data?.personal_info?.driving_experience || 'N/A',
+        value: quote?.data?.personal_info?.driving_experience
+          ? `${quote.data.personal_info.driving_experience} years`
+          : 'N/A',
       },
       {
         title: 'Your No Claim Discount',

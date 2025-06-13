@@ -629,10 +629,11 @@ const PolicyDetailForm = ({
                     name={MOTOR_QUOTE.owner_drv_exp}
                     label='Years of Driving Experience'
                     isRequired
-                    placeholder='Enter experience (Years)'
+                    placeholder='Enter your driving experience'
                     type='number'
                     min={0}
                     max={60}
+                    suffix='year(s)'
                   />
                 </Form.Item>
 
