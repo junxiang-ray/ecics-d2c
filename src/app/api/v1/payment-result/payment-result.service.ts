@@ -44,7 +44,7 @@ export async function handlePaymentResult(data: paymentDTO) {
     logger.info(`Quote updated to paid: ${JSON.stringify(quoteInfo)}`);
 
     if (quoteInfo.is_electric_model && quoteInfo.email && quoteInfo.name) {
-      sendMail({
+      await sendMail({
         to: quoteInfo.email,
         subject:
           'Tesla Motor Insurance Fractional Shares Campaign (FSPROMO) Details Inside',
