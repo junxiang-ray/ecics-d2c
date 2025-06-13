@@ -34,6 +34,7 @@ export interface Quote {
   company: Company;
   country_nationality: any;
   product_type: any;
+  is_electric_model?: boolean;
 }
 export interface Company {
   id: number;
@@ -201,6 +202,9 @@ export interface Vehicle {
   chassis_no?: string;
   engine_no?: string;
   engine_number?: string;
+  engine_capacity?: string;
+  power_rate?: string;
+  year_of_manufacture?: string;
 }
 
 export interface InsuranceAdditionalInfo {

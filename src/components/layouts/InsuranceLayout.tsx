@@ -6,9 +6,9 @@ import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
 import { InsuranceLayoutContext } from '@/components/contexts/InsuranceLayoutContext';
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 import ProcessBar from '@/components/ProcessBar';
 
-import ModalImportant from '@/app/motor/insurance/complete-purchase/ModalImportant';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';

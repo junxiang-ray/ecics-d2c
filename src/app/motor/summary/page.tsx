@@ -2,11 +2,10 @@
 
 import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-import { saveAs } from 'file-saver';
-import JSZip from 'jszip';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
+import { PaymentDocument } from '@/libs/types/auth';
 import {
   formatBooleanToYesNo,
   formatCurrency,
@@ -15,19 +14,19 @@ import {
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
+import PromoTickIcon from '@/components/icons/PromoTickIcon';
+import { usePaymentSummaryFromQuote } from '@/components/page/summary/useGetPaymentSummaryData';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
-import { LinkButton, SecondaryButton } from '@/components/ui/buttons';
+import {
+  LinkButton,
+  PrimaryButton,
+  SecondaryButton,
+} from '@/components/ui/buttons';
 
-import { useGetQuote } from '@/hook/insurance/quote';
+import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import InfoCard from './InfoCard';
-
-interface DocumentItem {
-  link: string;
-  title: string;
-  isEVModel: boolean;
-}
 
 export default function Summary() {
   const searchParams = useSearchParams();
@@ -44,14 +43,23 @@ export default function Summary() {
 
   const { data: quote, isLoading } = useGetQuote(key);
 
+  //Call api GetPaymentSummaryData
+  const productType = quote?.product_type?.name;
+  const isElectric = quote?.is_electric_model;
+  const { data: paymentSummaryData } = usePaymentSummaryFromQuote(
+    productType,
+    isElectric,
+  );
+
+  const { mutateAsync: downloadZip } = usePostZipFilesDownload();
+
   const _renderCongratulation = () => {
     return (
       <div className='flex flex-col items-center gap-5'>
         {isMobile ? (
           <CheckCircle size={48} />
         ) : (
-          // <PromoTickIcon size={48}/>
-          <CheckCircle size={48} />
+          <PromoTickIcon size={48} className='text-[#52C41A]' />
         )}
         <p className='text-center text-2xl font-normal leading-7 text-[#171A1F]'>
           Payment Success!
@@ -72,6 +80,72 @@ export default function Summary() {
           Share your referral code with friends and you'll both get rewarded
           when they sign up.
         </p>
+      </div>
+    );
+  };
+
+  const _renderNews = () => {
+    const section = paymentSummaryData?.[0];
+
+    return (
+      <div className='flex flex-col gap-4'>
+        <div className='self-center text-xl font-semibold'>
+          {section?.section_title}
+        </div>
+
+        {section?.products?.map((product: any) => (
+          <div
+            key={product.id}
+            className='flex w-full max-w-[900px] flex-col overflow-hidden rounded-xl border shadow-md md:flex-row'
+          >
+            {/* Image Section */}
+            <div className='aspect-video w-full md:aspect-auto md:h-auto md:w-2/5'>
+              <img
+                src={product.image[0]?.url}
+                alt={product.name}
+                className='h-full w-full object-cover'
+              />
+            </div>
+
+            {/* Content Section */}
+            <div className='flex w-full flex-col justify-between p-6 md:w-3/5'>
+              <div>
+                <h2 className='mb-2 text-xl font-semibold'>{product.name}</h2>
+                <p className='mb-4 text-base font-semibold text-gray-700'>
+                  {product.description}
+                </p>
+                <ul className='list-disc space-y-3 pl-5 text-sm font-light text-gray-600 marker:text-black'>
+                  {product.features.map((feature: any) => (
+                    <li key={feature.id}>
+                      <div className='flex items-start gap-3'>
+                        <span className='shrink-0 text-xl'>{feature.icon}</span>
+                        <span className='text-sm text-gray-600'>
+                          <strong className='font-semibold'>
+                            {feature.description?.replace(/\.*$/, '') + ': '}
+                          </strong>
+                          {feature.title}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {product.button_text && (
+                <div className='mt-6'>
+                  <PrimaryButton
+                    onClick={() =>
+                      (window.location.href = product.button_link ?? '#')
+                    }
+                    className='rounded-lg text-sm'
+                  >
+                    {product.button_text}
+                  </PrimaryButton>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
@@ -164,37 +238,30 @@ export default function Summary() {
       </div>
     );
   }
+  const documents: PaymentDocument[] = paymentSummaryData?.[0]?.documents || [];
 
-  const handleDownloadAll = async (
-    documents: { link: string; title: string }[],
-  ) => {
-    if (!documents || documents.length === 0) {
-      console.warn('No documents to download');
-      return;
+  const handleDownloadAll = async () => {
+    try {
+      const fileUrls = documents.flatMap((doc) =>
+        doc.document.map((d) => d.url),
+      );
+      if (fileUrls.length === 0) {
+        console.warn('No documents to download');
+        return;
+      }
+
+      const blob = await downloadZip(fileUrls);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ECICS-documents.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download failed:', err);
     }
-    const zip = new JSZip();
-
-    await Promise.all(
-      documents.map(async (doc, index) => {
-        try {
-          const response = await fetch(doc.link);
-          if (!response.ok) throw new Error(`Failed to fetch ${doc.link}`);
-          const blob = await response.blob();
-
-          const fileExtension = doc.link.split('.').pop() || 'pdf';
-          const safeTitle = doc.title.replace(/[/\\?%*:|"<>]/g, '-');
-
-          const filename = `${safeTitle}.${fileExtension}`;
-
-          zip.file(filename, blob);
-        } catch (error) {
-          console.error(`Can not install ${doc.link}:`, error);
-        }
-      }),
-    );
-
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
-    saveAs(zipBlob, 'ECICS-documents.zip');
   };
 
   const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
@@ -203,7 +270,10 @@ export default function Summary() {
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
   const addonsTitles =
-    matchedPlan?.addons?.map((addon) => addon.title).filter(Boolean) || [];
+    matchedPlan?.benefits
+      ?.filter((benefit) => benefit.is_active)
+      .map((benefit) => benefit.name)
+      .filter(Boolean) || [];
 
   return (
     <div className='flex w-full justify-center '>
@@ -219,15 +289,17 @@ export default function Summary() {
               All set! Your document is ready to go.
             </p>
             <div className='grid'>
-              {quote?.product_type.documents?.map((doc: any, index: number) => (
-                <div key={index}>{_renderDoc(doc.title, doc.link)}</div>
+              {documents.map((doc: any, index: number) => (
+                <div key={index}>
+                  {_renderDoc(doc.text, doc.document?.[0]?.url)}
+                </div>
               ))}
             </div>
             <div className='flex justify-center'>
               <LinkButton
                 type='link'
                 className='text-sm font-semibold text-[#00ADEF]'
-                onClick={() => handleDownloadAll(quote?.product_type.documents)}
+                onClick={handleDownloadAll}
               >
                 Download All
               </LinkButton>
@@ -318,7 +390,8 @@ export default function Summary() {
                 {
                   label: 'Years of Manufacture',
                   value:
-                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                    quote?.data?.vehicle_info_selected?.year_of_manufacture ||
+                    'N/A',
                 },
                 {
                   label: 'Engine Number',
@@ -333,12 +406,13 @@ export default function Summary() {
                 {
                   label: 'Engine Capacity',
                   value:
-                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                    quote?.data?.vehicle_info_selected?.engine_capacity ||
+                    'N/A',
                 },
                 {
                   label: 'Power Rate',
                   value:
-                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                    quote?.data?.vehicle_info_selected?.power_rate || 'N/A',
                 },
               ]}
             />
@@ -403,9 +477,10 @@ export default function Summary() {
               />
             ))}
           </div>
+          {_renderNews()}
           {/* {_renderRewarded()}
-          {_renderRewarded()}
-          {_renderCashBack()} */}
+                      {_renderRewarded()}
+                      {_renderCashBack()} */}
 
           {/*{isMobile ? (*/}
           {/*    <div className='flex justify-center gap-4 bg-white pt-4 text-[16px]'>*/}

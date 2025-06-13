@@ -1,5 +1,11 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+} from '@tanstack/react-query';
+
 import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
+
 import insurance from '@/api/base-service/insurance';
 
 export const useGetQuote = (key: string) => {
@@ -98,5 +104,22 @@ export const usePayment = () => {
   return useMutation({
     mutationFn: payment,
     mutationKey: ['payload'],
+  });
+};
+
+export const usePostZipFilesDownload = (): UseMutationResult<
+  Blob,
+  Error,
+  string[],
+  unknown
+> => {
+  const zipFilesDownload = async (documents: string[]) => {
+    const res = await insurance.postZipFilesDownload({ documents });
+    return res.data;
+  };
+
+  return useMutation<Blob, Error, string[], unknown>({
+    mutationFn: zipFilesDownload,
+    mutationKey: ['zip-files-download'],
   });
 };
