@@ -18,6 +18,7 @@ import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDeta
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import { PricingSummary } from '@/components/page/FeeBar';
+import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { ROUTES } from '@/constants/routes';
@@ -27,7 +28,6 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import ReviewSection from './ReviewSection';
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
 
 export default function CompletePurchaseDetail({

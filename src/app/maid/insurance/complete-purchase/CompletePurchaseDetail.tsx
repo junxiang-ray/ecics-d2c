@@ -19,8 +19,8 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import ReviewSection from './ReviewSection';
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
+import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
 
 function calculateFee(
   option: Option,
@@ -62,11 +62,10 @@ export default function CompletePurchaseDetail({
 
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
-  const quote = useAppSelector((state) => state.quote?.quote);
-  const vehicleSelected = quote?.data?.vehicle_info_selected;
+  const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
 
-  const plan = quote?.data?.plans?.find(
-    (plan) => quote.data?.selected_plan === plan.title,
+  const plan = maidQuote?.data?.plans?.find(
+    (plan) => maidQuote.data?.selected_plan === plan.title,
   );
 
   const {
@@ -101,7 +100,7 @@ export default function CompletePurchaseDetail({
   };
 
   const addonsSectionData = (
-    quote?.data?.review_info_premium?.data_section_add_ons || []
+    maidQuote?.data?.review_info_premium?.data_section_add_ons || []
   ).map((addon: any) => {
     const baseData = {
       title: addon.title,
@@ -117,14 +116,14 @@ export default function CompletePurchaseDetail({
   });
 
   const addonsIncludedData = (
-    quote?.data?.review_info_premium?.add_ons_included_in_this_plan || []
+    maidQuote?.data?.review_info_premium?.add_ons_included_in_this_plan || []
   ).map((item: any) => ({
     title: item.add_on_name,
     value: 'Included',
   }));
 
-  const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
-  const plans = quote?.data?.plans || [];
+  const selectedPlanTitle = maidQuote?.data?.selected_plan || 'N/A';
+  const plans = maidQuote?.data?.plans || [];
   const matchedPlan = plans.find(
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
@@ -133,48 +132,51 @@ export default function CompletePurchaseDetail({
       ?.filter((benefit) => benefit.is_active)
       .map((benefit) => benefit.name)
       .filter(Boolean) || [];
-
+  console.log(
+    'maidQuote?.data?.personal_info?',
+    maidQuote?.data?.personal_info,
+  );
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
   } = {
     helper_details: [
       {
         title: 'Helper’s Full Name',
-        value: 'N/A',
+        value: maidQuote?.data?.maid_info?.name || 'N/A',
       },
       {
         title: 'FIN',
-        value: 'N/A',
+        value: maidQuote?.data?.maid_info?.fin || 'N/A',
       },
       {
         title: 'Passport Number',
-        value: 'N/A',
+        value: maidQuote?.data?.maid_info?.passport_number || 'N/A',
       },
       {
         title: 'Has the helper been employed by you for more than 12 months?',
-        value: 'N/A',
+        value: maidQuote?.data?.maid_info?.has_helper_worked_12_months || 'N/A',
       },
       {
         title: 'Previous Insurer Name',
-        value: 'N/A',
+        value: maidQuote?.data?.maid_info?.company_name || 'N/A',
       },
       {
         title: 'Other Insurer Name',
-        value: 'N/A',
+        value: maidQuote?.data?.maid_info?.company_name_other || 'N/A',
       },
     ],
     helper_basic_information: [
       {
         title: 'Helper Type',
-        value: 'N/A',
+        value: maidQuote?.data?.insurance_other_info?.maid_type || 'N/A',
       },
       {
         title: 'Nationality',
-        value: 'N/A',
+        value: maidQuote?.data?.maid_info?.nationality || 'N/A',
       },
       {
         title: 'Date of Birth',
-        value: vehicleSelected?.first_registered_year || 'N/A',
+        value: maidQuote?.data?.maid_info?.date_of_birth || 'N/A',
       },
     ],
     policy_plan: [
@@ -194,57 +196,63 @@ export default function CompletePurchaseDetail({
     policy: [
       {
         title: 'Policy Start Date',
-        value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
+        value: maidQuote?.data?.insurance_other_info?.start_date || 'N/A',
       },
       {
         title: 'Policy End Date',
-        value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
+        value: maidQuote?.data?.insurance_other_info?.end_date || 'N/A',
       },
       {
         title: 'Policy Duration',
-        value: 'N/A',
+        value: maidQuote?.data?.insurance_other_info?.plan_period || 'N/A',
       },
     ],
     owner: [
       {
         title: 'Name as per NRIC',
-        value: quote?.data?.personal_info?.name ?? 'N/A',
+        value: maidQuote?.data?.personal_info?.name ?? 'N/A',
       },
       {
         title: 'Date of Birth',
-        value: quote?.data?.personal_info?.date_of_birth ?? 'N/A',
+        value: maidQuote?.data?.personal_info?.date_of_birth ?? 'N/A',
       },
-      { title: 'NRIC/FIN', value: quote?.data?.personal_info?.nric ?? 'N/A' },
-      { title: 'Nationality', value: 'N/A' },
+      {
+        title: 'NRIC/FIN',
+        value: maidQuote?.data?.personal_info?.nric ?? 'N/A',
+      },
+      {
+        title: 'Nationality',
+        value: maidQuote?.data?.personal_info?.nationality ?? 'N/A',
+      },
       {
         title: 'Address Line 1',
-        value: quote?.data?.personal_info?.address?.[0] ?? 'N/A',
+        value: maidQuote?.data?.personal_info?.address?.[0] ?? 'N/A',
       },
       {
         title: 'Address Line 2',
-        value: quote?.data?.personal_info?.address?.[1]
-          ? quote?.data?.personal_info?.address?.[1]
+        value: maidQuote?.data?.personal_info?.address?.[1]
+          ? maidQuote?.data?.personal_info?.address?.[1]
           : 'N/A',
       },
       {
         title: 'Address Line 3',
-        value: quote?.data?.personal_info?.address?.[2]
-          ? quote?.data?.personal_info?.address?.[2]
+        value: maidQuote?.data?.personal_info?.address?.[2]
+          ? maidQuote?.data?.personal_info?.address?.[2]
           : 'N/A',
       },
       {
         title: 'Postal Code',
-        value: quote?.data?.personal_info?.post_code ?? 'N/A',
+        value: maidQuote?.data?.personal_info?.post_code ?? 'N/A',
       },
     ],
     personal: [
       {
         title: 'Email Address',
-        value: quote?.data?.personal_info?.email || 'N/A',
+        value: maidQuote?.data?.personal_info?.email || 'N/A',
       },
       {
         title: 'Phone Number',
-        value: quote?.data?.personal_info?.phone,
+        value: maidQuote?.data?.personal_info?.phone,
       },
     ],
   };
@@ -291,7 +299,7 @@ export default function CompletePurchaseDetail({
 
   const defaultAddonsSelected = useMemo(() => {
     if (!plan?.addons.length) return {};
-    const selected_addons = quote?.data?.selected_addons ?? {};
+    const selected_addons = maidQuote?.data?.selected_addons ?? {};
     return plan.addons.reduce(
       (acc: Record<string, string>, addon) => {
         if (addon.type === 'checkbox') {
@@ -335,9 +343,9 @@ export default function CompletePurchaseDetail({
   const onPay = async () => {
     const data: any = {
       key: key,
-      selected_plan: quote?.data?.selected_plan,
-      selected_addons: quote?.data?.selected_addons,
-      // add_named_driver_info: quote?.data?.add_named_driver_info,
+      selected_plan: maidQuote?.data?.selected_plan,
+      selected_addons: maidQuote?.data?.selected_addons,
+      // add_named_driver_info: maidQuote?.data?.add_named_driver_info,
     };
     saveProposal(data).then((res) => {
       if (!res?.final_premium) return;
@@ -386,20 +394,20 @@ export default function CompletePurchaseDetail({
   });
 
   const totalAddonFeeSelected =
-    quote?.data?.review_info_premium?.data_section_add_ons.reduce(
+    maidQuote?.data?.review_info_premium?.data_section_add_ons.reduce(
       (total: number, addon: any) => total + (addon.feeSelected || 0),
       0,
     );
 
   const totalAddonDriver =
-    quote?.data?.review_info_premium?.drivers?.reduce(
+    maidQuote?.data?.review_info_premium?.drivers?.reduce(
       (total: number, driver: any, index: number) => {
         if (index === 0) return total;
         return (
           total +
-          (quote?.data?.review_info_premium?.addon_additional_driver
+          (maidQuote?.data?.review_info_premium?.addon_additional_driver
             ?.options?.[0]?.premium_with_gst
-            ? quote?.data?.review_info_premium?.addon_additional_driver
+            ? maidQuote?.data?.review_info_premium?.addon_additional_driver
                 .options[0].premium_with_gst
             : 0)
         );
@@ -409,25 +417,29 @@ export default function CompletePurchaseDetail({
 
   const totalAdditionFee = totalAddonFeeSelected + totalAddonDriver;
   const planFreeTotal =
-    (quote?.data?.review_info_premium?.total_final_price || 0) -
+    (maidQuote?.data?.review_info_premium?.total_final_price || 0) -
     (totalAdditionFee || 0);
 
   const _renderPremiumBreakdownContent = (
     <PremiumBreakdownContent
       productType={ProductType.MAID}
-      quoteInfo={quote}
-      dataSelectedAddOn={quote?.data?.review_info_premium?.data_section_add_ons}
-      drivers={quote?.data?.review_info_premium?.drivers ?? []}
-      addonAdditionalDriver={
-        quote?.data?.review_info_premium?.addon_additional_driver
+      maidQuote={maidQuote}
+      dataSelectedAddOn={
+        maidQuote?.data?.review_info_premium?.data_section_add_ons
       }
-      pricePlanMain={quote?.data?.review_info_premium?.price_plan ?? 0}
-      couponDiscount={quote?.data?.review_info_premium?.coupon_discount ?? 0}
+      drivers={maidQuote?.data?.review_info_premium?.drivers ?? []}
+      addonAdditionalDriver={
+        maidQuote?.data?.review_info_premium?.addon_additional_driver
+      }
+      pricePlanMain={maidQuote?.data?.review_info_premium?.price_plan ?? 0}
+      couponDiscount={
+        maidQuote?.data?.review_info_premium?.coupon_discount ?? 0
+      }
       tax={1.09}
-      gst={quote?.data?.review_info_premium?.gst ?? 0}
-      netPremium={quote?.data?.review_info_premium?.net_premium ?? 0}
+      gst={maidQuote?.data?.review_info_premium?.gst ?? 0}
+      netPremium={maidQuote?.data?.review_info_premium?.net_premium ?? 0}
       addonsIncluded={
-        quote?.data?.review_info_premium?.add_ons_included_in_this_plan
+        maidQuote?.data?.review_info_premium?.add_ons_included_in_this_plan
       }
       onClose={() => setIsShowPopupPremium(false)}
     />
@@ -504,7 +516,7 @@ export default function CompletePurchaseDetail({
           productType={ProductType.MAID}
           planFee={planFreeTotal}
           addonFee={totalAdditionFee}
-          discount={quote?.promo_code?.discount || 0}
+          discount={maidQuote?.promo_code?.discount || 0}
           loading={isPendingSave || isPendingPay}
           title='Premium breakdown'
           textButton='Submit & Pay'

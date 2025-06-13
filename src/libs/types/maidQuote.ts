@@ -58,13 +58,20 @@ export interface MaidQuoteData {
   review_info_premium?: ReviewInfo;
 }
 
-export interface MaidInfo {
-  nationality: string;
-  date_of_birth: string;
+export interface InsuranceOtherInfo {
+  end_date: string;
+  maid_type: string;
+  start_date: string;
+  plan_period: string;
 }
 
-export interface InsuranceOtherInfo {
-  maid_type: string;
-  plan_period: string;
-  start_date: string;
+export interface MaidInfo {
+  fin: string;
+  name: string;
+  nationality: string;
+  company_name: string;
+  date_of_birth: string; // or Date, if parsed
+  passport_number: string;
+  company_name_other: string;
+  has_helper_worked_12_months: string;
 }
