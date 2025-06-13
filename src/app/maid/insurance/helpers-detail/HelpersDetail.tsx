@@ -168,6 +168,26 @@ const createSchema = (listNric: any[] | undefined) =>
           });
         }
       }
+      const fin = data[MAID_QUOTE.fin];
+      const nric = data.nric;
+      if (
+        fin !== undefined &&
+        nric !== undefined &&
+        String(fin).trim() !== '' &&
+        String(nric).trim() !== '' &&
+        String(fin).toUpperCase() === String(nric).toUpperCase()
+      ) {
+        ctx.addIssue({
+          path: [MAID_QUOTE.fin],
+          code: z.ZodIssueCode.custom,
+          message: 'FIN and NRIC/FIN must not be the same.',
+        });
+        ctx.addIssue({
+          path: ['nric'],
+          code: z.ZodIssueCode.custom,
+          message: 'NRIC/FIN and FIN must not be the same.',
+        });
+      }
     });
 
 type FormData = z.infer<ReturnType<typeof createSchema>>;
