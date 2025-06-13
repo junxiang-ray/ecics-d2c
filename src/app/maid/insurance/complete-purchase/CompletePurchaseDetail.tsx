@@ -9,6 +9,7 @@ import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
+import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
@@ -20,7 +21,6 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
-import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
 
 function calculateFee(
   option: Option,

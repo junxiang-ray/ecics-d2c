@@ -246,7 +246,7 @@ function AddOnDetail({
       dispatch(updateQuote(res));
       setIsShowPopupPremium(false);
       if (isManual) {
-        router.push(ROUTES.INSURANCE_MAID.PERSONAL_DETAIL);
+        router.push(ROUTES.INSURANCE_MAID.HELPER_DETAIL);
       } else {
         router.push(ROUTES.INSURANCE_MAID.COMPLETE_PURCHASE);
       }
