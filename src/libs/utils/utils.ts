@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 export const removeFromLocalStorage = (keys: string[]) => {
@@ -145,4 +146,17 @@ export const formatBooleanToYesNo = (
     return value.toLowerCase() === 'true' ? 'Yes' : 'No';
   }
   return value ? 'Yes' : 'No';
+};
+
+export const getPaymentType = (
+  productType?: string,
+  isElectric?: boolean,
+): ProductType | undefined => {
+  if (productType === ProductType.MAID) {
+    return ProductType.MAID;
+  }
+  if (productType === ProductType.CAR) {
+    return isElectric ? ProductType.EVCAR : ProductType.CAR;
+  }
+  return undefined;
 };

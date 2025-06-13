@@ -15,6 +15,7 @@ import {
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
 import PromoTickIcon from '@/components/icons/PromoTickIcon';
+import { usePaymentSummaryFromQuote } from '@/components/page/summary/useGetPaymentSummaryData';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 import {
   LinkButton,
@@ -22,8 +23,6 @@ import {
   SecondaryButton,
 } from '@/components/ui/buttons';
 
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
-import { useGetPaymentSummaryData } from '@/hook/cms/verify';
 import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -47,14 +46,9 @@ export default function Summary() {
   //Call api GetPaymentSummaryData
   const productType = quote?.product_type?.name;
   const isElectric = quote?.is_electric_model;
-  let paymentType: ProductType | undefined;
-  if (productType === ProductType.MAID) {
-    paymentType = ProductType.MAID;
-  } else if (productType === ProductType.CAR) {
-    paymentType = isElectric ? ProductType.EVCAR : ProductType.CAR;
-  }
-  const { data: paymentSummaryData } = useGetPaymentSummaryData(
-    paymentType ?? '',
+  const { data: paymentSummaryData } = usePaymentSummaryFromQuote(
+    productType,
+    isElectric,
   );
 
   const { mutateAsync: downloadZip } = usePostZipFilesDownload();
