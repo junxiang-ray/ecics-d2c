@@ -129,3 +129,8 @@ export const POLICY_DURATION_OPTIONS: DropdownOption[] = [
   { value: '26', text: '26 Months' },
   { value: '14', text: '14 Months' },
 ];
+
+export const HAS_HELPER_WORKED_OPTION: DropdownOption[] = [
+  { value: 'YES', text: 'Yes' },
+  { value: 'NO', text: 'No' },
+];

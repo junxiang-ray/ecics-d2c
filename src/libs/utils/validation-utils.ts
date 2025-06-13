@@ -113,3 +113,34 @@ export function sgCarRegNoValidator(carRegNoInput: string | null): boolean {
 
   return cpLetter[letterIndex] === cpChkSum;
 }
+
+export const finValidator = (finInput: string | null | undefined): boolean => {
+  if (!finInput) return true;
+  if (finInput.includes(' ')) return false;
+  const fin = finInput.toUpperCase();
+  if (fin.length !== 9) return false;
+
+  const chars = fin.split('');
+  const first = chars.shift();
+  const last = chars.pop();
+
+  if (!first || !last) return false;
+
+  const weights = [2, 7, 6, 5, 4, 3, 2];
+  const digits = chars.map((c, i) => Number(c) * weights[i]);
+  const sum = digits.reduce((a, v) => a + v, 0);
+
+  const offset = first === 'G' ? 4 : first === 'M' ? 3 : 0;
+  let index = (offset + sum) % 11;
+  if (first === 'M') index = 10 - index;
+
+  const fg = ['X', 'W', 'U', 'T', 'R', 'Q', 'P', 'N', 'M', 'L', 'K'];
+  const m = ['K', 'L', 'J', 'N', 'P', 'Q', 'R', 'T', 'U', 'W', 'X'];
+
+  let checksum = '';
+  if (first === 'F' || first === 'G') checksum = fg[index];
+  else if (first === 'M') checksum = m[index];
+  else return false;
+
+  return last === checksum;
+};
