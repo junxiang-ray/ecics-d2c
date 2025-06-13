@@ -278,6 +278,16 @@ export interface Addon {
   premium_with_gst: number;
   default_option_id: number | null;
 }
+
+export interface AddOnFormat extends Addon {
+  icon: JSX.Element | null;
+  selectedOption: Option | null;
+  feeAdded: number; // feeAdded is the fee used to calculate the premium for the addon
+
+  activeOption: Option | null;
+  feeSelected: number; // feeSelected is the fee used to show fee when user change option
+}
+
 export interface AddOnIncludedInPlan {
   add_on_id: string;
   add_on_desc: string;

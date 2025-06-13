@@ -54,6 +54,7 @@ export interface MaidQuoteData {
   maid_info: MaidInfo;
   insurance_other_info: InsuranceOtherInfo;
   selected_plan: string;
+  selected_addons?: Record<string, string>;
 }
 
 export interface MaidInfo {

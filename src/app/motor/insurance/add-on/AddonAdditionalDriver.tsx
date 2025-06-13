@@ -10,9 +10,9 @@ import { formatCurrency } from '@/libs/utils/utils';
 import { PersonIcon } from '@/components/icons/add-on-icons';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import IconEditDriver from '@/components/icons/EditDriver';
+import AddOnRow from '@/components/page/insurance/add-on/AddOnRow';
 import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
-import AddOnRow from './AddOnRow';
 import AdditionDriver from '../components/AdditionDriver';
 
 export const ADDON_CARS = [

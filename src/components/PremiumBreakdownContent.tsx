@@ -1,12 +1,16 @@
 import { Button } from 'antd';
 
+import { MaidQuote } from '@/libs/types/maidQuote';
 import { Addon, AddOnIncludedInPlan, Quote } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+
 export interface PremiumBreakdownContentProps {
   quoteInfo?: Quote;
+  maidQuote?: MaidQuote;
   dataSelectedAddOn: any;
-  drivers: any[];
+  drivers?: any[];
   addonAdditionalDriver?: Addon;
   pricePlanMain: number;
   couponDiscount: number;
@@ -16,11 +20,13 @@ export interface PremiumBreakdownContentProps {
   addonsIncluded?: AddOnIncludedInPlan[];
   onClose?: () => void;
   isSummaryScreen?: boolean;
+  productType?: ProductType;
 }
 
 const PremiumBreakdownContent = ({
   quoteInfo,
   dataSelectedAddOn,
+  maidQuote,
   drivers,
   addonAdditionalDriver,
   pricePlanMain,
@@ -31,11 +37,15 @@ const PremiumBreakdownContent = ({
   addonsIncluded,
   onClose,
   isSummaryScreen,
+  productType,
 }: PremiumBreakdownContentProps) => {
   const hasAddons = dataSelectedAddOn && dataSelectedAddOn.length > 0;
   const hasDrivers = drivers && drivers.length > 0;
   const hasIncludedAddOns = addonsIncluded && addonsIncluded.length > 0;
   const hasAnyContent = hasAddons || hasDrivers || hasIncludedAddOns;
+
+  const isMaid = productType === ProductType.MAID;
+  const currentQuote = isMaid ? maidQuote : quoteInfo;
 
   return (
     <div className='flex flex-col gap-4 overflow-y-auto'>
@@ -49,10 +59,10 @@ const PremiumBreakdownContent = ({
         <div className='flex flex-col gap-2'>
           <p className='text-base font-bold text-[#303030]'>Plan</p>
           <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
-            <p>{quoteInfo?.data?.selected_plan ?? ''}</p>
+            <p>{currentQuote?.data?.selected_plan ?? ''}</p>
             <p>{formatCurrency(pricePlanMain)}</p>
           </div>
-          {quoteInfo?.promo_code && (
+          {currentQuote?.promo_code && (
             <div className='flex flex-row justify-between text-sm font-semibold text-[#00ADEF]'>
               <p>Coupon Discount</p>
               <p>-{formatCurrency(couponDiscount)}</p>

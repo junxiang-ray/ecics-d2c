@@ -4,8 +4,9 @@ import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Option } from '@/libs/types/quote';
+import { AddOnFormat } from '@/libs/types/quote';
 import {
+  calculateFee,
   formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
@@ -16,6 +17,7 @@ import { CarIcon, PersonIcon } from '@/components/icons/add-on-icons';
 import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDetailsIcon';
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
+import { PricingSummary } from '@/components/page/FeeBar';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { ROUTES } from '@/constants/routes';
@@ -26,23 +28,7 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import ReviewSection from './ReviewSection';
-import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
-import { PricingSummary } from '@/components/page/FeeBar';
-
-function calculateFee(
-  option: Option,
-  addonsAdded: Record<string, string>,
-): number {
-  if (!option?.dependencies || option.dependencies.length === 0) {
-    return option.premium_with_gst ?? 0;
-  }
-  const dependency = option.dependencies.find((dep) =>
-    dep.conditions.every(
-      (condition) => addonsAdded[condition.addon.code] === condition.value,
-    ),
-  );
-  return dependency?.premium_with_gst ?? 0;
-}
+import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
 
 export default function CompletePurchaseDetail({
   onSaveRegister,

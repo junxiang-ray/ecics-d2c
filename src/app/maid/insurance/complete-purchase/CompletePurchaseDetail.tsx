@@ -4,13 +4,14 @@ import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Option } from '@/libs/types/quote';
+import { AddOnFormat, Option } from '@/libs/types/quote';
 import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -19,7 +20,7 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import ReviewSection from './ReviewSection';
-import { AddOnFormat, mapIconToTypeAddOn } from '../add-on/AddonDetail';
+import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
 
 function calculateFee(
   option: Option,
@@ -413,6 +414,7 @@ export default function CompletePurchaseDetail({
 
   const _renderPremiumBreakdownContent = (
     <PremiumBreakdownContent
+      productType={ProductType.MAID}
       quoteInfo={quote}
       dataSelectedAddOn={quote?.data?.review_info_premium?.data_section_add_ons}
       drivers={quote?.data?.review_info_premium?.drivers ?? []}
@@ -499,6 +501,7 @@ export default function CompletePurchaseDetail({
       </div>
       <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
         <PricingSummary
+          productType={ProductType.MAID}
           planFee={planFreeTotal}
           addonFee={totalAdditionFee}
           discount={quote?.promo_code?.discount || 0}
