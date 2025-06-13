@@ -30,6 +30,7 @@ import {
   POLICY_DURATION_OPTIONS,
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
+
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { RadioField } from '@/components/ui/form/radiofield';

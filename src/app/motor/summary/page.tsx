@@ -222,7 +222,9 @@ export default function Summary() {
       { label: 'Marital Status', value: driver.marital_status || 'N/A' },
       {
         label: 'Driving Experience',
-        value: driver.driving_experience || 'N/A',
+        value: driver.driving_experience
+          ? `${driver.driving_experience} years`
+          : 'N/A',
       },
       {
         label: 'Do you have a claim in the past 3 years',

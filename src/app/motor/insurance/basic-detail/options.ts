@@ -15,60 +15,60 @@ export enum NumberClaim {
   TWO_MANY_CLAIMS = 'to_many_claims',
 }
 export enum NumberDriverExperience {
-  LESS_THAN_2_YEARS = 'less_than_2_years',
-  TWO_YEARS = '2 years',
-  THREE_YEARS = '3 years',
-  FOUR_YEARS = '4 years',
-  FIVE_YEARS = '5 years',
-  SIX_YEARS = '6 years and above',
+  LESS_THAN_2_YEARS = 2,
+  // TWO_YEARS = '2 years',
+  // THREE_YEARS = '3 years',
+  // FOUR_YEARS = '4 years',
+  // FIVE_YEARS = '5 years',
+  // SIX_YEARS = '6 years and above',
 }
 
-const DRIVER_EXP_BASE = [
-  {
-    valueEnum: NumberDriverExperience.LESS_THAN_2_YEARS,
-    valueNumber: 0,
-    text: 'Less than 2 years',
-  },
-  {
-    valueEnum: NumberDriverExperience.TWO_YEARS,
-    valueNumber: 2,
-    text: '2 years',
-  },
-  {
-    valueEnum: NumberDriverExperience.THREE_YEARS,
-    valueNumber: 3,
-    text: '3 years',
-  },
-  {
-    valueEnum: NumberDriverExperience.FOUR_YEARS,
-    valueNumber: 4,
-    text: '4 years',
-  },
-  {
-    valueEnum: NumberDriverExperience.FIVE_YEARS,
-    valueNumber: 5,
-    text: '5 years',
-  },
-  {
-    valueEnum: NumberDriverExperience.SIX_YEARS,
-    valueNumber: 6,
-    text: '6 years and above',
-  },
-];
+// const DRIVER_EXP_BASE = [
+//   {
+//     valueEnum: NumberDriverExperience.LESS_THAN_2_YEARS,
+//     valueNumber: 0,
+//     text: 'Less than 2 years',
+//   },
+//   {
+//     valueEnum: NumberDriverExperience.TWO_YEARS,
+//     valueNumber: 2,
+//     text: '2 years',
+//   },
+//   {
+//     valueEnum: NumberDriverExperience.THREE_YEARS,
+//     valueNumber: 3,
+//     text: '3 years',
+//   },
+//   {
+//     valueEnum: NumberDriverExperience.FOUR_YEARS,
+//     valueNumber: 4,
+//     text: '4 years',
+//   },
+//   {
+//     valueEnum: NumberDriverExperience.FIVE_YEARS,
+//     valueNumber: 5,
+//     text: '5 years',
+//   },
+//   {
+//     valueEnum: NumberDriverExperience.SIX_YEARS,
+//     valueNumber: 6,
+//     text: '6 years and above',
+//   },
+// ];
 
-export const DRV_EXP_OPTIONS: DropdownOption[] = DRIVER_EXP_BASE.map(
-  (item) => ({
-    value: item.valueEnum,
-    text: item.text,
-  }),
-);
+// export const DRV_EXP_OPTIONS: DropdownOption[] = DRIVER_EXP_BASE.map(
+//   (item) => ({
+//     value: item.valueEnum,
+//     text: item.text,
+//   }),
+// );
 
-export const DRIVE_EXP_OPTIONS: DropdownOption[] = DRIVER_EXP_BASE.map(
-  (item) => ({
-    value: item.valueNumber,
-    text: item.text,
-  }),
-);
+// export const DRIVE_EXP_OPTIONS: DropdownOption[] = DRIVER_EXP_BASE.map(
+//   (item) => ({
+//     value: item.valueNumber,
+//     text: item.text,
+//   }),
+// );
 
 const generateYearOptions = (): DropdownOption[] => {
   const currentYear = new Date().getFullYear();
