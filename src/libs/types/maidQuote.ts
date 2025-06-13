@@ -1,4 +1,4 @@
-import { PersonalInfo, Plan } from './quote';
+import { PersonalInfo, Plan, ReviewInfo } from './quote';
 
 export interface MaidQuoteResponse {
   message: string;
@@ -54,6 +54,7 @@ export interface MaidQuoteData {
   maid_info: MaidInfo;
   insurance_other_info: InsuranceOtherInfo;
   selected_plan: string;
+  review_info_premium?: ReviewInfo;
 }
 
 export interface MaidInfo {

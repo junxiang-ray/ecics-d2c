@@ -40,4 +40,10 @@ export const MAID_QUOTE = {
   plan_period: 'plan_period',
   nationality: 'nationality',
   maid_dob: 'date_of_birth',
+  name: 'name',
+  fin: 'fin',
+  passport_number: 'passport_number',
+  company_name: 'company_name',
+  company_name_other: 'company_name_other',
+  has_helper_worked_12_months: 'has_helper_worked_12_months',
 };
