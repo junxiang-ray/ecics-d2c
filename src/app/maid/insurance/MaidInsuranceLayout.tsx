@@ -2,6 +2,7 @@ import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
 import InsuranceLayout from '@/components/layouts/InsuranceLayout';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 
 const maidSteps = {
@@ -25,6 +26,7 @@ export default function MaidInsuranceLayout({
       stepToRoute={maidSteps}
       headerTitle='Maid Insurance Quotation'
       redirectToLoginPath={ROUTES.MAID.LOGIN}
+      productType={ProductType.MAID}
     >
       {children}
     </InsuranceLayout>
