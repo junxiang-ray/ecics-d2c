@@ -1,54 +1,33 @@
 'use client';
 
-import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import { PaymentDocument } from '@/libs/types/auth';
-import {
-  formatBooleanToYesNo,
-  formatCurrency,
-  formatCurrencyString,
-} from '@/libs/utils/utils';
+import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
 import PromoTickIcon from '@/components/icons/PromoTickIcon';
-import InfoCard from '@/components/page/summary/InfoCard';
 import { usePaymentSummaryFromQuote } from '@/components/page/summary/useGetPaymentSummaryData';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
-import {
-  LinkButton,
-  PrimaryButton,
-  SecondaryButton,
-} from '@/components/ui/buttons';
+import { LinkButton, PrimaryButton } from '@/components/ui/buttons';
 
 import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import InfoCard from '@/components/page/summary/InfoCard';
 
 export default function Summary() {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const key = searchParams.get('key') || '';
 
-  const handleGoPersonal = () => {
-    window.open(
-      'https://www.ecics.com/product-listing/personal',
-      '_blank',
-      'noopener,noreferrer',
-    );
-  };
-
   const { data: quote, isLoading } = useGetQuote(key);
 
   //Call api GetPaymentSummaryData
   const productType = quote?.product_type?.name;
-  const isElectric = quote?.is_electric_model;
-  const { data: paymentSummaryData } = usePaymentSummaryFromQuote(
-    productType,
-    isElectric,
-  );
+  const { data: paymentSummaryData } = usePaymentSummaryFromQuote(productType);
 
   const { mutateAsync: downloadZip } = usePostZipFilesDownload();
 
@@ -64,20 +43,6 @@ export default function Summary() {
           Payment Success!
           <br />
           Your coverage is now active and secured.
-        </p>
-      </div>
-    );
-  };
-
-  const _renderRewarded = () => {
-    return (
-      <div className='flex flex-col gap-2'>
-        <p className='text-base font-semibold leading-5'>
-          🎉 Get Rewarded for Referring a Friend!
-        </p>
-        <p className='text-sm font-normal'>
-          Share your referral code with friends and you'll both get rewarded
-          when they sign up.
         </p>
       </div>
     );
@@ -149,30 +114,6 @@ export default function Summary() {
     );
   };
 
-  const _renderCashBack = () => {
-    return (
-      <div className='flex w-full flex-col gap-4 border border-[#00ADEF] p-4 pb-8'>
-        <p className='text-[12.5px] font-semibold leading-[22px]'>
-          You get $50 cash back for each friend who signs up
-        </p>
-        <div className='flex flex-row justify-between'>
-          <SecondaryButton
-            icon={<ShareAltOutlined />}
-            className='h-[30px] rounded-sm text-sm !text-black shadow-md shadow-gray-200'
-          >
-            Share your link
-          </SecondaryButton>
-          <SecondaryButton
-            icon={<CopyOutlined />}
-            className='h-[30px] rounded-sm text-sm !text-black shadow-md shadow-gray-200'
-          >
-            Copy referral link
-          </SecondaryButton>
-        </div>
-      </div>
-    );
-  };
-
   const _renderDoc = (title: string, url: string) => {
     return (
       <div
@@ -211,26 +152,6 @@ export default function Summary() {
     title: item.add_on_name,
     value: 'Included',
   }));
-
-  const driversData = (quote?.data?.review_info_premium?.drivers || []).map(
-    (driver: any) => [
-      { label: 'Name as per NRIC', value: driver.name || 'N/A' },
-      { label: 'NRIC/FIN', value: driver.nric_or_fin || 'N/A' },
-      { label: 'Date of Birth', value: driver.date_of_birth || 'N/A' },
-      { label: 'Gender', value: driver.gender || 'N/A' },
-      { label: 'Marital Status', value: driver.marital_status || 'N/A' },
-      {
-        label: 'Driving Experience',
-        value: driver.driving_experience
-          ? `${driver.driving_experience} years`
-          : 'N/A',
-      },
-      {
-        label: 'Do you have a claim in the past 3 years',
-        value: formatBooleanToYesNo(driver.is_claim_in_3_years) || 'N/A',
-      },
-    ],
-  );
 
   if (isLoading) {
     return (
@@ -317,13 +238,11 @@ export default function Summary() {
                 },
                 {
                   label: 'Policy Start Date',
-                  value:
-                    quote?.data?.insurance_additional_info?.start_date || 'N/A',
+                  value: quote?.data?.insurance_other_info?.start_date || 'N/A',
                 },
                 {
                   label: 'Policy End Date',
-                  value:
-                    quote?.data?.insurance_additional_info?.end_date || 'N/A',
+                  value: quote?.data?.insurance_other_info?.end_date || 'N/A',
                 },
                 {
                   label: 'Plan Details',
@@ -365,55 +284,42 @@ export default function Summary() {
               }
             />
             <InfoCard
-              title='Vehicle Details'
+              title='Helper’s Details'
               data={[
                 {
-                  label: 'Vehicle Number',
-                  value:
-                    quote?.data?.vehicle_info_selected?.vehicle_number || 'N/A',
+                  label: 'Helper Type',
+                  value: quote?.data?.insurance_other_info?.maid_type || 'N/A',
                 },
                 {
-                  label: 'Vehicle Make',
-                  value:
-                    quote?.data?.vehicle_info_selected?.vehicle_make || 'N/A',
+                  label: 'Nationality',
+                  value: quote?.data?.maid_info?.nationality || 'N/A',
                 },
                 {
-                  label: 'Vehicle Model',
-                  value:
-                    quote?.data?.vehicle_info_selected?.vehicle_model || 'N/A',
+                  label: 'Date of Birth',
+                  value: quote?.data?.maid_info?.date_of_birth || 'N/A',
                 },
                 {
-                  label: 'First Registration Date',
+                  label: 'Full Name',
+                  value: quote?.data?.maid_info?.name || 'N/A',
+                },
+                {
+                  label: 'FIN',
+                  value: quote?.data?.maid_info?.fin || 'N/A',
+                },
+                {
+                  label: 'Passport Number',
+                  value: quote?.data?.maid_info?.passport_number || 'N/A',
+                },
+                {
+                  label:
+                    'Has the helper been employed by you for more than 12 months?',
                   value:
-                    quote?.data?.vehicle_info_selected?.first_registered_year ||
+                    quote?.data?.maid_info?.has_helper_worked_12_months ||
                     'N/A',
                 },
                 {
-                  label: 'Years of Manufacture',
-                  value:
-                    quote?.data?.vehicle_info_selected?.year_of_manufacture ||
-                    'N/A',
-                },
-                {
-                  label: 'Engine Number',
-                  value:
-                    quote?.data?.vehicle_info_selected?.engine_number || 'N/A',
-                },
-                {
-                  label: 'Chassis Number',
-                  value:
-                    quote?.data?.vehicle_info_selected?.chasis_number || 'N/A',
-                },
-                {
-                  label: 'Engine Capacity',
-                  value:
-                    quote?.data?.vehicle_info_selected?.engine_capacity ||
-                    'N/A',
-                },
-                {
-                  label: 'Power Rate',
-                  value:
-                    quote?.data?.vehicle_info_selected?.power_rate || 'N/A',
+                  label: 'Previous Insurer Name',
+                  value: quote?.data?.maid_info?.company_name || 'N/A',
                 },
               ]}
             />
@@ -425,20 +331,16 @@ export default function Summary() {
                   value: quote?.data?.personal_info?.name || 'N/A',
                 },
                 {
+                  label: 'Date of Birth',
+                  value: quote?.data?.personal_info?.date_of_birth || 'N/A',
+                },
+                {
                   label: 'NRIC / FIN',
                   value: quote?.data?.personal_info?.nric || 'N/A',
                 },
                 {
-                  label: 'Gender',
-                  value: quote?.data?.personal_info?.gender || 'N/A',
-                },
-                {
-                  label: 'Marital Status',
-                  value: quote?.data?.personal_info?.marital_status || 'N/A',
-                },
-                {
-                  label: 'Date of Birth',
-                  value: quote?.data?.personal_info?.date_of_birth || 'N/A',
+                  label: 'Nationality',
+                  value: quote?.data?.personal_info?.nationality || 'N/A',
                 },
                 {
                   label: 'Address Line 1',
@@ -461,22 +363,15 @@ export default function Summary() {
                   value: quote?.data?.personal_info?.post_code || 'N/A',
                 },
                 {
-                  label: 'Email',
-                  value: quote?.data?.personal_info?.email || 'N/A',
-                },
-                {
                   label: 'Mobile Number',
                   value: quote?.data?.personal_info?.phone || 'N/A',
                 },
+                {
+                  label: 'Email',
+                  value: quote?.data?.personal_info?.email || 'N/A',
+                },
               ]}
             />
-            {driversData.map((driver, index) => (
-              <InfoCard
-                key={index}
-                title={`Additional Named Driver ${index + 1}`}
-                data={driver}
-              />
-            ))}
           </div>
           {_renderNews()}
           {/* {_renderRewarded()}
