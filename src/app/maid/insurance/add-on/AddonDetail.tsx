@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { AddOnFormat } from '@/libs/types/quote';
-import { calculateFee } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PlusIcon, RoadSideIcon } from '@/components/icons/add-on-icons';
@@ -145,22 +144,28 @@ function AddOnDetail({
     const selectedOptionForAdded = addon.options.find(
       (option) => option.value === initValueForAdded,
     );
-    const feeAdded = selectedOptionForAdded
-      ? calculateFee(selectedOptionForAdded, addonsAdded)
-      : addon.type === 'checkbox' && addonsAdded?.[addon.code] === 'YES'
+    const feeAdded =
+      addon.type === 'checkbox' && addonsAdded?.[addon.code] === 'YES'
         ? addon.premium_with_gst
-        : 0;
+        : addon.type === 'select'
+          ? addon.options.find((opt) => opt.value === addonsAdded?.[addon.code])
+              ?.premium_with_gst || 0
+          : 0;
 
     // For feeSelected use the "addonsSelected" defaults
     const initValueForSelected = addonsSelected?.[addon.code] ?? null;
     const activeOption = addon.options.find(
       (option) => option.value === initValueForSelected,
     );
-    const feeSelected = activeOption
-      ? calculateFee(activeOption, addonsAdded)
-      : addon.type === 'checkbox' && addonsSelected?.[addon.code]
+
+    const feeSelected =
+      addon.type === 'checkbox' && addonsSelected?.[addon.code]
         ? addon.premium_with_gst
-        : 0;
+        : addon.type === 'select'
+          ? addon.options.find(
+              (opt) => opt.value === addonsSelected?.[addon.code],
+            )?.premium_with_gst || 0
+          : 0;
 
     return {
       ...addon,
@@ -257,8 +262,7 @@ function AddOnDetail({
       }
     });
   };
-  console.log('premiumWithGst', premiumWithGst);
-  console.log('totalAddonFee', totalAddonFee);
+
   return (
     <div className='flex w-full flex-col items-center'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
