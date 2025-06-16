@@ -2,6 +2,12 @@
   margin-left: -18px !important;
 }
 
+@media (max-width: 768px) {
+  .ant-steps.ant-steps-horizontal {
+    margin-left: -35px !important;
+  }
+}
+
 .ant-steps-item-title {
   font-weight: 500;
 }
