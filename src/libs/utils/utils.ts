@@ -74,9 +74,8 @@ export const generateKeyAndAttachToUrl = (key: string) => {
   return generatedKey;
 };
 
-export const calculateAge = (dob: string) => {
+export const calculateAge = (dob: string, today: Date = new Date()) => {
   const birthDate = new Date(dob);
-  const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
   if (
