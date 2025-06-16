@@ -1,4 +1,4 @@
-import { PersonalInfo, Plan, ReviewInfo } from './quote';
+import { Plan, ReviewInfo } from './quote';
 
 export interface MaidQuoteResponse {
   message: string;
@@ -12,7 +12,7 @@ export interface MaidQuoteCreationPayload {
   start_date: string;
   promo_code: string;
   partner_code: string;
-  personal_info: PersonalInfo;
+  personal_info: MaidPersonalInfo;
   maid_info: MaidInfo;
 }
 
@@ -50,12 +50,23 @@ export interface MaidQuote {
 
 export interface MaidQuoteData {
   plans?: Plan[];
-  personal_info: PersonalInfo;
+  personal_info: MaidPersonalInfo;
   maid_info: MaidInfo;
   insurance_other_info: InsuranceOtherInfo;
   selected_plan: string;
   selected_addons?: Record<string, string>;
   review_info_premium?: ReviewInfo;
+}
+
+export interface MaidInfo {
+  nationality: string;
+  date_of_birth: string;
+  name: string;
+  fin: string;
+  passport_number: string;
+  company_name: string;
+  company_name_other: string;
+  has_helper_worked_12_months: string;
 }
 
 export interface InsuranceOtherInfo {
@@ -65,13 +76,16 @@ export interface InsuranceOtherInfo {
   plan_period: string;
 }
 
-export interface MaidInfo {
-  fin: string;
+export interface MaidPersonalInfo {
   name: string;
+  nric: string;
+  email: string;
+  gender: string;
+  address: string | string[];
+  phone: string;
+  date_of_birth: string;
+  marital_status: string;
+  driving_experience: number;
+  post_code: string;
   nationality: string;
-  company_name: string;
-  date_of_birth: string; // or Date, if parsed
-  passport_number: string;
-  company_name_other: string;
-  has_helper_worked_12_months: string;
 }
