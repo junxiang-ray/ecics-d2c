@@ -36,6 +36,7 @@ import { useGetNationality } from '@/hook/insurance/common';
 import dayjs from 'dayjs';
 import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
 
 const createSchema = (listNric: any[] | undefined) =>
   z
@@ -153,8 +154,7 @@ const createSchema = (listNric: any[] | undefined) =>
         .nonempty('This field is required'),
     })
     .superRefine((data, ctx) => {
-      const VALUE_OPTION_OTHER = '257';
-      if (data[MAID_QUOTE.company_name] === VALUE_OPTION_OTHER) {
+      if (data[MAID_QUOTE.company_name] === VALUE_OPTION_COMPANY) {
         if (!data[MAID_QUOTE.company_name_other]) {
           ctx.addIssue({
             path: [MAID_QUOTE.company_name_other],
@@ -246,8 +246,6 @@ const HelpersDetail = (props: Props) => {
     }));
   }, [nationalOptions]);
 
-  const VALUE_OPTION_OTHER = '257';
-
   const hirePurchaseListFormatted: DropdownOption[] = [
     ...(Array.isArray(hirePurchaseList)
       ? hirePurchaseList.map((item: any) => ({
@@ -305,7 +303,7 @@ const HelpersDetail = (props: Props) => {
     const companyNameText = selectedInsurer ? selectedInsurer.text : '';
 
     const maidCompanyNameOther =
-      data.company_name === VALUE_OPTION_OTHER
+      data.company_name === VALUE_OPTION_COMPANY
         ? (data.company_name_other ?? '')
         : '';
 
@@ -431,7 +429,7 @@ const HelpersDetail = (props: Props) => {
                 />
               </Form.Item>
 
-              {selectedCompanyName === VALUE_OPTION_OTHER && (
+              {selectedCompanyName === VALUE_OPTION_COMPANY && (
                 <Form.Item
                   name={MAID_QUOTE.company_name_other}
                   validateStatus={
