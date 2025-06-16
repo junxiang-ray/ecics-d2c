@@ -41,6 +41,8 @@ export const InputNumberField = ({
               className={`flex h-10 w-full items-center ${fieldState.invalid ? '!border-red-500' : ''} ${
                 props.disabled ? 'bg-gray-200' : ''
               }`}
+              type='number'
+              inputMode='numeric'
             />
             {fieldState.error && (
               <span className='block text-sm text-red-500'>
