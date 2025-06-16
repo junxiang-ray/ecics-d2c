@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
-import { Addon, Option } from '@/libs/types/quote';
+import { AddOnFormat, AddonOption } from '@/libs/types/quote';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 // import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
@@ -21,6 +21,8 @@ import {
   RoadSideIcon,
 } from '@/components/icons/add-on-icons';
 import { PricingSummary } from '@/components/page/FeeBar';
+import AddOnRow from '@/components/page/insurance/add-on/AddOnRow';
+import AddOnRowDetail from '@/components/page/insurance/add-on/AddOnRowDetail';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
 import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
@@ -31,8 +33,6 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
-import AddOnRow from './AddOnRow';
-import AddOnRowDetail from './AddOnRowDetail';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
 
 export const mapIconToTypeAddOn = [
@@ -126,17 +126,8 @@ export const mapIconToTypeAddOn = [
   },
 ];
 
-export interface AddOnFormat extends Addon {
-  icon: JSX.Element | null;
-  selectedOption: Option | null;
-  feeAdded: number; // feeAdded is the fee used to calculate the premium for the addon
-
-  activeOption: Option | null;
-  feeSelected: number; // feeSelected is the fee used to show fee when user change option
-}
-
 function calculateFee(
-  option: Option,
+  option: AddonOption,
   addonsAdded: Record<string, string>,
 ): number {
   if (

@@ -22,6 +22,7 @@ import {
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
@@ -42,7 +43,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);

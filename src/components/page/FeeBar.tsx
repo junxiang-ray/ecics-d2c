@@ -5,6 +5,7 @@ import { formatCurrency } from '@/libs/utils/utils';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useAppSelector } from '@/redux/store';
 
@@ -18,6 +19,7 @@ export function PricingSummary({
   onClick,
   handleBack,
   setIsShowPopupPremium,
+  productType,
   loading,
 }: {
   isBasicDetailScreen?: boolean;
@@ -29,13 +31,18 @@ export function PricingSummary({
   loading?: boolean;
   onClick?: () => void;
   handleBack?: () => void;
+  productType?: ProductType;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
 }) {
   const discountFee = planFee + addonFee;
   const notDiscountFee = planFee / (1 - discount / 100) + addonFee;
   const { isMobile } = useDeviceDetection();
   const quoteInfo = useAppSelector((state) => state.quote?.quote);
-  const selectedPlan = quoteInfo?.data?.selected_plan;
+  const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
+
+  const isMaid = productType === ProductType.MAID;
+  const currentQuote = isMaid ? maidQuote : quoteInfo;
+  const selectedPlan = currentQuote?.data?.selected_plan;
 
   return (
     <div
