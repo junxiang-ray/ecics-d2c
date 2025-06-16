@@ -2,41 +2,41 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
+import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import {
-  finValidator,
-  sgCarRegNoValidator,
-  validateNRIC,
-} from '@/libs/utils/validation-utils';
+import { finValidator, validateNRIC } from '@/libs/utils/validation-utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
-import { InputField } from '@/components/ui/form/inputfield';
-import { RadioField } from '@/components/ui/form/radiofield';
-import { ROUTES } from '@/constants/routes';
-import { useGetHirePurchaseList } from '@/hook/insurance/quote';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { HAS_HELPER_WORKED_OPTION } from '@/app/motor/insurance/basic-detail/options';
+import { DatePickerField } from '@/components/ui/form/datepicker';
 import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui/form/dropdownfield';
-import { MAID_QUOTE } from '@/constants';
+import { InputField } from '@/components/ui/form/inputfield';
+import { RadioField } from '@/components/ui/form/radiofield';
+
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { DatePickerField } from '@/components/ui/form/datepicker';
-import { useGetNationality } from '@/hook/insurance/common';
-import dayjs from 'dayjs';
-import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
-import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import {
+  HAS_HELPER_WORKED_OPTION,
+  ProductType,
+} from '@/app/motor/insurance/basic-detail/options';
+import { MAID_QUOTE } from '@/constants';
 import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
+import { useGetNationality } from '@/hook/insurance/common';
+import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
+import { useGetHirePurchaseList } from '@/hook/insurance/quote';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const createSchema = (listNric: any[] | undefined) =>
   z
@@ -570,6 +570,7 @@ const HelpersDetail = (props: Props) => {
 
           <div className='mt-20 w-full bg-[#FFFEFF] md:mt-14'>
             <PricingSummary
+              productType={ProductType.MAID}
               planFee={planFreeTotal}
               addonFee={
                 maidQuoteInfo?.data?.review_info_premium?.total_addon_free
@@ -584,11 +585,11 @@ const HelpersDetail = (props: Props) => {
             />
           </div>
         </Form>
-
-        {/* <ModalPremium
+        <ModalPremium
+          productType={ProductType.MAID}
           isShowPopupPremium={isShowPopupPremium}
           setIsShowPopupPremium={setIsShowPopupPremium}
-          maidQuoteInfo={maidQuoteInfo}
+          maidQuote={maidQuoteInfo}
           dataSelectedAddOn={
             maidQuoteInfo?.data?.review_info_premium?.data_section_add_ons
           }
@@ -596,17 +597,22 @@ const HelpersDetail = (props: Props) => {
           addonAdditionalDriver={
             maidQuoteInfo?.data?.review_info_premium?.addon_additional_driver
           }
-          pricePlanMain={maidQuoteInfo?.data?.review_info_premium?.price_plan ?? 0}
+          pricePlanMain={
+            maidQuoteInfo?.data?.review_info_premium?.price_plan ?? 0
+          }
           couponDiscount={
             maidQuoteInfo?.data?.review_info_premium?.coupon_discount ?? 0
           }
           tax={1.09}
           gst={maidQuoteInfo?.data?.review_info_premium?.gst ?? 0}
-          netPremium={maidQuoteInfo?.data?.review_info_premium?.net_premium ?? 0}
-          addonsIncluded={
-            maidQuoteInfo?.data?.review_info_premium?.add_ons_included_in_this_plan
+          netPremium={
+            maidQuoteInfo?.data?.review_info_premium?.net_premium ?? 0
           }
-        /> */}
+          addonsIncluded={
+            maidQuoteInfo?.data?.review_info_premium
+              ?.add_ons_included_in_this_plan
+          }
+        />
       </div>
     </FormProvider>
   );
