@@ -277,12 +277,10 @@ const AddOnBonusDetailManualForm = (props: Props) => {
 
           {/* Personal Details */}
           <div className={`w-full ${isMobile ? '' : 'mt-[14px]'}`}>
-            <div
-              className={`text-lg font-bold underline ${isMobile ? 'mt-[28px]' : ''}`}
-            >
+            <div className='my-3 text-lg font-bold underline'>
               Enter Personal Details
             </div>
-            <div className='grid gap-y-2 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+            <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
               <Form.Item
                 name='name'
                 validateStatus={errors['name'] ? 'error' : ''}
@@ -388,9 +386,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           </div>
 
           {/* Vehicle Details */}
-          <div className={`w-full ${isMobile ? '' : 'mt-[40px]'}`}>
+          <div className={`w-full ${isMobile ? '' : 'mt-[32px]'}`}>
             <div
-              className={`text-lg font-bold underline ${isMobile ? 'mt-[6px]' : ''}`}
+              className={`my-3 text-lg font-bold underline ${isMobile ? 'mt-[32px] ' : ''}`}
             >
               Enter Vehicle Details
             </div>
@@ -431,7 +429,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               </Form.Item>
             </div>
           </div>
-          <div className='mt-20 w-full bg-[#FFFEFF] md:mt-2'>
+          <div className='mt-20 w-full bg-[#FFFEFF] md:mt-14'>
             <PricingSummary
               planFee={planFreeTotal}
               addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
