@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -19,28 +19,23 @@ import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 import { ROUTES } from '@/constants/routes';
-import { useVerifyRestrictedUser } from '@/hook/cms/verify';
-import { useGetHirePurchaseList, useSaveQuote } from '@/hook/insurance/quote';
+import { useGetHirePurchaseList } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { updateQuote, useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
+import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import {
-  GENDER_OPTIONS,
-  HAS_HELPER_WORKED_OPTION,
-  MARITAL_STATUS_OPTIONS,
-} from '@/app/motor/insurance/basic-detail/options';
-import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuote';
-import { RenewalModal } from '@/app/motor/insurance/basic-detail/modal/RenewalModal';
+import { HAS_HELPER_WORKED_OPTION } from '@/app/motor/insurance/basic-detail/options';
 import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui/form/dropdownfield';
-import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE } from '@/constants';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { useGetNationality } from '@/hook/insurance/common';
 import dayjs from 'dayjs';
+import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 
 const createSchema = (listNric: any[] | undefined) =>
   z
@@ -143,7 +138,7 @@ const createSchema = (listNric: any[] | undefined) =>
         })
         .nonempty('Has the helper is required'),
 
-      [MAID_QUOTE.company_name]: z.number({
+      [MAID_QUOTE.company_name]: z.string({
         required_error: 'Previous Insurer Name is required',
         invalid_type_error: 'Previous Insurer Name is required',
       }),
@@ -158,7 +153,7 @@ const createSchema = (listNric: any[] | undefined) =>
         .nonempty('This field is required'),
     })
     .superRefine((data, ctx) => {
-      const VALUE_OPTION_OTHER = 257;
+      const VALUE_OPTION_OTHER = '257';
       if (data[MAID_QUOTE.company_name] === VALUE_OPTION_OTHER) {
         if (!data[MAID_QUOTE.company_name_other]) {
           ctx.addIssue({
@@ -204,7 +199,16 @@ const HelpersDetail = (props: Props) => {
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const maidQuoteInfo = useAppSelector((state) => state.maidQuote.maidQuote);
   const personal_info = maidQuoteInfo?.data?.personal_info;
-  const { name, nric, address, post_code } = personal_info ?? {};
+  const maid_info = maidQuoteInfo?.data?.maid_info;
+  const { name, date_of_birth, nric, address, post_code } = personal_info ?? {};
+  const {
+    fin,
+    passport_number,
+    has_helper_worked_12_months,
+    company_name,
+    company_name_other,
+    nationality,
+  } = maid_info ?? {};
 
   const startDate = maidQuoteInfo?.data?.insurance_other_info?.start_date
     ? dayjs(maidQuoteInfo.data.insurance_other_info.start_date, 'DD/MM/YYYY')
@@ -217,14 +221,6 @@ const HelpersDetail = (props: Props) => {
   const listNamedDriverNric = addNamedDriverInfo?.map(
     (item) => item.nric_or_fin,
   );
-  const initFormDate: FormData = {
-    name: name ?? '',
-    nric: nric ?? '',
-    address1: address?.[0] ?? '',
-    address2: address?.[1] ?? '',
-    address3: address?.[2] ?? '',
-    pinCode: post_code ?? '',
-  };
 
   const schema = useMemo(
     () => createSchema(listNamedDriverNric),
@@ -236,10 +232,9 @@ const HelpersDetail = (props: Props) => {
   const router = useRouterWithQuery();
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
-  const [showCSModal, setShowCSModal] = useState(false);
-  const [showRenewalModal, setShowRenewalModal] = useState(false);
 
-  const { mutateAsync: saveQuote, isPending: isPending } = useSaveQuote();
+  const { mutateAsync: saveMaidQuote, isPending: isPending } =
+    useSaveMaidQuote();
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.MAID);
   const { data: nationalOptions } = useGetNationality();
 
@@ -250,16 +245,42 @@ const HelpersDetail = (props: Props) => {
       value: item.name,
     }));
   }, [nationalOptions]);
-  const VALUE_OPTION_OTHER = 257;
+
+  const VALUE_OPTION_OTHER = '257';
 
   const hirePurchaseListFormatted: DropdownOption[] = [
     ...(Array.isArray(hirePurchaseList)
       ? hirePurchaseList.map((item: any) => ({
-          value: item.id,
+          value: String(item.id),
           text: item.name,
         }))
       : []),
   ];
+
+  const companyOption = hirePurchaseListFormatted.find(
+    (item) => item.text === company_name,
+  );
+
+  const companyId = companyOption ? String(companyOption.value) : '';
+
+  const initFormDate: FormData = {
+    name: name ?? '',
+    nric: nric ?? '',
+    address1: address?.[0] ?? '',
+    address2: address?.[1] ?? '',
+    address3: address?.[2] ?? '',
+    pinCode: post_code ?? '',
+    [MAID_QUOTE.nationality]: nationality ?? '',
+    [MAID_QUOTE.maid_dob]: date_of_birth
+      ? dayjs(date_of_birth, 'DD/MM/YYYY').toDate()
+      : undefined,
+    nameHelper: maid_info?.name ?? '',
+    [MAID_QUOTE.fin]: fin ?? '',
+    [MAID_QUOTE.passport_number]: passport_number ?? '',
+    [MAID_QUOTE.has_helper_worked_12_months]: has_helper_worked_12_months ?? '',
+    [MAID_QUOTE.company_name]: companyId,
+    [MAID_QUOTE.company_name_other]: company_name_other ?? '',
+  };
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -312,18 +333,17 @@ const HelpersDetail = (props: Props) => {
       },
     };
 
-    // const dataQuote = {
-    //   key,
-    //   data: transformedData,
-    //   is_sending_email: false,
-    // };
-    // saveQuote(dataQuote).then((res) => {
-    //   if (res) {
-    //     dispatch(updateQuote(res));
-    //   }
-    //   router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
-    // });
-    console.log(transformedData, 'chinh1235');
+    const dataQuote = {
+      key,
+      data: transformedData,
+      is_sending_email: false,
+    };
+    saveMaidQuote(dataQuote).then((res) => {
+      if (res) {
+        dispatch(updateMaidQuote(res));
+      }
+      router.push(ROUTES.INSURANCE_MAID.COMPLETE_PURCHASE);
+    });
   };
 
   return (
