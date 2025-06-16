@@ -119,7 +119,7 @@ export const PolicyDetail = ({
   };
 
   return (
-    <div className='mt-4 w-full md:px-4'>
+    <div className='mt-4 w-full'>
       <PolicyDetailForm
         onSubmit={onSubmit}
         isSingpassFlow={isSingPassFlow}
