@@ -4,7 +4,7 @@
 
 @media (max-width: 768px) {
   .ant-steps.ant-steps-horizontal {
-    margin-left: -35px !important;
+    margin-left: -40px !important;
   }
 }
 
@@ -16,6 +16,7 @@
 .ant-steps-item-content {
   margin: 0 !important;
 }
+
 .ant-steps-item-finish .ant-steps-item-title,
 .ant-steps-item-process .ant-steps-item-title {
   white-space: normal;
@@ -74,6 +75,12 @@
 
 .ant-steps-item .ant-steps-item-container {
   width: 80px !important;
+}
+
+@media (max-width: 768px) {
+  .ant-steps-item .ant-steps-item-container {
+    width: 70px !important;
+  }
 }
 
 .custom-step-wait {
