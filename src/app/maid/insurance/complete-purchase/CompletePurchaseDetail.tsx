@@ -4,7 +4,7 @@ import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { AddOnFormat, Option } from '@/libs/types/quote';
+import { AddOnFormat, AddonOption } from '@/libs/types/quote';
 import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
 
 function calculateFee(
-  option: Option,
+  option: AddonOption,
   addonsAdded: Record<string, string>,
 ): number {
   if (!option?.dependencies || option.dependencies.length === 0) {
@@ -132,10 +132,7 @@ export default function CompletePurchaseDetail({
       ?.filter((benefit) => benefit.is_active)
       .map((benefit) => benefit.name)
       .filter(Boolean) || [];
-  console.log(
-    'maidQuote?.data?.personal_info?',
-    maidQuote?.data?.personal_info,
-  );
+
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
   } = {

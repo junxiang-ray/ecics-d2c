@@ -83,7 +83,7 @@ const PremiumBreakdownContent = ({
                   >
                     <p className='flex flex-col'>
                       {addon.title}
-                      {addon.optionLabel !== 'YES' && (
+                      {addon.optionLabel && addon.optionLabel !== 'YES' && (
                         <span className='ml-2 flex flex-row items-center gap-2'>
                           <p className='h-[4px] w-[4px] rounded-full bg-[#303030]'></p>
                           {addon.optionLabel} Coverage

@@ -147,7 +147,9 @@ function AddOnDetail({
     );
     const feeAdded = selectedOptionForAdded
       ? calculateFee(selectedOptionForAdded, addonsAdded)
-      : 0;
+      : addon.type === 'checkbox' && addonsAdded?.[addon.code] === 'YES'
+        ? addon.premium_with_gst
+        : 0;
 
     // For feeSelected use the "addonsSelected" defaults
     const initValueForSelected = addonsSelected?.[addon.code] ?? null;
@@ -156,7 +158,9 @@ function AddOnDetail({
     );
     const feeSelected = activeOption
       ? calculateFee(activeOption, addonsAdded)
-      : 0;
+      : addon.type === 'checkbox' && addonsSelected?.[addon.code]
+        ? addon.premium_with_gst
+        : 0;
 
     return {
       ...addon,
@@ -168,10 +172,10 @@ function AddOnDetail({
     };
   });
 
-  const dataSelectedAddOn = Object.entries(addonsAdded || {})
-    .filter(([selectedValue]) => {
-      return selectedValue !== 'NO';
-    })
+  const dataSelectedAddOn = (
+    Object.entries(addonsAdded || {}) as [string, string][]
+  )
+    .filter(([_, selectedValue]) => selectedValue.trim().toUpperCase() !== 'NO')
     .map(([code, selectedValue]) => {
       const addon = addonsFormatted.find((a) => a.code === code);
       const feeSelected = addon?.feeSelected || 0;
@@ -179,8 +183,8 @@ function AddOnDetail({
 
       return {
         title: addon?.title || code,
-        feeSelected: feeSelected,
-        selectedValue: selectedValue,
+        feeSelected,
+        selectedValue,
         optionLabel: selectedOptionLabel,
       };
     });
@@ -206,6 +210,7 @@ function AddOnDetail({
 
   const totalAddonFee = totalAddonNormalFee;
   const premiumWithGst = plan?.premium_with_gst ?? 0;
+
   const discountRate = maidQuote?.promo_code?.discount || 0;
   const tax = 1.09;
   const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
@@ -252,7 +257,8 @@ function AddOnDetail({
       }
     });
   };
-
+  console.log('premiumWithGst', premiumWithGst);
+  console.log('totalAddonFee', totalAddonFee);
   return (
     <div className='flex w-full flex-col items-center'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>

@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { Option } from '@/libs/types/quote';
+import { AddonOption } from '@/libs/types/quote';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
@@ -164,7 +164,7 @@ export const getPaymentType = (
 };
 
 export function calculateFee(
-  option: Option,
+  option: AddonOption,
   addonsAdded: Record<string, string>,
 ): number {
   if (

@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
-import { AddOnFormat, Option } from '@/libs/types/quote';
+import { AddOnFormat, AddonOption } from '@/libs/types/quote';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 // import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
@@ -127,7 +127,7 @@ export const mapIconToTypeAddOn = [
 ];
 
 function calculateFee(
-  option: Option,
+  option: AddonOption,
   addonsAdded: Record<string, string>,
 ): number {
   if (
