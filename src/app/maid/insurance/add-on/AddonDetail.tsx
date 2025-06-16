@@ -1,160 +1,65 @@
 'use client';
 
 import { Modal } from 'antd';
-import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
-import { Addon, Option } from '@/libs/types/quote';
+import { AddOnFormat } from '@/libs/types/quote';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
-// import HeaderVehicleInfo from '../plan/components/HeaderVehicleInfo';
-import {
-  AddIcon,
-  BillIcon,
-  CarIcon,
-  KeyIcon,
-  MedicalKitIcon,
-  PersonIcon,
-  RepairIcon,
-  RoadSideIcon,
-} from '@/components/icons/add-on-icons';
+import { PlusIcon, RoadSideIcon } from '@/components/icons/add-on-icons';
 import { PricingSummary } from '@/components/page/FeeBar';
+import AddOnRow from '@/components/page/insurance/add-on/AddOnRow';
+import AddOnRowDetail from '@/components/page/insurance/add-on/AddOnRowDetail';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
-// import { RequiredModal } from '../basic-detail/modal/RequireModal';
 import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
-import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import AddOnRow from './AddOnRow';
-import AddOnRowDetail from './AddOnRowDetail';
-
 export const mapIconToTypeAddOn = [
   {
-    code: 'CAR_COM_AND',
-    icon: <PersonIcon className='text-brand-blue' />,
+    code: 'MAID_CLASS_WOCI',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_TPFT_AND',
-    icon: <PersonIcon className='text-brand-blue' />,
+    code: 'MAID_DELU_WOCI',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_TPO_AND',
-    icon: <PersonIcon className='text-brand-blue' />,
+    code: 'MAID_EXCLU_WOCI',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_FNCD_AND',
-    icon: <PersonIcon className='text-brand-blue' />,
+    code: 'MAID_CLASS_OME',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_COM_ANW',
-    icon: <RepairIcon className='text-brand-blue' />,
+    code: 'MAID_DELU_OME',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_FNCD_ANW',
-    icon: <RepairIcon className='text-brand-blue' />,
+    code: 'MAID_EXCLU_OME',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_FNCD_RSA',
-    icon: <RoadSideIcon className='text-brand-blue' />,
+    code: 'MAID_CLASS_WOCP',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_COM_RSA',
-    icon: <RoadSideIcon className='text-brand-blue' />,
+    code: 'MAID_DELU_WOCP',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
   {
-    code: 'CAR_TPFT_BUN',
-    icon: <BillIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_BUN',
-    icon: <BillIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_TPO_BUN',
-    icon: <BillIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_FNCD_BUN',
-    icon: <BillIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_FNCD_LOU',
-    icon: <AddIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_LOU',
-    icon: <AddIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_PAC',
-    icon: <MedicalKitIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_FNCD_PAC',
-    icon: <MedicalKitIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_MDE',
-    icon: <MedicalKitIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_FNCD_MDE',
-    icon: <MedicalKitIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_KRC',
-    icon: <KeyIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_FNCD_KRC',
-    icon: <KeyIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_COM_NOR',
-    icon: <CarIcon className='text-brand-blue' />,
-  },
-  {
-    code: 'CAR_FNCD_NOR',
-    icon: <CarIcon className='text-brand-blue' />,
+    code: 'MAID_EXCLU_WOCP',
+    icon: <PlusIcon className='text-brand-blue' size={20} />,
   },
 ];
-
-export interface AddOnFormat extends Addon {
-  icon: JSX.Element | null;
-  selectedOption: Option | null;
-  feeAdded: number; // feeAdded is the fee used to calculate the premium for the addon
-
-  activeOption: Option | null;
-  feeSelected: number; // feeSelected is the fee used to show fee when user change option
-}
-
-function calculateFee(
-  option: Option,
-  addonsAdded: Record<string, string>,
-): number {
-  if (
-    !option?.dependencies ||
-    option.dependencies.length === 0 ||
-    !addonsAdded ||
-    Object.keys(addonsAdded).length === 0
-  ) {
-    return option.premium_with_gst ?? 0;
-  }
-
-  const dependency = option.dependencies.find((dep) =>
-    dep.conditions.every(
-      (condition) => addonsAdded[condition.addon.code] === condition.value,
-    ),
-  );
-  return dependency?.premium_with_gst ?? 0;
-}
 
 function AddOnDetail({
   onSaveRegister,
@@ -166,32 +71,24 @@ function AddOnDetail({
   const { handleBack } = useInsurance();
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
-  const quoteInfo = useAppSelector((state) => state.quote.quote);
+  const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
+
   const isManual = searchParams.get('manual') === 'true';
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [drivers, setDrivers] = useState<any[]>([]);
   const [addonsAdded, setAddonsAdded] = useState<any>(null);
   const [addonsSelected, setAddonsSelected] = useState<any>(null);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
-  const [isShowBonusDetail, setIsShowBonusDetail] = useState(false);
-  const [isShowRequireModal, setIsShowRequireModal] = useState(false);
 
   const { mutateAsync: saveQuote, isPending } = useSaveQuote();
 
   const plan = useMemo(() => {
-    return quoteInfo?.data?.plans?.find(
-      (plan) => quoteInfo.data?.selected_plan === plan.title,
+    return maidQuote?.data?.plans?.find(
+      (plan) => maidQuote.data?.selected_plan === plan.title,
     );
-  }, [quoteInfo]);
-
-  const addonAdditionalDriver = useMemo(() => {
-    return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
-  }, [plan]);
+  }, [maidQuote]);
 
   const normalAddons = useMemo(() => {
-    return (
-      plan?.addons.filter((addon) => !ADDON_CARS.includes(addon.code)) ?? []
-    );
+    return plan?.addons ?? [];
   }, [plan]);
 
   const defaultAddonsAdded = useMemo(() => {
@@ -200,14 +97,14 @@ function AddOnDetail({
     return Object.fromEntries(
       addonCodes.map((code) => [
         code,
-        quoteInfo?.data?.selected_addons?.[code] ?? 'NO',
+        maidQuote?.data?.selected_addons?.[code] ?? 'NO',
       ]),
     );
-  }, [normalAddons, quoteInfo]);
+  }, [normalAddons, maidQuote]);
 
   const defaultAddonsSelected = useMemo(() => {
     if (!plan?.addons.length) return {};
-    const selected_addons = quoteInfo?.data?.selected_addons ?? {};
+    const selected_addons = maidQuote?.data?.selected_addons ?? {};
     return plan.addons.reduce(
       (acc: Record<string, string>, addon) => {
         if (addon.type === 'checkbox') {
@@ -229,10 +126,9 @@ function AddOnDetail({
       },
       {} as Record<string, string>,
     );
-  }, [plan, quoteInfo]);
+  }, [plan, maidQuote]);
 
   useEffect(() => {
-    setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
     setAddonsAdded(defaultAddonsAdded);
     setAddonsSelected(defaultAddonsSelected);
   }, [defaultAddonsAdded, defaultAddonsSelected]);
@@ -248,18 +144,28 @@ function AddOnDetail({
     const selectedOptionForAdded = addon.options.find(
       (option) => option.value === initValueForAdded,
     );
-    const feeAdded = selectedOptionForAdded
-      ? calculateFee(selectedOptionForAdded, addonsAdded)
-      : 0;
+    const feeAdded =
+      addon.type === 'checkbox' && addonsAdded?.[addon.code] === 'YES'
+        ? addon.premium_with_gst
+        : addon.type === 'select'
+          ? addon.options.find((opt) => opt.value === addonsAdded?.[addon.code])
+              ?.premium_with_gst || 0
+          : 0;
 
     // For feeSelected use the "addonsSelected" defaults
     const initValueForSelected = addonsSelected?.[addon.code] ?? null;
     const activeOption = addon.options.find(
       (option) => option.value === initValueForSelected,
     );
-    const feeSelected = activeOption
-      ? calculateFee(activeOption, addonsAdded)
-      : 0;
+
+    const feeSelected =
+      addon.type === 'checkbox' && addonsSelected?.[addon.code]
+        ? addon.premium_with_gst
+        : addon.type === 'select'
+          ? addon.options.find(
+              (opt) => opt.value === addonsSelected?.[addon.code],
+            )?.premium_with_gst || 0
+          : 0;
 
     return {
       ...addon,
@@ -271,11 +177,10 @@ function AddOnDetail({
     };
   });
 
-  const dataSelectedAddOn = Object.entries(addonsAdded || {})
-    .filter(([code, selectedValue]) => {
-      const isHidden = ['CAR_COM_AJE', 'CAR_FNCD_AJE'].includes(code);
-      return !isHidden && selectedValue !== 'NO';
-    })
+  const dataSelectedAddOn = (
+    Object.entries(addonsAdded || {}) as [string, string][]
+  )
+    .filter(([_, selectedValue]) => selectedValue.trim().toUpperCase() !== 'NO')
     .map(([code, selectedValue]) => {
       const addon = addonsFormatted.find((a) => a.code === code);
       const feeSelected = addon?.feeSelected || 0;
@@ -283,33 +188,19 @@ function AddOnDetail({
 
       return {
         title: addon?.title || code,
-        feeSelected: feeSelected,
-        selectedValue: selectedValue,
+        feeSelected,
+        selectedValue,
         optionLabel: selectedOptionLabel,
       };
     });
 
   useEffect(() => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    if (plan?.code === 'COM') {
-      addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
-    }
-    if (plan?.code === 'FNCD') {
-      addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
-    }
-    //
-    if (addonAdditionalDriver?.code) {
-      const isExistDriver = drivers.every((driver) => driver.nric_or_fin);
-      addonsAdd[addonAdditionalDriver.code] = isExistDriver
-        ? 'drivers_age_from_27_to_70'
-        : 'NO';
-    }
 
     const data = {
       key: key,
-      selected_plan: quoteInfo?.data?.selected_plan ?? '',
+      selected_plan: maidQuote?.data?.selected_plan ?? '',
       selected_addons: addonsAdd,
-      add_named_driver_info: drivers,
     };
     onSaveRegister(() => ({
       currentStep: UserStep.SELECT_ADD_ON,
@@ -321,16 +212,11 @@ function AddOnDetail({
     const fee = addon.feeAdded ?? 0;
     return acc + fee;
   }, 0);
-  const baseFeeAdditionalDriver =
-    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
-  const additionalDriverFee = drivers.length
-    ? baseFeeAdditionalDriver * (drivers.length - 1)
-    : 0;
-  const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
+
+  const totalAddonFee = totalAddonNormalFee;
   const premiumWithGst = plan?.premium_with_gst ?? 0;
-  const baseFee = addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
-  const totalFeeDriver = drivers.length ? baseFee * (drivers.length - 1) : 0;
-  const discountRate = quoteInfo?.promo_code?.discount || 0;
+
+  const discountRate = maidQuote?.promo_code?.discount || 0;
   const tax = 1.09;
   const pricePlanMain = premiumWithGst / (1 - discountRate / 100) / tax;
   const couponDiscount = pricePlanMain * (discountRate / 100);
@@ -339,30 +225,17 @@ function AddOnDetail({
     return acc + value;
   }, 0);
 
-  const netPremium =
-    pricePlanMain -
-    couponDiscount +
-    selectAddOnTotal / tax +
-    totalFeeDriver / tax;
+  const netPremium = pricePlanMain - couponDiscount + selectAddOnTotal / tax;
   const valueCalculatedGST = 9;
   const gst = (netPremium * valueCalculatedGST) / 100;
   const totalFinalPrice = netPremium + gst;
 
   const handleOkay = () => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    //For plan codes COM the default value of CAR_COM_AJE is 'SGD 750.00'.
-    if (plan?.code === 'COM') {
-      addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
-    }
-    //For plan codes FNCD the default value of CAR_FNCD_AJE is 'SGD 750.00'.
-    if (plan?.code === 'FNCD') {
-      addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
-    }
 
     const data: any = {
       key: key,
       selected_addons: addonsAdd,
-      add_named_driver_info: drivers,
       review_info_premium: {
         price_plan: pricePlanMain,
         coupon_discount: couponDiscount,
@@ -370,7 +243,6 @@ function AddOnDetail({
         net_premium: netPremium,
         gst: gst,
         total_final_price: totalFinalPrice,
-        drivers: drivers,
         add_ons_included_in_this_plan: plan?.add_ons_included_in_this_plan,
         total_addon_free: totalAddonFee,
       },
@@ -384,48 +256,18 @@ function AddOnDetail({
       dispatch(updateQuote(res));
       setIsShowPopupPremium(false);
       if (isManual) {
-        router.push(ROUTES.INSURANCE.PERSONAL_DETAIL);
+        router.push(ROUTES.INSURANCE_MAID.HELPER_DETAIL);
       } else {
-        router.push(ROUTES.INSURANCE.COMPLETE_PURCHASE);
+        router.push(ROUTES.INSURANCE_MAID.COMPLETE_PURCHASE);
       }
     });
-  };
-  const handleContinue = () => {
-    // plan with code FNCD it requires at least one additional driver
-    if (plan?.code === 'FNCD') {
-      const isExistDriver =
-        drivers.every((driver) => driver.nric_or_fin) && drivers.length;
-      if (!isExistDriver) {
-        setIsShowRequireModal(true);
-        return;
-      }
-    }
-    handleOkay();
-  };
-
-  const ref = useRef<HTMLDivElement>(null);
-  const scrollToAdditionalDriver = () => {
-    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
     <div className='flex w-full flex-col items-center'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
-          {/* Edit bar - hide for now */}
-          {/* <div className='hidden items-center justify-between md:flex md:flex-col md:gap-4 xl:flex-row xl:gap-6'>
-                                  <HeaderVehicleInfo
-                                    vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                                    insuranceAdditionalInfo={
-                                      quoteInfo?.data.insurance_additional_info
-                                    }
-                                    selectPlan={quoteInfo?.data.selected_plan}
-                                    isShowScreen={true}
-                                  />
-                                </div> */}
-          <p className='mt-4 text-base font-bold underline' ref={ref}>
-            Select Add-ons
-          </p>
+          <p className='mt-4 text-base font-bold underline'>Select Add-ons</p>
           <div className='flex flex-col items-center'>
             <div className='mt-4 flex flex-col gap-6 md:max-w-[950px] md:gap-10'>
               {plan?.add_ons_included_in_this_plan?.map((addon) => (
@@ -435,6 +277,7 @@ function AddOnDetail({
                   icon={<RoadSideIcon className='text-brand-blue' />}
                   status='completed'
                   isIncluded={true}
+                  productType={ProductType.MAID}
                 >
                   <TruncateText text={addon.add_on_desc} />
                 </AddOnRow>
@@ -449,6 +292,7 @@ function AddOnDetail({
                     addonsSelected={addonsSelected}
                     setAddonsSelected={setAddonsSelected}
                     isPending={isPending}
+                    productType={ProductType.MAID}
                   />
                 );
               })}
@@ -465,12 +309,11 @@ function AddOnDetail({
         </Modal>
 
         <ModalPremium
+          productType={ProductType.MAID}
           isShowPopupPremium={isShowPopupPremium}
           setIsShowPopupPremium={setIsShowPopupPremium}
-          quoteInfo={quoteInfo}
+          maidQuote={maidQuote}
           dataSelectedAddOn={dataSelectedAddOn}
-          drivers={drivers}
-          addonAdditionalDriver={addonAdditionalDriver}
           pricePlanMain={pricePlanMain}
           couponDiscount={couponDiscount}
           tax={tax}
@@ -479,31 +322,20 @@ function AddOnDetail({
           addonsIncluded={plan?.add_ons_included_in_this_plan}
         />
       </div>
-
-      {!isShowBonusDetail && (
-        <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
-          <PricingSummary
-            planFee={premiumWithGst}
-            addonFee={totalAddonFee}
-            discount={quoteInfo?.promo_code?.discount || 0}
-            title='Premium breakdown'
-            textButton='Next'
-            onClick={handleContinue}
-            handleBack={handleBack}
-            setIsShowPopupPremium={setIsShowPopupPremium}
-            loading={isPending}
-          />
-        </div>
-      )}
-      {/*{isShowRequireModal && (*/}
-      {/*  <RequiredModal*/}
-      {/*    visible={isShowRequireModal}*/}
-      {/*    onOk={() => {*/}
-      {/*      setIsShowRequireModal(false);*/}
-      {/*      scrollToAdditionalDriver();*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*)}*/}
+      <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+        <PricingSummary
+          productType={ProductType.MAID}
+          planFee={premiumWithGst}
+          addonFee={totalAddonFee}
+          discount={maidQuote?.promo_code?.discount || 0}
+          title='Premium breakdown'
+          textButton='Next'
+          onClick={handleOkay}
+          handleBack={handleBack}
+          setIsShowPopupPremium={setIsShowPopupPremium}
+          loading={isPending}
+        />
+      </div>
     </div>
   );
 }

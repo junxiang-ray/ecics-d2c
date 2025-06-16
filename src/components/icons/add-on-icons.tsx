@@ -10,6 +10,7 @@ import DeleteIconSvg from '@/assets/icons/add-on/delete.svg';
 import FinishIconSvg from '@/assets/icons/add-on/finish.svg';
 import MedicalKitIconSvg from '@/assets/icons/add-on/medical-kit.svg';
 import PersonIconSvg from '@/assets/icons/add-on/person.svg';
+import PlusIconSvg from '@/assets/icons/add-on/plus.svg';
 import RepairIconSvg from '@/assets/icons/add-on/repair.svg';
 import RoadSideIconSvg from '@/assets/icons/add-on/road-side.svg';
 
@@ -44,6 +45,10 @@ export const FinishIcon = (props: Omit<SvgIconProps, 'svg'>) => {
 
 export const AddIcon = (props: Omit<SvgIconProps, 'svg'>) => {
   return <SvgIcon svg={AddIconSvg} {...props} />;
+};
+
+export const PlusIcon = (props: Omit<SvgIconProps, 'svg'>) => {
+  return <SvgIcon svg={PlusIconSvg} {...props} />;
 };
 
 export const DeleteIcon = (props: Omit<SvgIconProps, 'svg'>) => {

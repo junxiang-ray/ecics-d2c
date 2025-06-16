@@ -6,16 +6,22 @@ import PremiumBreakdownContent, {
   PremiumBreakdownContentProps,
 } from '@/components/PremiumBreakdownContent';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface Props extends PremiumBreakdownContentProps {
   isShowPopupPremium: boolean;
   setIsShowPopupPremium: (isShowPopupPremium: boolean) => void;
+  productType?: ProductType;
 }
 
 const ModalPremium = (props: Props) => {
-  const { isShowPopupPremium, setIsShowPopupPremium, ...rest } = props;
+  const { isShowPopupPremium, setIsShowPopupPremium, productType, ...rest } =
+    props;
   const isMobile = useDeviceDetection();
+
+  const isMaid = productType === ProductType.MAID;
+  const currentProductType = isMaid ? ProductType.MAID : ProductType.CAR;
 
   return (
     <>
@@ -30,6 +36,7 @@ const ModalPremium = (props: Props) => {
         >
           <PremiumBreakdownContent
             {...rest}
+            productType={currentProductType}
             onClose={() => setIsShowPopupPremium(false)}
           />
         </Drawer>
@@ -46,6 +53,7 @@ const ModalPremium = (props: Props) => {
         >
           <PremiumBreakdownContent
             {...rest}
+            productType={currentProductType}
             onClose={() => setIsShowPopupPremium(false)}
           />
         </Modal>

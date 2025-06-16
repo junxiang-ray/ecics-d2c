@@ -6,6 +6,7 @@ const createInsuranceRoutes = (basePath: string) => ({
   ADD_ON: `${basePath}/add-on`,
   PERSONAL_DETAIL: `${basePath}/personal-detail`,
   COMPLETE_PURCHASE: `${basePath}/complete-purchase`,
+  HELPER_DETAIL: `${basePath}/helpers-detail`,
 });
 
 export const ROUTES = {

@@ -269,7 +269,7 @@ export interface Addon {
   type: 'select' | 'checkbox'; // adjust as needed
   title: string;
   key_map: string | null;
-  options: Option[];
+  options: AddonOption[];
   sub_title: string | null;
   is_display: boolean;
   description: string | null;
@@ -278,12 +278,22 @@ export interface Addon {
   premium_with_gst: number;
   default_option_id: number | null;
 }
+
+export interface AddOnFormat extends Addon {
+  icon: JSX.Element | null;
+  selectedOption: AddonOption | null;
+  feeAdded: number; // feeAdded is the fee used to calculate the premium for the addon
+
+  activeOption: AddonOption | null;
+  feeSelected: number; // feeSelected is the fee used to show fee when user change option
+}
+
 export interface AddOnIncludedInPlan {
   add_on_id: string;
   add_on_desc: string;
   add_on_name: string;
 }
-export interface Option {
+export interface AddonOption {
   id: number;
   label: string;
   value: string;
