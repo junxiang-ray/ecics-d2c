@@ -224,7 +224,6 @@ export interface PersonalInfo {
   marital_status: string;
   driving_experience: number;
   post_code: string;
-  nationality?: string;
 }
 export interface ProductType {
   id: number;
