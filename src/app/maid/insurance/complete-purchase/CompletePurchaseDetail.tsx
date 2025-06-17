@@ -94,7 +94,7 @@ export default function CompletePurchaseDetail({
       return ROUTES.INSURANCE_MAID.BASIC_DETAIL;
     }
     if (['owner'].includes(key)) {
-      return ROUTES.INSURANCE_MAID.PERSONAL_DETAIL;
+      return ROUTES.INSURANCE_MAID.HELPER_DETAIL;
     }
     if (key === 'policy_plan') {
       return ROUTES.INSURANCE_MAID.PLAN;
