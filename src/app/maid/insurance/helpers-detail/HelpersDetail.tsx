@@ -304,6 +304,13 @@ const HelpersDetail = (props: Props) => {
     MAID_QUOTE.has_helper_worked_12_months,
   );
 
+  useEffect(() => {
+    if (selectedHasTheHelper === HasHelperValue.NO) {
+      methods.setValue(MAID_QUOTE.company_name, '');
+      methods.setValue(MAID_QUOTE.company_name_other, '');
+    }
+  }, [selectedHasTheHelper, methods]);
+
   const planFreeTotal =
     (maidQuoteInfo?.data?.review_info_premium?.total_final_price || 0) -
     (maidQuoteInfo?.data?.review_info_premium?.total_addon_free || 0);
@@ -352,6 +359,7 @@ const HelpersDetail = (props: Props) => {
       data: transformedData,
       is_sending_email: false,
     };
+    console.log(dataQuote, 'chinh123');
     saveMaidQuote(dataQuote).then((res) => {
       if (res) {
         dispatch(updateMaidQuote(res));
