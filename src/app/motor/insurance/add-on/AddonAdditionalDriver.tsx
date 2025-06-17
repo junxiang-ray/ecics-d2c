@@ -11,7 +11,6 @@ import { PersonIcon } from '@/components/icons/add-on-icons';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 import IconEditDriver from '@/components/icons/EditDriver';
 import AddOnRow from '@/components/page/insurance/add-on/AddOnRow';
-import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
 import AdditionDriver from '../components/AdditionDriver';
 
@@ -67,7 +66,7 @@ function AddonAdditionalDriver({
       icon={<PersonIcon className='text-brand-blue' />}
       status={status}
     >
-      <TruncateText text={addon.description} />
+      {addon.description}
       <div className='my-2 border-t border-dashed border-[#F0F0F0]' />
       <div className='flex flex-col gap-2'>
         <div

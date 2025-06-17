@@ -6,7 +6,6 @@ import { memo, useEffect, useState } from 'react';
 import { AddOnFormat } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
 
-import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { AddOnRadioGroupField } from '@/components/ui/form/radiofield';
 
@@ -88,7 +87,7 @@ function AddOnRowDetail({
     >
       {status === 'new' && (
         <>
-          <TruncateText text={addon.description} />
+          {addon.description}
           <div className='my-2 border-t border-dashed border-[#F0F0F0]' />
 
           {addon.type === 'select' && (
@@ -105,7 +104,7 @@ function AddOnRowDetail({
                     isPending={isPending}
                   />
                 </div>
-                <div className='flex items-center justify-between gap-2  text-[14px] font-semibold leading-5'>
+                <div className='mt-[20px] flex items-center justify-between gap-2 text-[14px] font-semibold leading-5'>
                   <p className='text-[#525252]'>
                     {formatCurrency(addon.feeSelected ?? 0)}
                   </p>
@@ -138,7 +137,7 @@ function AddOnRowDetail({
       )}
       {status === 'completed' && (
         <>
-          <TruncateText text={addon.description} />
+          {addon.description}
           <div className=' my-2 border-t border-dashed border-[#F0F0F0]' />
           <div className='flex flex-col justify-between gap-2 md:flex-row md:items-center'>
             {addon.type === 'select' && (

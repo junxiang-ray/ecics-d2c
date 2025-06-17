@@ -58,7 +58,7 @@ export default function Summary() {
         {isMobile ? (
           <CheckCircle size={48} />
         ) : (
-          <PromoTickIcon size={48} className='text-[#52C41A]' />
+          <PromoTickIcon size={48} className='text-green-promo' />
         )}
         <p className='text-center text-2xl font-normal leading-7 text-[#171A1F]'>
           Payment Success!

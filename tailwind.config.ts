@@ -19,6 +19,7 @@ const config: Config = {
         'plan-blue': '#b6dbfd',
         'review-blue': '#F4FBFD',
         'coupon-red': '#C80F1E',
+        'green-promo': '#2ECC71',
         'red-logo': '#F4333D',
       },
       animation: {

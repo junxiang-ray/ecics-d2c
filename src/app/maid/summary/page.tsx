@@ -37,7 +37,7 @@ export default function Summary() {
         {isMobile ? (
           <CheckCircle size={48} />
         ) : (
-          <PromoTickIcon size={48} className='text-[#52C41A]' />
+          <PromoTickIcon size={48} className='text-green-promo' />
         )}
         <p className='text-center text-2xl font-normal leading-7 text-[#171A1F]'>
           Payment Success!
@@ -191,11 +191,7 @@ export default function Summary() {
   const matchedPlan = plans.find(
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
-  const addonsTitles =
-    matchedPlan?.benefits
-      ?.filter((benefit) => benefit.is_active)
-      .map((benefit) => benefit.name)
-      .filter(Boolean) || [];
+  const addonsTitles = matchedPlan?.benefits || [];
 
   return (
     <div className='flex w-full justify-center '>

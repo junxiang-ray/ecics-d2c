@@ -133,11 +133,7 @@ export default function CompletePurchaseDetail({
   const matchedPlan = plans.find(
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
-  const addonsTitles =
-    matchedPlan?.addons
-      ?.filter((addon) => addon.is_display)
-      .map((addon) => addon.title)
-      .filter(Boolean) || [];
+  const addonsTitles = matchedPlan?.benefits || [];
 
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
