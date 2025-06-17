@@ -280,7 +280,7 @@ function AddOnDetail({
                   isIncluded={true}
                   productType={ProductType.MAID}
                 >
-                  <TruncateText text={addon.add_on_desc} />
+                  {addon.add_on_desc}
                 </AddOnRow>
               ))}
               {addonsFormatted.map((addon) => {

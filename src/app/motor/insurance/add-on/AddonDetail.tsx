@@ -449,7 +449,7 @@ function AddOnDetail({
                   status='completed'
                   isIncluded={true}
                 >
-                  <TruncateText text={addon.add_on_desc} />
+                  {addon.add_on_desc}
                 </AddOnRow>
               ))}
               {addonsFormatted.map((addon) => {

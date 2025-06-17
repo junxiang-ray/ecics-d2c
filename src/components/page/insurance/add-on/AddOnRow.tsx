@@ -99,7 +99,11 @@ export default function AddOnRow({
           {_renderStatusItem()}
         </div>
       )}
-      {isOpen && <div className='pt-2'>{children}</div>}
+      {isOpen && (
+        <div className='pt-2 text-justify text-[13px] font-semibold leading-[19px] text-[#535353] transition-all'>
+          {children}
+        </div>
+      )}
     </div>
   );
 }
