@@ -7,6 +7,7 @@ import {
 import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
 
 import insurance from '@/api/base-service/insurance';
+import { ProductTypeWeb } from '@/app/api/constants/product';
 
 export const useGetQuote = (key: string) => {
   const fetchQuote = async () => {
@@ -34,8 +35,14 @@ export const useGenerateQuote = () => {
 };
 
 export const useSaveProposal = () => {
-  const saveProposal = async (data: ProposalPayload) => {
-    const res = await insurance.saveProposal(data);
+  const saveProposal = async ({
+    data,
+    productType,
+  }: {
+    data: ProposalPayload;
+    productType: ProductTypeWeb;
+  }) => {
+    const res = await insurance.saveProposal(data, productType);
     return res.data.data;
   };
   return useMutation({

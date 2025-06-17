@@ -12,13 +12,13 @@ import { PricingSummary } from '@/components/page/FeeBar';
 import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
@@ -351,7 +351,10 @@ export default function CompletePurchaseDetail({
       personal_info: maidQuote?.data?.personal_info,
       maid_info: maidQuote?.data?.maid_info,
     };
-    saveProposal(data).then((res) => {
+    saveProposal({
+      data,
+      productType: PRODUCT_NAME.MAID,
+    }).then((res) => {
       if (!res?.final_premium) return;
       dispatch(updateMaidQuote({ is_finalized: true }));
     });

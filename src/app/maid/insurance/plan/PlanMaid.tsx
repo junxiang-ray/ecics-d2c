@@ -28,7 +28,13 @@ function PlanMaid({
     >
       {plans
         .slice()
-        .sort((a: any, b: any) => a.order - b.order)
+        .sort((a: any, b: any) => {
+          if (isMobile) {
+            if (a.is_recommended && !b.is_recommended) return -1;
+            if (!a.is_recommended && b.is_recommended) return 1;
+          }
+          return a.order - b.order;
+        })
         .map((plan, index) => {
           const isRecommended = plan.is_recommended;
           const active = selectedPlan?.id === plan.id;
