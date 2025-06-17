@@ -265,7 +265,9 @@ export interface ProposalPayload {
   key: string;
   selected_plan: string;
   selected_addons: Record<string, string>;
-  add_named_driver_info: AddNamedDriverInfo[];
+  personal_info?: PersonalPayload;
+  maid_info?: MaidInfo;
+  add_named_driver_info?: AddNamedDriverInfo[];
 }
 
 export interface QuoteInfo {

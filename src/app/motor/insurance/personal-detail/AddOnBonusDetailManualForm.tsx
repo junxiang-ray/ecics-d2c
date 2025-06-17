@@ -189,10 +189,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const planFreeTotal =
     (quoteInfo?.data?.review_info_premium?.total_final_price || 0) -
     (quoteInfo?.data?.review_info_premium?.total_addon_free || 0);
-  console.log(
-    '+ quoteInfo?.data?.review_info_premium?.total_addon_free',
-    quoteInfo?.data?.review_info_premium?.total_addon_free,
-  );
+
   const {
     formState: { errors },
   } = methods;

@@ -69,7 +69,11 @@ export const PolicyDetail = ({
   const onSubmit: SubmitHandler<FormData> = async (data: any) => {
     dispatch(setPromoCodeError(null));
     let payload: any;
-    payload = { ...data, key: key };
+    const updateLoadMaidInfo = {
+      ...maidInfo,
+      ...data?.maid_info,
+    };
+    payload = { ...data, key: key, maid_info: updateLoadMaidInfo };
     const startDateStr = data.start_date;
     const planPeriodStr = data.plan_period;
     let endDate = null;
@@ -99,7 +103,7 @@ export const PolicyDetail = ({
       payload = {
         ...payload,
         personal_info: personal_info,
-        // vehicle_info_selected: selectedVehicle,
+        maid_info: maidInfo,
       };
     }
     generateMaidQuote(payload)

@@ -134,9 +134,9 @@ export default function CompletePurchaseDetail({
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
   const addonsTitles =
-    matchedPlan?.benefits
-      ?.filter((benefit) => benefit.is_active)
-      .map((benefit) => benefit.name)
+    matchedPlan?.addons
+      ?.filter((addon) => addon.is_display)
+      .map((addon) => addon.title)
       .filter(Boolean) || [];
 
   const sharedDataMap: {
@@ -348,6 +348,8 @@ export default function CompletePurchaseDetail({
       key: key,
       selected_plan: maidQuote?.data?.selected_plan,
       selected_addons: maidQuote?.data?.selected_addons,
+      personal_info: maidQuote?.data?.personal_info,
+      maid_info: maidQuote?.data?.maid_info,
     };
     saveProposal(data).then((res) => {
       if (!res?.final_premium) return;
