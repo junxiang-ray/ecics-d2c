@@ -193,7 +193,7 @@ export const PromoCodeField = ({
               </div>
             </div>
           )}
-          {errorMessage && (
+          {!isExpiredPromoCode && errorMessage && (
             <span className='block pt-2 text-sm text-red-500'>
               {errorMessage}
             </span>

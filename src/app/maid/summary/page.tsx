@@ -191,11 +191,7 @@ export default function Summary() {
   const matchedPlan = plans.find(
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
-  const addonsTitles =
-    matchedPlan?.benefits
-      ?.filter((benefit) => benefit.is_active)
-      .map((benefit) => benefit.name)
-      .filter(Boolean) || [];
+  const addonsTitles = matchedPlan?.benefits || [];
 
   return (
     <div className='flex w-full justify-center '>
