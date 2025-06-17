@@ -33,7 +33,7 @@ datasource db {
 
 model Promocode {
   id                 Int      @id @default(autoincrement())
-  code               String   @unique
+  code               String   
   start_time         DateTime @map("start_time")
   end_time           DateTime @map("end_time")
   description        String

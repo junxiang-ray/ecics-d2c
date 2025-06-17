@@ -18,7 +18,7 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
     let promoCodeData = null;
     // Check if promo code is valid
     if (data.promo_code) {
-      promoCodeData = await prisma.promocode.findUnique({
+      promoCodeData = await prisma.promocode.findFirst({
         where: {
           code: data.promo_code,
         },
