@@ -46,8 +46,8 @@ function PlanCardMobile({
                 ? ''
                 : 'flex min-h-[400px] flex-1 flex-col justify-between',
               active
-                ? 'border-plan-blue bg-plan-blue'
-                : 'border-secondaryBlue bg-white',
+                ? 'border-[2px] border-[#00ADEF]'
+                : 'border-[#F0F0F0] bg-white',
             )}
             key={index}
             onClick={!isSaving ? () => setSelectedPlan(plan) : undefined}

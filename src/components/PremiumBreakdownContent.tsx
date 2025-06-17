@@ -54,7 +54,7 @@ const PremiumBreakdownContent = ({
       >
         Premium Breakdown
       </p>
-      <div className='flex flex-col gap-4'>
+      <div className='flex max-h-[70vh] flex-col gap-4 overflow-y-auto'>
         {/* Plan */}
         <div className='flex flex-col gap-2'>
           <p className='text-base font-bold text-[#303030]'>Plan</p>

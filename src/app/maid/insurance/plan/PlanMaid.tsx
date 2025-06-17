@@ -1,9 +1,13 @@
 'use client';
 
 import clsx from 'clsx';
+
 import { formatCurrency } from '@/libs/utils/utils';
+
 import TickCircleIcon from '@/components/icons/TickCircleIcon';
+
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import { FormatPlan } from './PlanDetail';
 
 function PlanMaid({

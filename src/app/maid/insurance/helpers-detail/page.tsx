@@ -1,7 +1,7 @@
 'use client';
 
-import MaidInsuranceLayout from '../MaidInsuranceLayout';
 import HelpersDetail from './HelpersDetail';
+import MaidInsuranceLayout from '../MaidInsuranceLayout';
 
 export default function AddonPage() {
   return (

@@ -10,8 +10,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
+
+import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownOption,
@@ -19,10 +22,7 @@ import {
 } from '@/components/ui//form/dropdownfield';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
-
-import { MAID_QUOTE } from '@/constants';
-import { emailRegex, phoneRegex } from '@/constants/validation.constant';
-import { useGetNationality } from '@/hook/insurance/common';
+import { RadioField } from '@/components/ui/form/radiofield';
 
 import {
   HELPER_TYPE_OPTIONS,
@@ -32,10 +32,10 @@ import {
   PolicyDurationValue,
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
-
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
-import { RadioField } from '@/components/ui/form/radiofield';
+import { MAID_QUOTE } from '@/constants';
+import { emailRegex, phoneRegex } from '@/constants/validation.constant';
+import { useGetNationality } from '@/hook/insurance/common';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -522,7 +522,7 @@ const PolicyDetailForm = ({
             />
             <PrimaryButton
               loading={isLoading}
-              className='ml-[6px] w-[90vw] bg-[#52C41A] md:w-40'
+              className='ml-[6px] w-[90vw] bg-green-promo md:w-40'
               onClick={() => {
                 form.submit();
               }}

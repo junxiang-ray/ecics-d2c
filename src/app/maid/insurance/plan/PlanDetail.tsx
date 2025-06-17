@@ -3,6 +3,7 @@
 import { Button } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
@@ -11,15 +12,16 @@ import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
 import { ROUTES } from '@/constants/routes';
+import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
-import PlanMaid from './PlanMaid';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
-import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+
+import PlanMaid from './PlanMaid';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -161,7 +163,7 @@ function PlanDetail({
                   />
                   <PrimaryButton
                     onClick={() => setShowConfirmDeclaration(true)}
-                    className='w-full bg-[#52C41A]'
+                    className='w-full bg-green-promo'
                     disabled={!selectedPlan?.id}
                     loading={isSaving}
                   >
@@ -203,7 +205,7 @@ function PlanDetail({
                 </div>
                 <PrimaryButton
                   onClick={() => setShowConfirmDeclaration(true)}
-                  className='w-40 bg-[#52C41A]'
+                  className='w-40 bg-green-promo'
                   disabled={!selectedPlan?.id}
                   loading={isSaving}
                 >

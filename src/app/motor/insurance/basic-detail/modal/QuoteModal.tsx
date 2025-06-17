@@ -50,7 +50,7 @@ export const QuoteModal = ({
         <div className='flex flex-row items-center justify-between'>
           <a
             href='tel:+6562065588'
-            className='flex w-[150px] flex-row items-center justify-center gap-1 rounded-lg bg-[#52C41A] py-3 text-base font-normal text-white hover:opacity-90'
+            className='flex w-[150px] flex-row items-center justify-center gap-1 rounded-lg bg-green-promo py-3 text-base font-normal text-white hover:opacity-90'
           >
             <PhoneIcon
               className='relative top-[1px] mr-1 text-white'
