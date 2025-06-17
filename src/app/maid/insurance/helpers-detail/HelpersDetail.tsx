@@ -317,11 +317,11 @@ const HelpersDetail = (props: Props) => {
         name: data.name,
         nric: data.nric,
         address: [data.address1, data.address2, data.address3],
+        nationality: data.nationality,
         post_code: data.pinCode,
         date_of_birth: dayjs(data.date_of_birth).format('DD/MM/YYYY'),
       },
       maid_info: {
-        nationality: data.nationality,
         name: data.nameHelper,
         fin: data.fin,
         passport_number: data.passport_number,

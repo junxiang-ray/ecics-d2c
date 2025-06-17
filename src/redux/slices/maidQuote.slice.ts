@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import { MaidQuote } from '@/libs/types/maidQuote';
 
 interface AppState {

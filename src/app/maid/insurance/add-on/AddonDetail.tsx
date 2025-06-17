@@ -19,8 +19,9 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import { MaidQuote } from '@/libs/types/maidQuote';
 
 export const mapIconToTypeAddOn = [
   {
@@ -253,7 +254,7 @@ function AddOnDetail({
       data: data,
       is_sending_email: false,
     }).then((res) => {
-      dispatch(updateQuote(res));
+      dispatch(updateMaidQuote(res as Partial<MaidQuote>));
       setIsShowPopupPremium(false);
       if (isManual) {
         router.push(ROUTES.INSURANCE_MAID.HELPER_DETAIL);
@@ -269,7 +270,7 @@ function AddOnDetail({
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
           <p className='mt-4 text-base font-bold underline'>Select Add-ons</p>
           <div className='flex flex-col items-center'>
-            <div className='mt-4 flex flex-col gap-6 md:max-w-[950px] md:gap-10'>
+            <div className='mt-4 flex w-[950px] flex-col gap-6 md:gap-10'>
               {plan?.add_ons_included_in_this_plan?.map((addon) => (
                 <AddOnRow
                   key={addon.add_on_id}
