@@ -29,6 +29,7 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
@@ -409,7 +410,10 @@ export default function CompletePurchaseDetail({
       selected_addons: quote?.data?.selected_addons,
       add_named_driver_info: quote?.data?.add_named_driver_info,
     };
-    saveProposal(data).then((res) => {
+    saveProposal({
+      data,
+      productType: PRODUCT_NAME.CAR,
+    }).then((res) => {
       if (!res?.final_premium) return;
       dispatch(updateQuote({ is_finalized: true }));
     });
