@@ -102,7 +102,7 @@ export function PricingSummary({
                     e.stopPropagation();
                     onClick && onClick();
                   }}
-                  className='w-full bg-[#52C41A] px-1 leading-4 text-white md:mt-5'
+                  className='w-full bg-[#2ECC71] px-1 leading-4 text-white md:mt-5'
                   loading={loading}
                 >
                   {textButton || 'Continue'}
@@ -157,7 +157,7 @@ export function PricingSummary({
                   e.stopPropagation();
                   onClick && onClick();
                 }}
-                className={`bg-[#52C41A] px-1 leading-4 text-white md:w-40 ${isBasicDetailScreen ? 'md:mb-2.5 md:mt-2.5' : 'md:mt-5'}`}
+                className={`bg-[#2ECC71] px-1 leading-4 text-white md:w-40 ${isBasicDetailScreen ? 'md:mb-2.5 md:mt-2.5' : 'md:mt-5'}`}
                 loading={loading}
               >
                 {textButton || 'Continue'}

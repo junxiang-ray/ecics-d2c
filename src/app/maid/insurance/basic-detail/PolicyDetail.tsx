@@ -1,18 +1,21 @@
 'use client';
 
+import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
+
 import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
+
 import { MAID_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
+import { useGenerateMaidQuote } from '@/hook/insurance/maidQuote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { setPromoCodeError } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 import PolicyDetailForm from './PolicyDetailForm';
-import { useGenerateMaidQuote } from '@/hook/insurance/maidQuote';
-import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import dayjs from 'dayjs';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;

@@ -11,7 +11,6 @@ import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useAppSelector } from '@/redux/store';
-import { ProductType } from '../basic-detail/options';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;
@@ -43,6 +42,9 @@ export const PromoCodeField = ({
 
   const isValidPromoCode = promoInfoSelected?.data?.is_valid;
   const errorMessage = isValidPromoCode ? '' : promoInfoSelected?.message;
+
+  const isExpiredPromoCode =
+    promoInfoSelected?.message === 'This promo code has expired.';
 
   const handleVerifyPromoCode = async (promoCode: string) => {
     try {
@@ -82,7 +84,7 @@ export const PromoCodeField = ({
   return (
     <div className='w-full'>
       {isDisablePromoCode && (
-        <div className='mb-5 w-full border p-3 font-semibold shadow-xl md:ms-2'>
+        <div className='mb-5 w-full border p-3 font-semibold md:ms-2'>
           <div className='mb-3 w-full text-base'>Enter Promo Code</div>
           <div className='flex items-center justify-between text-justify text-sm'>
             <WarningTriangleIcon className='mr-2 shrink-0' size={24} />
@@ -97,12 +99,12 @@ export const PromoCodeField = ({
         </div>
       )}
       {!isDisablePromoCode && isValidPromoCode && (
-        <div className='mb-5 w-full border p-3 font-semibold shadow-xl md:ms-2'>
+        <div className='mb-5 w-full border p-3 font-semibold md:ms-2'>
           <div className='mb-3 w-full text-base'>Enter Promo Code</div>
           <div className='mb-[10px] flex w-full items-center justify-between border border-gray-300 px-3 py-2'>
             <div className='flex items-center gap-2'>
               <span className='inline-block rounded px-3 py-1'>
-                <span className='text-base font-semibold text-[#52C41A]'>
+                <span className='text-base font-semibold text-green-promo'>
                   {promoInfoSelected?.data.code}
                 </span>
               </span>
@@ -115,7 +117,7 @@ export const PromoCodeField = ({
             />
           </div>
           {!isPromoCodeNotApplicable && (
-            <span className='flex items-center text-sm text-[#52C41A]'>
+            <span className='flex items-center text-sm text-green-promo'>
               <PromoTickIcon className='mr-2' size={24} />
               {promoInfoSelected?.data?.discount}% OFF applied
             </span>
@@ -140,7 +142,7 @@ export const PromoCodeField = ({
           name={MOTOR_QUOTE.promo_code}
           required={false}
           validateStatus={errorMessage ? 'error' : ''}
-          className='border p-3 font-semibold shadow-xl md:ms-2'
+          className='border p-3 font-semibold md:ms-2'
         >
           <div className='w-full'>Enter Promo Code</div>
           <Flex gap='small' className='w-full justify-between'>
@@ -151,7 +153,7 @@ export const PromoCodeField = ({
               render={({ field }) => (
                 <Input
                   {...field}
-                  className={`w-3/4 py-2 ${errorMessage ? '!border-red-500' : ''}`}
+                  className={`w-3/4 py-2 ${errorMessage ? '!border-red-500' : ''} hover:!border-gray-300 focus:!border-gray-300 focus:!shadow-none`}
                   {...props}
                 />
               )}
@@ -164,10 +166,19 @@ export const PromoCodeField = ({
               Apply
             </SecondaryButton>
           </Flex>
-          {errorMessage && (
-            <span className='block pt-2 text-sm text-red-500'>
-              {errorMessage}
-            </span>
+          {isExpiredPromoCode && (
+            <div className='mt-[10px] flex items-center text-justify text-sm'>
+              <WarningTriangleIcon className='mr-2' size={24} />
+              <div className='text-[#FD1212]'>
+                <span>Expired Promo Code</span>
+                <br />
+                <span className='font-normal'>
+                  The promo code you entered has expired.
+                  <br />
+                  Please check the code and try again.
+                </span>
+              </div>
+            </div>
           )}
           {isValidPromoCode && (
             <div className='mt-[10px] flex items-center text-justify text-sm'>
@@ -181,6 +192,11 @@ export const PromoCodeField = ({
                 </span>
               </div>
             </div>
+          )}
+          {errorMessage && (
+            <span className='block pt-2 text-sm text-red-500'>
+              {errorMessage}
+            </span>
           )}
         </Form.Item>
       )}

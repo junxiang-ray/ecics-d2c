@@ -17,11 +17,11 @@ import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
-import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 
 function calculateFee(
   option: AddonOption,
