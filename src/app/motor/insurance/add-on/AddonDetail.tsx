@@ -428,7 +428,7 @@ function AddOnDetail({
             Select Add-ons
           </p>
           <div className='flex flex-col items-center'>
-            <div className='mt-4 flex flex-col gap-6 md:max-w-[950px] md:gap-10'>
+            <div className='mt-4 flex w-[950px] flex-col gap-6 md:gap-10'>
               {addonAdditionalDriver && (
                 <AddonAdditionalDriver
                   addon={addonAdditionalDriver}

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { useAppSelector } from '@/redux/store';
@@ -20,6 +21,7 @@ interface ReviewSectionProps {
   isPendingSave?: boolean;
   isPendingPay?: boolean;
   sectionKey?: string;
+  productType?: ProductType;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
@@ -34,15 +36,21 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   isPendingSave,
   isPendingPay,
   sectionKey,
+  productType,
 }) => {
   const router = useRouterWithQuery();
   const isFinalized = useAppSelector(
     (state) => state.quote?.quote?.is_finalized,
   );
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
+  const isMaid = productType === ProductType.MAID;
 
   const handleEditClick = () => {
-    if (editRoute === ROUTES.INSURANCE.BASIC_DETAIL) {
+    const isBasicDetailRoute = isMaid
+      ? editRoute === ROUTES.INSURANCE_MAID.BASIC_DETAIL
+      : editRoute === ROUTES.INSURANCE.BASIC_DETAIL;
+
+    if (isBasicDetailRoute) {
       setIsShowPopupImportant(true);
     } else {
       handleRedirect();
