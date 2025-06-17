@@ -1,5 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
+import { AddonOption } from '@/libs/types/quote';
+
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
@@ -74,9 +76,8 @@ export const generateKeyAndAttachToUrl = (key: string) => {
   return generatedKey;
 };
 
-export const calculateAge = (dob: string) => {
+export const calculateAge = (dob: string, today: Date = new Date()) => {
   const birthDate = new Date(dob);
-  const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
   if (
@@ -160,3 +161,23 @@ export const getPaymentType = (
   }
   return undefined;
 };
+
+export function calculateFee(
+  option: AddonOption,
+  addonsAdded: Record<string, string>,
+): number {
+  if (
+    !option?.dependencies ||
+    option.dependencies.length === 0 ||
+    !addonsAdded ||
+    Object.keys(addonsAdded).length === 0
+  ) {
+    return option.premium_with_gst ?? 0;
+  }
+  const dependency = option.dependencies.find((dep) =>
+    dep.conditions.every(
+      (condition) => addonsAdded[condition.addon.code] === condition.value,
+    ),
+  );
+  return dependency?.premium_with_gst ?? 0;
+}

@@ -12,7 +12,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
-import { formatPromoCode } from '@/libs/utils/utils';
+import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
 
 import { PricingSummary } from '@/components/page/FeeBar';
 import { DatePickerField } from '@/components/ui//form/datepicker';
@@ -22,6 +22,7 @@ import {
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
@@ -42,7 +43,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -188,6 +188,29 @@ const createSchema = (isSingpassFlow: boolean) => {
           });
         }
       }
+
+      // driver experience validation based on age at policy start date
+      if (
+        data[MOTOR_QUOTE.owner_dob] &&
+        data[MOTOR_QUOTE.owner_drv_exp] &&
+        data[MOTOR_QUOTE.start_date]
+      ) {
+        const age = calculateAge(
+          data[MOTOR_QUOTE.owner_dob] as string,
+          data[MOTOR_QUOTE.start_date] as Date,
+        );
+        const drvExp = Number(data[MOTOR_QUOTE.owner_drv_exp]);
+        const maxDrvExp = age - 18;
+
+        if (drvExp > maxDrvExp) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "Please provide driving experience suitable for the driver's age.",
+            path: [MOTOR_QUOTE.owner_drv_exp],
+          });
+        }
+      }
     });
 };
 
@@ -291,6 +314,7 @@ const PolicyDetailForm = ({
   useEffect(() => {
     if (
       touchedFields[MOTOR_QUOTE.owner_drv_exp] &&
+      drvExp !== null &&
       drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
     ) {
       setShowCSModal(true);
@@ -631,10 +655,10 @@ const PolicyDetailForm = ({
                     label='Years of Driving Experience'
                     isRequired
                     placeholder='Enter your driving experience'
-                    type='number'
                     min={0}
                     max={60}
                     suffix='year(s)'
+                    precision={0}
                   />
                 </Form.Item>
 

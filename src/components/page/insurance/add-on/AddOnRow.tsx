@@ -5,9 +5,11 @@ import { useState } from 'react';
 
 import { FinishIcon } from '@/components/icons/add-on-icons';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 export type Status = 'new' | 'completed';
+
 export default function AddOnRow({
   title,
   icon,
@@ -15,6 +17,7 @@ export default function AddOnRow({
   isRecommended = false,
   isRequired = false,
   isIncluded = false,
+  productType,
   children,
 }: {
   title: string | null;
@@ -23,10 +26,12 @@ export default function AddOnRow({
   isRecommended?: boolean;
   isRequired?: boolean;
   isIncluded?: boolean;
+  productType?: ProductType;
   children?: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(true);
   const { isMobile } = useDeviceDetection();
+  const isMaid = productType === ProductType.MAID;
 
   const _renderStatusItem = () => {
     return (
@@ -55,7 +60,9 @@ export default function AddOnRow({
       <div className='flex items-center justify-between gap-4'>
         <div className='bg- flex items-center gap-4'>
           {!isRequired && !isIncluded ? (
-            <div className='flex h-9 w-9 justify-center rounded-[20px] border border-[#00ADEF] bg-[#00ADEF1A]'>
+            <div
+              className={`flex h-9 w-9 justify-center border-[#00ADEF] ${isMaid ? 'border-[4px]' : 'rounded-[20px] border bg-[#00ADEF1A]'}`}
+            >
               {icon}
             </div>
           ) : (

@@ -16,6 +16,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 export type ProcessBarType = StepProcessBar | undefined;
 
@@ -26,12 +27,14 @@ interface InsuranceLayoutProps {
   stepToRoute: Record<StepProcessBar, string>;
   headerTitle: string;
   redirectToLoginPath?: string;
+  productType?: ProductType;
 }
 
 function InsuranceLayout({
   children,
   stepToRoute,
   headerTitle,
+  productType,
   redirectToLoginPath,
 }: InsuranceLayoutProps) {
   const router = useRouterWithQuery();
@@ -44,6 +47,7 @@ function InsuranceLayout({
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
+  const isMaid = productType === ProductType.MAID;
 
   const isFinalized = useAppSelector(
     (state) => state.quote.quote?.is_finalized,
@@ -184,7 +188,13 @@ function InsuranceLayout({
         {isShowPopupImportant && (
           <ModalImportant
             isShowPopupImportant={isShowPopupImportant}
-            handleRedirect={() => router.push(ROUTES.INSURANCE.BASIC_DETAIL)}
+            handleRedirect={() =>
+              router.push(
+                isMaid
+                  ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
+                  : ROUTES.INSURANCE.BASIC_DETAIL,
+              )
+            }
             setIsShowPopupImportant={setIsShowPopupImportant}
           />
         )}

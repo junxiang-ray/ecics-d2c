@@ -25,6 +25,7 @@ import {
 } from '../basic-detail/options';
 
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
+import { calculateAge } from '@/libs/utils/utils';
 
 enum ClaimStatus {
   YES = 'true',
@@ -127,6 +128,23 @@ const createSchema = (
               message: 'NRIC/FIN must be unique',
               path: [index, 'nric_or_fin'],
             });
+          }
+
+          // driver experience validation based on age at policy start date
+          if (driver.date_of_birth && driver.driving_experience != null) {
+            const age = calculateAge(
+              driver.date_of_birth.toISOString(),
+              policyStartDate,
+            );
+            const maxDrvExp = age - 18;
+            if (driver.driving_experience > maxDrvExp) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message:
+                  "Please provide driving experience suitable for the driver's age.",
+                path: [index, 'driving_experience'],
+              });
+            }
           }
         });
       }),
@@ -306,6 +324,7 @@ const AdditionDriver = ({
                     min={0}
                     max={60}
                     suffix='year(s)'
+                    precision={0}
                   />
                 </div>
                 <div className='flex flex-col gap-2'>

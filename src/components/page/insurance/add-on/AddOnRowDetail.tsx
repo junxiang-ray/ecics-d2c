@@ -3,13 +3,15 @@
 import { Button } from 'antd';
 import { memo, useEffect, useState } from 'react';
 
+import { AddOnFormat } from '@/libs/types/quote';
 import { formatCurrency } from '@/libs/utils/utils';
 
 import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 import { SecondaryButton } from '@/components/ui/buttons';
 import { AddOnRadioGroupField } from '@/components/ui/form/radiofield';
 
-import { AddOnFormat } from './AddonDetail';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+
 import AddOnRow from './AddOnRow';
 
 function AddOnRowDetail({
@@ -19,6 +21,7 @@ function AddOnRowDetail({
   addonsSelected,
   setAddonsSelected,
   isPending,
+  productType,
 }: {
   addon: AddOnFormat;
   addonsAdded: any;
@@ -26,6 +29,7 @@ function AddOnRowDetail({
   addonsSelected: any;
   setAddonsSelected: (feeAdditions: any) => void;
   isPending: boolean;
+  productType?: ProductType;
 }) {
   const [selectedOption, setSelectedOption] = useState<any>(null);
 
@@ -80,6 +84,7 @@ function AddOnRowDetail({
       title={addon.title}
       icon={addon.icon}
       status={status}
+      productType={productType}
     >
       {status === 'new' && (
         <>
