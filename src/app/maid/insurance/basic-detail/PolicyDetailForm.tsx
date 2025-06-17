@@ -307,18 +307,18 @@ const PolicyDetailForm = ({
             }}
             onFinish={methods.handleSubmit(handleSubmit)}
             disabled={isLoading}
-            className='mb-16 flex w-full max-w-[1200px] flex-col px-4 sm:px-4 md:px-0'
+            className='mb-2 flex w-full max-w-[1200px] flex-col px-4 sm:px-4 md:mb-16 md:px-0'
             {...props}
           >
             <div className='w-full'>
               {!isSingpassFlow && (
                 <>
                   <div className='relative w-full' style={{ zIndex: '99' }}>
-                    <div className='flex flex-col'>
-                      <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
+                    <div className='flex flex-col gap-3'>
+                      <div className='text-base font-bold underline decoration-gray-400'>
                         Contact Info
                       </div>
-                      <div className='mb-6 grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6'>
+                      <div className='mb-4 grid w-full grid-cols-1 gap-4 md:mb-8 md:grid-cols-3 md:gap-6'>
                         <Form.Item
                           name={MAID_QUOTE.email}
                           validateStatus={
@@ -362,11 +362,11 @@ const PolicyDetailForm = ({
                       </div>
                     </div>
 
-                    <div>
-                      <div className='text-base font-bold leading-[35px] underline decoration-gray-400 decoration-1'>
+                    <div className='flex flex-col gap-3'>
+                      <div className='text-base font-bold underline decoration-gray-400'>
                         Basic Information
                       </div>
-                      <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+                      <div className='grid grid-cols-1 gap-6 gap-y-4 md:grid-cols-3'>
                         <Form.Item
                           name={MAID_QUOTE.maid_type}
                           validateStatus={
@@ -488,12 +488,13 @@ const PolicyDetailForm = ({
           </Form>
         </FormProvider>
       </div>
+
       <div
-        className={`fixed bottom-0 w-full bg-white px-2`}
+        className={`fixed bottom-0 w-full border-[1px] border-gray-100 bg-white px-2 shadow-md shadow-gray-200`}
         style={{ zIndex: 100 }}
       >
         <div className='mx-auto w-full max-w-[1200px]'>
-          <div className='flex w-full items-center justify-between py-3'>
+          <div className='flex w-full items-center justify-between py-3 md:py-6'>
             <Button
               color='cyan'
               icon={<ArrowBackIcon size={16} />}

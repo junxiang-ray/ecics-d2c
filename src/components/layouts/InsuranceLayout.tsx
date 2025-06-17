@@ -155,7 +155,7 @@ function InsuranceLayout({
             {/*    Back*/}
             {/*</SecondaryButton>*/}
             <div>
-              <div className='mb-[20px] text-center text-[24px] font-bold'>
+              <div className='mb-[12px] bg-white text-center text-[24px] font-bold'>
                 {headerTitle}
               </div>
               <div className='md:w-[520px]'>
