@@ -549,7 +549,7 @@ export default function CompletePurchaseDetail({
             maskClosable={true}
             keyboard={true}
             footer={null}
-            width={500}
+            width={385}
             centered
           >
             <div>{_renderPremiumBreakdownContent}</div>
