@@ -46,6 +46,11 @@ export enum PolicyDurationValue {
   FOURTEEN = '14',
 }
 
+export enum HasHelperValue {
+  YES = 'YES',
+  NO = 'NO',
+}
+
 // const DRIVER_EXP_BASE = [
 //   {
 //     valueEnum: NumberDriverExperience.LESS_THAN_2_YEARS,
@@ -154,6 +159,6 @@ export const POLICY_DURATION_OPTIONS: DropdownOption[] = [
 ];
 
 export const HAS_HELPER_WORKED_OPTION: DropdownOption[] = [
-  { value: 'YES', text: 'Yes' },
-  { value: 'NO', text: 'No' },
+  { value: HasHelperValue.YES, text: 'Yes' },
+  { value: HasHelperValue.NO, text: 'No' },
 ];

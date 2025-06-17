@@ -405,7 +405,10 @@ const PolicyDetailForm = ({
                                 : POLICY_DURATION_OPTIONS
                             }
                             isRequired={true}
-                            disabled={helperType === HelperTypeValue.NEW_MAID}
+                            disabled={
+                              helperType === HelperTypeValue.NEW_MAID ||
+                              isLoading
+                            }
                           />
                         </Form.Item>
 

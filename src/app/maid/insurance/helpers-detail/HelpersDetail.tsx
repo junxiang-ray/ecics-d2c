@@ -24,7 +24,10 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { HAS_HELPER_WORKED_OPTION } from '@/app/motor/insurance/basic-detail/options';
+import {
+  HAS_HELPER_WORKED_OPTION,
+  HasHelperValue,
+} from '@/app/motor/insurance/basic-detail/options';
 import {
   DropdownOption,
   LongOptionDropdownField,
@@ -154,8 +157,18 @@ const createSchema = (listNric: any[] | undefined) =>
         .nonempty('This field is required'),
     })
     .superRefine((data, ctx) => {
-      if (data[MAID_QUOTE.company_name] === VALUE_OPTION_COMPANY) {
-        if (!data[MAID_QUOTE.company_name_other]) {
+      if (data[MAID_QUOTE.has_helper_worked_12_months] === HasHelperValue.YES) {
+        if (!data[MAID_QUOTE.company_name]) {
+          ctx.addIssue({
+            path: [MAID_QUOTE.company_name],
+            code: z.ZodIssueCode.custom,
+            message: 'Previous Insurer Name is required',
+          });
+        }
+        if (
+          data[MAID_QUOTE.company_name] === VALUE_OPTION_COMPANY &&
+          !data[MAID_QUOTE.company_name_other]
+        ) {
           ctx.addIssue({
             path: [MAID_QUOTE.company_name_other],
             code: z.ZodIssueCode.custom,
@@ -287,6 +300,9 @@ const HelpersDetail = (props: Props) => {
   });
 
   const selectedCompanyName = methods.watch(MAID_QUOTE.company_name);
+  const selectedHasTheHelper = methods.watch(
+    MAID_QUOTE.has_helper_worked_12_months,
+  );
 
   const planFreeTotal =
     (maidQuoteInfo?.data?.review_info_premium?.total_final_price || 0) -
@@ -415,34 +431,40 @@ const HelpersDetail = (props: Props) => {
                 />
               </Form.Item>
 
-              <Form.Item
-                name={MAID_QUOTE.company_name}
-                validateStatus={errors[MAID_QUOTE.company_name] ? 'error' : ''}
-              >
-                <LongOptionDropdownField
-                  name={MAID_QUOTE.company_name}
-                  label='Previous Insurer Name'
-                  placeholder='Select Insurer'
-                  options={hirePurchaseListFormatted}
-                  showSearch
-                  isRequired={true}
-                />
-              </Form.Item>
+              {selectedHasTheHelper === HasHelperValue.YES && (
+                <>
+                  <Form.Item
+                    name={MAID_QUOTE.company_name}
+                    validateStatus={
+                      errors[MAID_QUOTE.company_name] ? 'error' : ''
+                    }
+                  >
+                    <LongOptionDropdownField
+                      name={MAID_QUOTE.company_name}
+                      label='Previous Insurer Name'
+                      placeholder='Select Insurer'
+                      options={hirePurchaseListFormatted}
+                      showSearch
+                      isRequired={true}
+                    />
+                  </Form.Item>
 
-              {selectedCompanyName === VALUE_OPTION_COMPANY && (
-                <Form.Item
-                  name={MAID_QUOTE.company_name_other}
-                  validateStatus={
-                    errors[MAID_QUOTE.company_name_other] ? 'error' : ''
-                  }
-                >
-                  <InputField
-                    name={MAID_QUOTE.company_name_other}
-                    label='Other Insurer Name'
-                    isRequired
-                    placeholder='Enter Other Insurer Name'
-                  />
-                </Form.Item>
+                  {selectedCompanyName === VALUE_OPTION_COMPANY && (
+                    <Form.Item
+                      name={MAID_QUOTE.company_name_other}
+                      validateStatus={
+                        errors[MAID_QUOTE.company_name_other] ? 'error' : ''
+                      }
+                    >
+                      <InputField
+                        name={MAID_QUOTE.company_name_other}
+                        label='Other Insurer Name'
+                        isRequired
+                        placeholder='Enter Other Insurer Name'
+                      />
+                    </Form.Item>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -568,7 +590,7 @@ const HelpersDetail = (props: Props) => {
             </div>
           </div>
 
-          <div className='mt-20 w-full bg-[#FFFEFF] md:mt-14'>
+          <div className='md:mt-18 mt-20 w-full bg-[#FFFEFF]'>
             <PricingSummary
               planFee={planFreeTotal}
               addonFee={
