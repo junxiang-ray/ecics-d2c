@@ -198,16 +198,17 @@ const HelpersDetail = (props: Props) => {
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const maidQuoteInfo = useAppSelector((state) => state.maidQuote.maidQuote);
+  const maidInfo = maidQuoteInfo?.data?.maid_info;
   const personal_info = maidQuoteInfo?.data?.personal_info;
   const maid_info = maidQuoteInfo?.data?.maid_info;
-  const { name, date_of_birth, nric, address, post_code } = personal_info ?? {};
+  const { name, date_of_birth, nric, address, post_code, nationality } =
+    personal_info ?? {};
   const {
     fin,
     passport_number,
     has_helper_worked_12_months,
     company_name,
     company_name_other,
-    nationality,
   } = maid_info ?? {};
 
   const startDate = maidQuoteInfo?.data?.insurance_other_info?.start_date
@@ -322,6 +323,7 @@ const HelpersDetail = (props: Props) => {
         date_of_birth: dayjs(data.date_of_birth).format('DD/MM/YYYY'),
       },
       maid_info: {
+        ...maidInfo,
         name: data.nameHelper,
         fin: data.fin,
         passport_number: data.passport_number,
