@@ -1,3 +1,4 @@
+import { MaritalStatusType } from './../../../../libs/types/quote';
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 export enum ProductType {
@@ -21,6 +22,28 @@ export enum NumberDriverExperience {
   // FOUR_YEARS = '4 years',
   // FIVE_YEARS = '5 years',
   // SIX_YEARS = '6 years and above',
+}
+
+export enum GenderValue {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
+export enum MaritalStatusValue {
+  MARRIED = 'MARRIED',
+  SINGLE = 'SINGLE',
+  WIDOWED = 'WIDOWED',
+  DIVORCED = 'DIVORCED',
+}
+
+export enum HelperTypeValue {
+  NEW_MAID = 'New Maid',
+  RENEWAL_MAID = 'Renewal Maid',
+  TRANSFER_MAID = 'Transfer Maid',
+}
+
+export enum PolicyDurationValue {
+  TWENTY_SIX = '26',
+  FOURTEEN = '14',
 }
 
 // const DRIVER_EXP_BASE = [
@@ -108,26 +131,26 @@ export const NO_CLAIM_OPTIONS: DropdownOption[] = [
 ];
 
 export const GENDER_OPTIONS: DropdownOption[] = [
-  { value: 'MALE', text: 'Male' },
-  { value: 'FEMALE', text: 'Female' },
+  { value: GenderValue.MALE, text: 'Male' },
+  { value: GenderValue.FEMALE, text: 'Female' },
 ];
 
 export const MARITAL_STATUS_OPTIONS: DropdownOption[] = [
-  { value: 'MARRIED', text: 'Married' },
-  { value: 'SINGLE', text: 'Single' },
-  { value: 'WIDOWED', text: 'Widowed' },
-  { value: 'DIVORCED', text: 'Divorced' },
+  { value: MaritalStatusValue.MARRIED, text: 'Married' },
+  { value: MaritalStatusValue.SINGLE, text: 'Single' },
+  { value: MaritalStatusValue.WIDOWED, text: 'Widowed' },
+  { value: MaritalStatusValue.DIVORCED, text: 'Divorced' },
 ];
 
 export const HELPER_TYPE_OPTIONS: DropdownOption[] = [
-  { value: 'New Maid', text: 'New Maid' },
-  { value: 'Renewal Maid', text: 'Renewal Maid' },
-  { value: 'Transfer Maid', text: 'Transfer Maid' },
+  { value: HelperTypeValue.NEW_MAID, text: 'New Maid' },
+  { value: HelperTypeValue.RENEWAL_MAID, text: 'Renewal Maid' },
+  { value: HelperTypeValue.TRANSFER_MAID, text: 'Transfer Maid' },
 ];
 
 export const POLICY_DURATION_OPTIONS: DropdownOption[] = [
-  { value: '26', text: '26 Months' },
-  { value: '14', text: '14 Months' },
+  { value: PolicyDurationValue.TWENTY_SIX, text: '26 Months' },
+  { value: PolicyDurationValue.FOURTEEN, text: '14 Months' },
 ];
 
 export const HAS_HELPER_WORKED_OPTION: DropdownOption[] = [

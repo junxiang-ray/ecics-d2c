@@ -26,8 +26,10 @@ import { useGetNationality } from '@/hook/insurance/common';
 
 import {
   HELPER_TYPE_OPTIONS,
+  HelperTypeValue,
   NumberClaim,
   POLICY_DURATION_OPTIONS,
+  PolicyDurationValue,
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 
@@ -187,8 +189,10 @@ const PolicyDetailForm = ({
   }, []);
 
   useEffect(() => {
-    if (helperType === 'New Maid') {
-      methods.setValue(MAID_QUOTE.plan_period, '26', { shouldValidate: true });
+    if (helperType === HelperTypeValue.NEW_MAID) {
+      methods.setValue(MAID_QUOTE.plan_period, PolicyDurationValue.TWENTY_SIX, {
+        shouldValidate: true,
+      });
     }
   }, [helperType, methods]);
 
@@ -392,14 +396,16 @@ const PolicyDetailForm = ({
                             name={MAID_QUOTE.plan_period}
                             label='Policy Duration'
                             options={
-                              helperType === 'New Maid'
+                              helperType === HelperTypeValue.NEW_MAID
                                 ? POLICY_DURATION_OPTIONS.filter(
-                                    (opt) => opt.value === '26',
+                                    (opt) =>
+                                      opt.value ===
+                                      PolicyDurationValue.TWENTY_SIX,
                                   )
                                 : POLICY_DURATION_OPTIONS
                             }
                             isRequired={true}
-                            disabled={helperType === 'New Maid'}
+                            disabled={helperType === HelperTypeValue.NEW_MAID}
                           />
                         </Form.Item>
 
