@@ -144,7 +144,7 @@ function InsuranceLayout({
           {/*    />*/}
           {/*  </div>*/}
           {/*)}*/}
-          <div className='relative flex w-full justify-center p-4 px-10 pb-0 lg:w-[1200px]'>
+          <div className='relative flex w-full justify-center p-4 px-10 pb-0'>
             {/* Reopen in Day 1.5 */}
             {/*<SecondaryButton*/}
             {/*    icon={<ArrowBackIcon size={11}/>}*/}
@@ -178,7 +178,7 @@ function InsuranceLayout({
           </div>
         </div>
 
-        <div className='mx-auto flex h-[calc(100svh-265px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-240px)]'>
+        <div className='mx-auto flex h-[calc(100svh-265px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-260px)]'>
           {typeof children === 'function'
             ? children({
                 onSave: (fn: () => any) => (childSaveRef.current = fn),

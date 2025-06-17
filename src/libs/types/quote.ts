@@ -67,7 +67,28 @@ export interface QuoteData {
   selected_addons?: Record<string, string>;
   add_named_driver_info?: AddNamedDriverInfo[];
   review_info_premium?: ReviewInfo;
+  maid_info?: MaidInfo;
+  insurance_other_info?: InsuranceOtherInfo;
 }
+
+export interface InsuranceOtherInfo {
+  end_date: string;
+  maid_type: string;
+  start_date: string;
+  plan_period: string;
+}
+
+export interface MaidInfo {
+  fin: string;
+  name: string;
+  nationality: string;
+  company_name: string;
+  date_of_birth: string; // or Date, if parsed
+  passport_number: string;
+  company_name_other: string;
+  has_helper_worked_12_months: string;
+}
+
 export interface DataFromSingpass {
   aud: string;
   dob: {
@@ -224,6 +245,7 @@ export interface PersonalInfo {
   marital_status: string;
   driving_experience: number;
   post_code: string;
+  nationality?: string;
 }
 export interface ProductType {
   id: number;
@@ -243,7 +265,9 @@ export interface ProposalPayload {
   key: string;
   selected_plan: string;
   selected_addons: Record<string, string>;
-  add_named_driver_info: AddNamedDriverInfo[];
+  personal_info?: PersonalPayload;
+  maid_info?: MaidInfo;
+  add_named_driver_info?: AddNamedDriverInfo[];
 }
 
 export interface QuoteInfo {

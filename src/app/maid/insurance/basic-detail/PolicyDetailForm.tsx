@@ -311,7 +311,7 @@ const PolicyDetailForm = ({
             }}
             onFinish={methods.handleSubmit(handleSubmit)}
             disabled={isLoading}
-            className='mb-2 flex w-full max-w-[1200px] flex-col px-4 sm:px-4 md:mb-16 md:px-0'
+            className='mb-2 flex w-full max-w-[1200px] flex-col px-4 sm:px-4 md:mb-16 md:px-6 lg:px-0'
             {...props}
           >
             <div className='w-full'>

@@ -2,44 +2,40 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
+import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import {
-  finValidator,
-  sgCarRegNoValidator,
-  validateNRIC,
-} from '@/libs/utils/validation-utils';
-
+import { finValidator, validateNRIC } from '@/libs/utils/validation-utils';
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
-import { InputField } from '@/components/ui/form/inputfield';
-import { RadioField } from '@/components/ui/form/radiofield';
-import { ROUTES } from '@/constants/routes';
-import { useGetHirePurchaseList } from '@/hook/insurance/quote';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import {
-  HAS_HELPER_WORKED_OPTION,
-  HasHelperValue,
-} from '@/app/motor/insurance/basic-detail/options';
+import { DatePickerField } from '@/components/ui/form/datepicker';
 import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui/form/dropdownfield';
-import { MAID_QUOTE } from '@/constants';
+import { InputField } from '@/components/ui/form/inputfield';
+import { RadioField } from '@/components/ui/form/radiofield';
+
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { DatePickerField } from '@/components/ui/form/datepicker';
-import { useGetNationality } from '@/hook/insurance/common';
-import dayjs from 'dayjs';
-import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
-import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import {
+  HAS_HELPER_WORKED_OPTION,
+  HasHelperValue,
+  ProductType,
+} from '@/app/motor/insurance/basic-detail/options';
+import { MAID_QUOTE } from '@/constants';
 import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
+import { useGetNationality } from '@/hook/insurance/common';
+import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
+import { useGetHirePurchaseList } from '@/hook/insurance/quote';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const createSchema = (listNric: any[] | undefined) =>
   z
@@ -211,16 +207,17 @@ const HelpersDetail = (props: Props) => {
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const maidQuoteInfo = useAppSelector((state) => state.maidQuote.maidQuote);
+  const maidInfo = maidQuoteInfo?.data?.maid_info;
   const personal_info = maidQuoteInfo?.data?.personal_info;
   const maid_info = maidQuoteInfo?.data?.maid_info;
-  const { name, date_of_birth, nric, address, post_code } = personal_info ?? {};
+  const { name, date_of_birth, nric, address, post_code, nationality } =
+    personal_info ?? {};
   const {
     fin,
     passport_number,
     has_helper_worked_12_months,
     company_name,
     company_name_other,
-    nationality,
   } = maid_info ?? {};
 
   const startDate = maidQuoteInfo?.data?.insurance_other_info?.start_date
@@ -340,11 +337,12 @@ const HelpersDetail = (props: Props) => {
         name: data.name,
         nric: data.nric,
         address: [data.address1, data.address2, data.address3],
+        nationality: data.nationality,
         post_code: data.pinCode,
         date_of_birth: dayjs(data.date_of_birth).format('DD/MM/YYYY'),
       },
       maid_info: {
-        nationality: data.nationality,
+        ...maidInfo,
         name: data.nameHelper,
         fin: data.fin,
         passport_number: data.passport_number,
@@ -359,7 +357,6 @@ const HelpersDetail = (props: Props) => {
       data: transformedData,
       is_sending_email: false,
     };
-    console.log(dataQuote, 'chinh123');
     saveMaidQuote(dataQuote).then((res) => {
       if (res) {
         dispatch(updateMaidQuote(res));
@@ -600,6 +597,7 @@ const HelpersDetail = (props: Props) => {
 
           <div className='md:mt-18 mt-20 w-full bg-[#FFFEFF]'>
             <PricingSummary
+              productType={ProductType.MAID}
               planFee={planFreeTotal}
               addonFee={
                 maidQuoteInfo?.data?.review_info_premium?.total_addon_free
@@ -614,11 +612,11 @@ const HelpersDetail = (props: Props) => {
             />
           </div>
         </Form>
-
-        {/* <ModalPremium
+        <ModalPremium
+          productType={ProductType.MAID}
           isShowPopupPremium={isShowPopupPremium}
           setIsShowPopupPremium={setIsShowPopupPremium}
-          maidQuoteInfo={maidQuoteInfo}
+          maidQuote={maidQuoteInfo}
           dataSelectedAddOn={
             maidQuoteInfo?.data?.review_info_premium?.data_section_add_ons
           }
@@ -626,17 +624,22 @@ const HelpersDetail = (props: Props) => {
           addonAdditionalDriver={
             maidQuoteInfo?.data?.review_info_premium?.addon_additional_driver
           }
-          pricePlanMain={maidQuoteInfo?.data?.review_info_premium?.price_plan ?? 0}
+          pricePlanMain={
+            maidQuoteInfo?.data?.review_info_premium?.price_plan ?? 0
+          }
           couponDiscount={
             maidQuoteInfo?.data?.review_info_premium?.coupon_discount ?? 0
           }
           tax={1.09}
           gst={maidQuoteInfo?.data?.review_info_premium?.gst ?? 0}
-          netPremium={maidQuoteInfo?.data?.review_info_premium?.net_premium ?? 0}
-          addonsIncluded={
-            maidQuoteInfo?.data?.review_info_premium?.add_ons_included_in_this_plan
+          netPremium={
+            maidQuoteInfo?.data?.review_info_premium?.net_premium ?? 0
           }
-        /> */}
+          addonsIncluded={
+            maidQuoteInfo?.data?.review_info_premium
+              ?.add_ons_included_in_this_plan
+          }
+        />
       </div>
     </FormProvider>
   );

@@ -12,12 +12,13 @@ import { PricingSummary } from '@/components/page/FeeBar';
 import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { updateQuote } from '@/redux/slices/quote.slice';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
@@ -83,18 +84,23 @@ export default function CompletePurchaseDetail({
   };
   const routerBySectionKey = (key: string) => {
     if (
-      ['personal', 'vehicle', 'policy', 'driving_experiences'].includes(key)
+      [
+        'helper_details',
+        'helper_basic_information',
+        'policy',
+        'personal',
+      ].includes(key)
     ) {
-      return ROUTES.INSURANCE.BASIC_DETAIL;
+      return ROUTES.INSURANCE_MAID.BASIC_DETAIL;
     }
-    if (['vehicle_details', 'owner'].includes(key)) {
-      return ROUTES.INSURANCE.PERSONAL_DETAIL;
+    if (['owner'].includes(key)) {
+      return ROUTES.INSURANCE_MAID.PERSONAL_DETAIL;
     }
     if (key === 'policy_plan') {
-      return ROUTES.INSURANCE.PLAN;
+      return ROUTES.INSURANCE_MAID.PLAN;
     }
     if (['addons'].includes(key)) {
-      return ROUTES.INSURANCE.ADD_ON;
+      return ROUTES.INSURANCE_MAID.ADD_ON;
     }
     return undefined;
   };
@@ -128,9 +134,9 @@ export default function CompletePurchaseDetail({
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
   const addonsTitles =
-    matchedPlan?.benefits
-      ?.filter((benefit) => benefit.is_active)
-      .map((benefit) => benefit.name)
+    matchedPlan?.addons
+      ?.filter((addon) => addon.is_display)
+      .map((addon) => addon.title)
       .filter(Boolean) || [];
 
   const sharedDataMap: {
@@ -342,11 +348,15 @@ export default function CompletePurchaseDetail({
       key: key,
       selected_plan: maidQuote?.data?.selected_plan,
       selected_addons: maidQuote?.data?.selected_addons,
-      // add_named_driver_info: maidQuote?.data?.add_named_driver_info,
+      personal_info: maidQuote?.data?.personal_info,
+      maid_info: maidQuote?.data?.maid_info,
     };
-    saveProposal(data).then((res) => {
+    saveProposal({
+      data,
+      productType: PRODUCT_NAME.MAID,
+    }).then((res) => {
       if (!res?.final_premium) return;
-      dispatch(updateQuote({ is_finalized: true }));
+      dispatch(updateMaidQuote({ is_finalized: true }));
     });
   };
 
@@ -463,6 +473,7 @@ export default function CompletePurchaseDetail({
                 return (
                   <div key='policy_plan' className='flex gap-4'>
                     <ReviewSection
+                      productType={ProductType.MAID}
                       key='policy_plan'
                       title='Policy Plan'
                       data={policyData}
@@ -472,6 +483,7 @@ export default function CompletePurchaseDetail({
                       editRoute={routerBySectionKey('policy_plan')}
                     />
                     <ReviewSection
+                      productType={ProductType.MAID}
                       key='addons'
                       title='Add-ons'
                       data={addonsData}
@@ -495,6 +507,7 @@ export default function CompletePurchaseDetail({
 
               return (
                 <ReviewSection
+                  productType={ProductType.MAID}
                   key={section.key}
                   title={section.title}
                   data={sharedDataMap[section.key] || []}

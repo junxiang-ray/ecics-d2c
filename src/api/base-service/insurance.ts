@@ -13,6 +13,7 @@ import {
 } from '@/constants/api.constant';
 
 import baseClient from './api.config';
+import { ProductTypeWeb } from '@/app/api/constants/product';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -22,8 +23,9 @@ export default {
   generateQuote(data: QuoteCreationPayload) {
     return baseClient.post<QuoteResponse>('/car/quote', data);
   },
-  saveProposal(data: ProposalPayload) {
-    return baseClient.post<any>('/car/proposal', data);
+  saveProposal(data: ProposalPayload, productType: ProductTypeWeb) {
+    const url = `/${productType}/proposal`;
+    return baseClient.post<any>(url, data);
   },
   saveQuote(key: string, data: any, is_sending_email: boolean) {
     const formatData = {
