@@ -178,7 +178,7 @@ function PlanDetail({
                   />
                   <PrimaryButton
                     onClick={() => setShowConfirmDeclaration(true)}
-                    className='w-full bg-[#52C41A]'
+                    className='w-full bg-green-promo'
                     disabled={!selectedPlan?.id}
                     loading={isSaving}
                   >
@@ -215,7 +215,7 @@ function PlanDetail({
                 </div>
                 <PrimaryButton
                   onClick={() => setShowConfirmDeclaration(true)}
-                  className='w-40 bg-[#52C41A]'
+                  className='w-40 bg-green-promo'
                   disabled={!selectedPlan?.id}
                   loading={isSaving}
                 >

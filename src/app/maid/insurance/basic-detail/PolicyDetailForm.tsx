@@ -519,7 +519,7 @@ const PolicyDetailForm = ({
             />
             <PrimaryButton
               loading={isLoading}
-              className='ml-[6px] w-[90vw] bg-[#52C41A] md:w-40'
+              className='ml-[6px] w-[90vw] bg-green-promo md:w-40'
               onClick={() => {
                 form.submit();
               }}

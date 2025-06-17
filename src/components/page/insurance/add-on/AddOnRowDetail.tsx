@@ -105,7 +105,7 @@ function AddOnRowDetail({
                     isPending={isPending}
                   />
                 </div>
-                <div className='flex items-center justify-between gap-2  text-[14px] font-semibold leading-5'>
+                <div className='mt-[20px] flex items-center justify-between gap-2 text-[14px] font-semibold leading-5'>
                   <p className='text-[#525252]'>
                     {formatCurrency(addon.feeSelected ?? 0)}
                   </p>

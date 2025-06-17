@@ -270,7 +270,7 @@ function AddOnDetail({
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
           <p className='mt-4 text-base font-bold underline'>Select Add-ons</p>
           <div className='flex flex-col items-center'>
-            <div className='mt-4 flex w-[950px] flex-col gap-6 md:gap-10'>
+            <div className='mt-4 flex flex-col gap-6 md:w-[950px] md:gap-10'>
               {plan?.add_ons_included_in_this_plan?.map((addon) => (
                 <AddOnRow
                   key={addon.add_on_id}
