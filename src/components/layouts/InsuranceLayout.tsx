@@ -144,7 +144,7 @@ function InsuranceLayout({
           {/*    />*/}
           {/*  </div>*/}
           {/*)}*/}
-          <div className='relative flex w-full justify-center p-4 px-10 pb-0 lg:w-[1200px]'>
+          <div className='relative flex w-full justify-center p-4 px-10 pb-0'>
             {/* Reopen in Day 1.5 */}
             {/*<SecondaryButton*/}
             {/*    icon={<ArrowBackIcon size={11}/>}*/}

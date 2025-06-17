@@ -106,9 +106,6 @@ export default function ProcessBar({
         responsive={false}
         items={steps}
       />
-      <p className='hidden pb-4 pt-2 text-center font-semibold md:block'>
-        {companyName}
-      </p>
     </div>
   );
 }
