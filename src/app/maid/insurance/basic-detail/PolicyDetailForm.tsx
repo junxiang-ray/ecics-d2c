@@ -179,11 +179,11 @@ const PolicyDetailForm = ({
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
   const minPolicyStartDate = useMemo(() => {
-    return dayjs().add(6, 'day');
+    return dayjs().add(5, 'day');
   }, []);
 
   const maxPolicyStartDate = useMemo(() => {
-    return dayjs().add(90, 'day');
+    return dayjs().add(26, 'month');
   }, []);
 
   useEffect(() => {
@@ -391,7 +391,13 @@ const PolicyDetailForm = ({
                           <RadioField
                             name={MAID_QUOTE.plan_period}
                             label='Policy Duration'
-                            options={POLICY_DURATION_OPTIONS}
+                            options={
+                              helperType === 'New Maid'
+                                ? POLICY_DURATION_OPTIONS.filter(
+                                    (opt) => opt.value === '26',
+                                  )
+                                : POLICY_DURATION_OPTIONS
+                            }
                             isRequired={true}
                             disabled={helperType === 'New Maid'}
                           />
