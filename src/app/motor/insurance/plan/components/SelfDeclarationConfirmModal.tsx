@@ -80,8 +80,8 @@ function SelfDeclarationConfirmModal({
       <p className='text-center text-2xl font-normal leading-[32px] text-[#000000D9]'>
         Declaration and Undertaking
       </p>
-      <div className='flex flex-col gap-2 px-2'>
-        <ol className='list-decimal text-sm font-normal leading-[18px] text-[#969696]'>
+      <div className='flex max-h-[300px] flex-col gap-4 overflow-y-auto px-4'>
+        <ol className='flex list-decimal flex-col gap-4 text-sm font-normal leading-[18px] text-[#969696]'>
           <li>
             In consideration of ECICS Limited (the “Insurer”) agreeing at my/our
             request to issue a Letter of Guarantee for the sum of Singapore
@@ -98,7 +98,53 @@ function SelfDeclarationConfirmModal({
             1. As a continuing obligation I/we shall indemnify and keep
             indemnified the Insurer from and against all claims, demands,
             payment, actions, suits, proceedings, losses, expenses including
-            legal costs on an indemnity basis and
+            legal costs on an indemnity basis and all other liabilities of
+            whatsoever nature or description which may be made or taken against
+            or incurred by the Insurer in relation to or arising out of the
+            Security Bond and/or this Counter-Indemnity.
+          </li>
+          <li>
+            2. Where any request is made upon the Insurer by the MOM for payment
+            of any sum of money pursuant to the Security Bond (“such request”)
+            the Insurer shall at its absolute discretion be at liberty to
+            contest or compromise or immediately pay upon such request and such
+            request shall be sufficient authority to the Insurer for making any
+            payment thereon without requiring or obtaining any evidence or proof
+            that the amount so claimed or requested is due and payable to the
+            MOM and without any notice or reference to or further authority from
+            me/us notwithstanding that I/we may dispute the validity of any such
+            claim or request.
+          </li>
+          <li>
+            3. I/We shall not at any time question or challenge the validity
+            legality or otherwise of any payment made by the Insurer to the MOM
+            pursuant to such request or deny any liability under this
+            Counter-Indemnity on the ground that such payment or any part
+            thereof made by the Insurer was not due or payable under the
+            Security Bond or on any other ground whatsoever.
+          </li>
+          <li>
+            4. I/We shall not be discharged or released from this
+            Counter-Indemnity by any compromise, variation or arrangement made
+            between the MOM and the Insurer in relation to the obligations
+            undertaken by the Insurer under the Security Bond or by any
+            forbearance whether as to payment, time, performance or otherwise
+            given by the Controller to the Insurer.
+          </li>
+          <li>
+            5. My/Our liability hereunder is irrevocable and shall remain in
+            full force and effect until the Insurer’s liability under the
+            Security Bond is fully discharged to the Insurer’s satisfaction.
+          </li>
+          <li>
+            6. This Counter-Indemnity shall be governed by and construed in
+            accordance with the laws of Singapore.
+          </li>
+          <li>
+            7. I/We agreed that a copy of this letter of indemnity, either by
+            way of fax or otherwise, shall be deemed binding and legally
+            enforceable in a court of law and shall have the same legal effects
+            as that of the original.
           </li>
         </ol>
       </div>
