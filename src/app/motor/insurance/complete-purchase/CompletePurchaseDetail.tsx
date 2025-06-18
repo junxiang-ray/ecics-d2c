@@ -4,9 +4,7 @@ import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { AddOnFormat } from '@/libs/types/quote';
 import {
-  calculateFee,
   formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
@@ -21,15 +19,14 @@ import { PricingSummary } from '@/components/page/FeeBar';
 import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-
-import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
-import { PRODUCT_NAME } from '@/app/api/constants/product';
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
@@ -58,6 +55,7 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const quote = useAppSelector((state) => state.quote?.quote);
   const vehicleSelected = quote?.data?.vehicle_info_selected;
+  const drivers = quote?.data?.add_named_driver_info ?? [];
 
   const plan = quote?.data?.plans?.find(
     (plan) => quote.data?.selected_plan === plan.title,
@@ -116,6 +114,31 @@ export default function CompletePurchaseDetail({
     title: item.add_on_name,
     value: 'Included',
   }));
+
+  // Addon Additional Driver
+  const addonAdditionalDriver = useMemo(() => {
+    return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
+  }, [plan]);
+  const baseFeeAdditionalDriver =
+    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
+  const additionalDriverFee = drivers.length
+    ? baseFeeAdditionalDriver * (drivers.length - 1)
+    : 0;
+
+  const addonDriver = quote?.data?.review_info_premium?.addon_additional_driver;
+  const allDrivers = quote?.data?.review_info_premium?.drivers || [];
+  const number_of_additional_drivers = allDrivers.length
+    ? allDrivers.length
+    : 0;
+  const addonsAdditionalDriver = addonDriver
+    ? [
+        {
+          title: addonDriver.title,
+          value: `SGD ${additionalDriverFee.toFixed(2)}`,
+          number_of_additional_drivers,
+        },
+      ]
+    : [];
 
   const getAdditionalDriverData = (drivers: any[] = []) => {
     return drivers.flatMap((driver, index) => [
@@ -265,7 +288,11 @@ export default function CompletePurchaseDetail({
     addons:
       addonsSectionData.length === 0 && addonsIncludedData.length === 0
         ? [{ title: 'You have no Add Ons selected', value: '' }]
-        : [...addonsSectionData, ...addonsIncludedData],
+        : [
+            ...addonsSectionData,
+            ...addonsIncludedData,
+            ...addonsAdditionalDriver,
+          ],
     driver: getAdditionalDriverData(quote?.data?.add_named_driver_info),
     owner: [
       {
@@ -350,47 +377,6 @@ export default function CompletePurchaseDetail({
     },
   ];
 
-  const [addonsAdded, setAddonsAdded] = useState<any>(null);
-  const [addonsSelected, setAddonsSelected] = useState<any>(null);
-
-  const defaultAddonsAdded = useMemo(() => {
-    if (!plan?.addons.length) return {};
-    const addonCodes = plan.addons.map((addon) => addon.code);
-    return Object.fromEntries(addonCodes.map((code) => [code, 'NO']));
-  }, [plan]);
-
-  const defaultAddonsSelected = useMemo(() => {
-    if (!plan?.addons.length) return {};
-    const selected_addons = quote?.data?.selected_addons ?? {};
-    return plan.addons.reduce(
-      (acc: Record<string, string>, addon) => {
-        if (addon.type === 'checkbox') {
-          acc[addon.code] = 'YES';
-        } else {
-          const selectedValue = selected_addons?.[addon.code];
-          if (selectedValue && selectedValue !== 'NO') {
-            acc[addon.code] = selectedValue;
-          } else {
-            const defaultOption = addon.options.find(
-              (option) => option.id === addon.default_option_id,
-            );
-            acc[addon.code] = defaultOption
-              ? defaultOption.value
-              : addon.options[0]?.value;
-          }
-        }
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [plan]);
-
-  useEffect(() => {
-    // setDrivers(quoteInfo?.data?.add_named_driver_info ?? []);
-    setAddonsAdded(defaultAddonsAdded);
-    setAddonsSelected(defaultAddonsSelected);
-  }, [defaultAddonsAdded, defaultAddonsSelected]);
-
   useEffect(() => {
     if (isSuccess) {
       payment(key);
@@ -418,46 +404,6 @@ export default function CompletePurchaseDetail({
       dispatch(updateQuote({ is_finalized: true }));
     });
   };
-
-  const onClosePopup = () => {
-    setIsShowPopupPremium(false);
-  };
-
-  const addons = plan?.addons ?? [];
-
-  const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
-    // map the icon to the addon
-    const iconMatched = mapIconToTypeAddOn.find(
-      (item) => item.code === addon.code,
-    );
-
-    // For feeAdded use the "addonsAdded" defaults
-    const initValueForAdded = addonsAdded?.[addon.code] ?? null;
-    const selectedOptionForAdded = addon.options.find(
-      (option) => option.value === initValueForAdded,
-    );
-    const feeAdded = selectedOptionForAdded
-      ? calculateFee(selectedOptionForAdded, addonsAdded)
-      : 0;
-
-    // For feeSelected use the "addonsSelected" defaults
-    const initValueForSelected = addonsSelected?.[addon.code] ?? null;
-    const activeOption = addon.options.find(
-      (option) => option.value === initValueForSelected,
-    );
-    const feeSelected = activeOption
-      ? calculateFee(activeOption, addonsAdded)
-      : 0;
-
-    return {
-      ...addon,
-      icon: iconMatched?.icon || null,
-      selectedOption: selectedOptionForAdded ?? null,
-      feeAdded: feeAdded,
-      activeOption: activeOption ?? null,
-      feeSelected: feeSelected,
-    };
-  });
 
   const totalAddonFeeSelected =
     quote?.data?.review_info_premium?.data_section_add_ons.reduce(
