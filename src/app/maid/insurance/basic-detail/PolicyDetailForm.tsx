@@ -78,6 +78,7 @@ const nonSingpassFlowFields = {
     ),
   [MAID_QUOTE.maid_dob]: z.date({
     required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
   }),
   [MAID_QUOTE.maid_type]: z
     .string({
