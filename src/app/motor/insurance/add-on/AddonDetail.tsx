@@ -24,7 +24,6 @@ import { PricingSummary } from '@/components/page/FeeBar';
 import AddOnRow from '@/components/page/insurance/add-on/AddOnRow';
 import AddOnRowDetail from '@/components/page/insurance/add-on/AddOnRowDetail';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
-import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
