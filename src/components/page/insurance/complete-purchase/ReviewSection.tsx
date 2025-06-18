@@ -126,7 +126,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                   <>
                     <div
                       className={`-mx-[14px] flex flex-row justify-between px-[14px] ${
-                        item.coverage_amount ? 'border-b pb-2' : ''
+                        item.coverage_amount ||
+                        item.number_of_additional_drivers
+                          ? 'border-b pb-2'
+                          : ''
                       }`}
                     >
                       <div className='font-semibold'>{item.title}</div>

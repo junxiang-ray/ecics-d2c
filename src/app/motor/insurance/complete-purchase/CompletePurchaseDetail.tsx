@@ -124,7 +124,6 @@ export default function CompletePurchaseDetail({
   const additionalDriverFee = drivers.length
     ? baseFeeAdditionalDriver * (drivers.length - 1)
     : 0;
-
   const addonDriver = quote?.data?.review_info_premium?.addon_additional_driver;
   const allDrivers = quote?.data?.review_info_premium?.drivers || [];
   const number_of_additional_drivers = allDrivers.length
