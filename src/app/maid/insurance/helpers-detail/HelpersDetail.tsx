@@ -333,7 +333,6 @@ const HelpersDetail = (props: Props) => {
         ...personal_info,
         email: personal_info?.email ?? '',
         phone: personal_info?.phone ?? '',
-        driving_experience: personal_info?.driving_experience ?? 0,
         name: data.name,
         nric: data.nric,
         address: [data.address1, data.address2, data.address3],

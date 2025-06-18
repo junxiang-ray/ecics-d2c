@@ -98,7 +98,6 @@ export const PolicyDetail = ({
         date_of_birth: userInfo?.date_of_birth,
         nric: userInfo?.nric,
         address: userInfo?.address,
-        driving_experience: userInfo?.driving_experience,
         phone: userInfo?.phone,
         email: userInfo?.email,
       };

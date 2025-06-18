@@ -44,11 +44,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   productType,
 }) => {
   const router = useRouterWithQuery();
-  const isFinalized = useAppSelector(
-    (state) => state.quote?.quote?.is_finalized,
-  );
-  const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
   const isMaid = productType === ProductType.MAID;
+  const isFinalized = useAppSelector((state) =>
+    isMaid
+      ? state.maidQuote?.maidQuote?.is_finalized
+      : state.quote?.quote?.is_finalized,
+  );
+
+  const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
 
   const handleEditClick = () => {
     const isBasicDetailRoute = isMaid
