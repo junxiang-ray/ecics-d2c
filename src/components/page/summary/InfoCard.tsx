@@ -10,7 +10,12 @@ type Props = {
     label: string;
     value:
       | string
-      | { title: string; value: string; coverage_amount?: string }[];
+      | {
+          title: string;
+          value: string;
+          coverage_amount?: string;
+          number_of_additional_drivers?: string;
+        }[];
   }[];
   extraTitle?: string;
   extraData?: React.ReactNode;
@@ -93,7 +98,7 @@ const InfoCard = (props: Props) => {
                               className='flex flex-col overflow-hidden rounded border'
                             >
                               <div
-                                className={`flex w-full items-center justify-between px-[14px] pt-[14px] ${addon.coverage_amount ? 'border-b pb-2' : 'pb-[14px]'}`}
+                                className={`flex w-full items-center justify-between px-[14px] pt-[14px] ${addon.coverage_amount || addon.number_of_additional_drivers ? 'border-b pb-2' : 'pb-[14px]'}`}
                               >
                                 <span className='font-semibold'>
                                   {addon.title}
@@ -106,6 +111,15 @@ const InfoCard = (props: Props) => {
                                   Coverage Amount: <br />
                                   <span className='font-semibold'>
                                     {addon.coverage_amount}
+                                  </span>
+                                </div>
+                              )}
+
+                              {addon.number_of_additional_drivers && (
+                                <div className='px-[14px] pb-[20px] pt-2 text-sm text-gray-500'>
+                                  Number of Additional Drivers: <br />
+                                  <span className='font-semibold'>
+                                    {addon.number_of_additional_drivers}
                                   </span>
                                 </div>
                               )}
