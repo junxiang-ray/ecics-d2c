@@ -10,7 +10,8 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
-import { useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { setPromoCodeError } from '@/redux/slices/quote.slice';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;
@@ -37,9 +38,10 @@ export const PromoCodeField = ({
   const [promoInfoSelected, setPromoInfoSelected] =
     useState<PromoCodeResponse | null>(null);
   const promoCodeError = useAppSelector((state) => state.quote.promoCodeError);
+  const dispatch = useAppDispatch();
+
   const isPromoCodeNotApplicable =
     promoCodeError?.message === 'Promo Code is invalid';
-
   const isValidPromoCode = promoInfoSelected?.data?.is_valid;
   const errorMessage = isValidPromoCode ? '' : promoInfoSelected?.message;
 
@@ -69,6 +71,7 @@ export const PromoCodeField = ({
   }, [applyPromoCode]);
 
   const handleSubmitPromoCode = () => {
+    dispatch(setPromoCodeError(null));
     const promoCode = getValues(MOTOR_QUOTE.promo_code);
     if (promoCode) {
       handleVerifyPromoCode(promoCode);
