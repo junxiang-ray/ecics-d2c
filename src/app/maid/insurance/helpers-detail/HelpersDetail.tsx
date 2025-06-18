@@ -398,6 +398,12 @@ const HelpersDetail = (props: Props) => {
                   label='Full Name'
                   isRequired
                   placeholder='Enter Helper’s Full Name as per FIN'
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = e.target.value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                    methods.setValue('nameHelper', value, {
+                      shouldValidate: true,
+                    });
+                  }}
                 />
               </Form.Item>
 
@@ -498,6 +504,10 @@ const HelpersDetail = (props: Props) => {
                   label='Full Name as per NRIC / FIN'
                   isRequired
                   placeholder='Enter Your Full Name as per NRIC/FIN'
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = e.target.value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                    methods.setValue('name', value, { shouldValidate: true });
+                  }}
                 />
               </Form.Item>
 
