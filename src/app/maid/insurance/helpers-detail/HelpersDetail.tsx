@@ -399,7 +399,10 @@ const HelpersDetail = (props: Props) => {
                   isRequired
                   placeholder='Enter Helper’s Full Name as per FIN'
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                    const value = e.target.value.replace(
+                      /[0-9~!@#$%^&*()_+[\]{}]/g,
+                      '',
+                    );
                     methods.setValue('nameHelper', value, {
                       shouldValidate: true,
                     });
@@ -505,7 +508,10 @@ const HelpersDetail = (props: Props) => {
                   isRequired
                   placeholder='Enter Your Full Name as per NRIC/FIN'
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                    const value = e.target.value.replace(
+                      /[0-9~!@#$%^&*()_+[\]{}]/g,
+                      '',
+                    );
                     methods.setValue('name', value, { shouldValidate: true });
                   }}
                 />
