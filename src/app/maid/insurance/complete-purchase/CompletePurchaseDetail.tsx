@@ -3,8 +3,13 @@
 import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
+import {
+  formatCurrency,
+  formatCurrencyString,
+  saveToLocalStorage,
+} from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
@@ -14,6 +19,7 @@ import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import DeclarationConfirmModal from '@/app/maid/insurance/complete-purchase/modal/DeclarationConfirmModal';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { MAID_PAYMENT_URL } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -48,6 +54,9 @@ export default function CompletePurchaseDetail({
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
+  const isFinalized = useSelector(
+    (state: any) => state.maidQuote.maidQuote?.is_finalized,
+  );
 
   const {
     mutate: payment,
@@ -280,6 +289,14 @@ export default function CompletePurchaseDetail({
   }, [dataPayment]);
 
   const onPay = async () => {
+    if (isFinalized) {
+      const savedUrl = localStorage.getItem(MAID_PAYMENT_URL);
+      if (savedUrl) {
+        window.location.href = savedUrl;
+      }
+      return;
+    }
+
     const data: any = {
       key: key,
       selected_plan: maidQuote?.data?.selected_plan,
@@ -287,13 +304,20 @@ export default function CompletePurchaseDetail({
       personal_info: maidQuote?.data?.personal_info,
       maid_info: maidQuote?.data?.maid_info,
     };
-    saveProposal({
-      data,
-      productType: PRODUCT_NAME.MAID,
-    }).then((res) => {
+
+    try {
+      const res = await saveProposal({
+        data,
+        productType: PRODUCT_NAME.MAID,
+      });
+      if (res?.payment_url) {
+        saveToLocalStorage({ [MAID_PAYMENT_URL]: res.payment_url });
+      }
       if (!res?.final_premium) return;
       dispatch(updateMaidQuote({ is_finalized: true }));
-    });
+    } catch (error: any) {
+      console.error('Unexpected error:', error);
+    }
   };
 
   const handlePayClick = () => {
