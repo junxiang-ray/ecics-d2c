@@ -217,7 +217,6 @@ const PolicyDetailForm = ({
           date_of_birth: dayjs(value[MAID_QUOTE.owner_dob] as Date).format(
             'DD/MM/YYYY',
           ),
-          driving_experience: value[MAID_QUOTE.owner_drv_exp],
           phone: value[MAID_QUOTE.mobile],
           email: value[MAID_QUOTE.email],
         };
