@@ -285,7 +285,9 @@ export default function CompletePurchaseDetail({
       },
     ],
     addons:
-      addonsSectionData.length === 0 && addonsIncludedData.length === 0
+      addonsSectionData.length === 0 &&
+      addonsIncludedData.length === 0 &&
+      addonsAdditionalDriver.length === 0
         ? [{ title: 'You have no Add Ons selected', value: '' }]
         : [
             ...addonsSectionData,

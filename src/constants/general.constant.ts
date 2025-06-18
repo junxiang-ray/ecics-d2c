@@ -10,3 +10,5 @@ export const PROMO_CODE = 'promo_code';
 
 // value option hire Purchase List
 export const VALUE_OPTION_COMPANY = '257';
+
+export const MAID_PAYMENT_URL = 'maid_payment_url';
