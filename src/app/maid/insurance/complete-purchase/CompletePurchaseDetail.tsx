@@ -12,6 +12,7 @@ import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewS
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import DeclarationConfirmModal from '@/app/maid/insurance/complete-purchase/modal/DeclarationConfirmModal';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
@@ -28,6 +29,7 @@ export default function CompletePurchaseDetail({
   const dispatch = useAppDispatch();
   const router = useRouterWithQuery();
   const { handleBack } = useInsurance();
+  const [showDeclarationModal, setShowDeclarationModal] = useState(false);
 
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean;
@@ -46,10 +48,6 @@ export default function CompletePurchaseDetail({
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
-
-  const plan = maidQuote?.data?.plans?.find(
-    (plan) => maidQuote.data?.selected_plan === plan.title,
-  );
 
   const {
     mutate: payment,
@@ -298,6 +296,19 @@ export default function CompletePurchaseDetail({
     });
   };
 
+  const handlePayClick = () => {
+    setShowDeclarationModal(true);
+  };
+
+  const handleDeclarationConfirm = () => {
+    setShowDeclarationModal(false);
+    onPay();
+  };
+
+  const handleDeclarationCancel = () => {
+    setShowDeclarationModal(false);
+  };
+
   const totalAddonFeeSelected =
     maidQuote?.data?.review_info_premium?.data_section_add_ons.reduce(
       (total: number, addon: any) => total + (addon.feeSelected || 0),
@@ -429,7 +440,7 @@ export default function CompletePurchaseDetail({
           title='Premium breakdown'
           textButton='Submit & Pay'
           handleBack={handleBack}
-          onClick={onPay}
+          onClick={handlePayClick}
           setIsShowPopupPremium={setIsShowPopupPremium}
         />
         {isMobile ? (
@@ -458,6 +469,11 @@ export default function CompletePurchaseDetail({
           </Modal>
         )}
       </div>
+      <DeclarationConfirmModal
+        visible={showDeclarationModal}
+        onOk={handleDeclarationConfirm}
+        onCancel={handleDeclarationCancel}
+      />
     </div>
   );
 }

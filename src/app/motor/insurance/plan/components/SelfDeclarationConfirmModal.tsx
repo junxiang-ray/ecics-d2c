@@ -5,6 +5,7 @@ import { Drawer, Modal } from 'antd';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import { ProductType } from '../../basic-detail/options';
 
 function SelfDeclarationConfirmModal({
