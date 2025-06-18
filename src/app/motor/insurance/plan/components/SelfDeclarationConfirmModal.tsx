@@ -81,7 +81,7 @@ function SelfDeclarationConfirmModal({
         Declaration and Undertaking
       </p>
       <div
-        className='flex max-h-[300px] flex-col gap-4 overflow-y-auto px-4'
+        className='flex max-h-[260px] flex-col gap-4 overflow-y-auto px-4'
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
