@@ -210,7 +210,7 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
     return ErrNotFound('Nationality not found');
   }
 
-  if (!companyInfo) {
+  if (data.maid_info?.has_helper_worked_12_months === 'YES' && !companyInfo) {
     return ErrNotFound('Company not found');
   }
 
@@ -274,7 +274,7 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
       quote_finalize_from_ISP: resSaveProposal,
       is_finalized: true,
       payment_id: resSaveProposal.data?.payment_id || '',
-      company_id: companyInfo.id,
+      company_id: companyInfo?.id || null,
     },
   });
 
