@@ -3,7 +3,7 @@
 import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { PaymentDocument } from '@/libs/types/auth';
 import {
@@ -24,6 +24,7 @@ import {
   SecondaryButton,
 } from '@/components/ui/buttons';
 
+import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
 import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -41,6 +42,12 @@ export default function Summary() {
   };
 
   const { data: quote, isLoading } = useGetQuote(key);
+
+  const drivers = quote?.data?.add_named_driver_info ?? [];
+
+  const plan = quote?.data?.plans?.find(
+    (plan) => quote.data?.selected_plan === plan.title,
+  );
 
   //Call api GetPaymentSummaryData
   const productType = quote?.product_type?.name;
@@ -212,6 +219,30 @@ export default function Summary() {
     value: 'Included',
   }));
 
+  // Addon Additional Driver
+  const addonAdditionalDriver = useMemo(() => {
+    return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
+  }, [plan]);
+  const baseFeeAdditionalDriver =
+    addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
+  const additionalDriverFee = drivers.length
+    ? baseFeeAdditionalDriver * (drivers.length - 1)
+    : 0;
+  const addonDriver = quote?.data?.review_info_premium?.addon_additional_driver;
+  const allDrivers = quote?.data?.review_info_premium?.drivers || [];
+  const number_of_additional_drivers = allDrivers.length
+    ? allDrivers.length
+    : 0;
+  const addonsAdditionalDriver = addonDriver
+    ? [
+        {
+          title: addonDriver.title,
+          value: `SGD ${additionalDriverFee.toFixed(2)}`,
+          number_of_additional_drivers,
+        },
+      ]
+    : [];
+
   const driversData = (quote?.data?.review_info_premium?.drivers || []).map(
     (driver: any) => [
       { label: 'Name as per NRIC', value: driver.name || 'N/A' },
@@ -332,7 +363,11 @@ export default function Summary() {
                 },
                 {
                   label: 'Add-ons',
-                  value: [...addonsSectionData, ...addonsIncludedData],
+                  value: [
+                    ...addonsSectionData,
+                    ...addonsIncludedData,
+                    ...addonsAdditionalDriver,
+                  ],
                 },
               ]}
               extraData={

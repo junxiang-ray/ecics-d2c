@@ -21,6 +21,9 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
       promoCodeData = await prisma.promocode.findFirst({
         where: {
           code: data.promo_code,
+          products: {
+            has: PRODUCT_NAME.CAR,
+          },
         },
       });
       if (!promoCodeData) {
@@ -234,6 +237,9 @@ export async function getQuouteForMaid(data: generateQuoteForMaidDTO) {
         prisma.promocode.findFirst({
           where: {
             code: data.promo_code,
+            products: {
+              has: PRODUCT_NAME.MAID,
+            },
           },
         }),
       ]);

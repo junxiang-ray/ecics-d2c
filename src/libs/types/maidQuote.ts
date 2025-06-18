@@ -85,7 +85,6 @@ export interface MaidPersonalInfo {
   phone: string;
   date_of_birth: string;
   marital_status: string;
-  driving_experience: number;
   post_code: string;
   nationality: string;
 }

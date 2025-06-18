@@ -106,7 +106,10 @@ const PremiumBreakdownContent = ({
                       key={index}
                       className='flex flex-row items-center justify-between font-normal text-[#303030]'
                     >
-                      <p>{driver.name}</p>
+                      <div className='flex items-center gap-2'>
+                        <div className='h-[4px] w-[4px] rounded-full bg-[#303030]'></div>
+                        <p>{driver.name}</p>
+                      </div>
                       <p>
                         {index === 0
                           ? 'FREE'

@@ -2,9 +2,8 @@
 
 import { Drawer, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { AddOnFormat, AddonOption } from '@/libs/types/quote';
 import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
@@ -20,23 +19,6 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-
-import { mapIconToTypeAddOn } from '../add-on/AddonDetail';
-
-function calculateFee(
-  option: AddonOption,
-  addonsAdded: Record<string, string>,
-): number {
-  if (!option?.dependencies || option.dependencies.length === 0) {
-    return option.premium_with_gst ?? 0;
-  }
-  const dependency = option.dependencies.find((dep) =>
-    dep.conditions.every(
-      (condition) => addonsAdded[condition.addon.code] === condition.value,
-    ),
-  );
-  return dependency?.premium_with_gst ?? 0;
-}
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
@@ -94,7 +76,7 @@ export default function CompletePurchaseDetail({
       return ROUTES.INSURANCE_MAID.BASIC_DETAIL;
     }
     if (['owner'].includes(key)) {
-      return ROUTES.INSURANCE_MAID.PERSONAL_DETAIL;
+      return ROUTES.INSURANCE_MAID.HELPER_DETAIL;
     }
     if (key === 'policy_plan') {
       return ROUTES.INSURANCE_MAID.PLAN;
@@ -133,11 +115,7 @@ export default function CompletePurchaseDetail({
   const matchedPlan = plans.find(
     (plan) => plan.title && plan.title.includes(selectedPlanTitle),
   );
-  const addonsTitles =
-    matchedPlan?.addons
-      ?.filter((addon) => addon.is_display)
-      .map((addon) => addon.title)
-      .filter(Boolean) || [];
+  const addonsTitles = matchedPlan?.benefits || [];
 
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
@@ -291,46 +269,6 @@ export default function CompletePurchaseDetail({
     },
   ];
 
-  const [addonsAdded, setAddonsAdded] = useState<any>(null);
-  const [addonsSelected, setAddonsSelected] = useState<any>(null);
-
-  const defaultAddonsAdded = useMemo(() => {
-    if (!plan?.addons.length) return {};
-    const addonCodes = plan.addons.map((addon) => addon.code);
-    return Object.fromEntries(addonCodes.map((code) => [code, 'NO']));
-  }, [plan]);
-
-  const defaultAddonsSelected = useMemo(() => {
-    if (!plan?.addons.length) return {};
-    const selected_addons = maidQuote?.data?.selected_addons ?? {};
-    return plan.addons.reduce(
-      (acc: Record<string, string>, addon) => {
-        if (addon.type === 'checkbox') {
-          acc[addon.code] = 'YES';
-        } else {
-          const selectedValue = selected_addons?.[addon.code];
-          if (selectedValue && selectedValue !== 'NO') {
-            acc[addon.code] = selectedValue;
-          } else {
-            const defaultOption = addon.options.find(
-              (option) => option.id === addon.default_option_id,
-            );
-            acc[addon.code] = defaultOption
-              ? defaultOption.value
-              : addon.options[0]?.value;
-          }
-        }
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [plan]);
-
-  useEffect(() => {
-    setAddonsAdded(defaultAddonsAdded);
-    setAddonsSelected(defaultAddonsSelected);
-  }, [defaultAddonsAdded, defaultAddonsSelected]);
-
   useEffect(() => {
     if (isSuccess) {
       payment(key);
@@ -359,46 +297,6 @@ export default function CompletePurchaseDetail({
       dispatch(updateMaidQuote({ is_finalized: true }));
     });
   };
-
-  const onClosePopup = () => {
-    setIsShowPopupPremium(false);
-  };
-
-  const addons = plan?.addons ?? [];
-
-  const addonsFormatted: AddOnFormat[] = addons.map((addon) => {
-    // map the icon to the addon
-    const iconMatched = mapIconToTypeAddOn.find(
-      (item: any) => item.code === addon.code,
-    );
-
-    // For feeAdded use the "addonsAdded" defaults
-    const initValueForAdded = addonsAdded?.[addon.code] ?? null;
-    const selectedOptionForAdded = addon.options.find(
-      (option) => option.value === initValueForAdded,
-    );
-    const feeAdded = selectedOptionForAdded
-      ? calculateFee(selectedOptionForAdded, addonsAdded)
-      : 0;
-
-    // For feeSelected use the "addonsSelected" defaults
-    const initValueForSelected = addonsSelected?.[addon.code] ?? null;
-    const activeOption = addon.options.find(
-      (option) => option.value === initValueForSelected,
-    );
-    const feeSelected = activeOption
-      ? calculateFee(activeOption, addonsAdded)
-      : 0;
-
-    return {
-      ...addon,
-      icon: iconMatched?.icon || null,
-      selectedOption: selectedOptionForAdded ?? null,
-      feeAdded: feeAdded,
-      activeOption: activeOption ?? null,
-      feeSelected: feeSelected,
-    };
-  });
 
   const totalAddonFeeSelected =
     maidQuote?.data?.review_info_premium?.data_section_add_ons.reduce(
@@ -553,7 +451,7 @@ export default function CompletePurchaseDetail({
             maskClosable={true}
             keyboard={true}
             footer={null}
-            width={500}
+            width={385}
             centered
           >
             <div>{_renderPremiumBreakdownContent}</div>

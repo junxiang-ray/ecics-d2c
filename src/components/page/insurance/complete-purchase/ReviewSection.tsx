@@ -13,7 +13,12 @@ interface ReviewSectionProps {
   title: string;
   description?: string;
   icon?: React.ReactNode;
-  data: { title: string; value: any; coverage_amount?: string }[];
+  data: {
+    title: string;
+    value: any;
+    coverage_amount?: string;
+    number_of_additional_drivers?: string;
+  }[];
   isExpanded?: boolean;
   onToggle?: () => void;
   setShowModal: (showModal: boolean) => void;
@@ -39,11 +44,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   productType,
 }) => {
   const router = useRouterWithQuery();
-  const isFinalized = useAppSelector(
-    (state) => state.quote?.quote?.is_finalized,
-  );
-  const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
   const isMaid = productType === ProductType.MAID;
+  const isFinalized = useAppSelector((state) =>
+    isMaid
+      ? state.maidQuote?.maidQuote?.is_finalized
+      : state.quote?.quote?.is_finalized,
+  );
+
+  const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
 
   const handleEditClick = () => {
     const isBasicDetailRoute = isMaid
@@ -121,18 +129,30 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                   <>
                     <div
                       className={`-mx-[14px] flex flex-row justify-between px-[14px] ${
-                        item.coverage_amount ? 'border-b pb-2' : ''
+                        item.coverage_amount ||
+                        item.number_of_additional_drivers
+                          ? 'border-b pb-2'
+                          : ''
                       }`}
                     >
                       <div className='font-semibold'>{item.title}</div>
                       <div>{item.value || '-'}</div>
                     </div>
-
                     {item.coverage_amount && (
                       <div className='mt-2 pt-2'>
                         <div className='text-gray-500'>Coverage Amount</div>
                         <div className='font-semibold'>
                           {item.coverage_amount}
+                        </div>
+                      </div>
+                    )}
+                    {item.number_of_additional_drivers && (
+                      <div className='mt-2 pt-2'>
+                        <div className='text-gray-500'>
+                          Number of Additional Drivers
+                        </div>
+                        <div className='font-semibold'>
+                          {item.number_of_additional_drivers}
                         </div>
                       </div>
                     )}
