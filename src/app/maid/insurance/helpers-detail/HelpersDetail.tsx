@@ -121,8 +121,8 @@ const createSchema = (listNric: any[] | undefined) =>
           required_error: 'Fin is required',
           invalid_type_error: 'Fin is required',
         })
-        .min(3, 'Fin must be at least 3 characters')
-        .max(9, 'Fin must be at most 9 characters')
+        .min(3, 'FIN must be at least 3 characters')
+        .max(9, 'FIN must be at most 9 characters')
         .nonempty('Fin is required')
         .refine(finValidator, { message: 'Please enter a valid FIN.' }),
 
@@ -152,13 +152,13 @@ const createSchema = (listNric: any[] | undefined) =>
       }),
       [MAID_QUOTE.company_name_other]: z.string().optional(),
       [MAID_QUOTE.maid_dob]: z.date({
-        required_error: 'This field is required',
+        required_error: 'Date of birth is required',
       }),
       [MAID_QUOTE.nationality]: z
         .string({
-          required_error: 'This field is required',
+          required_error: 'Nationality is required',
         })
-        .nonempty('This field is required'),
+        .nonempty('Nationality is required'),
     })
     .superRefine((data, ctx) => {
       if (data[MAID_QUOTE.has_helper_worked_12_months] === HasHelperValue.YES) {
