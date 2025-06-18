@@ -80,7 +80,13 @@ function SelfDeclarationConfirmModal({
       <p className='text-center text-2xl font-normal leading-[32px] text-[#000000D9]'>
         Declaration and Undertaking
       </p>
-      <div className='flex max-h-[300px] flex-col gap-4 overflow-y-auto px-4'>
+      <div
+        className='flex max-h-[300px] flex-col gap-4 overflow-y-auto px-4'
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
         <ol className='flex list-decimal flex-col gap-4 text-sm font-normal leading-[18px] text-[#969696]'>
           <li>
             In consideration of ECICS Limited (the “Insurer”) agreeing at my/our
