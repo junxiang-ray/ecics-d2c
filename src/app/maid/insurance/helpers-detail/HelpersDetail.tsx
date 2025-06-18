@@ -39,7 +39,7 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { REMOVE_NUMBER_AND_SPECIAL_CHAR_REGEX } from '@/app/api/utils/regex';
+import { REGEX_TEXT } from '@/app/api/utils/regex';
 
 const createSchema = (listNric: any[] | undefined) =>
   z
@@ -400,10 +400,7 @@ const HelpersDetail = (props: Props) => {
                   isRequired
                   placeholder='Enter Helper’s Full Name as per FIN'
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value.replace(
-                      REMOVE_NUMBER_AND_SPECIAL_CHAR_REGEX,
-                      '',
-                    );
+                    const value = e.target.value.replace(REGEX_TEXT, '');
                     methods.setValue('nameHelper', value, {
                       shouldValidate: true,
                     });
@@ -509,10 +506,7 @@ const HelpersDetail = (props: Props) => {
                   isRequired
                   placeholder='Enter Your Full Name as per NRIC/FIN'
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value.replace(
-                      REMOVE_NUMBER_AND_SPECIAL_CHAR_REGEX,
-                      '',
-                    );
+                    const value = e.target.value.replace(REGEX_TEXT, '');
                     methods.setValue('name', value, { shouldValidate: true });
                   }}
                 />
