@@ -7,7 +7,9 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
 import { finValidator, validateNRIC } from '@/libs/utils/validation-utils';
+
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
@@ -28,6 +30,7 @@ import {
 import { MAID_QUOTE } from '@/constants';
 import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
+import { passportRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import { useGetHirePurchaseList } from '@/hook/insurance/quote';
@@ -129,7 +132,11 @@ const createSchema = (listNric: any[] | undefined) =>
         })
         .nonempty('Passport number is required')
         .min(6, 'Passport number must be at least 6 characters')
-        .max(50, 'Passport number must be at most 50 characters'),
+        .max(20, 'Passport number must be at most 20 characters')
+        .regex(
+          passportRegex,
+          'Passport number must not contain special characters',
+        ),
 
       [MAID_QUOTE.has_helper_worked_12_months]: z
         .string({
