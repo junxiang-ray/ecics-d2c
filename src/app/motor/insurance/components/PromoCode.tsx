@@ -183,7 +183,7 @@ export const PromoCodeField = ({
               </div>
             </div>
           )}
-          {isValidPromoCode && (
+          {promoInfoSelected?.data === null && (
             <div className='mt-[10px] flex items-center text-justify text-sm'>
               <WarningTriangleIcon className='mr-2' size={24} />
               <div className='text-[#FD1212]'>
@@ -195,11 +195,6 @@ export const PromoCodeField = ({
                 </span>
               </div>
             </div>
-          )}
-          {errorMessage && (
-            <span className='block pt-2 text-sm text-red-500'>
-              {errorMessage}
-            </span>
           )}
         </Form.Item>
       )}

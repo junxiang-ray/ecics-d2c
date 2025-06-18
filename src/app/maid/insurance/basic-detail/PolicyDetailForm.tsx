@@ -289,7 +289,7 @@ const PolicyDetailForm = ({
         'DD/MM/YYYY',
       ),
       partner_code: partnerCode,
-      promo_code: applyPromoCode,
+      promo_code: applyPromoCode.toUpperCase() ?? '',
       personal_info: personal_info,
       maid_info: {
         nationality: nationality,
