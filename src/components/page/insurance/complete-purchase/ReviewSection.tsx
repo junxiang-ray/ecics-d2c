@@ -74,10 +74,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   };
 
   return (
-    <div className='mt-4 flex w-full flex-col gap-2 rounded-lg border shadow-sm'>
+    <div className='mt-4 flex w-full flex-col rounded-lg shadow-sm'>
       <div className='w-full min-w-[335px] '>
         <div
-          className={`border px-2 ${isExpanded ? 'w-full rounded-t-lg border-[#00ADEF] bg-[#F4FBFD]' : 'rounded-lg border-[#EDEDED]'}`}
+          className={`px-2 ${isExpanded ? 'w-full rounded-t-lg bg-[#F4FBFD]' : 'rounded-lg border-[#EDEDED]'}`}
         >
           <div className='flex w-full flex-row justify-between py-2'>
             <div className='flex w-full flex-row items-center justify-between'>
@@ -116,7 +116,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       </div>
 
       {isExpanded && (
-        <div className='mt-[20px] flex min-h-1 flex-col gap-2 px-4 pb-2'>
+        <div className='flex min-h-1 flex-col gap-2 rounded-bl-[6px] rounded-br-[6px] border border-t-0 px-4 pb-2 pt-[20px]'>
           <div
             className={`grid grid-cols-1 text-start md:gap-4 ${sectionKey === 'addons' || sectionKey === 'policy_plan' ? '' : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}
           >
