@@ -334,16 +334,6 @@ const PolicyDetailForm = ({
                             label='Email Address'
                             placeholder='Enter Your Email Address'
                             isRequired={true}
-                            onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>,
-                            ) => {
-                              const value = e.target.value;
-                              if (emailRegex.test(value) || value === '') {
-                                methods.setValue(MAID_QUOTE.email, value, {
-                                  shouldValidate: true,
-                                });
-                              }
-                            }}
                           />
                         </Form.Item>
 
