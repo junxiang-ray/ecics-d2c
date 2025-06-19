@@ -103,7 +103,7 @@ const InfoCard = (props: Props) => {
                                 <span className='font-semibold'>
                                   {addon.title}
                                 </span>
-                                <span>{addon.value || '-'}</span>
+                                <span>{addon.value}</span>
                               </div>
 
                               {addon.coverage_amount && (

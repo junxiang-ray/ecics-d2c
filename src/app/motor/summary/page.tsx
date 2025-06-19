@@ -242,6 +242,9 @@ export default function Summary() {
         },
       ]
     : [];
+  const filteredAddonsAdditionalDriver = addonsAdditionalDriver.filter(
+    (item) => item.number_of_additional_drivers > 0,
+  );
 
   const driversData = (quote?.data?.review_info_premium?.drivers || []).map(
     (driver: any) => [
@@ -363,11 +366,16 @@ export default function Summary() {
                 },
                 {
                   label: 'Add-ons',
-                  value: [
-                    ...addonsSectionData,
-                    ...addonsIncludedData,
-                    ...addonsAdditionalDriver,
-                  ],
+                  value:
+                    addonsSectionData.length === 0 &&
+                    addonsIncludedData.length === 0 &&
+                    filteredAddonsAdditionalDriver.length === 0
+                      ? [{ title: 'You have no Add Ons selected', value: '' }]
+                      : [
+                          ...addonsSectionData,
+                          ...addonsIncludedData,
+                          ...filteredAddonsAdditionalDriver,
+                        ],
                 },
               ]}
               extraData={
