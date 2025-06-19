@@ -24,7 +24,7 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
-import { MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import {
@@ -479,18 +479,8 @@ const PolicyDetailForm = ({
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
-  const minPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const minEligibleDate = adjustDateInDayjs(dobDayjs, 26, 0, 0);
-    const today = dayjs();
-    return today.isAfter(minEligibleDate) ? today : minEligibleDate;
-  }, [date_of_birth]);
-  const maxPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const maxEligibleDate = adjustDateInDayjs(dobDayjs, 71, 0, -1);
-    const today = adjustDateInDayjs(dayjs(), 0, 0, 90);
-    return today?.isBefore(maxEligibleDate) ? today : maxEligibleDate;
-  }, [date_of_birth]);
+  const minPolicyStartDate = useMemo(() => dayjs(), []);
+  const maxPolicyStartDate = useMemo(() => dayjs().add(90, 'day'), []);
 
   const minPolicyEndDate = useMemo(() => {
     const startDateDayjs = dateToDayjs(start_date);
@@ -502,6 +492,26 @@ const PolicyDetailForm = ({
     const maxEligibleDate = adjustDateInDayjs(startDateDayjs, 0, 18, -1);
     return maxEligibleDate;
   }, [start_date]);
+
+  useEffect(() => {
+    if (!date_of_birth || !start_date) return;
+
+    const policyStartDate = dayjs(start_date);
+    const dobDate = dayjs(date_of_birth);
+    const ageAtPolicyStart = policyStartDate.diff(dobDate, 'year');
+    const isOutOfRange = ageAtPolicyStart < 26 || ageAtPolicyStart >= 71;
+
+    if (isOutOfRange) {
+      setShowCSModal(true);
+      setDescriptionQuote(
+        'The driver is above 70 years of age.\n' +
+          'The driver is below 26 years of age.',
+      );
+      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
+        shouldValidate: true,
+      });
+    }
+  }, [start_date, date_of_birth]);
 
   return (
     <>
@@ -573,8 +583,6 @@ const PolicyDetailForm = ({
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
                           isRequired
-                          minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
-                          maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
                           onChange={handleChangeDob}
                         />
                       </Form.Item>
