@@ -48,11 +48,7 @@ const singpassFlowFields = {
     })
     .refine((date) => dayjs(date).isSameOrAfter(dayjs(), 'day'), {
       message: 'Start date cannot be earlier than today',
-    })
-    .refine(
-      (date) => dayjs(date).isSameOrBefore(dayjs().add(90, 'days'), 'day'),
-      { message: 'Start date cannot be later than 90 days from today' },
-    ),
+    }),
   [MAID_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
