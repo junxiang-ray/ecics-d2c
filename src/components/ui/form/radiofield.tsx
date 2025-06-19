@@ -45,7 +45,7 @@ export const RadioField = ({
                   value={option.value}
                   className={`mr-0 flex-grow rounded-lg border py-2 ps-2 text-[13px] transition-colors ${
                     field.value === option.value
-                      ? 'border-blue-400'
+                      ? 'border-[#00ADEF]'
                       : 'border-gray-300'
                   }`}
                 >

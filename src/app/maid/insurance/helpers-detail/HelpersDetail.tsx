@@ -233,7 +233,7 @@ const HelpersDetail = (props: Props) => {
     : null;
 
   const minDate = startDate?.subtract(120, 'year').add(1, 'day');
-  const maxDate = startDate?.subtract(18, 'year');
+  const maxDate = startDate?.subtract(21, 'year');
 
   const addNamedDriverInfo = useAddNamedDriverInfo();
   const listNamedDriverNric = addNamedDriverInfo?.map(
