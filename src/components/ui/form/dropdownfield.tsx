@@ -208,9 +208,7 @@ export const LongOptionDropdownField = ({
                   }}
                 >
                   {selected?.text || (
-                    <span className='text-base font-[200] text-[#acacac]'>
-                      Select Insurer
-                    </span>
+                    <span className='text-base font-[200] text-[#acacac]'>{`Select ${label?.toLowerCase() || ''}`}</span>
                   )}
                 </div>
 
