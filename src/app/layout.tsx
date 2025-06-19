@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 
 import '@/styles/app.scss';
 
+import { NavigationConfirmProvider } from '@/providers/NavigationConfirmProvider';
 import { ReactQueryProvider } from '@/providers/react-query';
 import { ReduxProvider } from '@/providers/redux';
 
@@ -52,7 +53,10 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <ReduxProvider>
             <ReactQueryProvider>
-              <AntdRegistry>{children}</AntdRegistry>
+              <AntdRegistry>
+                <NavigationConfirmProvider />
+                {children}
+              </AntdRegistry>
             </ReactQueryProvider>
           </ReduxProvider>
         </Suspense>

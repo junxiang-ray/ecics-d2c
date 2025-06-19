@@ -56,10 +56,6 @@ function PlanDetail({
   } = useSaveQuote();
 
   const plans = quoteInfo?.data?.plans ?? [];
-  const isSameSelectedPlan =
-    !!quoteInfo?.data?.selected_plan &&
-    selectedPlan?.id ===
-      plans.find((p) => p.title === quoteInfo.data.selected_plan)?.id;
 
   useEffect(() => {
     onSaveRegister(() => {
@@ -221,11 +217,11 @@ function PlanDetail({
                 <PrimaryButton
                   onClick={() => setShowConfirmDeclaration(true)}
                   className={`w-40 ${
-                    !selectedPlan?.id || isSameSelectedPlan
+                    !selectedPlan?.id
                       ? 'cursor-not-allowed bg-gray-400 text-white'
                       : 'bg-green-promo'
                   }`}
-                  disabled={!selectedPlan?.id || isSameSelectedPlan}
+                  disabled={!selectedPlan?.id}
                   loading={isSaving}
                 >
                   Next
