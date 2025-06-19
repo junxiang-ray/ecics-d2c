@@ -15,15 +15,8 @@ interface ProcessBarProps {
   onChange?: (current: number) => void;
   companyName?: string;
   isFinalized?: boolean;
+  productType?: string;
 }
-
-const stepsData = [
-  { step: StepProcessBar.POLICY_DETAILS, title: 'Basic Information' },
-  { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
-  { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
-  { step: StepProcessBar.PERSONAL_DETAIL, title: 'Details' },
-  { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
-];
 
 const stepsDataSingPass = [
   { step: StepProcessBar.POLICY_DETAILS, title: 'Policy Details' },
@@ -53,10 +46,22 @@ export default function ProcessBar({
   onChange,
   companyName,
   isFinalized,
+  productType,
 }: ProcessBarProps) {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const isManual = searchParams.get('manual') === 'true';
+
+  const stepsData = [
+    { step: StepProcessBar.POLICY_DETAILS, title: 'Basic Information' },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    {
+      step: StepProcessBar.PERSONAL_DETAIL,
+      title: productType ? 'Helper’s Details' : 'Details',
+    },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
   const selectedStepsData = isManual ? stepsData : stepsDataSingPass;
 
   const steps: StepsProps['items'] = selectedStepsData.map(

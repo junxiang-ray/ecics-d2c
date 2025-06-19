@@ -164,6 +164,7 @@ function InsuranceLayout({
                   onChange={handleChangeStep}
                   companyName={partnerInfo?.partner_name}
                   isFinalized={isFinalized}
+                  productType={isMaid ? ProductType.MAID : ''}
                 />
               </div>
             </div>
