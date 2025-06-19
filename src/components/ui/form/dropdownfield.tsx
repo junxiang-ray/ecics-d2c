@@ -207,7 +207,11 @@ export const LongOptionDropdownField = ({
                       'linear-gradient(to right, black 80%, transparent)',
                   }}
                 >
-                  {selected?.text || `Select ${label?.toLowerCase() || ''}`}
+                  {selected?.text || (
+                    <span className='text-base font-[200] text-[#acacac]'>
+                      Select Insurer
+                    </span>
+                  )}
                 </div>
 
                 <span className='pointer-events-none absolute right-3 top-5 -translate-y-1/2'>
