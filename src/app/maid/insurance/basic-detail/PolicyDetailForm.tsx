@@ -176,6 +176,9 @@ const PolicyDetailForm = ({
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
+  const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
+  const maxDob = useMemo(() => dayjs(), []);
+
   const minPolicyStartDate = useMemo(() => {
     return dayjs().add(5, 'day');
   }, []);
@@ -480,6 +483,8 @@ const PolicyDetailForm = ({
                         >
                           <DatePickerField
                             name={MAID_QUOTE.maid_dob}
+                            minDate={minDob}
+                            maxDate={maxDob}
                             label='Date of birth'
                             isRequired={true}
                           />

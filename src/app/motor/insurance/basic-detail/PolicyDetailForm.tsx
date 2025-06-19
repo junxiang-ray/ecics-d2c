@@ -392,6 +392,7 @@ const PolicyDetailForm = ({
     methods.setValue(MOTOR_QUOTE.start_date, null as any);
     methods.setValue(MOTOR_QUOTE.end_date, null as any);
   };
+
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
     const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
@@ -486,6 +487,8 @@ const PolicyDetailForm = ({
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
+  const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
+  const maxDob = useMemo(() => dayjs(), []);
   const minPolicyStartDate = useMemo(() => dayjs(), []);
   const maxPolicyStartDate = useMemo(() => dayjs().add(90, 'day'), []);
 
@@ -591,6 +594,8 @@ const PolicyDetailForm = ({
                         <DatePickerField
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
+                          minDate={minDob}
+                          maxDate={maxDob}
                           isRequired
                           onChange={handleChangeDob}
                         />
