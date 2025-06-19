@@ -168,16 +168,6 @@ const PolicyDetailForm = ({
     POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)?.text ||
     policyDuration;
 
-  const minDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(23, 'year');
-  }, [start_date]);
-
-  const maxDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(60, 'year').add(1, 'day');
-  }, [start_date]);
-
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
   const minPolicyStartDate = useMemo(() => {
@@ -249,10 +239,11 @@ const PolicyDetailForm = ({
 
   useEffect(() => {
     if (!start_date || !maid_dob) return;
+
+    const policyStartDate = dayjs(start_date);
     const dob = dayjs(maid_dob);
-    const isOutOfRange =
-      (minDob && dob.isBefore(minDob, 'day')) ||
-      (maxDob && dob.isAfter(maxDob, 'day'));
+    const ageAtPolicyStart = policyStartDate.diff(dob, 'year');
+    const isOutOfRange = ageAtPolicyStart < 23 || ageAtPolicyStart > 60;
 
     if (isOutOfRange) {
       setShowCSModal(true);
@@ -264,7 +255,7 @@ const PolicyDetailForm = ({
         shouldValidate: true,
       });
     }
-  }, [start_date, maid_dob, minDob, maxDob, methods]);
+  }, [start_date, maid_dob]);
 
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
@@ -482,8 +473,6 @@ const PolicyDetailForm = ({
                           <DatePickerField
                             name={MAID_QUOTE.maid_dob}
                             label='Date of birth'
-                            minDate={maxDob}
-                            maxDate={minDob}
                             isRequired={true}
                           />
                         </Form.Item>
