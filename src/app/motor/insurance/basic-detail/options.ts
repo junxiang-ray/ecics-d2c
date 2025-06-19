@@ -1,4 +1,3 @@
-import { MaritalStatusType } from './../../../../libs/types/quote';
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 export enum ProductType {

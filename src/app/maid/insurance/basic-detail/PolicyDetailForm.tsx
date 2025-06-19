@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -24,6 +24,7 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
+import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal';
 import {
   HELPER_TYPE_OPTIONS,
   HelperTypeValue,
@@ -48,11 +49,7 @@ const singpassFlowFields = {
     })
     .refine((date) => dayjs(date).isSameOrAfter(dayjs(), 'day'), {
       message: 'Start date cannot be earlier than today',
-    })
-    .refine(
-      (date) => dayjs(date).isSameOrBefore(dayjs().add(90, 'days'), 'day'),
-      { message: 'Start date cannot be later than 90 days from today' },
-    ),
+    }),
   [MAID_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
@@ -134,6 +131,14 @@ const PolicyDetailForm = ({
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
+  const [showCSModal, setShowCSModal] = useState<{
+    visible: boolean;
+    description: string;
+  }>({
+    visible: false,
+    description: '',
+  });
+  const [descriptionQuote, setDescriptionQuote] = useState('');
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
   const methods = useForm<FormData>({
@@ -169,17 +174,10 @@ const PolicyDetailForm = ({
     POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)?.text ||
     policyDuration;
 
-  const minDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(23, 'year');
-  }, [start_date]);
-
-  const maxDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(60, 'year').add(1, 'day');
-  }, [start_date]);
-
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
+
+  const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
+  const maxDob = useMemo(() => dayjs(), []);
 
   const minPolicyStartDate = useMemo(() => {
     return dayjs().add(5, 'day');
@@ -250,13 +248,25 @@ const PolicyDetailForm = ({
 
   useEffect(() => {
     if (!start_date || !maid_dob) return;
+
+    const policyStartDate = dayjs(start_date);
     const dob = dayjs(maid_dob);
-    if (dob.isAfter(minDob, 'day') || dob.isBefore(maxDob, 'day')) {
+    const ageAtPolicyStart = policyStartDate.diff(dob, 'year');
+    const isOutOfRange = ageAtPolicyStart < 23 || ageAtPolicyStart >= 60;
+
+    if (isOutOfRange) {
+      setShowCSModal({
+        visible: true,
+        description:
+          ageAtPolicyStart < 23
+            ? "The helper's age is below 23 years old."
+            : "The helper's age is above 60 years old.",
+      });
       methods.setValue(MAID_QUOTE.maid_dob, undefined, {
         shouldValidate: true,
       });
     }
-  }, [start_date, maid_dob, minDob, maxDob, methods]);
+  }, [start_date, maid_dob]);
 
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
@@ -473,9 +483,9 @@ const PolicyDetailForm = ({
                         >
                           <DatePickerField
                             name={MAID_QUOTE.maid_dob}
+                            minDate={minDob}
+                            maxDate={maxDob}
                             label='Date of birth'
-                            minDate={maxDob}
-                            maxDate={minDob}
                             isRequired={true}
                           />
                         </Form.Item>
@@ -499,6 +509,11 @@ const PolicyDetailForm = ({
             </div>
           </Form>
         </FormProvider>
+        <QuoteModal
+          onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
+          visible={showCSModal.visible}
+          description={showCSModal.description}
+        />
       </div>
 
       <div
