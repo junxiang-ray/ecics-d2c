@@ -27,7 +27,7 @@ interface InsuranceLayoutProps {
   stepToRoute: Record<StepProcessBar, string>;
   headerTitle: string;
   redirectToLoginPath?: string;
-  productType?: ProductType;
+  productType: ProductType;
 }
 
 function InsuranceLayout({
@@ -47,8 +47,6 @@ function InsuranceLayout({
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
-  const isMaid = productType === ProductType.MAID;
-
   const isFinalized = useAppSelector(
     (state) => state.quote.quote?.is_finalized,
   );
@@ -164,6 +162,7 @@ function InsuranceLayout({
                   onChange={handleChangeStep}
                   companyName={partnerInfo?.partner_name}
                   isFinalized={isFinalized}
+                  productType={productType}
                 />
               </div>
             </div>
@@ -190,7 +189,7 @@ function InsuranceLayout({
             isShowPopupImportant={isShowPopupImportant}
             handleRedirect={() =>
               router.push(
-                isMaid
+                productType === ProductType.MAID
                   ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
                   : ROUTES.INSURANCE.BASIC_DETAIL,
               )
