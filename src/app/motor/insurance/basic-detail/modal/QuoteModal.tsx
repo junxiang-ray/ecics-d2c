@@ -1,9 +1,11 @@
 import { Drawer, Modal } from 'antd';
 import React from 'react';
+
 import MailIcon from '@/components/icons/MailIcon';
 import PhoneIcon from '@/components/icons/PhoneIcon';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 interface QuoteModalProps {
   visible: boolean;
   onClick: () => void;
