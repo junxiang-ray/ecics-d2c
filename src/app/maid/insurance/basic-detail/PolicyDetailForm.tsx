@@ -36,6 +36,7 @@ import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { MAID_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
+import { REGEX_TEXT } from '@/app/api/utils/regex';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -334,6 +335,17 @@ const PolicyDetailForm = ({
                             label='Email Address'
                             placeholder='Enter Your Email Address'
                             isRequired={true}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>,
+                            ) => {
+                              const value = e.target.value.replace(
+                                REGEX_TEXT,
+                                '',
+                              );
+                              methods.setValue(MAID_QUOTE.email, value, {
+                                shouldValidate: true,
+                              });
+                            }}
                           />
                         </Form.Item>
 
