@@ -3,6 +3,7 @@ import { StepProcessBar } from '@/libs/enums/processBarEnums';
 import InsuranceLayout from '@/components/layouts/InsuranceLayout';
 
 import { ROUTES } from '@/constants/routes';
+import { ProductType } from './basic-detail/options';
 
 const motorSteps = {
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
@@ -25,6 +26,7 @@ export default function MotorInsuranceLayout({
       stepToRoute={motorSteps}
       headerTitle='Car Insurance Quotation'
       redirectToLoginPath={ROUTES.MOTOR.LOGIN}
+      productType={ProductType.CAR}
     >
       {children}
     </InsuranceLayout>

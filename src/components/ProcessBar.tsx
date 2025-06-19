@@ -9,13 +9,14 @@ import { StepProcessBar } from '@/libs/enums/processBarEnums';
 import { ProcessBarType } from '@/components/layouts/InsuranceLayout';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 interface ProcessBarProps {
   currentStep: ProcessBarType;
   onChange?: (current: number) => void;
   companyName?: string;
   isFinalized?: boolean;
-  productType?: string;
+  productType: string;
 }
 
 const stepsDataSingPass = [
@@ -58,7 +59,7 @@ export default function ProcessBar({
     { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
     {
       step: StepProcessBar.PERSONAL_DETAIL,
-      title: productType ? 'Helper’s Details' : 'Details',
+      title: productType === ProductType.MAID ? 'Helper’s Details' : 'Details',
     },
     { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
   ];
