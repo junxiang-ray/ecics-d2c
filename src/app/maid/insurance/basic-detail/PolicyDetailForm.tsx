@@ -49,11 +49,7 @@ const singpassFlowFields = {
     })
     .refine((date) => dayjs(date).isSameOrAfter(dayjs(), 'day'), {
       message: 'Start date cannot be earlier than today',
-    })
-    .refine(
-      (date) => dayjs(date).isSameOrBefore(dayjs().add(90, 'days'), 'day'),
-      { message: 'Start date cannot be later than 90 days from today' },
-    ),
+    }),
   [MAID_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
@@ -135,7 +131,13 @@ const PolicyDetailForm = ({
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
-  const [showCSModal, setShowCSModal] = useState(false);
+  const [showCSModal, setShowCSModal] = useState<{
+    visible: boolean;
+    description: string;
+  }>({
+    visible: false,
+    description: '',
+  });
   const [descriptionQuote, setDescriptionQuote] = useState('');
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
@@ -172,17 +174,10 @@ const PolicyDetailForm = ({
     POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)?.text ||
     policyDuration;
 
-  const minDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(23, 'year');
-  }, [start_date]);
-
-  const maxDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(60, 'year').add(1, 'day');
-  }, [start_date]);
-
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
+
+  const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
+  const maxDob = useMemo(() => dayjs(), []);
 
   const minPolicyStartDate = useMemo(() => {
     return dayjs().add(5, 'day');
@@ -253,22 +248,25 @@ const PolicyDetailForm = ({
 
   useEffect(() => {
     if (!start_date || !maid_dob) return;
+
+    const policyStartDate = dayjs(start_date);
     const dob = dayjs(maid_dob);
-    const isOutOfRange =
-      (minDob && dob.isBefore(minDob, 'day')) ||
-      (maxDob && dob.isAfter(maxDob, 'day'));
+    const ageAtPolicyStart = policyStartDate.diff(dob, 'year');
+    const isOutOfRange = ageAtPolicyStart < 23 || ageAtPolicyStart >= 60;
 
     if (isOutOfRange) {
-      setShowCSModal(true);
-      setDescriptionQuote(
-        "The helper's age is above 60 years old. \n" +
-          "The helper's age is below 23 years old. ",
-      );
+      setShowCSModal({
+        visible: true,
+        description:
+          ageAtPolicyStart < 23
+            ? "The helper's age is below 23 years old."
+            : "The helper's age is above 60 years old.",
+      });
       methods.setValue(MAID_QUOTE.maid_dob, undefined, {
         shouldValidate: true,
       });
     }
-  }, [start_date, maid_dob, minDob, maxDob, methods]);
+  }, [start_date, maid_dob]);
 
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
@@ -485,9 +483,9 @@ const PolicyDetailForm = ({
                         >
                           <DatePickerField
                             name={MAID_QUOTE.maid_dob}
+                            minDate={minDob}
+                            maxDate={maxDob}
                             label='Date of birth'
-                            minDate={maxDob}
-                            maxDate={minDob}
                             isRequired={true}
                           />
                         </Form.Item>
@@ -512,9 +510,9 @@ const PolicyDetailForm = ({
           </Form>
         </FormProvider>
         <QuoteModal
-          onClick={() => setShowCSModal(false)}
-          visible={showCSModal}
-          description={descriptionQuote}
+          onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
+          visible={showCSModal.visible}
+          description={showCSModal.description}
         />
       </div>
 

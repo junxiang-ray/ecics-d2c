@@ -24,7 +24,7 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
-import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
+import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import {
@@ -247,8 +247,13 @@ const PolicyDetailForm = ({
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
-  const [showCSModal, setShowCSModal] = useState(false);
-  const [descriptionQuote, setDescriptionQuote] = useState('');
+  const [showCSModal, setShowCSModal] = useState<{
+    visible: boolean;
+    description: string;
+  }>({
+    visible: false,
+    description: '',
+  });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
   const methods = useForm<FormData>({
@@ -317,19 +322,21 @@ const PolicyDetailForm = ({
       drvExp !== null &&
       drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
     ) {
-      setShowCSModal(true);
-      setDescriptionQuote(
-        'The listed driver has less than 2 years of driving experience',
-      );
+      setShowCSModal({
+        visible: true,
+        description:
+          'The listed driver has less than 2 years of driving experience',
+      });
     }
   }, [drvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
-      setShowCSModal(true);
-      setDescriptionQuote(
-        'The listed driver has reported more than 2 claims or claims exceeding SGD 20,000.',
-      );
+      setShowCSModal({
+        visible: true,
+        description:
+          'The listed driver has reported more than 2 claims or claims exceeding SGD 20,000.',
+      });
     }
   }, [no_claim]);
 
@@ -385,6 +392,7 @@ const PolicyDetailForm = ({
     methods.setValue(MOTOR_QUOTE.start_date, null as any);
     methods.setValue(MOTOR_QUOTE.end_date, null as any);
   };
+
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
     const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
@@ -479,6 +487,8 @@ const PolicyDetailForm = ({
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
+  const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
+  const maxDob = useMemo(() => dayjs(), []);
   const minPolicyStartDate = useMemo(() => dayjs(), []);
   const maxPolicyStartDate = useMemo(() => dayjs().add(90, 'day'), []);
 
@@ -502,11 +512,13 @@ const PolicyDetailForm = ({
     const isOutOfRange = ageAtPolicyStart < 26 || ageAtPolicyStart >= 71;
 
     if (isOutOfRange) {
-      setShowCSModal(true);
-      setDescriptionQuote(
-        'The driver is above 70 years of age.\n' +
-          'The driver is below 26 years of age.',
-      );
+      setShowCSModal({
+        visible: true,
+        description:
+          ageAtPolicyStart < 26
+            ? 'The driver is below 26 years of age.'
+            : 'The driver is above 70 years of age.',
+      });
       methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
         shouldValidate: true,
       });
@@ -582,6 +594,8 @@ const PolicyDetailForm = ({
                         <DatePickerField
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
+                          minDate={minDob}
+                          maxDate={maxDob}
                           isRequired
                           onChange={handleChangeDob}
                         />
@@ -765,9 +779,9 @@ const PolicyDetailForm = ({
         />
       </div>
       <QuoteModal
-        onClick={() => setShowCSModal(false)}
-        visible={showCSModal}
-        description={descriptionQuote}
+        onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
+        visible={showCSModal.visible}
+        description={showCSModal.description}
       />
     </>
   );
