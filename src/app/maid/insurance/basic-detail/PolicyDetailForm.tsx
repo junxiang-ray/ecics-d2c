@@ -131,7 +131,13 @@ const PolicyDetailForm = ({
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
-  const [showCSModal, setShowCSModal] = useState(false);
+  const [showCSModal, setShowCSModal] = useState<{
+    visible: boolean;
+    description: string;
+  }>({
+    visible: false,
+    description: '',
+  });
   const [descriptionQuote, setDescriptionQuote] = useState('');
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
@@ -243,14 +249,16 @@ const PolicyDetailForm = ({
     const policyStartDate = dayjs(start_date);
     const dob = dayjs(maid_dob);
     const ageAtPolicyStart = policyStartDate.diff(dob, 'year');
-    const isOutOfRange = ageAtPolicyStart < 23 || ageAtPolicyStart > 60;
+    const isOutOfRange = ageAtPolicyStart < 21 || ageAtPolicyStart >= 60;
 
     if (isOutOfRange) {
-      setShowCSModal(true);
-      setDescriptionQuote(
-        "The helper's age is above 60 years old. \n" +
-          "The helper's age is below 23 years old. ",
-      );
+      setShowCSModal({
+        visible: true,
+        description:
+          ageAtPolicyStart < 21
+            ? "The helper's age is below 21 years old."
+            : "The helper's age is above 60 years old.",
+      });
       methods.setValue(MAID_QUOTE.maid_dob, undefined, {
         shouldValidate: true,
       });
@@ -497,9 +505,9 @@ const PolicyDetailForm = ({
           </Form>
         </FormProvider>
         <QuoteModal
-          onClick={() => setShowCSModal(false)}
-          visible={showCSModal}
-          description={descriptionQuote}
+          onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
+          visible={showCSModal.visible}
+          description={showCSModal.description}
         />
       </div>
 
