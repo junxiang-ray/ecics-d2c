@@ -252,14 +252,14 @@ const PolicyDetailForm = ({
     const policyStartDate = dayjs(start_date);
     const dob = dayjs(maid_dob);
     const ageAtPolicyStart = policyStartDate.diff(dob, 'year');
-    const isOutOfRange = ageAtPolicyStart < 21 || ageAtPolicyStart >= 60;
+    const isOutOfRange = ageAtPolicyStart < 23 || ageAtPolicyStart >= 60;
 
     if (isOutOfRange) {
       setShowCSModal({
         visible: true,
         description:
-          ageAtPolicyStart < 21
-            ? "The helper's age is below 21 years old."
+          ageAtPolicyStart < 23
+            ? "The helper's age is below 23 years old."
             : "The helper's age is above 60 years old.",
       });
       methods.setValue(MAID_QUOTE.maid_dob, undefined, {
