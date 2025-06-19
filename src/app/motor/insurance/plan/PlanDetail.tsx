@@ -56,6 +56,10 @@ function PlanDetail({
   } = useSaveQuote();
 
   const plans = quoteInfo?.data?.plans ?? [];
+  const isSameSelectedPlan =
+    !!quoteInfo?.data?.selected_plan &&
+    selectedPlan?.id ===
+      plans.find((p) => p.title === quoteInfo.data.selected_plan)?.id;
 
   useEffect(() => {
     onSaveRegister(() => {
@@ -100,6 +104,7 @@ function PlanDetail({
     const data = {
       ...quoteInfo?.data,
       selected_plan: plan?.title,
+      selected_addon: {}, //https://redmine.tdt.asia/issues/118250
       key: key,
     };
     saveQuote({ key, data, is_sending_email: false }).then((res) => {
@@ -215,8 +220,12 @@ function PlanDetail({
                 </div>
                 <PrimaryButton
                   onClick={() => setShowConfirmDeclaration(true)}
-                  className='w-40 bg-green-promo'
-                  disabled={!selectedPlan?.id}
+                  className={`w-40 ${
+                    !selectedPlan?.id || isSameSelectedPlan
+                      ? 'cursor-not-allowed bg-gray-400 text-white'
+                      : 'bg-green-promo'
+                  }`}
+                  disabled={!selectedPlan?.id || isSameSelectedPlan}
                   loading={isSaving}
                 >
                   Next
