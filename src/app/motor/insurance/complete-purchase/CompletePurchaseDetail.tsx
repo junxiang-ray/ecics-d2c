@@ -138,6 +138,9 @@ export default function CompletePurchaseDetail({
         },
       ]
     : [];
+  const filteredAddonsAdditionalDriver = addonsAdditionalDriver.filter(
+    (item) => item.number_of_additional_drivers > 0,
+  );
 
   const getAdditionalDriverData = (drivers: any[] = []) => {
     return drivers.flatMap((driver, index) => [
@@ -287,12 +290,12 @@ export default function CompletePurchaseDetail({
     addons:
       addonsSectionData.length === 0 &&
       addonsIncludedData.length === 0 &&
-      addonsAdditionalDriver.length === 0
+      filteredAddonsAdditionalDriver.length === 0
         ? [{ title: 'You have no Add Ons selected', value: '' }]
         : [
             ...addonsSectionData,
             ...addonsIncludedData,
-            ...addonsAdditionalDriver,
+            ...filteredAddonsAdditionalDriver,
           ],
     driver: getAdditionalDriverData(quote?.data?.add_named_driver_info),
     owner: [
