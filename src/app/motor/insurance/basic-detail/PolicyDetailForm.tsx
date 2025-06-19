@@ -305,30 +305,6 @@ const PolicyDetailForm = ({
   }, [initPromoCode]);
 
   useEffect(() => {
-    if (!date_of_birth || !start_date) return;
-
-    const startDate = dayjs(start_date);
-    const minDob = adjustDateInDayjs(startDate, -71, 0, 1);
-    const maxDob = adjustDateInDayjs(startDate, -26, 0, 0);
-
-    const dobDate = dayjs(date_of_birth);
-    const isOutOfRange =
-      (minDob && dobDate.isBefore(minDob, 'day')) ||
-      (maxDob && dobDate.isAfter(maxDob, 'day'));
-
-    if (isOutOfRange) {
-      setShowCSModal(true);
-      setDescriptionQuote(
-        'The driver is above 70 years of age. \n' +
-          'The driver is below 26 years of age. ',
-      );
-      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
-        shouldValidate: true,
-      });
-    }
-  }, [start_date]);
-
-  useEffect(() => {
     if (hire_purchase !== ID_OPTION_OTHER) {
       methods.setValue(MOTOR_QUOTE.other_hire_purchase, '');
     }
@@ -503,23 +479,8 @@ const PolicyDetailForm = ({
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
-  const minDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(71, 'year').add(1, 'day');
-  }, [start_date]);
-
-  const maxDob = useMemo(() => {
-    if (!start_date) return undefined;
-    return dayjs(start_date).subtract(26, 'year');
-  }, [start_date]);
-
-  const minPolicyStartDate = useMemo(() => {
-    return dayjs().add(5, 'day');
-  }, []);
-
-  const maxPolicyStartDate = useMemo(() => {
-    return dayjs().add(26, 'month');
-  }, []);
+  const minPolicyStartDate = useMemo(() => dayjs(), []);
+  const maxPolicyStartDate = useMemo(() => dayjs().add(90, 'day'), []);
 
   const minPolicyEndDate = useMemo(() => {
     const startDateDayjs = dateToDayjs(start_date);
@@ -531,6 +492,26 @@ const PolicyDetailForm = ({
     const maxEligibleDate = adjustDateInDayjs(startDateDayjs, 0, 18, -1);
     return maxEligibleDate;
   }, [start_date]);
+
+  useEffect(() => {
+    if (!date_of_birth || !start_date) return;
+
+    const policyStartDate = dayjs(start_date);
+    const dobDate = dayjs(date_of_birth);
+    const ageAtPolicyStart = policyStartDate.diff(dobDate, 'year');
+    const isOutOfRange = ageAtPolicyStart < 26 || ageAtPolicyStart >= 71;
+
+    if (isOutOfRange) {
+      setShowCSModal(true);
+      setDescriptionQuote(
+        'The driver is above 70 years of age.\n' +
+          'The driver is below 26 years of age.',
+      );
+      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
+        shouldValidate: true,
+      });
+    }
+  }, [start_date, date_of_birth]);
 
   return (
     <>
@@ -602,8 +583,6 @@ const PolicyDetailForm = ({
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
                           isRequired
-                          minDate={minDob}
-                          maxDate={maxDob}
                           onChange={handleChangeDob}
                         />
                       </Form.Item>
