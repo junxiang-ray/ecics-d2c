@@ -108,7 +108,7 @@ const InfoCard = (props: Props) => {
 
                               {addon.coverage_amount && (
                                 <div className='px-[14px] pb-[20px] pt-2 text-sm text-gray-500'>
-                                  Coverage Amount: <br />
+                                  Selected Benefit: <br />
                                   <span className='font-semibold'>
                                     {addon.coverage_amount}
                                   </span>

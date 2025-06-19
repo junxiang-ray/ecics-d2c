@@ -140,7 +140,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                     </div>
                     {item.coverage_amount && (
                       <div className='mt-2 pt-2'>
-                        <div className='text-gray-500'>Coverage Amount</div>
+                        <div className='text-gray-500'>Selected Benefit</div>
                         <div className='font-semibold'>
                           {item.coverage_amount}
                         </div>
