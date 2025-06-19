@@ -10,13 +10,13 @@ import { formatCurrency, formatCurrencyString } from '@/libs/utils/utils';
 import CheckCircle from '@/components/icons/CheckCircle';
 import DocDuplicate from '@/components/icons/DocDuplicate';
 import PromoTickIcon from '@/components/icons/PromoTickIcon';
+import InfoCard from '@/components/page/summary/InfoCard';
 import { usePaymentSummaryFromQuote } from '@/components/page/summary/useGetPaymentSummaryData';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 import { LinkButton, PrimaryButton } from '@/components/ui/buttons';
 
 import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import InfoCard from '@/components/page/summary/InfoCard';
 
 export default function Summary() {
   const searchParams = useSearchParams();
@@ -63,19 +63,21 @@ export default function Summary() {
             className='flex w-full max-w-[900px] flex-col overflow-hidden rounded-xl border shadow-md md:flex-row'
           >
             {/* Image Section */}
-            <div className='aspect-video w-full md:aspect-auto md:h-auto md:w-2/5'>
+            <div className='h-[250px] w-full md:h-auto md:w-2/5'>
               <img
-                src={product.image[0]?.url}
+                src={product.image?.[0]?.url}
                 alt={product.name}
-                className='h-full w-full object-cover'
+                className='h-full w-full rounded-t-xl object-cover md:rounded-l-xl md:rounded-t-none'
               />
             </div>
 
             {/* Content Section */}
             <div className='flex w-full flex-col justify-between p-6 md:w-3/5'>
               <div>
-                <h2 className='mb-2 text-xl font-semibold'>{product.name}</h2>
-                <p className='mb-4 text-base font-semibold text-gray-700'>
+                <h2 className='mb-2 text-center text-xl font-semibold md:text-left'>
+                  {product.name}
+                </h2>
+                <p className='mb-4 text-center text-base font-semibold text-gray-700 md:text-left'>
                   {product.description}
                 </p>
                 <ul className='list-disc space-y-3 pl-5 text-sm font-light text-gray-600 marker:text-black'>
