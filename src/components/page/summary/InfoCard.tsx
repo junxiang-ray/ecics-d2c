@@ -58,7 +58,7 @@ const InfoCard = (props: Props) => {
             {normalItems.map((item, index) => (
               <div key={index} className='flex flex-col'>
                 <p className='text-sm text-gray-600'>{item.label}</p>
-                <p className='text-base font-semibold'>
+                <p className='whitespace-pre-wrap break-words text-base font-semibold'>
                   {typeof item.value === 'string' && item.value}
                 </p>
               </div>

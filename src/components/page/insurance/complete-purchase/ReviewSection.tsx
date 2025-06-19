@@ -160,7 +160,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 ) : (
                   <>
                     <div>{item.title}</div>
-                    <div className='font-semibold'>
+                    <div className='whitespace-pre-wrap break-words font-semibold'>
                       {item.value ? (
                         sectionKey === 'policy_plan' &&
                         item.title === 'Plan Details' ? (
