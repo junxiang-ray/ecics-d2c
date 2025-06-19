@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -24,6 +24,7 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
+import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal';
 import {
   HELPER_TYPE_OPTIONS,
   HelperTypeValue,
@@ -133,6 +134,8 @@ const PolicyDetailForm = ({
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MAID_QUOTE.promo_code] ?? promoDefault;
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
+  const [showCSModal, setShowCSModal] = useState(false);
+  const [descriptionQuote, setDescriptionQuote] = useState('');
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
   const methods = useForm<FormData>({
@@ -250,7 +253,16 @@ const PolicyDetailForm = ({
   useEffect(() => {
     if (!start_date || !maid_dob) return;
     const dob = dayjs(maid_dob);
-    if (dob.isAfter(minDob, 'day') || dob.isBefore(maxDob, 'day')) {
+    const isOutOfRange =
+      (minDob && dob.isBefore(minDob, 'day')) ||
+      (maxDob && dob.isAfter(maxDob, 'day'));
+
+    if (isOutOfRange) {
+      setShowCSModal(true);
+      setDescriptionQuote(
+        "The helper's age is above 60 years old. \n" +
+          "The helper's age is below 23 years old. ",
+      );
       methods.setValue(MAID_QUOTE.maid_dob, undefined, {
         shouldValidate: true,
       });
@@ -501,6 +513,11 @@ const PolicyDetailForm = ({
             </div>
           </Form>
         </FormProvider>
+        <QuoteModal
+          onClick={() => setShowCSModal(false)}
+          visible={showCSModal}
+          description={descriptionQuote}
+        />
       </div>
 
       <div

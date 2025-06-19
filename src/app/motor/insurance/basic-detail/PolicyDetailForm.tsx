@@ -24,7 +24,7 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
-import { MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import {
@@ -305,6 +305,30 @@ const PolicyDetailForm = ({
   }, [initPromoCode]);
 
   useEffect(() => {
+    if (!date_of_birth || !start_date) return;
+
+    const startDate = dayjs(start_date);
+    const minDob = adjustDateInDayjs(startDate, -71, 0, 1);
+    const maxDob = adjustDateInDayjs(startDate, -26, 0, 0);
+
+    const dobDate = dayjs(date_of_birth);
+    const isOutOfRange =
+      (minDob && dobDate.isBefore(minDob, 'day')) ||
+      (maxDob && dobDate.isAfter(maxDob, 'day'));
+
+    if (isOutOfRange) {
+      setShowCSModal(true);
+      setDescriptionQuote(
+        'The driver is above 70 years of age. \n' +
+          'The driver is below 26 years of age. ',
+      );
+      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
+        shouldValidate: true,
+      });
+    }
+  }, [start_date]);
+
+  useEffect(() => {
     if (hire_purchase !== ID_OPTION_OTHER) {
       methods.setValue(MOTOR_QUOTE.other_hire_purchase, '');
     }
@@ -479,18 +503,23 @@ const PolicyDetailForm = ({
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
+  const minDob = useMemo(() => {
+    if (!start_date) return undefined;
+    return dayjs(start_date).subtract(71, 'year').add(1, 'day');
+  }, [start_date]);
+
+  const maxDob = useMemo(() => {
+    if (!start_date) return undefined;
+    return dayjs(start_date).subtract(26, 'year');
+  }, [start_date]);
+
   const minPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const minEligibleDate = adjustDateInDayjs(dobDayjs, 26, 0, 0);
-    const today = dayjs();
-    return today.isAfter(minEligibleDate) ? today : minEligibleDate;
-  }, [date_of_birth]);
+    return dayjs().add(5, 'day');
+  }, []);
+
   const maxPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const maxEligibleDate = adjustDateInDayjs(dobDayjs, 71, 0, -1);
-    const today = adjustDateInDayjs(dayjs(), 0, 0, 90);
-    return today?.isBefore(maxEligibleDate) ? today : maxEligibleDate;
-  }, [date_of_birth]);
+    return dayjs().add(26, 'month');
+  }, []);
 
   const minPolicyEndDate = useMemo(() => {
     const startDateDayjs = dateToDayjs(start_date);
@@ -573,8 +602,8 @@ const PolicyDetailForm = ({
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
                           isRequired
-                          minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
-                          maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
+                          minDate={minDob}
+                          maxDate={maxDob}
                           onChange={handleChangeDob}
                         />
                       </Form.Item>
