@@ -512,6 +512,7 @@ const PolicyDetailForm = ({
                     setApplyPromoCode={setApplyPromoCode}
                     isDisablePromoCode={!isEnablePromoCode}
                     product_type={ProductType.MAID}
+                    isFormSubmitting={isLoading}
                   />
                 </div>
               </div>

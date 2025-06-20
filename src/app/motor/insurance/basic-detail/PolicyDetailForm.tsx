@@ -758,6 +758,7 @@ const PolicyDetailForm = ({
                   setApplyPromoCode={setApplyPromoCode}
                   isDisablePromoCode={!isEnablePromoCode}
                   product_type={ProductType.CAR}
+                  isFormSubmitting={isLoading}
                 />
               </div>
             </div>
