@@ -1,16 +1,12 @@
 'use client';
 
-import { Button } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
-import { formatCurrency } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
-import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
@@ -22,6 +18,7 @@ import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PlanMaid from './PlanMaid';
+import { PricingSummary } from '@/components/page/FeeBar';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -124,99 +121,20 @@ function PlanDetail({
           </div>
         </div>
       </div>
-
-      <div className='mt-4 w-full md:flex md:flex-row md:justify-center'>
-        <div className='fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
-          <div className='flex w-full items-center justify-between border-t-2 bg-white p-4 py-2 md:max-w-7xl md:border-none md:py-4'>
-            {isMobile ? (
-              <div className='flex w-full flex-col items-center gap-3'>
-                <div className='flex w-full justify-between px-2'>
-                  <div>
-                    <p className='text-base font-semibold text-[#080808]'>
-                      {selectedPlan?.title} Plan
-                    </p>
-                  </div>
-
-                  <div className='flex flex-col gap-2'>
-                    <div className='flex flex-row items-center gap-2'>
-                      {!!selectedPlan?.discount && (
-                        <span className='ps-4 text-sm font-normal text-[#FF0004] line-through decoration-1'>
-                          {formatCurrency(selectedPlan?.currentPrice)}
-                        </span>
-                      )}
-                      <p className='text-lg font-bold text-[#323743]'>
-                        {formatCurrency(selectedPlan?.premium_with_gst)}
-                      </p>
-                    </div>
-                    <p className='flex w-full justify-end text-xs font-semibold text-[#323743]'>
-                      (inclusive of GST)
-                    </p>
-                  </div>
-                </div>
-                <div className='flex w-full items-center gap-4'>
-                  <Button
-                    color='cyan'
-                    icon={<ArrowBackIcon size={16} />}
-                    shape='circle'
-                    className='mr-[6px] border-none bg-gray-200 pt-[6px]'
-                    onClick={handleBack}
-                  />
-                  <PrimaryButton
-                    onClick={() => setShowConfirmDeclaration(true)}
-                    className='w-full bg-green-promo'
-                    disabled={!selectedPlan?.id}
-                    loading={isSaving}
-                  >
-                    Next
-                  </PrimaryButton>
-                </div>
-              </div>
-            ) : (
-              <div className='flex w-full items-center justify-between'>
-                <Button
-                  color='cyan'
-                  icon={<ArrowBackIcon size={16} />}
-                  shape='circle'
-                  className='border-none bg-gray-200 pt-[6px]'
-                  onClick={handleBack}
-                />
-                <div className='flex gap-20 px-2'>
-                  <div>
-                    <p className='text-2xl font-semibold text-[#080808]'>
-                      {selectedPlan?.title} Plan
-                    </p>
-                  </div>
-
-                  <div className='flex flex-col gap-2'>
-                    <div className='flex flex-row items-center gap-2'>
-                      {!!selectedPlan?.discount && (
-                        <span className='ps-4 text-sm font-normal text-[#FF0004] line-through decoration-1'>
-                          {formatCurrency(selectedPlan?.currentPrice)}
-                        </span>
-                      )}
-                      <p className='text-lg font-bold text-[#323743]'>
-                        {formatCurrency(selectedPlan?.premium_with_gst)}
-                      </p>
-                    </div>
-                    <p className='flex w-full justify-end text-xs font-semibold text-[#323743]'>
-                      (inclusive of GST)
-                    </p>
-                  </div>
-                </div>
-                <PrimaryButton
-                  onClick={() => setShowConfirmDeclaration(true)}
-                  className='w-40 bg-green-promo'
-                  disabled={!selectedPlan?.id}
-                  loading={isSaving}
-                >
-                  Next
-                </PrimaryButton>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
+      <PricingSummary
+        isBasicDetailScreen={false}
+        planFee={selectedPlan?.premium_with_gst ?? 0}
+        addonFee={0}
+        discount={selectedPlan?.discount ?? 0}
+        title={`${selectedPlan?.title}`}
+        textButton='Next'
+        onClick={() => setShowConfirmDeclaration(true)}
+        handleBack={handleBack}
+        productType={ProductType.MAID}
+        loading={isSaving}
+        titlePlan={selectedPlan?.title}
+        isPlan
+      />
       <SelfDeclarationConfirmModal
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}

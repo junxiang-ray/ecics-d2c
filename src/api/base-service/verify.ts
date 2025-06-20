@@ -67,7 +67,9 @@ export default {
     return baseClient.post<any>(`${API_POST_CHECK_VEHICLE}`, payload);
   },
 
-  getNationality() {
-    return baseClient.get<NationalResponse>(`${API_GET_LIST_NATIONAL}`);
+  getNationality(group_name: string) {
+    return baseClient.get<NationalResponse>(`${API_GET_LIST_NATIONAL}`, {
+      params: { group_name },
+    });
   },
 };

@@ -5,15 +5,16 @@ import {
   QuoteResponse,
 } from '@/libs/types/quote';
 
+import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
   API_GET_QUOTE_BY_KEY,
+  API_GET_REQUEST_LOG,
   API_POST_PERSONAL_INFO_SAVE,
   API_POST_ZIP_FILES_DOWNLOAD,
   API_SAVE_QUOTE,
 } from '@/constants/api.constant';
 
 import baseClient from './api.config';
-import { ProductTypeWeb } from '@/app/api/constants/product';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -38,8 +39,8 @@ export default {
   postPersonalInfoSave(payload: SavePersonalInfoPayload) {
     return baseClient.post<any>(`${API_POST_PERSONAL_INFO_SAVE}`, payload);
   },
-  requestLogCar() {
-    return baseClient.get<any>('/request-log/car');
+  requestLog(product_type: string) {
+    return baseClient.get<any>(`${API_GET_REQUEST_LOG}` + product_type);
   },
   getHirePurchaseList(product_type: string) {
     return baseClient.get<any>('/companies/' + product_type);

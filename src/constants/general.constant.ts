@@ -12,3 +12,8 @@ export const PROMO_CODE = 'promo_code';
 export const VALUE_OPTION_COMPANY = '257';
 
 export const MAID_PAYMENT_URL = 'maid_payment_url';
+
+export const GROUP_COUNTRY = {
+  country_for_maid: 'country_for_maid',
+  country_for_employer: 'country_for_employer',
+};

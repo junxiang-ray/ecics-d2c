@@ -28,7 +28,10 @@ import {
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 import { MAID_QUOTE } from '@/constants';
-import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
+import {
+  GROUP_COUNTRY,
+  VALUE_OPTION_COMPANY,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { passportRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
@@ -233,7 +236,7 @@ const HelpersDetail = (props: Props) => {
     : null;
 
   const minDate = startDate?.subtract(120, 'year').add(1, 'day');
-  const maxDate = startDate?.subtract(18, 'year');
+  const maxDate = startDate?.subtract(21, 'year');
 
   const addNamedDriverInfo = useAddNamedDriverInfo();
   const listNamedDriverNric = addNamedDriverInfo?.map(
@@ -254,7 +257,9 @@ const HelpersDetail = (props: Props) => {
   const { mutateAsync: saveMaidQuote, isPending: isPending } =
     useSaveMaidQuote();
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.MAID);
-  const { data: nationalOptions } = useGetNationality();
+  const { data: nationalOptions } = useGetNationality(
+    GROUP_COUNTRY.country_for_employer,
+  );
 
   const nationalOptionsFormatted: DropdownOption[] = useMemo(() => {
     if (!nationalOptions) return [];
@@ -612,23 +617,6 @@ const HelpersDetail = (props: Props) => {
               </Form.Item>
             </div>
           </div>
-
-          <div className='md:mt-18 mt-20 w-full bg-[#FFFEFF]'>
-            <PricingSummary
-              productType={ProductType.MAID}
-              planFee={planFreeTotal}
-              addonFee={
-                maidQuoteInfo?.data?.review_info_premium?.total_addon_free
-              }
-              discount={maidQuoteInfo?.promo_code?.discount || 0}
-              title='Premium breakdown'
-              textButton='Next'
-              handleBack={handleBack}
-              onClick={methods.handleSubmit(handleSubmit)}
-              setIsShowPopupPremium={setIsShowPopupPremium}
-              loading={isPending}
-            />
-          </div>
         </Form>
         <ModalPremium
           productType={ProductType.MAID}
@@ -657,6 +645,20 @@ const HelpersDetail = (props: Props) => {
             maidQuoteInfo?.data?.review_info_premium
               ?.add_ons_included_in_this_plan
           }
+        />
+      </div>
+      <div className='mt-20 w-full bg-[#FFFEFF] md:mt-10'>
+        <PricingSummary
+          productType={ProductType.MAID}
+          planFee={planFreeTotal}
+          addonFee={maidQuoteInfo?.data?.review_info_premium?.total_addon_free}
+          discount={maidQuoteInfo?.promo_code?.discount || 0}
+          title='Premium breakdown'
+          textButton='Next'
+          handleBack={handleBack}
+          onClick={methods.handleSubmit(handleSubmit)}
+          setIsShowPopupPremium={setIsShowPopupPremium}
+          loading={isPending}
         />
       </div>
     </FormProvider>

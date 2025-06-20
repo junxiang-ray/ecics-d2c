@@ -81,14 +81,14 @@ export const useGetHirePurchaseList = (product_type: string) => {
   });
 };
 
-export const useRequestLogCar = () => {
-  const requestLogCar = async () => {
-    const res = await insurance.requestLogCar();
+export const useRequestLog = (product_type: string) => {
+  const requestLog = async () => {
+    const res = await insurance.requestLog(product_type);
     return res.data;
   };
   return useMutation({
-    mutationFn: requestLogCar,
-    mutationKey: ['log-car'],
+    mutationFn: requestLog,
+    mutationKey: ['request-log'],
   });
 };
 
