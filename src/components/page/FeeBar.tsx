@@ -131,12 +131,12 @@ export function PricingSummary({
               {!isBasicDetailScreen && (
                 <>
                   <div
-                    className='flex flex-row items-center gap-28'
+                    className='flex max-w-[574px] flex-row items-center sm:min-w-[300px]  md:gap-1 lg:min-w-[574px] lg:gap-28'
                     onClick={() => setIsShowPopupPremium?.(true)}
                   >
-                    <div className='flex flex-col'>
+                    <div className='flex max-w-[246px] flex-col md:min-w-[246px]'>
                       <p className='text-[24px] font-bold leading-[35px] text-[#080808]'>
-                        {isPlan ? title : selectedPlan} Plan
+                        {isPlan ? title : selectedPlan}
                       </p>
                       {!isPlan && (
                         <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>

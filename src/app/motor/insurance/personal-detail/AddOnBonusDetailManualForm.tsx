@@ -429,19 +429,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               </Form.Item>
             </div>
           </div>
-          <div className='mt-20 w-full bg-[#FFFEFF] md:mt-14'>
-            <PricingSummary
-              planFee={planFreeTotal}
-              addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
-              discount={quoteInfo?.promo_code?.discount || 0}
-              title='Premium breakdown'
-              textButton='Next'
-              handleBack={handleBack}
-              onClick={methods.handleSubmit(handleSubmit)}
-              setIsShowPopupPremium={setIsShowPopupPremium}
-              loading={isPending}
-            />
-          </div>
         </Form>
         <ModalPremium
           isShowPopupPremium={isShowPopupPremium}
@@ -464,6 +451,19 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           addonsIncluded={
             quoteInfo?.data?.review_info_premium?.add_ons_included_in_this_plan
           }
+        />
+      </div>
+      <div className='mt-20 w-full bg-[#FFFEFF] md:mt-14'>
+        <PricingSummary
+          planFee={planFreeTotal}
+          addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
+          discount={quoteInfo?.promo_code?.discount || 0}
+          title='Premium breakdown'
+          textButton='Next'
+          handleBack={handleBack}
+          onClick={methods.handleSubmit(handleSubmit)}
+          setIsShowPopupPremium={setIsShowPopupPremium}
+          loading={isPending}
         />
       </div>
       {showCSModal && (
