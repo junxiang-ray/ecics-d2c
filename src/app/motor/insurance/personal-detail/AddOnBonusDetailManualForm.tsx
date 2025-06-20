@@ -212,9 +212,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
       },
       vehicle_info_selected: {
         ...vehicle_info_selected,
-        vehicle_number: data.vehicleNumber,
-        engine_number: data.engineNumber,
-        chasis_number: data.chasisNumber.toUpperCase() ?? '',
+        vehicle_number: data?.vehicleNumber?.toUpperCase() ?? '',
+        engine_number: data?.engineNumber?.toUpperCase() ?? '',
+        chasis_number: data?.chasisNumber?.toUpperCase() ?? '',
       },
     };
 
