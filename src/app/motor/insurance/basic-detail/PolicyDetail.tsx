@@ -5,11 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
-import {
-  formatPromoCode,
-  generateKeyAndAttachToUrl,
-  normalizeFields,
-} from '@/libs/utils/utils';
+import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
@@ -25,7 +21,6 @@ import { setPromoCodeError, updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PolicyDetailForm from './PolicyDetailForm';
-import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;
@@ -110,22 +105,17 @@ export const PolicyDetail = ({
 
     if (isSingPassFlow && userInfo) {
       // data from Singpass
-      const personal_info = normalizeFields(
-        {
-          name: userInfo?.name,
-          gender: userInfo?.gender,
-          marital_status: userInfo?.marital_status,
-          date_of_birth: userInfo?.date_of_birth,
-          nric: userInfo?.nric,
-          address: userInfo?.address,
-          driving_experience: userInfo?.driving_experience,
-          phone: userInfo?.phone,
-          email: String(userInfo?.email ?? ''),
-        },
-        {
-          email: 'lower',
-        },
-      );
+      const personal_info = {
+        name: userInfo?.name,
+        gender: userInfo?.gender,
+        marital_status: userInfo?.marital_status,
+        date_of_birth: userInfo?.date_of_birth,
+        nric: userInfo?.nric,
+        address: userInfo?.address,
+        driving_experience: userInfo?.driving_experience,
+        phone: userInfo?.phone,
+        email: userInfo?.email?.toLowerCase(),
+      };
 
       payload = {
         ...payload,

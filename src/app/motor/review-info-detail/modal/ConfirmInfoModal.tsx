@@ -8,7 +8,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { calculateAge, normalizeFields } from '@/libs/utils/utils';
+import { calculateAge } from '@/libs/utils/utils';
 
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
@@ -70,8 +70,12 @@ const ConfirmInfoModal = ({
     const qdlClasses = parsed?.drivinglicence?.qdl?.classes || [];
     const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
-    const personal_info = normalizeFields(
-      {
+    const payload: SavePersonalInfoPayload = {
+      key: `${uuid()}`,
+      is_sending_email: true,
+      promo_code: promo_code || '',
+      partner_code: partner_code || '',
+      personal_info: {
         name: parsed.name?.value || '',
         gender: parsed.sex?.desc || '',
         marital_status: parsed.marital?.desc || '',
@@ -90,20 +94,9 @@ const ConfirmInfoModal = ({
               ? '6 years and above'
               : `${drivingYears} years`
             : '1 year',
-        phone: parsed.mobileno?.nbr?.value || '',
-        email: String(parsed.email?.value || ''),
+        phone: `${parsed.mobileno?.nbr?.value || ''}`,
+        email: parsed.email?.value.toLowerCase() || '',
       },
-      {
-        email: 'lower',
-      },
-    );
-
-    const payload: SavePersonalInfoPayload = {
-      key: `${uuid()}`,
-      is_sending_email: true,
-      promo_code: promo_code || '',
-      partner_code: partner_code || '',
-      personal_info: personal_info,
       vehicle_info_selected: {
         vehicle_number: parsed.vehicles[0].vehicleno?.value || '',
         first_registered_year:

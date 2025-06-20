@@ -8,7 +8,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { normalizeFields } from '@/libs/utils/utils';
 import { finValidator, validateNRIC } from '@/libs/utils/validation-utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
@@ -343,36 +342,26 @@ const HelpersDetail = (props: Props) => {
 
     const transformedData: any = {
       current_step: 4,
-      personal_info: normalizeFields(
-        {
-          ...personal_info,
-          email: String(personal_info?.email ?? ''),
-          phone: personal_info?.phone ?? '',
-          name: data.name,
-          nric: data.nric,
-          address: [data.address1, data.address2, data.address3],
-          nationality: data.nationality,
-          post_code: data.pinCode,
-          date_of_birth: dayjs(data.date_of_birth).format('DD/MM/YYYY'),
-        },
-        {
-          email: 'lower',
-        },
-      ),
-      maid_info: normalizeFields(
-        {
-          ...maidInfo,
-          name: data.nameHelper,
-          fin: data.fin,
-          passport_number: data.passport_number,
-          company_name: companyNameText,
-          company_name_other: maidCompanyNameOther,
-          has_helper_worked_12_months: data.has_helper_worked_12_months,
-        },
-        {
-          passport_number: 'upper',
-        },
-      ),
+      personal_info: {
+        ...personal_info,
+        email: personal_info?.email?.toLowerCase() ?? '',
+        phone: personal_info?.phone ?? '',
+        name: data.name,
+        nric: data.nric,
+        address: [data.address1, data.address2, data.address3],
+        nationality: data.nationality,
+        post_code: data.pinCode,
+        date_of_birth: dayjs(data.date_of_birth).format('DD/MM/YYYY'),
+      },
+      maid_info: {
+        ...maidInfo,
+        name: data.nameHelper,
+        fin: data.fin,
+        passport_number: data.passport_number,
+        company_name: companyNameText,
+        company_name_other: maidCompanyNameOther,
+        has_helper_worked_12_months: data.has_helper_worked_12_months,
+      },
     };
 
     const dataQuote = {

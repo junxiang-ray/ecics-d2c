@@ -161,24 +161,3 @@ export const getPaymentType = (
   }
   return undefined;
 };
-
-type Normalizer = 'upper' | 'lower' | ((val: any) => any);
-export function normalizeFields<T extends Record<string, any>>(
-  data: T,
-  fieldRules: Partial<Record<keyof T, Normalizer>>,
-): T {
-  const result = { ...data };
-
-  for (const key in fieldRules) {
-    const rule = fieldRules[key];
-    const value = result[key];
-
-    if (typeof value === 'string' && rule) {
-      if (rule === 'upper') result[key] = value.toUpperCase();
-      else if (rule === 'lower') result[key] = value.toLowerCase();
-      else if (typeof rule === 'function') result[key] = rule(value);
-    }
-  }
-
-  return result;
-}

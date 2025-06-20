@@ -11,7 +11,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { normalizeFields, saveToSessionStorage } from '@/libs/utils/utils';
+import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 
@@ -106,8 +106,12 @@ export const VehicleSelectionModal = ({
       const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
       const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
-      const personal_info = normalizeFields(
-        {
+      const payload: SavePersonalInfoPayload = {
+        key: `${uuid()}`,
+        is_sending_email: false,
+        promo_code: promo_code || '',
+        partner_code: partner_code || '',
+        personal_info: {
           name: updatedParsed.name?.value || '',
           gender: updatedParsed.sex?.desc || '',
           marital_status: updatedParsed.marital?.desc || '',
@@ -127,19 +131,8 @@ export const VehicleSelectionModal = ({
                 : `${drivingYears} years`
               : '1 year',
           phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
-          email: String(updatedParsed.email?.value || ''),
+          email: updatedParsed.email?.value?.toLowerCase() || '',
         },
-        {
-          email: 'lower',
-        },
-      );
-
-      const payload: SavePersonalInfoPayload = {
-        key: `${uuid()}`,
-        is_sending_email: false,
-        promo_code: promo_code || '',
-        partner_code: partner_code || '',
-        personal_info,
         vehicle_info_selected,
         vehicles:
           updatedParsed.vehicles?.map((v: any) => ({

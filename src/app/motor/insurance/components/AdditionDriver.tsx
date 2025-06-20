@@ -11,7 +11,7 @@ dayjs.extend(isSameOrBefore);
 import dayjs from 'dayjs';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
-import { calculateAge, normalizeFields } from '@/libs/utils/utils';
+import { calculateAge } from '@/libs/utils/utils';
 import { validateNRIC } from '@/libs/utils/validation-utils';
 
 import { DatePickerField } from '@/components/ui/form/datepicker';
@@ -223,17 +223,11 @@ const AdditionDriver = ({
   };
 
   const onSubmit = (data: FormData) => {
-    const formattedDrivers = data.drivers.map((driver) => {
-      const normalizedDriver = normalizeFields(driver, {
-        nric_or_fin: 'upper',
-      });
-
-      return {
-        ...normalizedDriver,
-        date_of_birth: dayjs(driver.date_of_birth).format('DD/MM/YYYY'),
-      };
-    });
-
+    const formattedDrivers = data.drivers.map((driver) => ({
+      ...driver,
+      nric_or_fin: driver.nric_or_fin?.toUpperCase(),
+      date_of_birth: dayjs(driver.date_of_birth).format('DD/MM/YYYY'),
+    }));
     setDataDrivers(formattedDrivers);
     setIsShowAdditionDriver(false);
   };

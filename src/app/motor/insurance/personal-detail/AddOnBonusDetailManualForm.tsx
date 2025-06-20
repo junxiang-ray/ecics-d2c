@@ -7,7 +7,6 @@ import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { normalizeFields } from '@/libs/utils/utils';
 import {
   sgCarRegNoValidator,
   validateNRIC,
@@ -195,10 +194,11 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   } = methods;
 
   const handleSubmit = (data: FormData) => {
-    const personalInfo = normalizeFields(
-      {
+    const transformedData: any = {
+      current_step: 3,
+      personal_info: {
         ...personal_info,
-        email: personal_info?.email ?? '',
+        email: personal_info?.email?.toLowerCase() ?? '',
         phone: personal_info?.phone ?? '',
         date_of_birth: personal_info?.date_of_birth ?? '',
         driving_experience: personal_info?.driving_experience ?? 0,
@@ -209,15 +209,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         address: [data.address1, data.address2, data.address3],
         post_code: data.pinCode,
       },
-      {
-        email: 'lower',
-        nric: 'upper',
-      },
-    );
-
-    const transformedData: any = {
-      current_step: 3,
-      personal_info: personalInfo,
       vehicle_info_selected: {
         ...vehicle_info_selected,
         vehicle_number: data.vehicleNumber,
