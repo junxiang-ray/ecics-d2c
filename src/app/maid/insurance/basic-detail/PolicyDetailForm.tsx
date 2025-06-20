@@ -37,6 +37,7 @@ import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { MAID_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
+import { GROUP_COUNTRY } from '@/constants/general.constant';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -161,7 +162,9 @@ const PolicyDetailForm = ({
   const nationality = watch(MAID_QUOTE.nationality) as string;
   const helperType = watch(MAID_QUOTE.maid_type) as string;
   const policyDuration = watch(MAID_QUOTE.plan_period) as string;
-  const { data: nationalOptions } = useGetNationality();
+  const { data: nationalOptions } = useGetNationality(
+    GROUP_COUNTRY.country_for_maid,
+  );
   const nationalOptionsFormatted: DropdownOption[] = useMemo(() => {
     if (!nationalOptions) return [];
     return nationalOptions?.map((item: any) => ({

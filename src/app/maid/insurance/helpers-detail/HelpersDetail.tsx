@@ -28,7 +28,10 @@ import {
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 import { MAID_QUOTE } from '@/constants';
-import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
+import {
+  GROUP_COUNTRY,
+  VALUE_OPTION_COMPANY,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { passportRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
@@ -254,7 +257,9 @@ const HelpersDetail = (props: Props) => {
   const { mutateAsync: saveMaidQuote, isPending: isPending } =
     useSaveMaidQuote();
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.MAID);
-  const { data: nationalOptions } = useGetNationality();
+  const { data: nationalOptions } = useGetNationality(
+    GROUP_COUNTRY.country_for_employer,
+  );
 
   const nationalOptionsFormatted: DropdownOption[] = useMemo(() => {
     if (!nationalOptions) return [];

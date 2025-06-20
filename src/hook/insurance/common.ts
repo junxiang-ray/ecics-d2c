@@ -85,14 +85,14 @@ export const usePostCheckVehicle = (onUnmatch: () => void) => {
   });
 };
 
-export const useGetNationality = () => {
+export const useGetNationality = (group_name: string) => {
   const fetchNational = async () => {
-    const res = await verify.getNationality();
+    const res = await verify.getNationality(group_name);
     return res.data.data;
   };
 
   return useQuery({
     queryFn: fetchNational,
-    queryKey: ['nationalities'],
+    queryKey: ['nationalities', group_name],
   });
 };
