@@ -89,7 +89,7 @@ const UnMatchVehicleModal = ({
               : `${drivingYears} years`
             : '1 year',
         phone: `${parsedData.mobileno?.nbr?.value || ''}`,
-        email: parsedData.email?.value || '',
+        email: parsedData.email?.value?.toLowerCase() || '',
       },
       vehicle_info_selected: {
         vehicle_number: v[0]?.vehicleno?.value || '',

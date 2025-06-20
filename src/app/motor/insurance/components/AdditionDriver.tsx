@@ -11,10 +11,12 @@ dayjs.extend(isSameOrBefore);
 import dayjs from 'dayjs';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
+import { calculateAge } from '@/libs/utils/utils';
 import { validateNRIC } from '@/libs/utils/validation-utils';
 
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { InputField } from '@/components/ui/form/inputfield';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -23,9 +25,6 @@ import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
 } from '../basic-detail/options';
-
-import { InputNumberField } from '@/components/ui/form/inputnumberfield';
-import { calculateAge } from '@/libs/utils/utils';
 
 enum ClaimStatus {
   YES = 'true',
@@ -226,6 +225,7 @@ const AdditionDriver = ({
   const onSubmit = (data: FormData) => {
     const formattedDrivers = data.drivers.map((driver) => ({
       ...driver,
+      nric_or_fin: driver.nric_or_fin?.toUpperCase(),
       date_of_birth: dayjs(driver.date_of_birth).format('DD/MM/YYYY'),
     }));
     setDataDrivers(formattedDrivers);

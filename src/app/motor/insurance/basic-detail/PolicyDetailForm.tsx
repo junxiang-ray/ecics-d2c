@@ -24,7 +24,7 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
-import { MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import {
@@ -360,7 +360,7 @@ const PolicyDetailForm = ({
           ),
           driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
           phone: value[MOTOR_QUOTE.mobile],
-          email: value[MOTOR_QUOTE.email],
+          email: (value[MAID_QUOTE.email] as string)?.toLowerCase(),
         };
       }
 
@@ -451,7 +451,6 @@ const PolicyDetailForm = ({
         vehicle_model: value[MOTOR_QUOTE.vehicle_model],
         first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
       };
-
       personal_info = {
         date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
           'DD/MM/YYYY',

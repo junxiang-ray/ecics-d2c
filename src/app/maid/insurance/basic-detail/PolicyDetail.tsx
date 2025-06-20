@@ -96,10 +96,10 @@ export const PolicyDetail = ({
         gender: userInfo?.gender,
         marital_status: userInfo?.marital_status,
         date_of_birth: userInfo?.date_of_birth,
-        nric: userInfo?.nric,
+        nric: userInfo?.nric?.toUpperCase(),
         address: userInfo?.address,
         phone: userInfo?.phone,
-        email: userInfo?.email,
+        email: userInfo?.email?.toLowerCase(),
       };
 
       payload = {

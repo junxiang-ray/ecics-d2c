@@ -22,6 +22,7 @@ import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { REGEX_TEXT } from '@/app/api/utils/regex';
 import {
   HAS_HELPER_WORKED_OPTION,
   HasHelperValue,
@@ -42,7 +43,6 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { REGEX_TEXT } from '@/app/api/utils/regex';
 
 const createSchema = (listNric: any[] | undefined) =>
   z
@@ -344,10 +344,10 @@ const HelpersDetail = (props: Props) => {
       current_step: 4,
       personal_info: {
         ...personal_info,
-        email: personal_info?.email ?? '',
+        email: personal_info?.email?.toLowerCase() ?? '',
         phone: personal_info?.phone ?? '',
         name: data.name,
-        nric: data.nric,
+        nric: (data.nric as string)?.toUpperCase() ?? '',
         address: [data.address1, data.address2, data.address3],
         nationality: data.nationality,
         post_code: data.pinCode,
@@ -357,7 +357,7 @@ const HelpersDetail = (props: Props) => {
         ...maidInfo,
         name: data.nameHelper,
         fin: data.fin,
-        passport_number: data.passport_number,
+        passport_number: (data.passport_number as string)?.toUpperCase() ?? '',
         company_name: companyNameText,
         company_name_other: maidCompanyNameOther,
         has_helper_worked_12_months: data.has_helper_worked_12_months,
@@ -497,7 +497,7 @@ const HelpersDetail = (props: Props) => {
             className={`flex w-full flex-col gap-4 ${isMobile ? '' : 'mt-6'}`}
           >
             <div
-              className={`text-lg font-bold underline ${isMobile ? 'mt-[28px]' : ''}`}
+              className={`text-base font-bold underline ${isMobile ? 'mt-[28px]' : ''}`}
             >
               Enter Personal Details
             </div>

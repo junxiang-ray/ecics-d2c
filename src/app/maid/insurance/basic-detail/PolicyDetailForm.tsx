@@ -35,9 +35,9 @@ import {
 } from '@/app/motor/insurance/basic-detail/options';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { MAID_QUOTE } from '@/constants';
+import { GROUP_COUNTRY } from '@/constants/general.constant';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
-import { GROUP_COUNTRY } from '@/constants/general.constant';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -214,13 +214,12 @@ const PolicyDetailForm = ({
           vehicle_model: value[MAID_QUOTE.vehicle_model],
           first_registered_year: value[MAID_QUOTE.reg_yyyy] as string,
         };
-
         personal_info = {
           date_of_birth: dayjs(value[MAID_QUOTE.owner_dob] as Date).format(
             'DD/MM/YYYY',
           ),
           phone: value[MAID_QUOTE.mobile],
-          email: value[MAID_QUOTE.email],
+          email: (value[MAID_QUOTE.email] as string)?.toLowerCase(),
         };
       }
       const payload = {
@@ -290,7 +289,7 @@ const PolicyDetailForm = ({
     if (!isSingpassFlow) {
       personal_info = {
         phone: value[MAID_QUOTE.mobile],
-        email: value[MAID_QUOTE.email],
+        email: (value[MAID_QUOTE.email] as string)?.toLowerCase(),
       };
     }
 
