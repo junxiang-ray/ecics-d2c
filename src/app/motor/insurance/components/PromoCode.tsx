@@ -10,8 +10,8 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { setPromoCodeError } from '@/redux/slices/quote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;

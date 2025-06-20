@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
+import { MaidQuote } from '@/libs/types/maidQuote';
 import { AddOnFormat } from '@/libs/types/quote';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
@@ -13,15 +14,13 @@ import { PricingSummary } from '@/components/page/FeeBar';
 import AddOnRow from '@/components/page/insurance/add-on/AddOnRow';
 import AddOnRowDetail from '@/components/page/insurance/add-on/AddOnRowDetail';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
-import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { MaidQuote } from '@/libs/types/maidQuote';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 export const mapIconToTypeAddOn = [
   {
@@ -270,7 +269,7 @@ function AddOnDetail({
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
           <p className='mt-4 text-base font-bold underline'>Select Add-ons</p>
           <div className='flex flex-col items-center'>
-            <div className='mt-4 flex flex-col gap-6 md:w-[950px] md:gap-10'>
+            <div className='mt-4 flex max-w-full flex-col gap-6 md:max-w-full lg:w-[950px] lg:gap-10'>
               {plan?.add_ons_included_in_this_plan?.map((addon) => (
                 <AddOnRow
                   key={addon.add_on_id}

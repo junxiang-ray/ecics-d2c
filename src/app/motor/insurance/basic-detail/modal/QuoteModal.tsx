@@ -6,6 +6,7 @@ import PhoneIcon from '@/components/icons/PhoneIcon';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 interface QuoteModalProps {
   visible: boolean;
   onClick: () => void;

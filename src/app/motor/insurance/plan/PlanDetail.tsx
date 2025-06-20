@@ -2,7 +2,6 @@
 
 // import HeaderVehicleInfo from './components/HeaderVehicleInfo';
 // import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
-import { Button } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import 'swiper/css';
