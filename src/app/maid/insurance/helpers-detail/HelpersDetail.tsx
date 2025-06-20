@@ -628,23 +628,6 @@ const HelpersDetail = (props: Props) => {
               </Form.Item>
             </div>
           </div>
-
-          <div className='md:mt-18 mt-20 w-full bg-[#FFFEFF]'>
-            <PricingSummary
-              productType={ProductType.MAID}
-              planFee={planFreeTotal}
-              addonFee={
-                maidQuoteInfo?.data?.review_info_premium?.total_addon_free
-              }
-              discount={maidQuoteInfo?.promo_code?.discount || 0}
-              title='Premium breakdown'
-              textButton='Next'
-              handleBack={handleBack}
-              onClick={methods.handleSubmit(handleSubmit)}
-              setIsShowPopupPremium={setIsShowPopupPremium}
-              loading={isPending}
-            />
-          </div>
         </Form>
         <ModalPremium
           productType={ProductType.MAID}
@@ -673,6 +656,20 @@ const HelpersDetail = (props: Props) => {
             maidQuoteInfo?.data?.review_info_premium
               ?.add_ons_included_in_this_plan
           }
+        />
+      </div>
+      <div className='mt-20 w-full bg-[#FFFEFF] md:mt-10'>
+        <PricingSummary
+          productType={ProductType.MAID}
+          planFee={planFreeTotal}
+          addonFee={maidQuoteInfo?.data?.review_info_premium?.total_addon_free}
+          discount={maidQuoteInfo?.promo_code?.discount || 0}
+          title='Premium breakdown'
+          textButton='Next'
+          handleBack={handleBack}
+          onClick={methods.handleSubmit(handleSubmit)}
+          setIsShowPopupPremium={setIsShowPopupPremium}
+          loading={isPending}
         />
       </div>
     </FormProvider>
