@@ -95,7 +95,7 @@ function AddOnRowDetail({
               <div className='flex flex-col md:flex-row md:items-center md:justify-between'>
                 <div className='flex flex-col gap-1 text-[14px]'>
                   <p className='font-semibold leading-[20px] text-[#525252]'>
-                    Select Coverage Amount
+                    Select Benefit
                   </p>
                   <AddOnRadioGroupField
                     options={options}
@@ -142,7 +142,7 @@ function AddOnRowDetail({
           <div className='flex flex-col justify-between gap-2 md:flex-row md:items-center'>
             {addon.type === 'select' && (
               <div className='text-sm font-bold text-[#525252]'>
-                Coverage Amount:{' '}
+                Selected Benefit:{' '}
                 <span className='font-semibold'>
                   {addon.activeOption?.label}
                 </span>

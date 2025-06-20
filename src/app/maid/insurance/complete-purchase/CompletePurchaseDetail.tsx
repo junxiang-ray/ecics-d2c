@@ -72,17 +72,10 @@ export default function CompletePurchaseDetail({
     toggleSection(key);
   };
   const routerBySectionKey = (key: string) => {
-    if (
-      [
-        'helper_details',
-        'helper_basic_information',
-        'policy',
-        'personal',
-      ].includes(key)
-    ) {
+    if (['helper_basic_information', 'policy', 'personal'].includes(key)) {
       return ROUTES.INSURANCE_MAID.BASIC_DETAIL;
     }
-    if (['owner'].includes(key)) {
+    if (['helper_details', 'owner'].includes(key)) {
       return ROUTES.INSURANCE_MAID.HELPER_DETAIL;
     }
     if (key === 'policy_plan') {

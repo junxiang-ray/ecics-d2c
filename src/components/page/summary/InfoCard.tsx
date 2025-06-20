@@ -58,7 +58,7 @@ const InfoCard = (props: Props) => {
             {normalItems.map((item, index) => (
               <div key={index} className='flex flex-col'>
                 <p className='text-sm text-gray-600'>{item.label}</p>
-                <p className='text-base font-semibold'>
+                <p className='whitespace-pre-wrap break-words text-base font-semibold'>
                   {typeof item.value === 'string' && item.value}
                 </p>
               </div>
@@ -108,7 +108,7 @@ const InfoCard = (props: Props) => {
 
                               {addon.coverage_amount && (
                                 <div className='px-[14px] pb-[20px] pt-2 text-sm text-gray-500'>
-                                  Coverage Amount: <br />
+                                  Selected Benefit: <br />
                                   <span className='font-semibold'>
                                     {addon.coverage_amount}
                                   </span>
