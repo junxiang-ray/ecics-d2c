@@ -347,7 +347,7 @@ const HelpersDetail = (props: Props) => {
         email: personal_info?.email?.toLowerCase() ?? '',
         phone: personal_info?.phone ?? '',
         name: data.name,
-        nric: data.nric,
+        nric: (data.nric as string)?.toUpperCase() ?? '',
         address: [data.address1, data.address2, data.address3],
         nationality: data.nationality,
         post_code: data.pinCode,
@@ -357,7 +357,7 @@ const HelpersDetail = (props: Props) => {
         ...maidInfo,
         name: data.nameHelper,
         fin: data.fin,
-        passport_number: data.passport_number,
+        passport_number: (data.passport_number as string)?.toUpperCase() ?? '',
         company_name: companyNameText,
         company_name_other: maidCompanyNameOther,
         has_helper_worked_12_months: data.has_helper_worked_12_months,
@@ -497,7 +497,7 @@ const HelpersDetail = (props: Props) => {
             className={`flex w-full flex-col gap-4 ${isMobile ? '' : 'mt-6'}`}
           >
             <div
-              className={`text-lg font-bold underline ${isMobile ? 'mt-[28px]' : ''}`}
+              className={`text-base font-bold underline ${isMobile ? 'mt-[28px]' : ''}`}
             >
               Enter Personal Details
             </div>

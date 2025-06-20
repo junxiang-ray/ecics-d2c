@@ -203,7 +203,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         date_of_birth: personal_info?.date_of_birth ?? '',
         driving_experience: personal_info?.driving_experience ?? 0,
         name: data.name,
-        nric: data.nric,
+        nric: (data.nric as string)?.toUpperCase() ?? '',
         gender: data.gender,
         marital_status: data.maritalStatus,
         address: [data.address1, data.address2, data.address3],
@@ -213,7 +213,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         ...vehicle_info_selected,
         vehicle_number: data.vehicleNumber,
         engine_number: data.engineNumber,
-        chasis_number: data.chasisNumber,
+        chasis_number: data.chasisNumber.toUpperCase() ?? '',
       },
     };
 
