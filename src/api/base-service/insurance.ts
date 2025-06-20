@@ -7,8 +7,10 @@ import {
 
 import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
+  API_GET_HIRE_PURCHASE_LIST,
   API_GET_QUOTE_BY_KEY,
   API_GET_REQUEST_LOG,
+  API_POST_PAYMENT,
   API_POST_PERSONAL_INFO_SAVE,
   API_POST_ZIP_FILES_DOWNLOAD,
   API_SAVE_QUOTE,
@@ -43,13 +45,13 @@ export default {
     return baseClient.get<any>(`${API_GET_REQUEST_LOG}` + product_type);
   },
   getHirePurchaseList(product_type: string) {
-    return baseClient.get<any>('/companies/' + product_type);
+    return baseClient.get<any>(`${API_GET_HIRE_PURCHASE_LIST}` + product_type);
   },
   saveProposalFinalize(data: { key: string }) {
     return baseClient.post<any>('/car/proposal/finalize', data);
   },
   payment(data: { key: string }) {
-    return baseClient.post<any>('/payment', data);
+    return baseClient.post<any>(`${API_POST_PAYMENT}`, data);
   },
   postZipFilesDownload(data: { documents: string[] }) {
     return baseClient.post<Blob>(`${API_POST_ZIP_FILES_DOWNLOAD}`, data, {

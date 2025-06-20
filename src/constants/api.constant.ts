@@ -23,3 +23,7 @@ export const API_GET_PAYMENT_SUMMARY_DATA = '/payment-summary';
 export const API_POST_ZIP_FILES_DOWNLOAD = '/zip-files';
 
 export const API_GET_REQUEST_LOG = '/request-log/';
+
+export const API_GET_HIRE_PURCHASE_LIST = '/companies/';
+
+export const API_POST_PAYMENT = '/payment';
