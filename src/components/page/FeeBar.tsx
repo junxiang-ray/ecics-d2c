@@ -97,6 +97,7 @@ export function PricingSummary({
                   icon={<ArrowBackIcon size={16} />}
                   shape='circle'
                   className='mr-[6px] border-none bg-gray-200 pt-[6px]'
+                  disabled={loading}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleBack?.();
