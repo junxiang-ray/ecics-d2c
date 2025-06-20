@@ -18,6 +18,7 @@ interface InputFieldProps extends InputProps {
   applyPromoCode: string;
   setApplyPromoCode: (promoCode: string) => void;
   product_type: string;
+  isFormSubmitting?: boolean;
 }
 
 export interface PromoCodeModel {
@@ -30,6 +31,7 @@ export const PromoCodeField = ({
   applyPromoCode,
   setApplyPromoCode,
   product_type,
+  isFormSubmitting,
   ...props
 }: InputFieldProps) => {
   const { control, getValues, setValue } = useFormContext();
@@ -164,6 +166,7 @@ export const PromoCodeField = ({
             <SecondaryButton
               onClick={handleSubmitPromoCode}
               loading={isPending}
+              disabled={isPending || isFormSubmitting}
               className='ml-[16px] w-[150px] shadow-md shadow-gray-400'
             >
               Apply
