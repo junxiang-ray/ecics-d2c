@@ -31,6 +31,7 @@ import { UnableQuote } from '../basic-detail/modal/UnableQuote';
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
+  ProductType,
 } from '../basic-detail/options';
 
 const createSchema = (listNric: any[] | undefined) =>
@@ -463,6 +464,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           onClick={methods.handleSubmit(handleSubmit)}
           setIsShowPopupPremium={setIsShowPopupPremium}
           loading={isPending}
+          productType={ProductType.CAR}
         />
       </div>
       {showCSModal && (

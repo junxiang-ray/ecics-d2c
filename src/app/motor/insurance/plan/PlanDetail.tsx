@@ -151,7 +151,7 @@ function PlanDetail({
         textButton='Next'
         onClick={() => setShowConfirmDeclaration(true)}
         handleBack={handleBack}
-        productType={ProductType.MAID}
+        productType={ProductType.CAR}
         loading={isSaving}
         titlePlan={selectedPlan?.title}
         isPlan
