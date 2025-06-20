@@ -38,6 +38,8 @@ import { MAID_QUOTE } from '@/constants';
 import { GROUP_COUNTRY } from '@/constants/general.constant';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { ROUTES } from '@/constants/routes';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -125,6 +127,7 @@ const PolicyDetailForm = ({
   isLoading = false,
   ...props
 }: PolicyDetailProps) => {
+  const router = useRouterWithQuery();
   const [form] = Form.useForm();
   const searchParams = useSearchParams();
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
@@ -309,6 +312,10 @@ const PolicyDetailForm = ({
       },
     };
     onSubmit(payload);
+  };
+
+  const handleBackLogin = () => {
+    router.push(ROUTES.MAID.LOGIN);
   };
 
   return (
@@ -531,7 +538,7 @@ const PolicyDetailForm = ({
               className='border-none bg-gray-200 pt-[6px]'
               onClick={(e) => {
                 e.stopPropagation();
-                // handleBack?.();
+                handleBackLogin?.();
               }}
             />
             <PrimaryButton

@@ -33,6 +33,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
+import { ProductType } from '../basic-detail/options';
 
 export const mapIconToTypeAddOn = [
   {
@@ -504,6 +505,7 @@ function AddOnDetail({
             handleBack={handleBack}
             setIsShowPopupPremium={setIsShowPopupPremium}
             loading={isPending}
+            productType={ProductType.CAR}
           />
         </div>
       )}

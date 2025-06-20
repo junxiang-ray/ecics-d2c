@@ -27,6 +27,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { ProductType } from '../basic-detail/options';
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
@@ -555,6 +556,7 @@ export default function CompletePurchaseDetail({
           handleBack={handleBack}
           onClick={onPay}
           setIsShowPopupPremium={setIsShowPopupPremium}
+          productType={ProductType.CAR}
         />
         {isMobile ? (
           <Drawer
