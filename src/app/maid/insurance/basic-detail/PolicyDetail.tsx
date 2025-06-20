@@ -5,7 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
-import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
+import {
+  formatPromoCode,
+  generateKeyAndAttachToUrl,
+  normalizeFields,
+} from '@/libs/utils/utils';
 
 import { MAID_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
@@ -91,16 +95,21 @@ export const PolicyDetail = ({
     }
     if (isSingPassFlow && userInfo) {
       // data from Singpass
-      const personal_info = {
-        name: userInfo?.name,
-        gender: userInfo?.gender,
-        marital_status: userInfo?.marital_status,
-        date_of_birth: userInfo?.date_of_birth,
-        nric: userInfo?.nric,
-        address: userInfo?.address,
-        phone: userInfo?.phone,
-        email: userInfo?.email,
-      };
+      const personal_info = normalizeFields(
+        {
+          name: userInfo?.name,
+          gender: userInfo?.gender,
+          marital_status: userInfo?.marital_status,
+          date_of_birth: userInfo?.date_of_birth,
+          nric: userInfo?.nric,
+          address: userInfo?.address,
+          phone: userInfo?.phone,
+          email: String(userInfo?.email),
+        },
+        {
+          email: 'lower',
+        },
+      );
 
       payload = {
         ...payload,

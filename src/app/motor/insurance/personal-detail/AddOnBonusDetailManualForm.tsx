@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { normalizeFields } from '@/libs/utils/utils';
 import {
   sgCarRegNoValidator,
   validateNRIC,
@@ -18,7 +19,6 @@ import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -195,9 +195,8 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   } = methods;
 
   const handleSubmit = (data: FormData) => {
-    const transformedData: any = {
-      current_step: 3,
-      personal_info: {
+    const personalInfo = normalizeFields(
+      {
         ...personal_info,
         email: personal_info?.email ?? '',
         phone: personal_info?.phone ?? '',
@@ -210,6 +209,14 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         address: [data.address1, data.address2, data.address3],
         post_code: data.pinCode,
       },
+      {
+        email: 'lower',
+      },
+    );
+
+    const transformedData: any = {
+      current_step: 3,
+      personal_info: personalInfo,
       vehicle_info_selected: {
         ...vehicle_info_selected,
         vehicle_number: data.vehicleNumber,

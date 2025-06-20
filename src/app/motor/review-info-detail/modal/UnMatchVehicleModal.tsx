@@ -9,7 +9,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import { saveToSessionStorage } from '@/libs/utils/utils';
+import { normalizeFields, saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 import {
@@ -64,12 +64,8 @@ const UnMatchVehicleModal = ({
     const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
     const parsedSingpass = singpassDataRaw ? JSON.parse(singpassDataRaw) : {};
 
-    return {
-      key: `${uuid()}`,
-      is_sending_email: false,
-      promo_code: promoCode ?? '',
-      partner_code: partnerCode ?? '',
-      personal_info: {
+    const personal_info = normalizeFields(
+      {
         name: parsedData.name?.value || '',
         gender: parsedData.sex?.desc || '',
         marital_status: parsedData.marital?.desc || '',
@@ -89,8 +85,19 @@ const UnMatchVehicleModal = ({
               : `${drivingYears} years`
             : '1 year',
         phone: `${parsedData.mobileno?.nbr?.value || ''}`,
-        email: parsedData.email?.value || '',
+        email: String(parsedData.email?.value || ''),
       },
+      {
+        email: 'lower',
+      },
+    );
+
+    return {
+      key: `${uuid()}`,
+      is_sending_email: false,
+      promo_code: promoCode ?? '',
+      partner_code: partnerCode ?? '',
+      personal_info: personal_info,
       vehicle_info_selected: {
         vehicle_number: v[0]?.vehicleno?.value || '',
         first_registered_year:

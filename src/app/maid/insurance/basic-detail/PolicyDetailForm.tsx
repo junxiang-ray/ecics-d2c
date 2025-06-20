@@ -12,7 +12,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
-import { formatPromoCode } from '@/libs/utils/utils';
+import { formatPromoCode, normalizeFields } from '@/libs/utils/utils';
 
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
 import { DatePickerField } from '@/components/ui//form/datepicker';
@@ -34,7 +34,7 @@ import {
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
-import { MAID_QUOTE } from '@/constants';
+import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { GROUP_COUNTRY } from '@/constants/general.constant';
@@ -214,14 +214,18 @@ const PolicyDetailForm = ({
           vehicle_model: value[MAID_QUOTE.vehicle_model],
           first_registered_year: value[MAID_QUOTE.reg_yyyy] as string,
         };
-
-        personal_info = {
-          date_of_birth: dayjs(value[MAID_QUOTE.owner_dob] as Date).format(
-            'DD/MM/YYYY',
-          ),
-          phone: value[MAID_QUOTE.mobile],
-          email: value[MAID_QUOTE.email],
-        };
+        personal_info = normalizeFields(
+          {
+            date_of_birth: dayjs(value[MAID_QUOTE.owner_dob] as Date).format(
+              'DD/MM/YYYY',
+            ),
+            phone: value[MAID_QUOTE.mobile],
+            email: value[MAID_QUOTE.email],
+          },
+          {
+            email: 'lower',
+          },
+        );
       }
       const payload = {
         key: key,
@@ -288,10 +292,13 @@ const PolicyDetailForm = ({
       POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)
         ?.text || policyDuration;
     if (!isSingpassFlow) {
-      personal_info = {
+      const rawPersonalInfo = {
         phone: value[MAID_QUOTE.mobile],
         email: value[MAID_QUOTE.email],
       };
+      personal_info = normalizeFields(rawPersonalInfo, {
+        email: 'lower',
+      });
     }
 
     const payload = {

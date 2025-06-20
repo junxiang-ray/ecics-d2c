@@ -19,6 +19,7 @@ import {
 import {
   calculateAge,
   capitalizeWords,
+  normalizeFields,
   saveToSessionStorage,
 } from '@/libs/utils/utils';
 
@@ -210,12 +211,8 @@ const ReviewInfoDetail = () => {
         const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
         const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
-        const payload: SavePersonalInfoPayload = {
-          key: `${uuid()}`,
-          is_sending_email: false,
-          promo_code: promo_code || '',
-          partner_code: partner_code || '',
-          personal_info: {
+        const personal_info = normalizeFields(
+          {
             name: updatedParsed.name?.value || '',
             gender: updatedParsed.sex?.desc || '',
             marital_status: updatedParsed.marital?.desc || '',
@@ -234,9 +231,20 @@ const ReviewInfoDetail = () => {
                   ? '6 years and above'
                   : `${drivingYears} years`
                 : '1 year',
-            phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
-            email: updatedParsed.email?.value || '',
+            phone: updatedParsed.mobileno?.nbr?.value || '',
+            email: String(updatedParsed.email?.value || ''),
           },
+          {
+            email: 'lower',
+          },
+        );
+
+        const payload: SavePersonalInfoPayload = {
+          key: `${uuid()}`,
+          is_sending_email: false,
+          promo_code: promo_code || '',
+          partner_code: partner_code || '',
+          personal_info: personal_info,
           vehicle_info_selected,
           vehicles:
             updatedParsed.vehicles?.map((v: any) => ({

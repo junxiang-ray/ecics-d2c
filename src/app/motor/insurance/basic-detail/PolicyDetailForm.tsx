@@ -12,7 +12,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
-import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
+import {
+  calculateAge,
+  formatPromoCode,
+  normalizeFields,
+} from '@/libs/utils/utils';
 
 import { PricingSummary } from '@/components/page/FeeBar';
 import { DatePickerField } from '@/components/ui//form/datepicker';
@@ -354,7 +358,7 @@ const PolicyDetailForm = ({
           first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
         };
 
-        personal_info = {
+        const rawPersonalInfo = {
           date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
             'DD/MM/YYYY',
           ),
@@ -362,6 +366,10 @@ const PolicyDetailForm = ({
           phone: value[MOTOR_QUOTE.mobile],
           email: value[MOTOR_QUOTE.email],
         };
+
+        personal_info = normalizeFields(rawPersonalInfo, {
+          email: 'upper',
+        });
       }
 
       const payload = {
@@ -452,14 +460,19 @@ const PolicyDetailForm = ({
         first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
       };
 
-      personal_info = {
-        date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
-          'DD/MM/YYYY',
-        ),
-        driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
-        phone: value[MOTOR_QUOTE.mobile],
-        email: value[MOTOR_QUOTE.email],
-      };
+      personal_info = normalizeFields(
+        {
+          date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
+            'DD/MM/YYYY',
+          ),
+          driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
+          phone: value[MOTOR_QUOTE.mobile],
+          email: value[MOTOR_QUOTE.email],
+        },
+        {
+          email: 'lower',
+        },
+      );
     }
     const noOfClaim = value[MOTOR_QUOTE.owner_no_of_claims];
     const promoCode =

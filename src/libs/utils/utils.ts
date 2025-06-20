@@ -162,22 +162,23 @@ export const getPaymentType = (
   return undefined;
 };
 
-export function calculateFee(
-  option: AddonOption,
-  addonsAdded: Record<string, string>,
-): number {
-  if (
-    !option?.dependencies ||
-    option.dependencies.length === 0 ||
-    !addonsAdded ||
-    Object.keys(addonsAdded).length === 0
-  ) {
-    return option.premium_with_gst ?? 0;
+type Normalizer = 'upper' | 'lower' | ((val: any) => any);
+export function normalizeFields<T extends Record<string, any>>(
+  data: T,
+  fieldRules: Partial<Record<keyof T, Normalizer>>,
+): T {
+  const result = { ...data };
+
+  for (const key in fieldRules) {
+    const rule = fieldRules[key];
+    const value = result[key];
+
+    if (typeof value === 'string' && rule) {
+      if (rule === 'upper') result[key] = value.toUpperCase();
+      else if (rule === 'lower') result[key] = value.toLowerCase();
+      else if (typeof rule === 'function') result[key] = rule(value);
+    }
   }
-  const dependency = option.dependencies.find((dep) =>
-    dep.conditions.every(
-      (condition) => addonsAdded[condition.addon.code] === condition.value,
-    ),
-  );
-  return dependency?.premium_with_gst ?? 0;
+
+  return result;
 }
