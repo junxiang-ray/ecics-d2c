@@ -211,6 +211,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
       },
       {
         email: 'lower',
+        nric: 'upper',
       },
     );
 
