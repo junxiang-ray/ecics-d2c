@@ -10,11 +10,9 @@ import 'swiper/css/navigation';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
-import { formatCurrency } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
-import { PrimaryButton } from '@/components/ui/buttons';
+import { PricingSummary } from '@/components/page/FeeBar';
 
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -145,92 +143,20 @@ function PlanDetail({
           </div>
         </div>
       </div>
-
-      <div className='mt-4 w-full md:flex md:flex-row md:justify-center'>
-        <div className='fixed bottom-0 left-1/2 z-10 flex w-full -translate-x-1/2 transform justify-center border-[1px] border-gray-100 bg-white shadow-md shadow-gray-200'>
-          <div className='flex w-full items-center justify-between border-t-2 bg-white p-4 py-2 md:max-w-7xl md:border-none md:py-4'>
-            {isMobile ? (
-              <div className='flex w-full flex-col items-center gap-3'>
-                <div className='flex w-full items-center justify-between text-center'>
-                  <p className='mr-[4px] max-w-[150px] text-start text-[16px] font-semibold text-[#323743]'>
-                    {selectedPlan?.title}
-                  </p>
-                  {!!selectedPlan?.discount && (
-                    <span className='text-[14px] font-normal text-[#FF0004] line-through decoration-1 md:text-2xl md:text-[#EF0000]'>
-                      {formatCurrency(selectedPlan?.currentPrice)}
-                    </span>
-                  )}
-                  <div className='ml-[4px]'>
-                    <p className='text-[18px] font-bold text-[#1B223C]'>
-                      {formatCurrency(selectedPlan?.premium_with_gst)}
-                    </p>
-                    <p className='text-[12px] font-semibold text-[#323743]'>
-                      (inclusive of GST)
-                    </p>
-                  </div>
-                </div>
-                <div className='flex w-full items-center'>
-                  <Button
-                    color='cyan'
-                    icon={<ArrowBackIcon size={16} />}
-                    shape='circle'
-                    className='mr-[6px] border-none bg-gray-200 pt-[6px]'
-                    onClick={handleBack}
-                  />
-                  <PrimaryButton
-                    onClick={() => setShowConfirmDeclaration(true)}
-                    className='w-full bg-green-promo'
-                    disabled={!selectedPlan?.id}
-                    loading={isSaving}
-                  >
-                    Next
-                  </PrimaryButton>
-                </div>
-              </div>
-            ) : (
-              <div className='flex w-full items-center justify-between'>
-                <Button
-                  color='cyan'
-                  icon={<ArrowBackIcon size={16} />}
-                  shape='circle'
-                  className='border-none bg-gray-200 pt-[6px]'
-                  onClick={handleBack}
-                />
-                <div className='flex items-center gap-4 px-2'>
-                  <p className='text-lg font-semibold text-[#323743]'>
-                    {selectedPlan?.title}
-                  </p>
-                  {!!selectedPlan?.discount && (
-                    <span className='ps-4 text-[18px] font-normal text-[#FF0004] line-through decoration-1'>
-                      {formatCurrency(selectedPlan?.currentPrice)}
-                    </span>
-                  )}
-                  <div className='flex flex-col gap-1'>
-                    <p className='text-3xl font-bold text-[#1B223C]'>
-                      {formatCurrency(selectedPlan?.premium_with_gst)}
-                    </p>
-                    <p className='font-semibold text-[#323743]'>
-                      (inclusive of GST)
-                    </p>
-                  </div>
-                </div>
-                <PrimaryButton
-                  onClick={() => setShowConfirmDeclaration(true)}
-                  className={`w-40 ${
-                    !selectedPlan?.id
-                      ? 'cursor-not-allowed bg-gray-400 text-white'
-                      : 'bg-green-promo'
-                  }`}
-                  disabled={!selectedPlan?.id}
-                  loading={isSaving}
-                >
-                  Next
-                </PrimaryButton>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <PricingSummary
+        isBasicDetailScreen={false}
+        planFee={selectedPlan?.premium_with_gst ?? 0}
+        addonFee={0}
+        discount={selectedPlan?.discount ?? 0}
+        title={`${selectedPlan?.title}`}
+        textButton='Next'
+        onClick={() => setShowConfirmDeclaration(true)}
+        handleBack={handleBack}
+        productType={ProductType.MAID}
+        loading={isSaving}
+        titlePlan={selectedPlan?.title}
+        isPlan
+      />
 
       <SelfDeclarationConfirmModal
         visible={showConfirmDeclaration}

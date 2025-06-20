@@ -235,7 +235,7 @@ const ReviewInfoDetail = () => {
                   : `${drivingYears} years`
                 : '1 year',
             phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
-            email: updatedParsed.email?.value || '',
+            email: updatedParsed.email?.value?.toLowerCase() || '',
           },
           vehicle_info_selected,
           vehicles:

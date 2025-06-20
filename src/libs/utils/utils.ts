@@ -161,23 +161,3 @@ export const getPaymentType = (
   }
   return undefined;
 };
-
-export function calculateFee(
-  option: AddonOption,
-  addonsAdded: Record<string, string>,
-): number {
-  if (
-    !option?.dependencies ||
-    option.dependencies.length === 0 ||
-    !addonsAdded ||
-    Object.keys(addonsAdded).length === 0
-  ) {
-    return option.premium_with_gst ?? 0;
-  }
-  const dependency = option.dependencies.find((dep) =>
-    dep.conditions.every(
-      (condition) => addonsAdded[condition.addon.code] === condition.value,
-    ),
-  );
-  return dependency?.premium_with_gst ?? 0;
-}

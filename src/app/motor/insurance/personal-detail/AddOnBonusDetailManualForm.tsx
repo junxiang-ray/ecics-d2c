@@ -18,7 +18,6 @@ import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyRestrictedUser } from '@/hook/cms/verify';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -199,12 +198,12 @@ const AddOnBonusDetailManualForm = (props: Props) => {
       current_step: 3,
       personal_info: {
         ...personal_info,
-        email: personal_info?.email ?? '',
+        email: personal_info?.email?.toLowerCase() ?? '',
         phone: personal_info?.phone ?? '',
         date_of_birth: personal_info?.date_of_birth ?? '',
         driving_experience: personal_info?.driving_experience ?? 0,
         name: data.name,
-        nric: data.nric,
+        nric: (data.nric as string)?.toUpperCase() ?? '',
         gender: data.gender,
         marital_status: data.maritalStatus,
         address: [data.address1, data.address2, data.address3],
@@ -214,7 +213,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
         ...vehicle_info_selected,
         vehicle_number: data.vehicleNumber,
         engine_number: data.engineNumber,
-        chasis_number: data.chasisNumber,
+        chasis_number: data.chasisNumber.toUpperCase() ?? '',
       },
     };
 
@@ -429,19 +428,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
               </Form.Item>
             </div>
           </div>
-          <div className='mt-20 w-full bg-[#FFFEFF] md:mt-14'>
-            <PricingSummary
-              planFee={planFreeTotal}
-              addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
-              discount={quoteInfo?.promo_code?.discount || 0}
-              title='Premium breakdown'
-              textButton='Next'
-              handleBack={handleBack}
-              onClick={methods.handleSubmit(handleSubmit)}
-              setIsShowPopupPremium={setIsShowPopupPremium}
-              loading={isPending}
-            />
-          </div>
         </Form>
         <ModalPremium
           isShowPopupPremium={isShowPopupPremium}
@@ -464,6 +450,19 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           addonsIncluded={
             quoteInfo?.data?.review_info_premium?.add_ons_included_in_this_plan
           }
+        />
+      </div>
+      <div className='mt-20 w-full bg-[#FFFEFF] md:mt-14'>
+        <PricingSummary
+          planFee={planFreeTotal}
+          addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}
+          discount={quoteInfo?.promo_code?.discount || 0}
+          title='Premium breakdown'
+          textButton='Next'
+          handleBack={handleBack}
+          onClick={methods.handleSubmit(handleSubmit)}
+          setIsShowPopupPremium={setIsShowPopupPremium}
+          loading={isPending}
         />
       </div>
       {showCSModal && (

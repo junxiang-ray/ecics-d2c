@@ -114,7 +114,7 @@ export const PolicyDetail = ({
         address: userInfo?.address,
         driving_experience: userInfo?.driving_experience,
         phone: userInfo?.phone,
-        email: userInfo?.email,
+        email: userInfo?.email?.toLowerCase(),
       };
 
       payload = {
