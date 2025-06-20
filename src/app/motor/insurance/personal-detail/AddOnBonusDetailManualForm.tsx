@@ -31,6 +31,7 @@ import { UnableQuote } from '../basic-detail/modal/UnableQuote';
 import {
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
+  ProductType,
 } from '../basic-detail/options';
 
 const createSchema = (listNric: any[] | undefined) =>
@@ -211,9 +212,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
       },
       vehicle_info_selected: {
         ...vehicle_info_selected,
-        vehicle_number: data.vehicleNumber,
-        engine_number: data.engineNumber,
-        chasis_number: data.chasisNumber.toUpperCase() ?? '',
+        vehicle_number: data?.vehicleNumber?.toUpperCase() ?? '',
+        engine_number: data?.engineNumber?.toUpperCase() ?? '',
+        chasis_number: data?.chasisNumber?.toUpperCase() ?? '',
       },
     };
 
@@ -463,6 +464,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           onClick={methods.handleSubmit(handleSubmit)}
           setIsShowPopupPremium={setIsShowPopupPremium}
           loading={isPending}
+          productType={ProductType.CAR}
         />
       </div>
       {showCSModal && (

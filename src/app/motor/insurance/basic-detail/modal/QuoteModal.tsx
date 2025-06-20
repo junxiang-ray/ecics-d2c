@@ -63,6 +63,8 @@ export const QuoteModal = ({
           </a>
           <a
             href='mailto:customerservice@ecics.com.sg'
+            target='_blank'
+            rel='noopener noreferrer'
             className='flex w-[150px] flex-row items-center justify-center gap-1 rounded-lg bg-[#00ADEF] py-3 text-base font-normal text-white hover:opacity-90'
           >
             <MailIcon

@@ -776,6 +776,7 @@ const PolicyDetailForm = ({
           onClick={() => {
             form.submit();
           }}
+          productType={ProductType.CAR}
         />
       </div>
       <QuoteModal

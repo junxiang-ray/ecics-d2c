@@ -32,7 +32,7 @@ export function PricingSummary({
   loading?: boolean;
   onClick?: () => void;
   handleBack?: () => void;
-  productType?: ProductType;
+  productType: ProductType;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
   isPlan?: boolean;
   titlePlan?: string;
@@ -43,8 +43,7 @@ export function PricingSummary({
   const quoteInfo = useAppSelector((state) => state.quote?.quote);
   const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
 
-  const isMaid = productType === ProductType.MAID;
-  const currentQuote = isMaid ? maidQuote : quoteInfo;
+  const currentQuote = productType === ProductType.MAID ? maidQuote : quoteInfo;
   const selectedPlan = currentQuote?.data?.selected_plan;
 
   return (
@@ -64,13 +63,12 @@ export function PricingSummary({
                 >
                   <div>
                     <p className='max-w-[150px] text-[16px] font-bold text-[#080808]'>
-                      {isPlan ? title : selectedPlan} Plan
+                      {isPlan ? title : selectedPlan}{' '}
+                      {productType === ProductType.MAID && 'Plan'}
                     </p>
-                    {!isPlan && (
-                      <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
-                        {title}
-                      </p>
-                    )}
+                    <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
+                      {isPlan ? 'Premium breakdown' : title}
+                    </p>
                   </div>
                   <div className='flex flex-col gap-1'>
                     <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
@@ -131,18 +129,17 @@ export function PricingSummary({
               {!isBasicDetailScreen && (
                 <>
                   <div
-                    className='flex max-w-[574px] flex-row items-center sm:min-w-[300px]  md:gap-1 lg:min-w-[574px] lg:gap-28'
+                    className='flex flex-row items-center sm:min-w-[300px] md:gap-1 lg:min-w-[574px] lg:gap-28'
                     onClick={() => setIsShowPopupPremium?.(true)}
                   >
                     <div className='flex max-w-[246px] flex-col md:min-w-[246px]'>
                       <p className='text-[24px] font-bold leading-[35px] text-[#080808]'>
-                        {isPlan ? title : selectedPlan}
+                        {isPlan ? title : selectedPlan}{' '}
+                        {productType === ProductType.MAID && 'Plan'}
                       </p>
-                      {!isPlan && (
-                        <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
-                          {title}
-                        </p>
-                      )}
+                      <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
+                        {isPlan ? 'Premium breakdown' : title}
+                      </p>
                     </div>
                     <div className='flex flex-col'>
                       <div className='flex flex-row gap-2'>

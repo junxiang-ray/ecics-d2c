@@ -33,6 +33,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
+import { ProductType } from '../basic-detail/options';
 
 export const mapIconToTypeAddOn = [
   {
@@ -427,7 +428,7 @@ function AddOnDetail({
             Select Add-ons
           </p>
           <div className='flex flex-col items-center'>
-            <div className='mt-4 flex max-w-full flex-col gap-6 md:max-w-full lg:w-[950px] lg:gap-10'>
+            <div className='mt-4 flex w-full flex-col gap-6 lg:w-[950px] lg:gap-10'>
               {addonAdditionalDriver && (
                 <AddonAdditionalDriver
                   addon={addonAdditionalDriver}
@@ -504,6 +505,7 @@ function AddOnDetail({
             handleBack={handleBack}
             setIsShowPopupPremium={setIsShowPopupPremium}
             loading={isPending}
+            productType={ProductType.CAR}
           />
         </div>
       )}
