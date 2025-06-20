@@ -356,7 +356,7 @@ const HelpersDetail = (props: Props) => {
       maid_info: {
         ...maidInfo,
         name: data.nameHelper,
-        fin: data.fin,
+        fin: (data.fin as string)?.toUpperCase() ?? '',
         passport_number: (data.passport_number as string)?.toUpperCase() ?? '',
         company_name: companyNameText,
         company_name_other: maidCompanyNameOther,
