@@ -6,11 +6,13 @@ import { Quote } from '@/libs/types/quote';
 interface AppState {
   quote: Quote;
   promoCodeError: { message: string } | null;
+  isLoadingStep?: boolean;
 }
 
 const initialState: AppState = {
   quote: {} as Quote,
   promoCodeError: null,
+  isLoadingStep: false,
 };
 
 const appSlice = createSlice({
@@ -29,10 +31,14 @@ const appSlice = createSlice({
     ) {
       state.promoCodeError = action.payload;
     },
+    setIsLoadingStep(state, action: PayloadAction<boolean>) {
+      state.isLoadingStep = action.payload;
+    },
   },
 });
 
-export const { updateQuote, clearQuote, setPromoCodeError } = appSlice.actions;
+export const { updateQuote, clearQuote, setPromoCodeError, setIsLoadingStep } =
+  appSlice.actions;
 
 export const useAddNamedDriverInfo = () => {
   return useSelector(

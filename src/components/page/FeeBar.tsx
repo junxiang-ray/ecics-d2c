@@ -1,4 +1,5 @@
 import { Button } from 'antd';
+import { useEffect } from 'react';
 
 import { formatCurrency } from '@/libs/utils/utils';
 
@@ -7,7 +8,8 @@ import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useAppSelector } from '@/redux/store';
+import { setIsLoadingStep } from '@/redux/slices/quote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 export function PricingSummary({
   isBasicDetailScreen,
@@ -40,11 +42,18 @@ export function PricingSummary({
   const discountFee = planFee + addonFee;
   const notDiscountFee = planFee / (1 - discount / 100) + addonFee;
   const { isMobile } = useDeviceDetection();
+  const dispatch = useAppDispatch();
   const quoteInfo = useAppSelector((state) => state.quote?.quote);
   const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
 
   const currentQuote = productType === ProductType.MAID ? maidQuote : quoteInfo;
   const selectedPlan = currentQuote?.data?.selected_plan;
+
+  useEffect(() => {
+    if (!loading) {
+      dispatch(setIsLoadingStep(false));
+    }
+  }, [loading, dispatch]);
 
   return (
     <div
@@ -106,6 +115,7 @@ export function PricingSummary({
                 <PrimaryButton
                   onClick={(e) => {
                     e.stopPropagation();
+                    dispatch(setIsLoadingStep(true));
                     onClick && onClick();
                   }}
                   className='w-full bg-[#2ECC71] px-1 leading-4 text-white md:mt-5'
@@ -121,6 +131,7 @@ export function PricingSummary({
                 color='cyan'
                 icon={<ArrowBackIcon size={16} />}
                 shape='circle'
+                disabled={loading}
                 className='border-none bg-gray-200 pt-[6px]'
                 onClick={(e) => {
                   e.stopPropagation();
@@ -166,6 +177,7 @@ export function PricingSummary({
               <PrimaryButton
                 onClick={(e) => {
                   e.stopPropagation();
+                  dispatch(setIsLoadingStep(true));
                   onClick && onClick();
                 }}
                 className={`bg-[#2ECC71] px-1 leading-4 text-white md:w-40 ${isBasicDetailScreen ? 'md:mb-2.5 md:mt-2.5' : 'md:mt-5'}`}

@@ -9,6 +9,7 @@ import { InsuranceLayoutContext } from '@/components/contexts/InsuranceLayoutCon
 import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 import ProcessBar from '@/components/ProcessBar';
 
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
@@ -16,7 +17,6 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 export type ProcessBarType = StepProcessBar | undefined;
 
@@ -50,6 +50,7 @@ function InsuranceLayout({
   const isFinalized = useAppSelector(
     (state) => state.quote.quote?.is_finalized,
   );
+  const isLoadingStep = useAppSelector((state) => state.quote.isLoadingStep);
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
 
   const getStepFromRoute = (route: string): ProcessBarType => {
@@ -162,6 +163,7 @@ function InsuranceLayout({
                   onChange={handleChangeStep}
                   companyName={partnerInfo?.partner_name}
                   isFinalized={isFinalized}
+                  isLoading={isLoadingStep}
                   productType={productType}
                 />
               </div>

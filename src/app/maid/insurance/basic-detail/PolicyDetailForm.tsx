@@ -537,6 +537,7 @@ const PolicyDetailForm = ({
               icon={<ArrowBackIcon size={16} />}
               shape='circle'
               className='border-none bg-gray-200 pt-[6px]'
+              disabled={isLoading}
               onClick={(e) => {
                 e.stopPropagation();
                 handleBackLogin?.();

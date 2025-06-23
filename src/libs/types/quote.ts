@@ -17,6 +17,7 @@ export interface Quote {
   data: QuoteData;
   partner_code: string;
   is_finalized: boolean;
+  is_loading?: boolean;
   is_paid: boolean;
   is_sending_email: boolean;
   expiration_date: string; // ISO string date
