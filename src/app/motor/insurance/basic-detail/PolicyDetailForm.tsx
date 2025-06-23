@@ -418,7 +418,6 @@ const PolicyDetailForm = ({
           placeholder='Select name of finance company'
           options={hirePurchaseOptions}
           showSearch
-          isFadeText
         />
       </Form.Item>
 
