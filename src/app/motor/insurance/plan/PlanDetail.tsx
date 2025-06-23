@@ -2,7 +2,6 @@
 
 // import HeaderVehicleInfo from './components/HeaderVehicleInfo';
 // import HeaderVehicleInfoMobile from './components/HeaderVehicleInfoMobile';
-import { Button } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import 'swiper/css';
@@ -12,10 +11,10 @@ import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
+import { PricingSummary } from '@/components/page/FeeBar';
 
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -23,7 +22,6 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';
 import { ProductType } from '../basic-detail/options';
-import { PricingSummary } from '@/components/page/FeeBar';
 
 export interface FormatPlan extends Plan {
   discount: number;
@@ -42,7 +40,6 @@ function PlanDetail({
 
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
-  const { isMobile } = useDeviceDetection();
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
 

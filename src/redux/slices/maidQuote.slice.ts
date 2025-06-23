@@ -4,12 +4,10 @@ import { MaidQuote } from '@/libs/types/maidQuote';
 
 interface AppState {
   maidQuote: MaidQuote;
-  promoCodeError: { message: string } | null;
 }
 
 const initialState: AppState = {
   maidQuote: {} as MaidQuote,
-  promoCodeError: null,
 };
 
 const appSlice = createSlice({
@@ -21,12 +19,6 @@ const appSlice = createSlice({
     },
     clearMaidQuote(state) {
       state.maidQuote = {} as MaidQuote;
-    },
-    setPromoCodeError(
-      state,
-      action: PayloadAction<{ message: string } | null>,
-    ) {
-      state.promoCodeError = action.payload;
     },
   },
 });

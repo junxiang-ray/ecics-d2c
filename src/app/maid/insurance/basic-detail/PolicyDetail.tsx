@@ -11,8 +11,8 @@ import { MAID_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { useGenerateMaidQuote } from '@/hook/insurance/maidQuote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { setPromoCodeError } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PolicyDetailForm from './PolicyDetailForm';
