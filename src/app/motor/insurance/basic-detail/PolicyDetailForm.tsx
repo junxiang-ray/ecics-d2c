@@ -564,6 +564,13 @@ const PolicyDetailForm = ({
                               e.preventDefault();
                             }
                           }}
+                          onPaste={(e) => {
+                            e.preventDefault();
+                            const pastedText = e.clipboardData
+                              .getData('text')
+                              .trim();
+                            methods.setValue(MOTOR_QUOTE.email, pastedText);
+                          }}
                         />
                       </Form.Item>
 
