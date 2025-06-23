@@ -36,10 +36,10 @@ import {
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { MAID_QUOTE } from '@/constants';
 import { GROUP_COUNTRY } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -50,9 +50,15 @@ const singpassFlowFields = {
       required_error: 'This field is required',
       invalid_type_error: 'This field is required',
     })
-    .refine((date) => dayjs(date).isSameOrAfter(dayjs(), 'day'), {
-      message: 'Start date cannot be earlier than today',
-    }),
+    .refine(
+      (date) => {
+        const todayPlus5 = dayjs().add(5, 'day').startOf('day');
+        return dayjs(date).isSameOrAfter(todayPlus5, 'day');
+      },
+      {
+        message: 'Start date must be at least 5 days from today',
+      },
+    ),
   [MAID_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
