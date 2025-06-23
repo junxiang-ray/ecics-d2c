@@ -36,10 +36,10 @@ import {
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { MAID_QUOTE } from '@/constants';
 import { GROUP_COUNTRY } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -50,9 +50,15 @@ const singpassFlowFields = {
       required_error: 'This field is required',
       invalid_type_error: 'This field is required',
     })
-    .refine((date) => dayjs(date).isSameOrAfter(dayjs(), 'day'), {
-      message: 'Start date cannot be earlier than today',
-    }),
+    .refine(
+      (date) => {
+        const todayPlus5 = dayjs().add(5, 'day').startOf('day');
+        return dayjs(date).isSameOrAfter(todayPlus5, 'day');
+      },
+      {
+        message: 'Start date must be at least 5 days from today',
+      },
+    ),
   [MAID_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
@@ -185,20 +191,13 @@ const PolicyDetailForm = ({
   const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
   const maxDob = useMemo(() => dayjs(), []);
 
-  const minPolicyStartDate = dayjs().add(5, 'day');
-  const maxPolicyStartDate = dayjs().add(26, 'month');
+  const minPolicyStartDate = useMemo(() => {
+    return dayjs().add(5, 'day');
+  }, []);
 
-  useEffect(() => {
-    const startDate = methods.getValues(MAID_QUOTE.start_date);
-    if (startDate && dayjs(startDate).isBefore(minPolicyStartDate, 'day')) {
-      methods.setValue(MAID_QUOTE.start_date, undefined, {
-        shouldValidate: true,
-      });
-      methods.setValue(MAID_QUOTE.end_date, undefined, {
-        shouldValidate: true,
-      });
-    }
-  }, [minPolicyStartDate, methods]);
+  const maxPolicyStartDate = useMemo(() => {
+    return dayjs().add(26, 'month');
+  }, []);
 
   useEffect(() => {
     if (helperType === HelperTypeValue.NEW_MAID) {
