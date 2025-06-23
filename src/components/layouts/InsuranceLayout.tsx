@@ -47,10 +47,13 @@ function InsuranceLayout({
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
-  const isFinalized = useAppSelector(
-    (state) => state.quote.quote?.is_finalized,
+  const isMaid = productType === ProductType.MAID;
+  const isFinalized = useAppSelector((state) =>
+    isMaid
+      ? state.maidQuote?.maidQuote?.is_finalized
+      : state.quote.quote?.is_finalized,
   );
-  const isLoadingStep = useAppSelector((state) => state.quote.isLoadingStep);
+  const isLoadingStep = useAppSelector((state) => state.general.isLoadingStep);
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
 
   const getStepFromRoute = (route: string): ProcessBarType => {
