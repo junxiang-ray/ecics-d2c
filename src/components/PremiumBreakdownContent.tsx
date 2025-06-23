@@ -108,7 +108,9 @@ const PremiumBreakdownContent = ({
                     >
                       <div className='flex items-center gap-2'>
                         <div className='h-[4px] w-[4px] rounded-full bg-[#303030]'></div>
-                        <p>{driver.name}</p>
+                        <p className='max-w-[220px] break-words text-justify'>
+                          {driver.name}
+                        </p>
                       </div>
                       <p>
                         {index === 0

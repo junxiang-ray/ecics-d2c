@@ -13,7 +13,6 @@ import { PricingSummary } from '@/components/page/FeeBar';
 import AddOnRow from '@/components/page/insurance/add-on/AddOnRow';
 import AddOnRowDetail from '@/components/page/insurance/add-on/AddOnRowDetail';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
-import TruncateText from '@/components/page/insurance/add-on/TruncateText ';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
