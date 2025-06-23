@@ -185,13 +185,20 @@ const PolicyDetailForm = ({
   const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
   const maxDob = useMemo(() => dayjs(), []);
 
-  const minPolicyStartDate = useMemo(() => {
-    return dayjs().add(5, 'day');
-  }, []);
+  const minPolicyStartDate = dayjs().add(5, 'day');
+  const maxPolicyStartDate = dayjs().add(26, 'month');
 
-  const maxPolicyStartDate = useMemo(() => {
-    return dayjs().add(26, 'month');
-  }, []);
+  useEffect(() => {
+    const startDate = methods.getValues(MAID_QUOTE.start_date);
+    if (startDate && dayjs(startDate).isBefore(minPolicyStartDate, 'day')) {
+      methods.setValue(MAID_QUOTE.start_date, undefined, {
+        shouldValidate: true,
+      });
+      methods.setValue(MAID_QUOTE.end_date, undefined, {
+        shouldValidate: true,
+      });
+    }
+  }, [minPolicyStartDate, methods]);
 
   useEffect(() => {
     if (helperType === HelperTypeValue.NEW_MAID) {
