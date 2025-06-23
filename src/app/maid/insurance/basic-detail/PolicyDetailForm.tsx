@@ -161,9 +161,8 @@ const PolicyDetailForm = ({
 
   const {
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = methods;
-
   // input field change
   const start_date = watch(MAID_QUOTE.start_date) as Date;
   const maid_dob = watch(MAID_QUOTE.maid_dob) as Date;
@@ -291,6 +290,10 @@ const PolicyDetailForm = ({
   };
 
   const handleSubmit = (value: FormData) => {
+    if (!isDirty) {
+      router.push(ROUTES.INSURANCE_MAID.PLAN);
+      return;
+    }
     let personal_info;
     const planPeriodText =
       POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)
