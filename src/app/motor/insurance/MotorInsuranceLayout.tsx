@@ -1,8 +1,16 @@
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
 import InsuranceLayout from '@/components/layouts/InsuranceLayout';
 
 import { ROUTES } from '@/constants/routes';
+import { setIsSingpassFlow } from '@/redux/slices/general.slice';
+import { useAppDispatch } from '@/redux/store';
+
 import { ProductType } from './basic-detail/options';
 
 const motorSteps = {
@@ -12,6 +20,7 @@ const motorSteps = {
   [StepProcessBar.PERSONAL_DETAIL]: ROUTES.INSURANCE.PERSONAL_DETAIL,
   [StepProcessBar.COMPLETE_PURCHASE]: ROUTES.INSURANCE.COMPLETE_PURCHASE,
 };
+
 type OnSaveHandler = (fn: () => any) => void;
 
 type MotorInsuranceLayoutProps = {
@@ -21,6 +30,16 @@ type MotorInsuranceLayoutProps = {
 export default function MotorInsuranceLayout({
   children,
 }: MotorInsuranceLayoutProps) {
+  const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
+
+  const manual = searchParams.get('manual') || '';
+  const isManual = manual === 'true';
+
+  useEffect(() => {
+    dispatch(setIsSingpassFlow(!isManual));
+  }, [manual, dispatch]);
+
   return (
     <InsuranceLayout
       stepToRoute={motorSteps}

@@ -1,4 +1,5 @@
 import { Button } from 'antd';
+import { useEffect } from 'react';
 
 import { formatCurrency } from '@/libs/utils/utils';
 
@@ -7,7 +8,8 @@ import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useAppSelector } from '@/redux/store';
+import { setIsLoadingStep } from '@/redux/slices/general.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 export function PricingSummary({
   isBasicDetailScreen,
@@ -40,11 +42,18 @@ export function PricingSummary({
   const discountFee = planFee + addonFee;
   const notDiscountFee = planFee / (1 - discount / 100) + addonFee;
   const { isMobile } = useDeviceDetection();
+  const dispatch = useAppDispatch();
   const quoteInfo = useAppSelector((state) => state.quote?.quote);
   const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
 
   const currentQuote = productType === ProductType.MAID ? maidQuote : quoteInfo;
   const selectedPlan = currentQuote?.data?.selected_plan;
+
+  useEffect(() => {
+    if (!loading) {
+      dispatch(setIsLoadingStep(false));
+    }
+  }, [loading, dispatch]);
 
   return (
     <div
@@ -66,9 +75,11 @@ export function PricingSummary({
                       {isPlan ? title : selectedPlan}{' '}
                       {productType === ProductType.MAID && 'Plan'}
                     </p>
-                    <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
-                      {isPlan ? 'Premium breakdown' : title}
-                    </p>
+                    {!isPlan && (
+                      <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
+                        {title}
+                      </p>
+                    )}
                   </div>
                   <div className='flex flex-col gap-1'>
                     <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
@@ -97,6 +108,7 @@ export function PricingSummary({
                   icon={<ArrowBackIcon size={16} />}
                   shape='circle'
                   className='mr-[6px] border-none bg-gray-200 pt-[6px]'
+                  disabled={loading}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleBack?.();
@@ -105,6 +117,7 @@ export function PricingSummary({
                 <PrimaryButton
                   onClick={(e) => {
                     e.stopPropagation();
+                    dispatch(setIsLoadingStep(true));
                     onClick && onClick();
                   }}
                   className='w-full bg-[#2ECC71] px-1 leading-4 text-white md:mt-5'
@@ -120,6 +133,7 @@ export function PricingSummary({
                 color='cyan'
                 icon={<ArrowBackIcon size={16} />}
                 shape='circle'
+                disabled={loading}
                 className='border-none bg-gray-200 pt-[6px]'
                 onClick={(e) => {
                   e.stopPropagation();
@@ -137,9 +151,11 @@ export function PricingSummary({
                         {isPlan ? title : selectedPlan}{' '}
                         {productType === ProductType.MAID && 'Plan'}
                       </p>
-                      <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
-                        {isPlan ? 'Premium breakdown' : title}
-                      </p>
+                      {!isPlan && (
+                        <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
+                          {title}
+                        </p>
+                      )}
                     </div>
                     <div className='flex flex-col'>
                       <div className='flex flex-row gap-2'>
@@ -165,6 +181,7 @@ export function PricingSummary({
               <PrimaryButton
                 onClick={(e) => {
                   e.stopPropagation();
+                  dispatch(setIsLoadingStep(true));
                   onClick && onClick();
                 }}
                 className={`bg-[#2ECC71] px-1 leading-4 text-white md:w-40 ${isBasicDetailScreen ? 'md:mb-2.5 md:mt-2.5' : 'md:mt-5'}`}

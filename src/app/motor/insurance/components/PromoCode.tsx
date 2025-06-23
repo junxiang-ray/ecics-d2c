@@ -10,7 +10,7 @@ import { SecondaryButton } from '@/components/ui/buttons';
 import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
-import { setPromoCodeError } from '@/redux/slices/quote.slice';
+import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 interface InputFieldProps extends InputProps {
@@ -39,7 +39,9 @@ export const PromoCodeField = ({
     useVerifyPromoCode(product_type);
   const [promoInfoSelected, setPromoInfoSelected] =
     useState<PromoCodeResponse | null>(null);
-  const promoCodeError = useAppSelector((state) => state.quote.promoCodeError);
+  const promoCodeError = useAppSelector(
+    (state) => state.general.promoCodeError,
+  );
   const dispatch = useAppDispatch();
 
   const isPromoCodeNotApplicable =

@@ -98,7 +98,11 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 {isExpanded && !isFinalized && (
                   <div className='gap flex flex-row items-center'>
                     <p
-                      className='mr-2 font-bold text-[#00ADEF]'
+                      className={`mr-2 font-bold ${
+                        isPendingSave || isPendingPay
+                          ? 'cursor-not-allowed text-gray-400'
+                          : 'cursor-pointer text-[#00ADEF]'
+                      }`}
                       onClick={() => {
                         if (!isPendingSave && !isPendingPay) {
                           handleEditClick();

@@ -27,19 +27,15 @@ import {
 import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
 import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useAppSelector } from '@/redux/store';
 
 export default function Summary() {
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const key = searchParams.get('key') || '';
-
-  const handleGoPersonal = () => {
-    window.open(
-      'https://www.ecics.com/product-listing/personal',
-      '_blank',
-      'noopener,noreferrer',
-    );
-  };
+  const isSingpassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
 
   const { data: quote, isLoading } = useGetQuote(key);
 
@@ -431,12 +427,16 @@ export default function Summary() {
                     quote?.data?.vehicle_info_selected?.first_registered_year ||
                     'N/A',
                 },
-                {
-                  label: 'Years of Manufacture',
-                  value:
-                    quote?.data?.vehicle_info_selected?.year_of_manufacture ||
-                    'N/A',
-                },
+                ...(isSingpassFlow
+                  ? [
+                      {
+                        label: 'Years of Manufacture',
+                        value:
+                          quote?.data?.vehicle_info_selected
+                            ?.year_of_manufacture || 'N/A',
+                      },
+                    ]
+                  : []),
                 {
                   label: 'Engine Number',
                   value:
@@ -447,17 +447,22 @@ export default function Summary() {
                   value:
                     quote?.data?.vehicle_info_selected?.chasis_number || 'N/A',
                 },
-                {
-                  label: 'Engine Capacity',
-                  value:
-                    quote?.data?.vehicle_info_selected?.engine_capacity ||
-                    'N/A',
-                },
-                {
-                  label: 'Power Rate',
-                  value:
-                    quote?.data?.vehicle_info_selected?.power_rate || 'N/A',
-                },
+                ...(isSingpassFlow
+                  ? [
+                      {
+                        label: 'Engine Capacity',
+                        value:
+                          quote?.data?.vehicle_info_selected?.engine_capacity ||
+                          'N/A',
+                      },
+                      {
+                        label: 'Power Rate',
+                        value:
+                          quote?.data?.vehicle_info_selected?.power_rate ||
+                          'N/A',
+                      },
+                    ]
+                  : []),
               ]}
             />
             <InfoCard

@@ -480,6 +480,8 @@ export default function CompletePurchaseDetail({
                     isExpanded={true}
                     setShowModal={setShowModal}
                     editRoute={ROUTES.INSURANCE.ADD_ON}
+                    isPendingSave={isPendingSave}
+                    isPendingPay={isPendingPay}
                   />
                 ));
               }
@@ -504,6 +506,8 @@ export default function CompletePurchaseDetail({
                       sectionKey='policy_plan'
                       setShowModal={setShowModal}
                       editRoute={routerBySectionKey('policy_plan')}
+                      isPendingSave={isPendingSave}
+                      isPendingPay={isPendingPay}
                     />
                     <ReviewSection
                       key='addons'
@@ -514,6 +518,8 @@ export default function CompletePurchaseDetail({
                       sectionKey='addons'
                       setShowModal={setShowModal}
                       editRoute={routerBySectionKey('addons')}
+                      isPendingSave={isPendingSave}
+                      isPendingPay={isPendingPay}
                     />
                   </div>
                 );
@@ -539,6 +545,8 @@ export default function CompletePurchaseDetail({
                   sectionKey={section.key}
                   setShowModal={setShowModal}
                   editRoute={routerBySectionKey(section.key)}
+                  isPendingSave={isPendingSave}
+                  isPendingPay={isPendingPay}
                 />
               );
             })}

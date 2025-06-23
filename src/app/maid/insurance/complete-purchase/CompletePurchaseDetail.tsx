@@ -407,6 +407,8 @@ export default function CompletePurchaseDetail({
                       sectionKey='policy_plan'
                       setShowModal={setShowModal}
                       editRoute={routerBySectionKey('policy_plan')}
+                      isPendingSave={isPendingSave}
+                      isPendingPay={isPendingPay}
                     />
                     <ReviewSection
                       productType={ProductType.MAID}
@@ -417,6 +419,8 @@ export default function CompletePurchaseDetail({
                       sectionKey='addons'
                       setShowModal={setShowModal}
                       editRoute={routerBySectionKey('addons')}
+                      isPendingSave={isPendingSave}
+                      isPendingPay={isPendingPay}
                     />
                   </div>
                 );
@@ -441,6 +445,8 @@ export default function CompletePurchaseDetail({
                   sectionKey={section.key}
                   setShowModal={setShowModal}
                   editRoute={routerBySectionKey(section.key)}
+                  isPendingSave={isPendingSave}
+                  isPendingPay={isPendingPay}
                 />
               );
             })}

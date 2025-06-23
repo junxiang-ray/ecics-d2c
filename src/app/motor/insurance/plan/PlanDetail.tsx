@@ -15,7 +15,6 @@ import { PricingSummary } from '@/components/page/FeeBar';
 
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -41,7 +40,6 @@ function PlanDetail({
 
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
-  const { isMobile } = useDeviceDetection();
   const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
 

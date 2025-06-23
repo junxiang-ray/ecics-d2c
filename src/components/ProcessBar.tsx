@@ -8,14 +8,15 @@ import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
 import { ProcessBarType } from '@/components/layouts/InsuranceLayout';
 
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 interface ProcessBarProps {
   currentStep: ProcessBarType;
   onChange?: (current: number) => void;
   companyName?: string;
   isFinalized?: boolean;
+  isLoading?: boolean;
   productType: string;
 }
 
@@ -47,6 +48,7 @@ export default function ProcessBar({
   onChange,
   companyName,
   isFinalized,
+  isLoading,
   productType,
 }: ProcessBarProps) {
   const searchParams = useSearchParams();
@@ -85,7 +87,7 @@ export default function ProcessBar({
           </p>
         ),
         status: stepStatus,
-        disabled: stepStatus === 'wait' || isFinalized,
+        disabled: stepStatus === 'wait' || isFinalized || isLoading,
         icon: (
           <div
             className={`custom-step-wait bg-red-500${

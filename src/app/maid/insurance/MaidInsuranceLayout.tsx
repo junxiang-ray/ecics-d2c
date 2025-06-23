@@ -1,9 +1,14 @@
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+
 import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
 import InsuranceLayout from '@/components/layouts/InsuranceLayout';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
+import { setIsSingpassFlow } from '@/redux/slices/general.slice';
+import { useAppDispatch } from '@/redux/store';
 
 const maidSteps = {
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE_MAID.BASIC_DETAIL,
@@ -21,6 +26,16 @@ type MaidInsuranceLayoutProps = {
 export default function MaidInsuranceLayout({
   children,
 }: MaidInsuranceLayoutProps) {
+  const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
+
+  const manual = searchParams.get('manual') || '';
+  const isManual = manual === 'true';
+
+  useEffect(() => {
+    dispatch(setIsSingpassFlow(!isManual));
+  }, [manual, dispatch]);
+
   return (
     <InsuranceLayout
       stepToRoute={maidSteps}

@@ -78,18 +78,8 @@ function PlanCardMobile({
             ))}
             <div className='relative z-0 mt-6 overflow-hidden rounded-xl bg-review-blue'>
               <div className='pointer-events-none absolute inset-0 z-0 rounded-xl border border-secondaryBlue' />
-              <div
-                className={clsx(
-                  'absolute -left-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue',
-                  active ? 'bg-plan-blue' : 'bg-white',
-                )}
-              />
-              <div
-                className={clsx(
-                  'absolute -right-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue',
-                  active ? 'bg-plan-blue' : 'bg-white',
-                )}
-              />
+              <div className='absolute -left-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue bg-white' />
+              <div className='absolute -right-3 top-1/2 h-[1rem] w-5 -translate-y-1/2 rounded-md border border-secondaryBlue bg-white' />
               {plan.discount ? (
                 <>
                   <div className='flex items-center p-4 pb-2'>
