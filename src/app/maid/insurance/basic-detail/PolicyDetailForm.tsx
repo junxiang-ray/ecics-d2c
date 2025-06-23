@@ -359,11 +359,6 @@ const PolicyDetailForm = ({
                             label='Email Address'
                             placeholder='Enter Your Email Address'
                             isRequired={true}
-                            onKeyDown={(e) => {
-                              if (e.key === ' ') {
-                                e.preventDefault();
-                              }
-                            }}
                           />
                         </Form.Item>
 
