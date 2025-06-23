@@ -66,9 +66,11 @@ export function PricingSummary({
                       {isPlan ? title : selectedPlan}{' '}
                       {productType === ProductType.MAID && 'Plan'}
                     </p>
-                    <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
-                      {isPlan ? 'Premium breakdown' : title}
-                    </p>
+                    {!isPlan && (
+                      <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
+                        {title}
+                      </p>
+                    )}
                   </div>
                   <div className='flex flex-col gap-1'>
                     <p className='flex flex-row gap-1 text-lg font-semibold leading-6 text-[#323743] md:flex-row md:gap-2 md:text-3xl md:font-bold md:text-[#1B223C]'>
@@ -138,9 +140,11 @@ export function PricingSummary({
                         {isPlan ? title : selectedPlan}{' '}
                         {productType === ProductType.MAID && 'Plan'}
                       </p>
-                      <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
-                        {isPlan ? 'Premium breakdown' : title}
-                      </p>
+                      {!isPlan && (
+                        <p className='text-[12px] font-semibold leading-[26px] text-[#00ADEF] underline'>
+                          {title}
+                        </p>
+                      )}
                     </div>
                     <div className='flex flex-col'>
                       <div className='flex flex-row gap-2'>
