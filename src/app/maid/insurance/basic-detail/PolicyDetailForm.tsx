@@ -353,18 +353,6 @@ const PolicyDetailForm = ({
                             label='Email Address'
                             placeholder='Enter Your Email Address'
                             isRequired={true}
-                            onKeyDown={(e) => {
-                              if (e.key === ' ') {
-                                e.preventDefault();
-                              }
-                            }}
-                            onPaste={(e) => {
-                              e.preventDefault();
-                              const pastedText = e.clipboardData
-                                .getData('text')
-                                .trim();
-                              methods.setValue(MAID_QUOTE.email, pastedText);
-                            }}
                           />
                         </Form.Item>
 

@@ -559,18 +559,6 @@ const PolicyDetailForm = ({
                           label='Email Address'
                           isRequired
                           placeholder='Enter your email address'
-                          onKeyDown={(e) => {
-                            if (e.key === ' ') {
-                              e.preventDefault();
-                            }
-                          }}
-                          onPaste={(e) => {
-                            e.preventDefault();
-                            const pastedText = e.clipboardData
-                              .getData('text')
-                              .trim();
-                            methods.setValue(MOTOR_QUOTE.email, pastedText);
-                          }}
                         />
                       </Form.Item>
 
