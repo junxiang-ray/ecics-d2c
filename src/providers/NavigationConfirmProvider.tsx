@@ -24,7 +24,12 @@ export function NavigationConfirmProvider() {
 
   const handleLeave = () => {
     setIsModalVisible(false);
-    router.push('/');
+    const basePath = pathName.startsWith('/maid')
+      ? '/maid'
+      : pathName.startsWith('/motor')
+        ? '/motor'
+        : '/';
+    router.push(basePath);
   };
 
   const handleStay = () => {
@@ -37,7 +42,7 @@ export function NavigationConfirmProvider() {
     <Modal
       open={isModalVisible}
       closable={false}
-      mask={false}
+      mask={true}
       footer={
         <div className='grid grid-cols-2 gap-2'>
           <Button danger style={{ width: '100%' }} onClick={handleLeave}>
@@ -50,16 +55,16 @@ export function NavigationConfirmProvider() {
       }
       style={{
         position: 'fixed',
-        top: 0,
+        top: '50%',
         left: '50%',
-        transform: 'translateX(-50%)',
+        transform: 'translate(-50%, -50%)',
         margin: 0,
-        padding: '12px 24px',
+        padding: '10px 24px',
         width: '100%',
         maxWidth: 500,
       }}
       bodyStyle={{
-        padding: '16px',
+        paddingBottom: '24px',
       }}
     >
       <p className='text-lg font-semibold'>Do you want to leave this site?</p>
