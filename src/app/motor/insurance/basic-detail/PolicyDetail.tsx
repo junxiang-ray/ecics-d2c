@@ -15,9 +15,9 @@ import { ROUTES } from '@/constants/routes';
 import {
   useGenerateQuote,
   useGetHirePurchaseList,
-  useGetQuote,
 } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -96,6 +96,7 @@ export const PolicyDetail = ({
   }, []);
 
   const onSubmit: SubmitHandler<FormData> = async (data: any) => {
+    dispatch(setPromoCodeError(null));
     let payload: any;
     const updateLoadVehicle = {
       ...selectedVehicle,
@@ -114,7 +115,7 @@ export const PolicyDetail = ({
         address: userInfo?.address,
         driving_experience: userInfo?.driving_experience,
         phone: userInfo?.phone,
-        email: userInfo?.email,
+        email: userInfo?.email?.toLowerCase(),
       };
 
       payload = {
@@ -123,12 +124,20 @@ export const PolicyDetail = ({
         vehicle_info_selected: selectedVehicle,
       };
     }
-    generateQuote(payload).then((res) => {
-      if (res) {
-        dispatch(updateQuote(res));
-      }
-      router.push(ROUTES.INSURANCE.PLAN);
-    });
+    generateQuote(payload)
+      .then((res) => {
+        if (res) {
+          dispatch(updateQuote(res));
+          router.push(ROUTES.INSURANCE.PLAN);
+        }
+      })
+      .catch((err) => {
+        if (err?.response?.status === 422) {
+          dispatch(setPromoCodeError(err.response.data));
+        } else {
+          console.error('Unexpected error:', err);
+        }
+      });
   };
 
   return (

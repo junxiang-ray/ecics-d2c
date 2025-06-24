@@ -31,12 +31,17 @@ export const PrimaryButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
 );
 
 export const SecondaryButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
-  ({ className, children, htmlType = 'button', ...rest }, ref) => {
+  ({ className, children, htmlType = 'button', danger, ...rest }, ref) => {
+    const baseClass = 'px-3 text-base font-semibold';
+    const colorClass = danger
+      ? 'text-[#FD1212] border-[#FD1212] hover:bg-red-50'
+      : 'text-blue-400 border-blue-400 hover:bg-blue-50';
+
     return (
       <Button
         type='default'
         size='large'
-        className={`${className} border-blue-400 px-3 text-base font-semibold text-blue-400 hover:bg-blue-50`}
+        className={`${baseClass} ${colorClass} ${className}`}
         ref={ref}
         htmlType={htmlType}
         {...rest}

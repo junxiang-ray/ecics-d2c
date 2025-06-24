@@ -53,7 +53,7 @@ function PlanCardDesktop({
 
                   {isRecommended && (
                     <div className='rounded-md bg-white px-2 py-1 text-xs text-sky-500'>
-                      <span>Recommended</span>
+                      <span>Most Popular</span>
                     </div>
                   )}
                 </div>

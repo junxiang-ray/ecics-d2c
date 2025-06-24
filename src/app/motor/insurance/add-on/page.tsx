@@ -1,12 +1,12 @@
 'use client';
 
 import AddOnDetail from './AddonDetail';
-import InsuranceLayout from '../InsuranceLayout';
+import MotorInsuranceLayout from '../MotorInsuranceLayout';
 
 export default function AddonPage() {
   return (
-    <InsuranceLayout>
+    <MotorInsuranceLayout>
       {({ onSave }) => <AddOnDetail onSaveRegister={onSave} />}
-    </InsuranceLayout>
+    </MotorInsuranceLayout>
   );
 }

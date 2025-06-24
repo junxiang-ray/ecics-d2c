@@ -1,6 +1,7 @@
-import { Quote } from '@/libs/types/quote';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
+
+import { Quote } from '@/libs/types/quote';
 
 interface AppState {
   quote: Quote;
