@@ -2,7 +2,7 @@
 
 import { Button, Modal } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 
@@ -19,12 +19,9 @@ export function NavigationConfirmProvider() {
   const router = useRouter();
   const pathName = usePathname();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const previousUrlRef = useRef<string>('');
 
   useEffect(() => {
     if (isPathAllowed(pathName)) return;
-    // Store the current URL to know where the user intends to go back to.
-    previousUrlRef.current = document.referrer || '/';
     // Block the first back action.
     window.history.pushState(null, '', window.location.href);
 
@@ -45,7 +42,7 @@ export function NavigationConfirmProvider() {
       ? `/${PRODUCT_NAME.MAID}`
       : pathName.startsWith(`/${PRODUCT_NAME.MOTOR}`)
         ? `/${PRODUCT_NAME.MOTOR}`
-        : previousUrlRef.current || '/';
+        : '/';
 
     router.push(basePath);
   };
@@ -61,6 +58,7 @@ export function NavigationConfirmProvider() {
       open={isModalVisible}
       closable={false}
       mask={true}
+      centered
       footer={
         <div className='grid grid-cols-2 gap-2'>
           <Button danger style={{ width: '100%' }} onClick={handleLeave}>
@@ -71,16 +69,6 @@ export function NavigationConfirmProvider() {
           </Button>
         </div>
       }
-      style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        margin: 0,
-        padding: '10px 24px',
-        width: '100%',
-        maxWidth: 500,
-      }}
       bodyStyle={{
         paddingBottom: '24px',
       }}
