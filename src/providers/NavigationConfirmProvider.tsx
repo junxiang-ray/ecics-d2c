@@ -29,6 +29,8 @@ export function NavigationConfirmProvider() {
 
   const handleStay = () => {
     setIsModalVisible(false);
+    // Push a new history entry to intercept the next back button
+    window.history.pushState(null, '', window.location.href);
   };
 
   return (
