@@ -1,55 +1,59 @@
 'use client';
 
 import { Button, Modal } from 'antd';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+
+function isPathAllowed(pathname: string) {
+  return (
+    pathname === `/${PRODUCT_NAME.MAID}` ||
+    pathname.startsWith(`/${PRODUCT_NAME.MAID}/insurance/basic-detail`) ||
+    pathname === `/${PRODUCT_NAME.MOTOR}` ||
+    pathname.startsWith(`/${PRODUCT_NAME.MOTOR}/insurance/basic-detail`)
+  );
+}
 
 export function NavigationConfirmProvider() {
   const router = useRouter();
   const pathName = usePathname();
-  const searchParams = useSearchParams();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const hasInterceptedRef = useRef(false);
-  const fullUrlRef = useRef<string>(''); // keep the original full URL
+  const previousUrlRef = useRef<string>('');
 
   useEffect(() => {
-    fullUrlRef.current = `${pathName}?${searchParams.toString()}`;
-    window.history.pushState({ custom: true }, '', fullUrlRef.current);
+    if (isPathAllowed(pathName)) return;
+    // Store the current URL to know where the user intends to go back to.
+    previousUrlRef.current = document.referrer || '/';
+    // Block the first back action.
+    window.history.pushState(null, '', window.location.href);
 
-    const handlePopState = (event: PopStateEvent) => {
-      if (hasInterceptedRef.current) return;
-
-      event.preventDefault();
-      hasInterceptedRef.current = true;
+    const handlePopState = () => {
       setIsModalVisible(true);
-
-      // Push the original URL back into the stack to preserve it when the Stay button is clicked.
-      window.history.pushState({ custom: true }, '', fullUrlRef.current);
+      // Push the current state again to continue blocking.
+      window.history.pushState(null, '', window.location.href);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [pathName, searchParams]);
+  }, [pathName]);
 
   const handleLeave = () => {
     setIsModalVisible(false);
-    hasInterceptedRef.current = false;
 
-    const basePath = pathName.startsWith('/maid')
-      ? '/maid'
-      : pathName.startsWith('/motor')
-        ? '/motor'
-        : '/';
+    const basePath = pathName.startsWith(`/${PRODUCT_NAME.MAID}`)
+      ? `/${PRODUCT_NAME.MAID}`
+      : pathName.startsWith(`/${PRODUCT_NAME.MOTOR}`)
+        ? `/${PRODUCT_NAME.MOTOR}`
+        : previousUrlRef.current || '/';
 
-    router.replace(basePath);
+    router.push(basePath);
   };
 
   const handleStay = () => {
     setIsModalVisible(false);
-    hasInterceptedRef.current = false;
-
-    // Push the current state again so that the user has to press back one more time
-    window.history.pushState({ custom: true }, '', fullUrlRef.current);
+    // Push a new history entry to intercept the next back button
+    window.history.pushState(null, '', window.location.href);
   };
 
   return (
@@ -59,10 +63,10 @@ export function NavigationConfirmProvider() {
       mask={true}
       footer={
         <div className='grid grid-cols-2 gap-2'>
-          <Button danger onClick={handleLeave} style={{ width: '100%' }}>
+          <Button danger style={{ width: '100%' }} onClick={handleLeave}>
             Leave
           </Button>
-          <Button type='primary' onClick={handleStay} style={{ width: '100%' }}>
+          <Button type='primary' style={{ width: '100%' }} onClick={handleStay}>
             Stay
           </Button>
         </div>
