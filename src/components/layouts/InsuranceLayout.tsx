@@ -182,7 +182,7 @@ function InsuranceLayout({
           </div>
         </div>
 
-        <div className='mx-auto flex h-[calc(100svh-265px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-260px)]'>
+        <div className='mx-auto flex h-[calc(100svh-280px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-260px)]'>
           {typeof children === 'function'
             ? children({
                 onSave: (fn: () => any) => (childSaveRef.current = fn),

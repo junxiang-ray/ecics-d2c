@@ -95,6 +95,7 @@ function PlanDetail({
     const data = {
       ...quoteInfo?.data,
       selected_plan: plan?.title,
+      selected_addon: {}, //https://redmine.tdt.asia/issues/118250
       key: key,
     };
     saveQuote({ key, data, is_sending_email: false }).then((res) => {

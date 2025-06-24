@@ -7,6 +7,7 @@ import { UserStep } from '@/libs/enums/processBarEnums';
 import { Plan } from '@/libs/types/quote';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
+import { PricingSummary } from '@/components/page/FeeBar';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
@@ -18,7 +19,6 @@ import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PlanMaid from './PlanMaid';
-import { PricingSummary } from '@/components/page/FeeBar';
 
 export interface FormatPlan extends Plan {
   discount: number;

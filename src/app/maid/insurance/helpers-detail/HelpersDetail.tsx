@@ -469,7 +469,6 @@ const HelpersDetail = (props: Props) => {
                       options={hirePurchaseListFormatted}
                       showSearch
                       isRequired={true}
-                      isFadeText
                     />
                   </Form.Item>
 

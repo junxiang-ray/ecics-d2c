@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { UserStep } from '@/libs/enums/processBarEnums';
+import { MaidQuote } from '@/libs/types/maidQuote';
 import { AddOnFormat } from '@/libs/types/quote';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
@@ -18,9 +19,8 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { MaidQuote } from '@/libs/types/maidQuote';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 export const mapIconToTypeAddOn = [
   {
