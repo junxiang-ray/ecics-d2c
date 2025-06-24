@@ -56,7 +56,9 @@ export const PolicyDetail = ({
     [MAID_QUOTE.start_date]: insuranceInfo?.start_date
       ? dayjs(insuranceInfo?.start_date, 'DD/MM/YYYY').toDate()
       : undefined,
-    [MAID_QUOTE.end_date]: maidQuote?.end_date ?? undefined,
+    [MAID_QUOTE.end_date]: maidQuote?.end_date
+      ? dayjs(maidQuote?.end_date, 'DD/MM/YYYY').toDate()
+      : undefined,
     [MAID_QUOTE.nationality]: maidInfo?.nationality ?? '',
     [MAID_QUOTE.maid_dob]: maidInfo?.date_of_birth
       ? dayjs(maidInfo?.date_of_birth, 'DD/MM/YYYY').toDate()

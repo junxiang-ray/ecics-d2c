@@ -36,10 +36,10 @@ import {
 import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
 import { MAID_QUOTE } from '@/constants';
 import { GROUP_COUNTRY } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -50,9 +50,15 @@ const singpassFlowFields = {
       required_error: 'This field is required',
       invalid_type_error: 'This field is required',
     })
-    .refine((date) => dayjs(date).isSameOrAfter(dayjs(), 'day'), {
-      message: 'Start date cannot be earlier than today',
-    }),
+    .refine(
+      (date) => {
+        const todayPlus5 = dayjs().add(5, 'day').startOf('day');
+        return dayjs(date).isSameOrAfter(todayPlus5, 'day');
+      },
+      {
+        message: 'Start date must be at least 5 days from today',
+      },
+    ),
   [MAID_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
@@ -155,9 +161,8 @@ const PolicyDetailForm = ({
 
   const {
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = methods;
-
   // input field change
   const start_date = watch(MAID_QUOTE.start_date) as Date;
   const maid_dob = watch(MAID_QUOTE.maid_dob) as Date;
@@ -285,6 +290,10 @@ const PolicyDetailForm = ({
   };
 
   const handleSubmit = (value: FormData) => {
+    if (!isDirty) {
+      router.push(ROUTES.INSURANCE_MAID.PLAN);
+      return;
+    }
     let personal_info;
     const planPeriodText =
       POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)
@@ -353,11 +362,6 @@ const PolicyDetailForm = ({
                             label='Email Address'
                             placeholder='Enter Your Email Address'
                             isRequired={true}
-                            onKeyDown={(e) => {
-                              if (e.key === ' ') {
-                                e.preventDefault();
-                              }
-                            }}
                           />
                         </Form.Item>
 

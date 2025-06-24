@@ -13,7 +13,7 @@ export const InputField = ({
   isRequired,
   ...props
 }: InputFieldProps) => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   return (
     <>
@@ -41,6 +41,20 @@ export const InputField = ({
               className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''} ${
                 props.disabled ? 'bg-gray-200' : ''
               }`}
+              onBlur={() => {
+                const trimmed = field.value?.trim();
+                setValue(name, trimmed, { shouldValidate: true });
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const pastedText = e.clipboardData.getData('text').trim();
+                setValue(name, pastedText, { shouldValidate: true });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === ' ' && field.value === '') {
+                  e.preventDefault();
+                }
+              }}
             />
             {fieldState.error && (
               <span className='block text-sm text-red-500'>
