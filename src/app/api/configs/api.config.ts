@@ -70,7 +70,9 @@ export async function handleApiCallToISP(endpoint: string, body: any) {
   const url = `${process.env.ISP_API_URL}${endpoint}`;
   const headers = { 'In-Auth-Token': token };
   try {
-    logger.info(`Calling ${url} with body: ${JSON.stringify(body)}`);
+    logger.info(
+      `Calling ISP service ${url} with body: ${JSON.stringify(body)}`,
+    );
     let response = await axios.post(url, body, { headers });
     logger.info(
       `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data)}`,

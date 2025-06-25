@@ -23,19 +23,19 @@ export const useVerifyPartnerCode = (partner_code: string) => {
   });
 };
 
-export const useVerifyPromoCode = () => {
+export const useVerifyPromoCode = (product_type: string) => {
   const fetchQuote = async (promo_code: string) => {
     const formattedPromoCode = formatPromoCode(promo_code);
     const res = await verify.verifyPromoCode({
       promo_code: formattedPromoCode,
-      product_type: 'car',
+      product_type,
     });
     return res.data;
   };
 
   return useMutation({
     mutationFn: fetchQuote,
-    mutationKey: ['promo'],
+    mutationKey: ['promo', product_type],
   });
 };
 
@@ -82,5 +82,17 @@ export const usePostCheckVehicle = (onUnmatch: () => void) => {
       }
       console.error(error);
     },
+  });
+};
+
+export const useGetNationality = (group_name: string) => {
+  const fetchNational = async () => {
+    const res = await verify.getNationality(group_name);
+    return res.data.data;
+  };
+
+  return useQuery({
+    queryFn: fetchNational,
+    queryKey: ['nationalities', group_name],
   });
 };

@@ -13,6 +13,7 @@ interface DropdownFieldProps extends SelectProps {
   className?: string;
   renderOption?: (option: DropdownOption) => React.ReactNode;
   notFoundContent?: React.ReactNode;
+  isRequired?: boolean;
 }
 
 export interface DropdownOption {
@@ -20,7 +21,7 @@ export interface DropdownOption {
   text: string;
 }
 
-interface OptionType {
+export interface OptionType {
   value: string;
   label: JSX.Element;
 }
@@ -39,6 +40,7 @@ export const DropdownField = ({
   disabled,
   className,
   renderOption,
+  isRequired,
   ...props
 }: DropdownFieldProps) => {
   const { control } = useFormContext();
@@ -50,7 +52,14 @@ export const DropdownField = ({
         control={control}
         render={({ field, fieldState }) => (
           <>
-            {label && <span className='text-base font-semibold'>{label}</span>}
+            {label && (
+              <span className='text-base font-semibold'>
+                {label}
+                {isRequired && (
+                  <span className='font-semibold text-[#C80F1E]'>*</span>
+                )}
+              </span>
+            )}
             <Select
               {...props}
               {...field}
@@ -113,6 +122,7 @@ export const LongOptionDropdownField = ({
   options,
   disabled,
   renderOption,
+  isRequired,
   notFoundContent,
   ...props
 }: DropdownFieldProps) => {
@@ -175,9 +185,11 @@ export const LongOptionDropdownField = ({
             style={{ position: 'relative' }}
           >
             {label && (
-              <label className='text-base font-semibold'>{label}</label>
+              <label className='text-base font-semibold'>
+                {label}
+                {isRequired && <span className='text-red-500'>*</span>}
+              </label>
             )}
-
             <Input
               {...field}
               type='text'
@@ -187,15 +199,15 @@ export const LongOptionDropdownField = ({
               disabled={disabled}
               readOnly
               status={fieldState.invalid ? 'error' : undefined}
-              className='w-full rounded border px-3 py-2'
+              className='w-full truncate rounded border px-3 py-2 pr-8'
             />
-
             <span
               className='absolute right-3 transform cursor-pointer pt-[10px]'
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
               <ArrowDownIcon size={20} />
             </span>
+
             {isDropdownOpen && (
               <div
                 className='absolute z-50 w-full rounded border bg-white shadow-lg'

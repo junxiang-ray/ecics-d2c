@@ -6,37 +6,40 @@ import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
-import { formatPromoCode } from '@/libs/utils/utils';
+import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
 
+import { PricingSummary } from '@/components/page/FeeBar';
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownField,
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
-import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
-import { MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
+import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import {
   useGetVehicleMakes,
   useGetVehicleModels,
 } from '@/hook/insurance/common';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
-import { UnableQuote } from './modal/UnableQuote';
+import { QuoteModal } from './modal/QuoteModal';
 import {
-  DRV_EXP_OPTIONS,
   NCD_OPTIONS,
   NO_CLAIM_OPTIONS,
   NumberClaim,
   NumberDriverExperience,
+  ProductType,
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
@@ -50,6 +53,7 @@ const sryMsg =
 const singpassFlowFields = {
   [MOTOR_QUOTE.hire_purchase]: z.number({
     required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
   }),
   [MOTOR_QUOTE.other_hire_purchase]: z.string().optional(),
   [MOTOR_QUOTE.start_date]: z
@@ -99,15 +103,14 @@ const nonSingpassFlowFields = {
     ),
   [MOTOR_QUOTE.owner_dob]: z.date({
     required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.owner_drv_exp]: z
-    .string({
+  [MOTOR_QUOTE.owner_drv_exp]: z.coerce
+    .number({
       required_error: 'This field is required',
       invalid_type_error: 'This field is required',
     })
-    .refine((val) => val !== NumberDriverExperience.LESS_THAN_2_YEARS, {
-      message: sryMsg,
-    }),
+    .min(2, { message: sryMsg }),
   [MOTOR_QUOTE.vehicle_make]: z
     .string({
       required_error: 'This field is required',
@@ -172,7 +175,43 @@ const createSchema = (isSingpassFlow: boolean) => {
           'Policy end date cannot be more than 18 months after the start date',
         path: [MOTOR_QUOTE.end_date],
       },
-    );
+    )
+    .superRefine((data, ctx) => {
+      if (data[MOTOR_QUOTE.hire_purchase] === ID_OPTION_OTHER) {
+        const value = data[MOTOR_QUOTE.other_hire_purchase];
+
+        if (typeof value !== 'string' || !value.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'This field is required',
+            path: [MOTOR_QUOTE.other_hire_purchase],
+          });
+        }
+      }
+
+      // driver experience validation based on age at policy start date
+      if (
+        data[MOTOR_QUOTE.owner_dob] &&
+        data[MOTOR_QUOTE.owner_drv_exp] &&
+        data[MOTOR_QUOTE.start_date]
+      ) {
+        const age = calculateAge(
+          data[MOTOR_QUOTE.owner_dob] as string,
+          data[MOTOR_QUOTE.start_date] as Date,
+        );
+        const drvExp = Number(data[MOTOR_QUOTE.owner_drv_exp]);
+        const maxDrvExp = age - 18;
+
+        if (drvExp > maxDrvExp) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "Please provide driving experience suitable for the driver's age.",
+            path: [MOTOR_QUOTE.owner_drv_exp],
+          });
+        }
+      }
+    });
 };
 
 const nonSingpassSchema = z.object(nonSingpassFlowFields);
@@ -198,15 +237,23 @@ const PolicyDetailForm = ({
   isLoading = false,
   ...props
 }: PolicyDetailProps) => {
+  const router = useRouter();
   const [form] = Form.useForm();
   const searchParams = useSearchParams();
+  const { isMobile } = useDeviceDetection();
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
   const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
-  const [showCSModal, setShowCSModal] = useState(false);
+  const [showCSModal, setShowCSModal] = useState<{
+    visible: boolean;
+    description: string;
+  }>({
+    visible: false,
+    description: '',
+  });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
 
   const methods = useForm<FormData>({
@@ -219,7 +266,7 @@ const PolicyDetailForm = ({
 
   const {
     watch,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = methods;
 
   // input field change
@@ -227,7 +274,7 @@ const PolicyDetailForm = ({
   const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
-  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as string;
+  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
 
   const { data: makeOptions } = useGetVehicleMakes();
@@ -237,6 +284,10 @@ const PolicyDetailForm = ({
 
   const { data: modelOptions, isLoading: isLoadingModelOptions } =
     useGetVehicleModels(vehicleMakeId as string);
+
+  const handleBackLogin = () => {
+    router.push(ROUTES.MOTOR.LOGIN);
+  };
 
   const makeOptionsFormatted: DropdownOption[] = useMemo(() => {
     if (!makeOptions) return [];
@@ -258,16 +309,34 @@ const PolicyDetailForm = ({
     setApplyPromoCode(initPromoCode);
   }, [initPromoCode]);
 
+  useEffect(() => {
+    if (hire_purchase !== ID_OPTION_OTHER) {
+      methods.setValue(MOTOR_QUOTE.other_hire_purchase, '');
+    }
+  }, [hire_purchase]);
+
   // to open Customer Service Modal - Unable to provide quote online
   useEffect(() => {
-    if (drvExp === NumberDriverExperience.LESS_THAN_2_YEARS) {
-      setShowCSModal(true);
+    if (
+      touchedFields[MOTOR_QUOTE.owner_drv_exp] &&
+      drvExp !== null &&
+      drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
+    ) {
+      setShowCSModal({
+        visible: true,
+        description:
+          'The listed driver has less than 2 years of driving experience',
+      });
     }
-  }, [drvExp]);
+  }, [drvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
-      setShowCSModal(true);
+      setShowCSModal({
+        visible: true,
+        description:
+          'The listed driver has reported more than 2 claims or claims exceeding SGD 20,000.',
+      });
     }
   }, [no_claim]);
 
@@ -291,7 +360,7 @@ const PolicyDetailForm = ({
           ),
           driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
           phone: value[MOTOR_QUOTE.mobile],
-          email: value[MOTOR_QUOTE.email],
+          email: (value[MAID_QUOTE.email] as string)?.toLowerCase(),
         };
       }
 
@@ -323,6 +392,7 @@ const PolicyDetailForm = ({
     methods.setValue(MOTOR_QUOTE.start_date, null as any);
     methods.setValue(MOTOR_QUOTE.end_date, null as any);
   };
+
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
     const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
@@ -335,7 +405,7 @@ const PolicyDetailForm = ({
   };
 
   const hire_purchase_section = (
-    <div>
+    <>
       <Form.Item
         name={MOTOR_QUOTE.hire_purchase}
         validateStatus={errors[MOTOR_QUOTE.hire_purchase] ? 'error' : ''}
@@ -344,27 +414,30 @@ const PolicyDetailForm = ({
         <LongOptionDropdownField
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
+          isRequired
           placeholder='Select name of finance company'
           options={hirePurchaseOptions}
           showSearch
         />
       </Form.Item>
 
-      {hire_purchase === ID_OPTION_OTHER ? (
+      {hire_purchase === ID_OPTION_OTHER && (
         <Form.Item
           name={MOTOR_QUOTE.other_hire_purchase}
           validateStatus={
             errors[MOTOR_QUOTE.other_hire_purchase] ? 'error' : ''
           }
-          className='pt-1'
+          className='mb-1'
         >
           <InputField
             name={MOTOR_QUOTE.other_hire_purchase}
+            label='Your Hire Purchase Company'
+            isRequired
             placeholder='Please enter your hire purchase company'
           />
         </Form.Item>
-      ) : null}
-    </div>
+      )}
+    </>
   );
 
   const handleSubmit = (value: FormData) => {
@@ -377,7 +450,6 @@ const PolicyDetailForm = ({
         vehicle_model: value[MOTOR_QUOTE.vehicle_model],
         first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
       };
-
       personal_info = {
         date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
           'DD/MM/YYYY',
@@ -414,18 +486,10 @@ const PolicyDetailForm = ({
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
-  const minPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const minEligibleDate = adjustDateInDayjs(dobDayjs, 26, 0, 0);
-    const today = dayjs();
-    return today.isAfter(minEligibleDate) ? today : minEligibleDate;
-  }, [date_of_birth]);
-  const maxPolicyStartDate = useMemo(() => {
-    const dobDayjs = dateToDayjs(date_of_birth);
-    const maxEligibleDate = adjustDateInDayjs(dobDayjs, 71, 0, -1);
-    const today = adjustDateInDayjs(dayjs(), 0, 0, 90);
-    return today?.isBefore(maxEligibleDate) ? today : maxEligibleDate;
-  }, [date_of_birth]);
+  const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
+  const maxDob = useMemo(() => dayjs(), []);
+  const minPolicyStartDate = useMemo(() => dayjs(), []);
+  const maxPolicyStartDate = useMemo(() => dayjs().add(90, 'day'), []);
 
   const minPolicyEndDate = useMemo(() => {
     const startDateDayjs = dateToDayjs(start_date);
@@ -437,6 +501,28 @@ const PolicyDetailForm = ({
     const maxEligibleDate = adjustDateInDayjs(startDateDayjs, 0, 18, -1);
     return maxEligibleDate;
   }, [start_date]);
+
+  useEffect(() => {
+    if (!date_of_birth || !start_date) return;
+
+    const policyStartDate = dayjs(start_date);
+    const dobDate = dayjs(date_of_birth);
+    const ageAtPolicyStart = policyStartDate.diff(dobDate, 'year');
+    const isOutOfRange = ageAtPolicyStart < 26 || ageAtPolicyStart >= 71;
+
+    if (isOutOfRange) {
+      setShowCSModal({
+        visible: true,
+        description:
+          ageAtPolicyStart < 26
+            ? 'The driver is below 26 years of age.'
+            : 'The driver is above 70 years of age.',
+      });
+      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
+        shouldValidate: true,
+      });
+    }
+  }, [start_date, date_of_birth]);
 
   return (
     <>
@@ -456,10 +542,7 @@ const PolicyDetailForm = ({
             {!isSingpassFlow && (
               <>
                 <div className='relative w-full' style={{ zIndex: '99' }}>
-                  <div className='text-xl font-bold'>
-                    Enter Your Policy Details
-                  </div>
-                  <div className='w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm'>
+                  <div className='w-full'>
                     <div className='my-3 text-lg font-bold'>
                       Personal Information
                     </div>
@@ -472,7 +555,8 @@ const PolicyDetailForm = ({
                       >
                         <InputField
                           name={MOTOR_QUOTE.email}
-                          label='Email ID'
+                          label='Email Address'
+                          isRequired
                           placeholder='Enter your email address'
                         />
                       </Form.Item>
@@ -485,7 +569,8 @@ const PolicyDetailForm = ({
                       >
                         <InputField
                           name={MOTOR_QUOTE.mobile}
-                          label='Phone Number'
+                          label='Mobile Number'
+                          isRequired
                           placeholder='Enter your phone number'
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>,
@@ -508,29 +593,16 @@ const PolicyDetailForm = ({
                         <DatePickerField
                           name={MOTOR_QUOTE.owner_dob}
                           label='Date of birth'
-                          minDate={adjustDateInDayjs(dayjs(), -71, 0, 1)}
-                          maxDate={adjustDateInDayjs(dayjs(), -26, 0, 0)}
+                          minDate={minDob}
+                          maxDate={maxDob}
+                          isRequired
                           onChange={handleChangeDob}
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={MOTOR_QUOTE.owner_drv_exp}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''
-                        }
-                      >
-                        <DropdownField
-                          name={MOTOR_QUOTE.owner_drv_exp}
-                          label='Years of Driving Experience'
-                          placeholder="Select your driver's experience (Years)"
-                          options={DRV_EXP_OPTIONS}
                         />
                       </Form.Item>
                     </div>
                   </div>
 
-                  <div className='my-6 w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm'>
+                  <div className='my-6 mt-[32px] w-full'>
                     <div className='my-3 text-lg font-bold'>
                       Vehicle Information
                     </div>
@@ -539,6 +611,7 @@ const PolicyDetailForm = ({
                         <LongOptionDropdownField
                           name={MOTOR_QUOTE.vehicle_make}
                           label='Vehicle Make'
+                          isRequired
                           placeholder='Select vehicle make'
                           options={makeOptionsFormatted}
                           onChange={() => {
@@ -556,6 +629,7 @@ const PolicyDetailForm = ({
                         <LongOptionDropdownField
                           name={MOTOR_QUOTE.vehicle_model}
                           label='Vehicle Model'
+                          isRequired
                           placeholder='Select vehicle model'
                           options={modelOptionsFormatted}
                           disabled={!vehicle_make || isLoading}
@@ -574,11 +648,11 @@ const PolicyDetailForm = ({
                         <DropdownField
                           name={MOTOR_QUOTE.reg_yyyy}
                           label="Vehicle's Year of Registration"
+                          isRequired
                           placeholder='Select registration year'
                           options={REG_YEAR_OPTIONS}
                         />
                       </Form.Item>
-
                       {!isSingpassFlow ? hire_purchase_section : null}
                     </div>
                   </div>
@@ -586,9 +660,59 @@ const PolicyDetailForm = ({
               </>
             )}
 
-            <div className='w-full sm:rounded-lg sm:border sm:border-blue-400 sm:bg-gray-100/50 sm:p-4 sm:backdrop-blur-sm'>
+            <div className='mt-[32px] w-full'>
               <div className='my-3 text-lg font-bold'>
-                Confirm Your Policy Details
+                Your Driving Experience
+              </div>
+              <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+                <Form.Item
+                  name={MOTOR_QUOTE.owner_drv_exp}
+                  validateStatus={
+                    errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''
+                  }
+                >
+                  <InputNumberField
+                    name={MOTOR_QUOTE.owner_drv_exp}
+                    label='Years of Driving Experience'
+                    isRequired
+                    placeholder='Enter your driving experience'
+                    min={0}
+                    max={60}
+                    suffix='year(s)'
+                    precision={0}
+                  />
+                </Form.Item>
+
+                <Form.Item name={MOTOR_QUOTE.owner_ncd}>
+                  <DropdownField
+                    name={MOTOR_QUOTE.owner_ncd}
+                    label='No Claim Discount'
+                    isRequired
+                    placeholder='Select your current NCD'
+                    options={NCD_OPTIONS}
+                  ></DropdownField>
+                </Form.Item>
+
+                <Form.Item
+                  name={MOTOR_QUOTE.owner_no_of_claims}
+                  validateStatus={
+                    errors[MOTOR_QUOTE.owner_no_of_claims] ? 'error' : ''
+                  }
+                >
+                  <DropdownField
+                    name={MOTOR_QUOTE.owner_no_of_claims}
+                    label='Number of claims in the past 3 years'
+                    isRequired
+                    placeholder='Select number of claims'
+                    options={NO_CLAIM_OPTIONS}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className='mt-[32px] w-full'>
+              <div className='my-3 text-lg font-bold'>
+                Policy Start & End Date
               </div>
               <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
                 <Form.Item
@@ -598,6 +722,7 @@ const PolicyDetailForm = ({
                   <DatePickerField
                     name={MOTOR_QUOTE.start_date}
                     label='Policy Start Date'
+                    isRequired
                     minDate={minPolicyStartDate}
                     maxDate={maxPolicyStartDate}
                     onChange={handleChangeStartDate}
@@ -614,35 +739,12 @@ const PolicyDetailForm = ({
                   <DatePickerField
                     label='Policy End Date'
                     name={MOTOR_QUOTE.end_date}
+                    isRequired
                     minDate={minPolicyEndDate}
                     maxDate={maxPolicyEndDate}
                     disabled={!start_date || isLoading}
                   />
                 </Form.Item>
-
-                <Form.Item name={MOTOR_QUOTE.owner_ncd}>
-                  <DropdownField
-                    name={MOTOR_QUOTE.owner_ncd}
-                    label='No Claim Discount'
-                    placeholder='Select your current NCD'
-                    options={NCD_OPTIONS}
-                  ></DropdownField>
-                </Form.Item>
-
-                <Form.Item
-                  name={MOTOR_QUOTE.owner_no_of_claims}
-                  validateStatus={
-                    errors[MOTOR_QUOTE.owner_no_of_claims] ? 'error' : ''
-                  }
-                >
-                  <DropdownField
-                    name={MOTOR_QUOTE.owner_no_of_claims}
-                    label='Number of claims in the past 3 years'
-                    placeholder='Select number of claims'
-                    options={NO_CLAIM_OPTIONS}
-                  />
-                </Form.Item>
-
                 {isSingpassFlow ? hire_purchase_section : null}
               </div>
             </div>
@@ -654,43 +756,33 @@ const PolicyDetailForm = ({
                   applyPromoCode={applyPromoCode}
                   setApplyPromoCode={setApplyPromoCode}
                   isDisablePromoCode={!isEnablePromoCode}
+                  product_type={ProductType.CAR}
+                  isFormSubmitting={isLoading}
                 />
               </div>
             </div>
           </div>
         </Form>
       </FormProvider>
-      {/* <div className='fixed bottom-0 mt-6 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-3'>
-        <div className='w-full sm:col-span-1 sm:col-start-2'>
-          <Form.Item>
-            <PrimaryButton
-              loading={isLoading}
-              className='w-full'
-              onClick={() => {
-                form.submit();
-              }}
-            >
-              Generate Quote
-            </PrimaryButton>
-          </Form.Item>
-        </div>
-      </div> */}
-      <div className='fixed bottom-0 w-full bg-white' style={{ zIndex: 100 }}>
-        <div className='flex w-full justify-center py-3'>
-          <PrimaryButton
-            loading={isLoading}
-            className='w-[90vw] md:w-96'
-            onClick={() => {
-              form.submit();
-            }}
-          >
-            Generate Quote
-          </PrimaryButton>
-        </div>
+      <div
+        className={`fixed bottom-0 w-full bg-white px-2 ${isMobile ? 'px-2' : ''}`}
+        style={{ zIndex: 100 }}
+      >
+        <PricingSummary
+          loading={isLoading}
+          isBasicDetailScreen={true}
+          textButton='Generate Quote'
+          handleBack={handleBackLogin}
+          onClick={() => {
+            form.submit();
+          }}
+          productType={ProductType.CAR}
+        />
       </div>
-      <UnableQuote
-        onClick={() => setShowCSModal(false)}
-        visible={showCSModal}
+      <QuoteModal
+        onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
+        visible={showCSModal.visible}
+        description={showCSModal.description}
       />
     </>
   );

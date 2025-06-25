@@ -17,6 +17,7 @@ export interface Quote {
   data: QuoteData;
   partner_code: string;
   is_finalized: boolean;
+  is_loading?: boolean;
   is_paid: boolean;
   is_sending_email: boolean;
   expiration_date: string; // ISO string date
@@ -34,6 +35,7 @@ export interface Quote {
   company: Company;
   country_nationality: any;
   product_type: any;
+  is_electric_model?: boolean;
 }
 export interface Company {
   id: number;
@@ -50,6 +52,7 @@ export interface ReviewInfo {
   drivers: any[];
   addon_additional_driver: any;
   add_ons_included_in_this_plan?: AddOnIncludedInPlan[];
+  total_addon_free?: number;
 }
 
 export interface QuoteData {
@@ -65,7 +68,28 @@ export interface QuoteData {
   selected_addons?: Record<string, string>;
   add_named_driver_info?: AddNamedDriverInfo[];
   review_info_premium?: ReviewInfo;
+  maid_info?: MaidInfo;
+  insurance_other_info?: InsuranceOtherInfo;
 }
+
+export interface InsuranceOtherInfo {
+  end_date: string;
+  maid_type: string;
+  start_date: string;
+  plan_period: string;
+}
+
+export interface MaidInfo {
+  fin: string;
+  name: string;
+  nationality: string;
+  company_name: string;
+  date_of_birth: string; // or Date, if parsed
+  passport_number: string;
+  company_name_other: string;
+  has_helper_worked_12_months: string;
+}
+
 export interface DataFromSingpass {
   aud: string;
   dob: {
@@ -200,6 +224,9 @@ export interface Vehicle {
   chassis_no?: string;
   engine_no?: string;
   engine_number?: string;
+  engine_capacity?: string;
+  power_rate?: string;
+  year_of_manufacture?: string;
 }
 
 export interface InsuranceAdditionalInfo {
@@ -219,6 +246,7 @@ export interface PersonalInfo {
   marital_status: string;
   driving_experience: number;
   post_code: string;
+  nationality?: string;
 }
 export interface ProductType {
   id: number;
@@ -238,7 +266,9 @@ export interface ProposalPayload {
   key: string;
   selected_plan: string;
   selected_addons: Record<string, string>;
-  add_named_driver_info: AddNamedDriverInfo[];
+  personal_info?: PersonalPayload;
+  maid_info?: MaidInfo;
+  add_named_driver_info?: AddNamedDriverInfo[];
 }
 
 export interface QuoteInfo {
@@ -264,7 +294,7 @@ export interface Addon {
   type: 'select' | 'checkbox'; // adjust as needed
   title: string;
   key_map: string | null;
-  options: Option[];
+  options: AddonOption[];
   sub_title: string | null;
   is_display: boolean;
   description: string | null;
@@ -273,12 +303,22 @@ export interface Addon {
   premium_with_gst: number;
   default_option_id: number | null;
 }
+
+export interface AddOnFormat extends Addon {
+  icon: JSX.Element | null;
+  selectedOption: AddonOption | null;
+  feeAdded: number; // feeAdded is the fee used to calculate the premium for the addon
+
+  activeOption: AddonOption | null;
+  feeSelected: number; // feeSelected is the fee used to show fee when user change option
+}
+
 export interface AddOnIncludedInPlan {
   add_on_id: string;
   add_on_desc: string;
   add_on_name: string;
 }
-export interface Option {
+export interface AddonOption {
   id: number;
   label: string;
   value: string;

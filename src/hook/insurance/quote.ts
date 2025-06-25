@@ -1,8 +1,13 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+} from '@tanstack/react-query';
 
 import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
 
 import insurance from '@/api/base-service/insurance';
+import { ProductTypeWeb } from '@/app/api/constants/product';
 
 export const useGetQuote = (key: string) => {
   const fetchQuote = async () => {
@@ -30,8 +35,14 @@ export const useGenerateQuote = () => {
 };
 
 export const useSaveProposal = () => {
-  const saveProposal = async (data: ProposalPayload) => {
-    const res = await insurance.saveProposal(data);
+  const saveProposal = async ({
+    data,
+    productType,
+  }: {
+    data: ProposalPayload;
+    productType: ProductTypeWeb;
+  }) => {
+    const res = await insurance.saveProposal(data, productType);
     return res.data.data;
   };
   return useMutation({
@@ -70,14 +81,14 @@ export const useGetHirePurchaseList = (product_type: string) => {
   });
 };
 
-export const useRequestLogCar = () => {
-  const requestLogCar = async () => {
-    const res = await insurance.requestLogCar();
+export const useRequestLog = (product_type: string) => {
+  const requestLog = async () => {
+    const res = await insurance.requestLog(product_type);
     return res.data;
   };
   return useMutation({
-    mutationFn: requestLogCar,
-    mutationKey: ['log-car'],
+    mutationFn: requestLog,
+    mutationKey: ['request-log'],
   });
 };
 
@@ -100,5 +111,22 @@ export const usePayment = () => {
   return useMutation({
     mutationFn: payment,
     mutationKey: ['payload'],
+  });
+};
+
+export const usePostZipFilesDownload = (): UseMutationResult<
+  Blob,
+  Error,
+  string[],
+  unknown
+> => {
+  const zipFilesDownload = async (documents: string[]) => {
+    const res = await insurance.postZipFilesDownload({ documents });
+    return res.data;
+  };
+
+  return useMutation<Blob, Error, string[], unknown>({
+    mutationFn: zipFilesDownload,
+    mutationKey: ['zip-files-download'],
   });
 };
