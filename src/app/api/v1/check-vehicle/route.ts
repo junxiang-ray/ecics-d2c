@@ -1,9 +1,11 @@
 import { NextRequest } from 'next/server';
+
 import { successRes } from '@/app/api/core/success.response';
+
 import { checkVehicleDTOSchema } from './check-vechicle.dto';
-import logger from '../../libs/logger';
 import { checkVehicleMakeAndModel } from './vehicle.service';
 import { ErrNotFound } from '../../core/error.response';
+import logger from '../../libs/logger';
 
 export const POST = async (
   req: NextRequest,

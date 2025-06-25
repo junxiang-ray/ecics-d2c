@@ -55,7 +55,7 @@ const reviewInfoSchema = z.object({
       invalid_type_error: 'Please enter a valid email address.',
     })
     .regex(emailRegex, 'Please enter a valid email address.'),
-  phone_number: z
+  mobile_number: z
     .string({
       required_error: 'This field is required',
     })
@@ -275,7 +275,7 @@ const ReviewInfoDetail = () => {
     criteriaMode: 'all',
     defaultValues: {
       email_address: '',
-      phone_number: '',
+      mobile_number: '',
       qualified_driving_license: '',
       marital_status: '',
       vehicles: [
@@ -462,7 +462,7 @@ const ReviewInfoDetail = () => {
 
       methods.reset({
         email_address: transformed.email,
-        phone_number: transformed.phone ?? undefined,
+        mobile_number: transformed.phone ?? undefined,
       });
 
       if (parsed.vehicles?.length >= 1) {
@@ -669,46 +669,35 @@ const ReviewInfoDetail = () => {
         <div className='flex min-h-screen flex-col'>
           <div className='relative z-10 flex-grow p-6'>
             <div className='flex items-center justify-between'>
-              {isMobile ? (
-                <>
-                  <Image
-                    src='/singpass.svg'
-                    alt='Singpass Logo'
-                    width={170}
-                    height={170}
-                  />
-                  <Image
-                    src='/ecics.svg'
-                    alt='ECICS Logo'
-                    width={100}
-                    height={100}
-                  />
-                </>
-              ) : (
-                <>
-                  <Image src='/ecics.svg' alt='Logo' width={100} height={100} />
-                  <Image
-                    src='/singpass.svg'
-                    alt='Logo'
-                    width={170}
-                    height={170}
-                  />
-                </>
-              )}
+              <Image
+                src='/singpass.svg'
+                alt='Singpass Logo'
+                width={170}
+                height={170}
+              />
+              <Image
+                src='/ecics.svg'
+                alt='ECICS Logo'
+                width={100}
+                height={100}
+              />
             </div>
-            <div className='mt-6 text-lg font-bold'>
+            <div className='mt-6 text-2xl font-bold'>
               Review your Myinfo details
             </div>
             {isMobile ? (
               <div>
                 <InfoSection
-                  title='Enter a valid Email and Contact Number'
+                  title='Contact Info'
                   data={[
                     {
                       label: 'Email Address',
                       value: commonInfo?.email ?? null,
                     },
-                    { label: 'Phone Number', value: commonInfo?.phone ?? null },
+                    {
+                      label: 'Mobile Number',
+                      value: commonInfo?.phone ?? null,
+                    },
                   ]}
                   setIsDisabled={setIsDisabled}
                   methods={methods}
@@ -742,13 +731,16 @@ const ReviewInfoDetail = () => {
             ) : (
               <div className='w-full justify-self-center'>
                 <InfoSection
-                  title='Enter a valid Email and Contact Number'
+                  title='Contact Info'
                   data={[
                     {
                       label: 'Email Address',
                       value: commonInfo?.email ?? null,
                     },
-                    { label: 'Phone Number', value: commonInfo?.phone ?? null },
+                    {
+                      label: 'Mobile Number',
+                      value: commonInfo?.phone ?? null,
+                    },
                   ]}
                   setIsDisabled={setIsDisabled}
                   methods={methods}

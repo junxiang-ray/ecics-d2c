@@ -11,6 +11,7 @@ import {
   DropdownOption,
 } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
+import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 import { VehicleResponse } from '@/api/base-service/verify';
 import {
@@ -26,7 +27,6 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { ReviewInfoForm } from './ReviewInfoDetail';
 import { UnableQuote } from '../insurance/basic-detail/modal/UnableQuote';
 import { MARITAL_STATUS_OPTIONS } from '../insurance/basic-detail/options';
-import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 type VehicleInfo = {
   vehicle_number: string;
@@ -42,7 +42,7 @@ type VehicleInfo = {
 
 type FormValues = {
   email_address: string;
-  phone_number: string;
+  mobile_number: string;
   qualified_driving_license: string;
   marital_status: string;
   vehicles: VehicleInfo[];
@@ -225,7 +225,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
   const handleInputChangeEmailPhone = (
     e: React.ChangeEvent<HTMLInputElement>,
-    key: 'email_address' | 'phone_number',
+    key: 'email_address' | 'mobile_number',
   ) => {
     const value = e.target.value.trim();
     const inputName = e.target.name.toLowerCase();
@@ -246,7 +246,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
       parsed.email.lastupdated = today;
     }
 
-    if (inputName === 'phone_number') {
+    if (inputName === 'mobile_number') {
       const { prefix, areaCode, nbr } = parsePhoneNumber(value);
 
       parsed.mobileno = {
@@ -472,7 +472,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
         <div
           key={i}
           className={
-            title === 'Enter a valid Email and Contact Number' && isMobile
+            title === 'Contact Info' && isMobile
               ? 'mt-[4px]'
               : 'mt-2 grid grid-cols-2 gap-4'
           }
@@ -480,7 +480,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
           {chunk.map((item, idx) => {
             const nameKey = item.label.toLowerCase().replace(/\s+/g, '_');
             const isEmailAddress = nameKey === 'email_address';
-            const isPhoneNumber = nameKey === 'phone_number';
+            const isPhoneNumber = nameKey === 'mobile_number';
             const isVehicleMake = nameKey === 'vehicle_make';
             const isVehicleModel = nameKey === 'vehicle_model';
             const isVehicleYearRegistration =
@@ -490,7 +490,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 
             if (
               item.value != null &&
-              (nameKey === 'email_address' || nameKey === 'phone_number')
+              (nameKey === 'email_address' || nameKey === 'mobile_number')
             ) {
               setValue(nameKey, String(item.value));
             }
@@ -504,7 +504,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 >
                   <InputField
                     name={nameKey}
-                    label={isEmailAddress ? 'Email Address' : 'Phone Number'}
+                    label={isEmailAddress ? 'Email Address' : 'Mobile Number'}
                     type='text'
                     className='h-[30px] w-full rounded-[6px] border border-gray-300 p-2'
                     placeholder={
@@ -717,29 +717,19 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   };
 
   return (
-    <div
-      className={`${isMobile ? '' : 'rounded-md border border-gray-300 bg-gray-100 p-4'} mt-4 ${boxClass}`}
-    >
+    <div className={`${isMobile ? '' : 'p-4'} mt-4 ${boxClass}`}>
       <div className='flex items-center justify-between'>
-        {!(title === 'Enter a valid Email and Contact Number' && isMobile) && (
-          <span
-            className={`text-base font-bold ${
-              title === 'Enter a valid Email and Contact Number' && !isMobile
-                ? ''
-                : 'underline underline-offset-4'
-            }`}
-          >
-            {title}
-          </span>
+        {!(title === 'Contact Info' && isMobile) && (
+          <span className='text-base font-bold underline'>{title}</span>
         )}
-        {title === 'Enter a valid Email and Contact Number' && !isMobile && (
-          <Tooltip title='We use this information to verify your identity and pre-fill your application with accurate government-verified data. This helps ensure a faster, more secure, and seamless submission process.'>
-            <span className='flex cursor-pointer items-center font-bold'>
-              <WarningIcon size={14} />
-              <span className='ml-1 text-[10px]'>Why do we need this?</span>
-            </span>
-          </Tooltip>
-        )}
+        {/*{title === 'Contact Info' && !isMobile && (*/}
+        {/*  <Tooltip title='We use this information to verify your identity and pre-fill your application with accurate government-verified data. This helps ensure a faster, more secure, and seamless submission process.'>*/}
+        {/*    <span className='flex cursor-pointer items-center font-bold'>*/}
+        {/*      <WarningIcon size={14} />*/}
+        {/*      <span className='ml-1 text-[10px]'>Why do we need this?</span>*/}
+        {/*    </span>*/}
+        {/*  </Tooltip>*/}
+        {/*)}*/}
       </div>
       {renderGrid(vehicleIndex ?? 0)}
       {showContactModal && (

@@ -1,5 +1,5 @@
-import { capitalizeFirstLetter } from '../../utils/text.helpers';
 import logger from '../logger';
+import { capitalizeFirstLetter } from '../../utils/text.helpers';
 
 interface quoteInfo {
   quote_key: string;
