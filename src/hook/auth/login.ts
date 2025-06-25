@@ -4,7 +4,7 @@ import { SavePersonalInfoPayload, UserInfoPayload } from '@/libs/types/auth';
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import insurance from '@/api/base-service/insurance';
-import auth from '@/api/singpass-service/auth';
+import auth from '@/api/singpass-car-service/auth';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
