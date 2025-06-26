@@ -3,6 +3,8 @@ import { savePersonalInfoDTO } from './personal-info.dto';
 import logger from '@/app/api/libs/logger';
 import { sendMail } from '@/app/api/libs/mailer';
 import { generateQuoteEmail } from '@/app/api/libs/mailer/templates';
+import { ErrBadRequest } from '@/app/api/core/error.response';
+import { capitalizeFirstLetter } from '@/app/api/utils/text.helpers';
 
 export async function savePersonalInfo(data: savePersonalInfoDTO) {
   try {
@@ -20,31 +22,12 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
       };
     }
 
-    const newPersonalInfo = await prisma.personalInfo.create({
-      data: {
-        email: data.personal_info.email,
-        phone: data.personal_info.phone,
-        name: data.personal_info.name,
-        nric: data.personal_info.nric,
-        gender: data.personal_info.gender,
-        marital_status: data.personal_info.marital_status,
-        date_of_birth: data.personal_info.date_of_birth,
-        address: data.personal_info.address,
-        year_of_registration: data.vehicle_info_selected.year_of_registration,
-        driving_experience: data.personal_info.driving_experience,
-        vehicles: data.vehicles ?? [],
-      },
-    });
-    logger.info(
-      `Creating a new personal info: ${JSON.stringify(newPersonalInfo)}`,
-    );
-
     const newQuoteInfo: any = {
       key: data.key,
       data: {
         personal_info: data.personal_info,
-        vehicle_info_selected: data.vehicle_info_selected,
-        vehicles: data.vehicles,
+        vehicle_info_selected: data?.vehicle_info_selected || null,
+        vehicles: data?.vehicles || null,
         data_from_singpass: data.data_from_singpass,
         current_step: 0,
       },
@@ -52,34 +35,70 @@ export async function savePersonalInfo(data: savePersonalInfoDTO) {
       partner_code: data.partner_code || '',
     };
 
-    if (data.promo_code) {
-      newQuoteInfo.promo_code = {
-        connect: {
-          code: data.promo_code,
+    const [product_type, promoCodeInfo] = await Promise.all([
+      prisma.productType.findFirst({
+        where: { name: data.product_type },
+      }),
+      prisma.promocode.findFirst({
+        where: {
+          code: data?.promo_code || '',
+          products: {
+            has: data.product_type,
+          },
         },
-      };
-    }
+      }),
+    ]);
 
-    const newQuote = await prisma.quote.create({ data: newQuoteInfo });
+    const newQuote = await prisma.quote.create({
+      data: {
+        key: data.key,
+        phone: data.personal_info.phone,
+        email: data.personal_info.email,
+        name: data.personal_info?.name || '',
+        data: {
+          personal_info: data.personal_info,
+          vehicle_info_selected: data?.vehicle_info_selected,
+          vehicles: data?.vehicles,
+          data_from_singpass: data.data_from_singpass,
+          current_step: 0,
+        },
+        is_sending_email: data.is_sending_email ? true : false,
+        partner_code: data.partner_code || '',
+        promo_code: promoCodeInfo
+          ? {
+              connect: { id: promoCodeInfo.id },
+            }
+          : undefined,
+        product_type: product_type
+          ? {
+              connect: { id: product_type.id },
+            }
+          : undefined,
+      },
+      include: {
+        promo_code: true,
+        product_type: true,
+      },
+    });
     logger.info(`Creating a new quote info: ${JSON.stringify(newQuote)}`);
 
     if (data.is_sending_email) {
       const retrieveQuoteHTML = generateQuoteEmail({
         quote_key: newQuote.key ?? '',
-        product_name: 'car',
+        product_name: newQuote?.product_type?.name ?? '',
       });
 
       sendMail({
-        to: newPersonalInfo.email ?? '',
-        subject: `ECICS Limited | Your Car Insurance Purchase Journey`,
+        to: data.personal_info.email ?? '',
+        subject: `ECICS Limited | Your ${capitalizeFirstLetter(newQuote?.product_type?.name || '')} Insurance Purchase Journey`,
         html: retrieveQuoteHTML,
       });
     }
 
     return {
-      message: 'Personal info created successfully.',
+      message: 'Personal info saved successfully.',
       data: {
-        ...newPersonalInfo,
+        ...data,
         key: newQuote.key,
       },
     };
