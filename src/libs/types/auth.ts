@@ -56,6 +56,7 @@ export interface Vehicle {
 }
 
 export interface VehicleSingPassResponse {
+  status?: { desc?: string };
   chassisno: { value: string };
   engineno: { value: string };
   firstregistrationdate: { value: string };

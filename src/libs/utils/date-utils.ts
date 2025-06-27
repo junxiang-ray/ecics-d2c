@@ -156,7 +156,9 @@ export const dayjsToDate = (dayjsObj: dayjs.Dayjs | null | undefined) =>
   dayjsObj?.toDate() || undefined;
 
 export const convertDateToDDMMYYYY = (date: string) => {
+  if (!date) return '';
   const dateObj = new Date(date);
+  if (isNaN(dateObj.getTime())) return '';
   const day = String(dateObj.getDate()).padStart(2, '0');
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
   const year = dateObj.getFullYear();
@@ -225,38 +227,39 @@ export const calculateDrivingExperienceFromLicences = (
     issuedate?: { value?: string };
   }>,
 ): number => {
-  if (!classes || classes.length === 0) return 1;
+  if (!Array.isArray(classes) || classes.length === 0) return 1;
+
   const targetClasses = ['3', '3A'];
+  const validDates: Date[] = [];
 
-  const qdlDates: Date[] = [];
-
-  // Iterate over the classes to filter those with class '3' or '3A' and valid issue dates
-  for (const c of classes) {
-    const classValue = c.class?.value;
-    const issuedateStr = c.issuedate?.value;
+  for (const cls of classes) {
+    const classValue = cls.class?.value;
+    const issuedateStr = cls.issuedate?.value;
 
     if (classValue && targetClasses.includes(classValue) && issuedateStr) {
-      const parsedDate = parseCustomDate(issuedateStr);
-      if (parsedDate) {
-        qdlDates.push(parsedDate);
+      const parsedDate = new Date(issuedateStr);
+      if (!isNaN(parsedDate.getTime())) {
+        validDates.push(parsedDate);
       }
     }
   }
 
-  if (qdlDates.length === 0) return 1;
+  if (validDates.length === 0) return 1;
 
-  // Find the earliest date from the filtered list of valid classes
-  const earliestQdl = new Date(Math.min(...qdlDates.map((d) => d.getTime())));
+  const earliestDate = validDates.reduce((min, date) =>
+    date < min ? date : min,
+  );
+
   const today = new Date();
+  let years = today.getFullYear() - earliestDate.getFullYear();
 
-  // Calculate the difference in milliseconds between today and the earliest issue date
-  const diffInMs = today.getTime() - earliestQdl.getTime();
+  // Adjust if the "anniversary" hasn't occurred yet this year
+  const hasHadAnniversaryThisYear =
+    today.getMonth() > earliestDate.getMonth() ||
+    (today.getMonth() === earliestDate.getMonth() &&
+      today.getDate() >= earliestDate.getDate());
 
-  // Convert milliseconds to years (exact years, not rounded down)
-  const years = diffInMs / (1000 * 60 * 60 * 24 * 365);
+  if (!hasHadAnniversaryThisYear) years--;
 
-  // Round down to the nearest whole year
-  const roundedYears = Math.floor(years);
-
-  return roundedYears > 0 ? roundedYears : 1; // Ensure at least 1 year is returned
+  return years > 0 ? years : 1;
 };

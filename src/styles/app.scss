@@ -137,3 +137,8 @@
   -webkit-overflow-scrolling: auto !important;
   overflow: hidden !important;
 }
+
+html {
+  overflow: hidden;
+  height: 100%;
+}
