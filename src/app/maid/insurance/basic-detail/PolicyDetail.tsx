@@ -102,12 +102,13 @@ export const PolicyDetail = ({
         address: userInfo?.address,
         phone: userInfo?.phone,
         email: userInfo?.email?.toLowerCase(),
+        post_code: userInfo?.post_code,
       };
 
       payload = {
         ...payload,
         personal_info: personal_info,
-        maid_info: maidInfo,
+        maid_info: updateLoadMaidInfo,
       };
     }
     generateMaidQuote(payload)

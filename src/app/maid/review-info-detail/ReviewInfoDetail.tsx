@@ -1,25 +1,47 @@
 'use client';
 
-import { PrimaryButton } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { MAID_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfoMaid } from '@/hook/auth/login-maid';
 import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from 'antd';
+import { Button, Form } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ModalProgress } from './ModalProgress';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { useAppDispatch } from '@/redux/store';
+import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
+import dayjs from 'dayjs';
 
 interface Props {
   personalInfo: any;
   initialValues: any;
 }
+
+const schema = z.object({
+  [MAID_QUOTE.email]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .regex(emailRegex, 'Please enter a valid email address.'),
+  [MAID_QUOTE.mobile]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .length(8, "Please enter an 8-digit number starting with '8' or '9'.")
+    .regex(
+      phoneRegex,
+      "Please enter an 8-digit number starting with '8' or '9'.",
+    ),
+});
+
+type FormData = z.infer<typeof schema>;
 
 export const ReviewInfoDetailMaid = ({
   personalInfo,
@@ -28,6 +50,7 @@ export const ReviewInfoDetailMaid = ({
   const [form] = Form.useForm();
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
 
   const initKey = searchParams.get('key') || '';
   const partnerCode = searchParams.get('partner_code') || '';
@@ -46,25 +69,6 @@ export const ReviewInfoDetailMaid = ({
     const keyQuote = generateKeyAndAttachToUrl(initKey);
     setKey(keyQuote);
   }, []);
-
-  const schema = z.object({
-    [MAID_QUOTE.email]: z
-      .string({
-        required_error: 'This field is required',
-      })
-      .regex(emailRegex, 'Please enter a valid email address.'),
-    [MAID_QUOTE.mobile]: z
-      .string({
-        required_error: 'This field is required',
-      })
-      .length(8, "Please enter an 8-digit number starting with '8' or '9'.")
-      .regex(
-        phoneRegex,
-        "Please enter an 8-digit number starting with '8' or '9'.",
-      ),
-  });
-
-  type FormData = z.infer<typeof schema>;
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -86,35 +90,40 @@ export const ReviewInfoDetailMaid = ({
       partner_code: partnerCode,
       promo_code: promoDefault,
       is_sending_email: false,
+      product_type: ProductType.MAID,
       personal_info: {
         name: personalInfo?.name?.value ?? '',
         nationality: personalInfo?.nationality?.desc ?? '',
-        date_of_birth: personalInfo?.dob?.value ?? '',
+        date_of_birth: dayjs(personalInfo?.dob?.value as Date).format(
+          'DD/MM/YYYY',
+        ),
         nric: personalInfo?.uinfin?.value ?? '',
-        address1:
-          personalInfo?.regadd?.block?.value &&
-          personalInfo?.regadd?.street?.value
-            ? `Blk ${personalInfo.regadd.block.value} ${personalInfo.regadd.street.value}`
-            : '',
-        address2: personalInfo?.regadd?.building?.value ?? '',
-        address3:
-          personalInfo?.regadd?.floor?.value &&
-          personalInfo?.regadd?.unit?.value
-            ? `#${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
-            : '',
-        postal: personalInfo?.regadd?.postal?.value ?? '',
+        address: [
+          [
+            personalInfo?.regadd?.block?.value,
+            personalInfo?.regadd?.street?.value,
+            personalInfo?.regadd?.building?.value,
+            personalInfo?.regadd?.floor?.value &&
+            personalInfo?.regadd?.unit?.value
+              ? `${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
+              : null,
+            '',
+          ]
+            .filter(Boolean)
+            .join(' '),
+        ],
+        post_code: personalInfo?.regadd?.postal?.value ?? '',
         email: values[MAID_QUOTE.email],
-        mobile: values[MAID_QUOTE.mobile],
+        phone: values[MAID_QUOTE.mobile],
+        gender: personalInfo?.sex?.desc,
+        marital_status: personalInfo?.marital?.desc,
       },
       data_from_singpass: personalInfo,
     };
 
     savePersonalInfoMaid(data, {
       onSuccess: () => {
-        router.push(ROUTES.INSURANCE_MAID.BASIC_DETAIL);
-      },
-      onError: () => {
-        router.push(ROUTES.INSURANCE_MAID.BASIC_DETAIL);
+        dispatch(updateMaidQuote(data));
       },
     });
   };
@@ -130,7 +139,7 @@ export const ReviewInfoDetailMaid = ({
     },
     {
       label: 'Date of Birth',
-      value: personalInfo?.dob?.value,
+      value: dayjs(personalInfo?.dob?.value).format('DD/MM/YYYY'),
     },
     {
       label: 'NRIC / FIN',
@@ -141,7 +150,7 @@ export const ReviewInfoDetailMaid = ({
       value:
         personalInfo?.regadd?.block?.value &&
         personalInfo?.regadd?.street?.value
-          ? `Blk ${personalInfo.regadd.block.value} ${personalInfo.regadd.street.value}`
+          ? `${personalInfo.regadd.block.value} ${personalInfo.regadd.street.value}`
           : undefined,
     },
     {
@@ -152,7 +161,7 @@ export const ReviewInfoDetailMaid = ({
       label: 'Address Line 3',
       value:
         personalInfo?.regadd?.floor?.value && personalInfo?.regadd?.unit?.value
-          ? `#${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
+          ? `${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
           : undefined,
     },
     {
@@ -249,15 +258,15 @@ export const ReviewInfoDetailMaid = ({
 
       <div className='fixed bottom-0 left-0 flex w-full justify-center bg-[#FAFAFA] px-6 py-4 md:py-6'>
         <div className='flex w-full max-w-[1280px] flex-row items-center justify-between gap-6'>
-          <PrimaryButton
+          <Button
             onClick={() => {
               setIsShowModal(true);
             }}
             disabled={isPending}
-            className='w-[90vw] rounded-none border border-[#FF3B30] bg-white text-center text-base font-bold leading-[21px] !text-[#FF3B30] md:w-40'
+            className='h-[40px] w-[90vw] rounded-none border border-[#FF3B30] bg-white text-center text-base font-bold leading-[21px] !text-[#FF3B30] md:w-40'
           >
             Cancel
-          </PrimaryButton>
+          </Button>
           <PrimaryButton
             loading={isPending}
             onClick={() => {

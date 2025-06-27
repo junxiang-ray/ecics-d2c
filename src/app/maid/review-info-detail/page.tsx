@@ -58,12 +58,12 @@ export default function ReviewInfoDetailPage() {
     uinfin: personalInfo?.uinfin?.value || '',
     address1:
       personalInfo?.regadd?.block?.value && personalInfo?.regadd?.street?.value
-        ? `Blk ${personalInfo.regadd.block.value} ${personalInfo.regadd.street.value}`
+        ? `${personalInfo.regadd.block.value} ${personalInfo.regadd.street.value}`
         : '',
     address2: personalInfo?.regadd?.building?.value || '',
     address3:
       personalInfo?.regadd?.floor?.value && personalInfo?.regadd?.unit?.value
-        ? `#${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
+        ? `${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
         : '',
     postal: personalInfo?.regadd?.postal?.value || '',
   };
