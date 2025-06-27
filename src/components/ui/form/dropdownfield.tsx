@@ -202,7 +202,7 @@ export const LongOptionDropdownField = ({
               className='w-full truncate rounded border px-3 py-2 pr-8'
             />
             <span
-              className={`absolute right-3 transform cursor-pointer pt-[10px] ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+              className={`absolute right-3 transform cursor-pointer pt-[10px] ${disabled ? 'pointer-events-none' : ''}`}
               onClick={() => {
                 if (!disabled) setIsDropdownOpen((prev) => !prev);
               }}
