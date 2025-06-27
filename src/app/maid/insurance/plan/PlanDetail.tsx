@@ -10,7 +10,6 @@ import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
-import SelfDeclarationConfirmModal from '@/app/motor/insurance/plan/components/SelfDeclarationConfirmModal';
 import { ROUTES } from '@/constants/routes';
 import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -38,7 +37,6 @@ function PlanDetail({
   const dispatch = useAppDispatch();
   const key = searchParams.get('key') || '';
   const { isMobile } = useDeviceDetection();
-  const [showConfirmDeclaration, setShowConfirmDeclaration] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<FormatPlan | null>(null);
 
   const maidQuoteInfo = useAppSelector((state) => state.maidQuote?.maidQuote);
@@ -101,7 +99,6 @@ function PlanDetail({
       }
       router.push(ROUTES.INSURANCE_MAID.ADD_ON);
     });
-    setShowConfirmDeclaration(false);
   };
 
   return (
@@ -128,18 +125,12 @@ function PlanDetail({
         discount={selectedPlan?.discount ?? 0}
         title={`${selectedPlan?.title}`}
         textButton='Next'
-        onClick={() => setShowConfirmDeclaration(true)}
+        onClick={() => choicePlan(selectedPlan)}
         handleBack={handleBack}
         productType={ProductType.MAID}
         loading={isSaving}
         titlePlan={selectedPlan?.title}
         isPlan
-      />
-      <SelfDeclarationConfirmModal
-        visible={showConfirmDeclaration}
-        onOk={() => choicePlan(selectedPlan)}
-        onCancel={() => setShowConfirmDeclaration(false)}
-        product_type={ProductType.MAID}
       />
     </div>
   );
