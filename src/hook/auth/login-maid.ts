@@ -86,7 +86,7 @@ export const usePostPersonalInfoMaid = () => {
         queryParams.append('promo_code', promoCode);
       }
 
-      window.location.href = `${ROUTES.INSURANCE.BASIC_DETAIL_SINGPASS}&${queryParams.toString()}`;
+      window.location.href = `${ROUTES.INSURANCE_MAID.BASIC_DETAIL_SINGPASS}&${queryParams.toString()}`;
     },
   });
 };
