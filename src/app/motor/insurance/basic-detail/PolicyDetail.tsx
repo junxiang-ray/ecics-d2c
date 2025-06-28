@@ -10,6 +10,9 @@ import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import SingpassPolicyDetailForm from '@/app/motor/insurance/basic-detail/SingpassPolicyDetailForm';
+import HeaderVehicleInfo from '@/app/motor/insurance/plan/components/HeaderVehicleInfo';
+import HeaderVehicleInfoMobile from '@/app/motor/insurance/plan/components/HeaderVehicleInfoMobile';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -140,11 +143,14 @@ export const PolicyDetail = ({
       });
   };
 
+  const FormComponent = isSingPassFlow
+    ? SingpassPolicyDetailForm
+    : PolicyDetailForm;
+
   return (
-    <>
-      <div className='mt-4 w-full md:px-0'>
-        {/* turn on Day 1.5 */}
-        {/* {isSingPassFlow && (
+    <div className='mt-4 w-full md:px-0'>
+      {/* turn on Day 1.5 */}
+      {/* {isSingPassFlow && (
           <>
             <div className='mb-8 hidden items-center justify-between md:flex md:flex-col md:gap-4'>
               <HeaderVehicleInfo
@@ -161,15 +167,13 @@ export const PolicyDetail = ({
             </div>
           </>
         )} */}
-        <PolicyDetailForm
-          onSubmit={onSubmit}
-          hirePurchaseOptions={hirePurchaseListFormatted}
-          isSingpassFlow={isSingPassFlow}
-          isLoading={isPending}
-          initialValues={initialValues}
-          onSaveRegister={onSaveRegister}
-        />
-      </div>
-    </>
+      <FormComponent
+        onSubmit={onSubmit}
+        hirePurchaseOptions={hirePurchaseListFormatted}
+        isLoading={isPending}
+        initialValues={initialValues}
+        onSaveRegister={onSaveRegister}
+      />
+    </div>
   );
 };
