@@ -1,10 +1,10 @@
 'use client';
 
-import { Button, Modal } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import NavigationConfirmModal from '@/providers/modal/NavigationConfirmModal';
 
 function isPathAllowed(pathname: string) {
   return (
@@ -54,27 +54,10 @@ export function NavigationConfirmProvider() {
   };
 
   return (
-    <Modal
-      open={isModalVisible}
-      closable={false}
-      mask={true}
-      centered
-      footer={
-        <div className='grid grid-cols-2 gap-2'>
-          <Button danger style={{ width: '100%' }} onClick={handleLeave}>
-            Leave
-          </Button>
-          <Button type='primary' style={{ width: '100%' }} onClick={handleStay}>
-            Stay
-          </Button>
-        </div>
-      }
-      bodyStyle={{
-        paddingBottom: '24px',
-      }}
-    >
-      <p className='text-lg font-semibold'>Do you want to leave this site?</p>
-      <p className='text-base'>Changes you made may not be saved.</p>
-    </Modal>
+    <NavigationConfirmModal
+      visible={isModalVisible}
+      onLeave={handleLeave}
+      onStay={handleStay}
+    />
   );
 }

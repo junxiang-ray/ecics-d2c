@@ -10,11 +10,13 @@ import ModalImportant from '@/components/page/insurance/complete-purchase/ModalI
 import ProcessBar from '@/components/ProcessBar';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { ECICS_URL } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useVerifyPartnerCode } from '@/hook/insurance/common';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import NavigationConfirmModal from '@/providers/modal/NavigationConfirmModal';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -55,6 +57,7 @@ function InsuranceLayout({
   );
   const isLoadingStep = useAppSelector((state) => state.general.isLoadingStep);
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
 
   const getStepFromRoute = (route: string): ProcessBarType => {
     const entry = Object.entries(stepToRoute).find(
@@ -110,6 +113,19 @@ function InsuranceLayout({
     });
   };
 
+  const handleLogoClick = () => {
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleModalStay = () => {
+    setIsConfirmModalVisible(false);
+  };
+
+  const handleModalLeave = () => {
+    setIsConfirmModalVisible(false);
+    window.location.href = ECICS_URL;
+  };
+
   return (
     <InsuranceLayoutContext.Provider value={{ handleBack }}>
       <>
@@ -128,9 +144,10 @@ function InsuranceLayout({
               </div>
             )}
             <img
-              className={`${!isMobile && !partnerInfo?.partner_name ? 'ml-4' : ''}`}
+              className={`cursor-pointer ${!isMobile && !partnerInfo?.partner_name ? 'ml-4' : ''}`}
               src='/ecics.svg'
               alt='ecics'
+              onClick={handleLogoClick}
             />
           </div>
         </div>
@@ -202,6 +219,11 @@ function InsuranceLayout({
             setIsShowPopupImportant={setIsShowPopupImportant}
           />
         )}
+        <NavigationConfirmModal
+          visible={isConfirmModalVisible}
+          onLeave={handleModalLeave}
+          onStay={handleModalStay}
+        />
       </>
     </InsuranceLayoutContext.Provider>
   );
