@@ -344,6 +344,10 @@ const PolicyDetailForm = ({
   };
 
   const handleBackLogin = () => {
+    if (isSingpassFlow) {
+      router.push(ROUTES.MAID.REVIEW_INFO_DETAIL);
+      return;
+    }
     router.push(ROUTES.MAID.LOGIN);
   };
 
@@ -410,7 +414,9 @@ const PolicyDetailForm = ({
                 )}
                 <div className='flex flex-col gap-3'>
                   <div className='text-base font-bold underline decoration-gray-400'>
-                    Basic Information
+                    {isSingpassFlow
+                      ? 'Helper’s Information'
+                      : 'Basic Information'}
                   </div>
                   <div className='grid grid-cols-1 gap-6 gap-y-4 md:grid-cols-3'>
                     <Form.Item

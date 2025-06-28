@@ -20,13 +20,6 @@ interface ProcessBarProps {
   productType: string;
 }
 
-const stepsDataSingPass = [
-  { step: StepProcessBar.POLICY_DETAILS, title: 'Policy Details' },
-  { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
-  { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
-  { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
-];
-
 const getStepStatus = (step: StepProcessBar, currentStep: ProcessBarType) => {
   if (currentStep !== undefined && step < currentStep) return 'finish';
   if (step === currentStep) return 'process';
@@ -51,6 +44,20 @@ export default function ProcessBar({
   isLoading,
   productType,
 }: ProcessBarProps) {
+  const stepsDataSingPass = [
+    { step: -1, title: '' },
+    {
+      step: StepProcessBar.POLICY_DETAILS,
+      title:
+        productType === ProductType.MAID
+          ? 'Helper’s Information'
+          : 'Policy Details',
+    },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
+
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const isManual = searchParams.get('manual') === 'true';
