@@ -18,11 +18,7 @@ import {
   convertDateToDDMMYYYY,
   extractYear,
 } from '@/libs/utils/date-utils';
-import {
-  calculateAge,
-  capitalizeWords,
-  saveToSessionStorage,
-} from '@/libs/utils/utils';
+import { calculateAge, capitalizeWords } from '@/libs/utils/utils';
 
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
@@ -36,7 +32,6 @@ import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuot
 import { MARITAL_STATUS_OPTIONS } from '@/app/motor/insurance/basic-detail/options';
 import ConfirmInfoModalWrapper from '@/app/motor/review-info-detail/modal/ConfirmInfoModalWrapper';
 import {
-  DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
   PARTNER_CODE,
   PROMO_CODE,
@@ -218,48 +213,21 @@ const ReviewInfoDetail = () => {
         : 'N/A',
     },
   ];
-
-  const drivingClasses = userInfoCar?.drivinglicence?.qdl?.classes || [];
-  const expiryDate =
-    userInfoCar?.drivinglicence?.qdl?.expirydate?.value || 'N/A';
-  const validityDesc =
-    userInfoCar?.drivinglicence?.qdl?.validity?.desc || 'N/A';
+  const qdl = userInfoCar?.drivinglicence?.qdl ?? {};
+  const drivingClasses = qdl.classes ?? [];
+  const expiryDate = qdl.expirydate?.value ?? 'N/A';
+  const validityDesc = qdl.validity?.desc ?? 'N/A';
 
   const callApiPersonalInfo = () => {
-    const sessionDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
-    const singpassDataRaw = sessionStorage.getItem(DATA_FROM_SINGPASS);
-
-    if (!sessionDataRaw || !singpassDataRaw) return;
-
-    const parsed = JSON.parse(sessionDataRaw);
+    const singpassDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!singpassDataRaw) return;
     const parsedSingpass = JSON.parse(singpassDataRaw);
 
-    if (Array.isArray(parsed.vehicles) && parsed.vehicles.length === 1) {
-      const vehicleSelected = [...parsed.vehicles];
-      const updatedParsed = {
-        ...parsed,
-        vehicle_selected: vehicleSelected,
-      };
-      saveToSessionStorage({
-        [ECICS_USER_INFO]: JSON.stringify(updatedParsed),
-      });
-
-      const v = updatedParsed.vehicle_selected[0] || {};
-
-      const vehicle_info_selected = {
-        vehicle_number: v.vehicleno?.value || '',
-        first_registered_year:
-          extractYear(v.firstregistrationdate?.value) || '',
-        vehicle_make: v.make?.value || '',
-        vehicle_model: v.model?.value || '',
-        engine_number: v.engineno?.value || '',
-        chasis_number: v.chassisno?.value || '',
-        engine_capacity: v.enginecapacity?.value || '',
-        power_rate: v.powerrate?.value || '',
-        year_of_manufacture: v.yearofmanufacture?.value || '',
-      };
-
-      const qdlClasses = updatedParsed?.drivinglicence?.qdl?.classes || [];
+    if (
+      Array.isArray(parsedSingpass.vehicles) &&
+      parsedSingpass.vehicles.length === 1
+    ) {
+      const qdlClasses = parsedSingpass?.drivinglicence?.qdl?.classes || [];
       const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
       const payload: SavePersonalInfoPayload = {
@@ -267,32 +235,27 @@ const ReviewInfoDetail = () => {
         is_sending_email: false,
         promo_code: promo_code || '',
         partner_code: partner_code || '',
+        product_type: 'car',
         personal_info: {
-          name: updatedParsed.name?.value || '',
-          gender: updatedParsed.sex?.desc || '',
-          marital_status: updatedParsed.marital?.desc || '',
-          nric: updatedParsed.uinfin?.value || '',
+          name: parsedSingpass.name?.value || '',
+          gender: parsedSingpass.sex?.desc || '',
+          marital_status: parsedSingpass.marital?.desc || '',
+          nric: parsedSingpass.uinfin?.value || '',
           address: [
-            `${updatedParsed.regadd?.block?.value || ''} ${updatedParsed.regadd?.street?.value || ''} #${updatedParsed.regadd?.floor?.value || ''}-${updatedParsed.regadd?.unit?.value || ''}, ${updatedParsed.regadd?.postal?.value || ''}, ${updatedParsed.regadd?.country?.desc || ''}`,
+            `${parsedSingpass.regadd?.block?.value || ''} ${parsedSingpass.regadd?.street?.value || ''} #${parsedSingpass.regadd?.floor?.value || ''}-${parsedSingpass.regadd?.unit?.value || ''}, ${parsedSingpass.regadd?.postal?.value || ''}, ${parsedSingpass.regadd?.country?.desc || ''}`,
           ].filter(Boolean),
-          post_code: updatedParsed.regadd?.postal?.value || '',
-          date_of_birth: updatedParsed.dob?.value
-            ? convertDateToDDMMYYYY(updatedParsed.dob.value)
+          post_code: parsedSingpass.regadd?.postal?.value || '',
+          date_of_birth: parsedSingpass.dob?.value
+            ? convertDateToDDMMYYYY(parsedSingpass.dob.value)
             : '',
-          year_of_registration: updatedParsed.year_of_registration || '',
-          driving_experience:
-            qdlClasses.length > 0
-              ? drivingYears >= 6
-                ? '6 years and above'
-                : `${drivingYears} years`
-              : '1 year',
-          phone: `${updatedParsed.mobileno?.nbr?.value || ''}`,
-          email: updatedParsed.email?.value?.toLowerCase() || '',
+          year_of_registration: parsedSingpass.year_of_registration || '',
+          driving_experience: String(drivingYears) || '',
+          phone: `${parsedSingpass.mobileno?.nbr?.value || ''}`,
+          email: parsedSingpass.email?.value?.toLowerCase() || '',
         },
-        vehicle_info_selected,
         vehicles:
-          updatedParsed.vehicles?.map((v: any) => ({
-            chasis_number: v.vehicleno?.value || '',
+          parsedSingpass.vehicles?.map((v: any) => ({
+            chassis_number: v.vehicleno?.value || '',
             vehicle_make: v.make?.value || '',
             vehicle_model: v.model?.value || '',
             first_registered_year:
@@ -302,8 +265,7 @@ const ReviewInfoDetail = () => {
       };
 
       verifyRestrictedUser({
-        vehicle_registration_number: vehicle_info_selected?.vehicle_number,
-        national_identity_no: updatedParsed.uinfin?.value,
+        national_identity_no: parsedSingpass.uinfin?.value,
       })
         .then((res) => {
           if (res?.isAllowNewBiz === false) {
@@ -318,6 +280,7 @@ const ReviewInfoDetail = () => {
         });
     }
   };
+
   const handleNext = () => {
     // Check vehicle not found
     const vehicles = userInfoCar?.vehicles || [];
@@ -328,7 +291,6 @@ const ReviewInfoDetail = () => {
       return;
     }
     // Check hasClass3Or3A
-    const drivingClasses = userInfoCar?.drivinglicence?.qdl?.classes || [];
     const hasClass3Or3A = drivingClasses.some(
       (cls: any) => cls.class?.value === '3' || cls.class?.value === '3A',
     );
