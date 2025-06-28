@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { usePostUserInfo } from '@/hook/auth/login';
-import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 
 import ReviewInfoDetail from './ReviewInfoDetail';
 
