@@ -415,6 +415,7 @@ const PolicyDetailForm = ({
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
           isRequired
+          disabled={isLoading}
           placeholder='Select name of finance company'
           options={hirePurchaseOptions}
           showSearch
@@ -614,6 +615,7 @@ const PolicyDetailForm = ({
                           isRequired
                           placeholder='Select vehicle make'
                           options={makeOptionsFormatted}
+                          disabled={isLoading}
                           onChange={() => {
                             // Reset model when make changes
                             methods.setValue(
