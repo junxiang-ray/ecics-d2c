@@ -26,166 +26,167 @@ function DeclarationConfirmModal({
       <p className='text-center text-2xl font-normal leading-[32px] text-[#000000D9]'>
         Declaration and Undertaking
       </p>
-      <div className='scrollbar-hide flex max-h-[60vh] flex-col gap-2 overflow-y-auto bg-[#F4FBFD] px-2 text-justify text-sm text-[#000000]'>
-        <p>
-          <strong>Counter Indemnity</strong>
-        </p>
-        <p>
-          The Counter Indemnity shall apply if I have not selected the Waiver of
-          Counter Indemnity for Insurance Guarantee Bond (hereinafter referred
-          to as "Guarantee") to Ministry of Manpower, Singapore (hereinafter
-          referred to as "MOM").
-        </p>
-        <p>
-          In consideration of ECICS Insurance (Singapore) Pte. Ltd. (hereinafter
-          referred to as "ECICS") agreeing at my request to provide a Guarantee
-          for the sum of Singapore Dollars Five Thousand Only (S$5,000) to MOM,
-          as security for the due and satisfactory observance and performance of
-          all conditions under the Security Bond in connection with my
-          employment of a foreign domestic worker.
-        </p>
-        <p>
-          I hereby irrevocably and unconditionally agree and undertake as
-          follows:
-        </p>
-        <ol className='list-[lower-alpha] space-y-2 pl-6 text-sm text-[#000000]'>
-          <li>
-            To indemnify ECICS on demand in full against all claims, payments,
-            demands, actions, suits, proceedings, losses, liabilities, costs,
-            interests and expenses whatsoever which may be taken or made against
-            ECICS or incurred or become payable by ECICS under the
-            abovementioned Guarantee;
-          </li>
-          <li>
-            That ECICS may at its absolute discretion compromise all claims,
-            payments, demands, actions, suits, proceedings, losses, liabilities,
-            costs, interests and expenses which may be taken or made against
-            ECICS under the Guarantee;
-          </li>
-          <li>
-            To accept all receipts, vouchers and other evidence of all payments
-            made by ECICS or of all liabilities or obligations incurred by ECICS
-            by reason of the Guarantee as conclusive evidence against me and my
-            estate of the fact and extent of my liability herein;
-          </li>
-          <li>
-            To pay ECICS interest based on 6% per annum on all sums paid by
-            ECICS under the Guarantee calculated from the date when payment was
-            made by ECICS until the date when full payment is received by ECICS
-            from me, and to pay on an indemnity basis, all costs and expenses
-            ECICS incurred or may incur in enforcing its rights under this
-            Counter Indemnity including but not limited to any action or legal
-            proceedings that may be commenced by ECICS;
-          </li>
-          <li>
-            That this Counter Indemnity shall be a continuing indemnity and
-            ECICS may at any time or times at its discretion without giving any
-            notice to me extend the validity of or renew the Guarantee, or grant
-            any indulgence or make any arrangement or compromise in relation to
-            the Guarantee, without discharging or impairing my liability under
-            this Counter Indemnity;
-          </li>
-          <li>
-            That no delay or omission on the part of ECICS in exercising any
-            rights, power, privilege or remedy in respect of this Counter
-            Indemnity shall impair such rights, power, privilege or remedy. The
-            rights, powers, privileges and remedies provided in this Counter
-            Indemnity are cumulative and not exclusive of any rights, powers,
-            privileges and remedies provided by law;
-          </li>
-          <li>
-            My liability herein is irrevocable and shall remain in full force
-            and effect until the liability of ECICS under the Guarantee has been
-            fully discharged to the satisfaction of ECICS; and
-          </li>
-          <li>
-            That this Counter Indemnity shall be governed and construed by the
-            laws of the Republic of Singapore, and I irrevocably submit to the
-            jurisdiction of the Courts of the Republic of Singapore.
-          </li>
-        </ol>
+      <div className='flex max-h-[60vh] flex-col gap-2 overflow-y-auto bg-[#F4FBFD] px-2 text-justify text-sm text-[#000000]'>
         <p>
           <strong>DECLARATION</strong>
         </p>
+        <p>I hereby declare and agree that:</p>
+        <ol className='list-decimal space-y-2 pl-6 text-sm text-[#000000]'>
+          <li>
+            the statements herein are true, accurate and complete; otherwise the
+            policy issued may be void. ECICS Limited is authorized to make any
+            inquiry in connection with this application. Neither the acceptance
+            of this application nor the making of any further inquiry will bind
+            ECICS Limited to complete the insurance.
+          </li>
+          <li>
+            the information contained in and submitted with this application is
+            on file with ECICS Limited and along with the application is
+            considered physically attached to the Policy and will become part of
+            it. ECICS Limited has relied upon this application and attachments
+            in issuing this Policy. I/We agree that the information contained in
+            and submitted with this application is deemed material to the risk
+            assumed by ECICS Limited.
+          </li>
+          <li>
+            if the information in this application materially changes between
+            the date this application is signed and prior to the inception date
+            of the Policy, the proposer will notify ECICS Limited, who may
+            modify or withdraw the quotation and/or revise the terms of the
+            Policy.
+          </li>
+          <li>
+            the insured maid is in good health and free from physical defects,
+            infirmity or illness or recurring illness.
+          </li>
+          <li>
+            agree to ensure that the insured maid meets the vaccination required
+            by the Singapore government at all times.
+          </li>
+          <li>
+            understand that all pre-existing conditions are not covered for the
+            first 12 months of the maid’s employment with me. Thereafter,
+            pre-existing conditions are covered under Section 3 of our policy
+            subject to the terms and conditions of the policy.
+          </li>
+          <li>
+            understand that I am liable to co-pay the eligible claims amount
+            above $15,000 unless I have opted to purchase the Waiver of
+            Co-payment Payable by Employer optional cover during the application
+            of this policy.
+          </li>
+          <li>
+            I have read and understand the terms, conditions and exclusions
+            contained in the policy and as modified or extended.
+          </li>
+          <li>
+            I understand that any guarantee issued by ECICS Limited pursuant to
+            the policy is subject to the Counter Indemnity as attached and I
+            agree to the terms and conditions therein.
+          </li>
+          <li>
+            I/We have read and consent to the Consent for Use & Disclosure of
+            Personal Data. Please refer to the full ECICS Limited’s Consent for
+            Use & Disclosure of Personal Data at{' '}
+            <a
+              href='https://www.ecics.com/personal-data'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              https://www.ecics.com/personal-data
+            </a>{' '}
+            for more information.
+          </li>
+        </ol>
         <p>
-          The Counter Indemnity shall apply if I have not selected the Waiver of
-          Counter Indemnity for Insurance Guarantee Bond (hereinafter referred
-          to as "Guarantee") to Ministry of Manpower, Singapore (hereinafter
-          referred to as "MOM").
+          <strong>
+            COUNTER INDEMNITY (in respect of Security Bond issued to MOM of
+            Singapore)
+          </strong>
         </p>
         <p>
-          In consideration of ECICS Insurance (Singapore) Pte. Ltd. (hereinafter
-          referred to as "ECICS") agreeing at my request to provide a Guarantee
-          for the sum of Singapore Dollars Five Thousand Only (S$5,000) to MOM,
-          as security for the due and satisfactory observance and performance of
-          all conditions under the Security Bond in connection with my
-          employment of a foreign domestic worker.
+          <strong>IMPORTANT NOTICE</strong> - The Proposer/Employer is hereby
+          notified that by virtue of signing this letter of indemnity, it is
+          hereby understood and agreed that a copy of it, either by way of fax
+          or otherwise, shall be deemed binding and legally enforceable in a
+          court of law and shall have the same legal effects as that of the
+          original.
         </p>
         <p>
-          I hereby irrevocably and unconditionally agree and undertake as
-          follows:
+          To: ECICS Limited, 10 Eunos Road 8, Singapore Post Centre #09-04A,
+          Singapore 408600
         </p>
-        <ol className='list-[lower-alpha] space-y-2 pl-6 text-sm text-[#000000]'>
+        <p>
+          In consideration of ECICS Limited (the “Insurer”) agreeing at my/our
+          request to issue a Letter of Guarantee for the sum of Singapore
+          Dollars Five Thousand Only (S$5,000) to the Ministry of Manpower,
+          Singapore as security for the duty and satisfactory observance and
+          performance of all conditionals under the Security Bond.
+        </p>
+        <p>
+          I/We hereby jointly and severally irrevocably and unconditionally
+          agree and undertake for myself/ourselves and my/our heirs executors
+          administrators assigns and successors that:
+        </p>
+        <ol className='list-decimal space-y-2 pl-6 text-sm text-[#000000]'>
           <li>
-            To indemnify ECICS on demand in full against all claims, payments,
-            demands, actions, suits, proceedings, losses, liabilities, costs,
-            interests and expenses whatsoever which may be taken or made against
-            ECICS or incurred or become payable by ECICS under the
-            abovementioned Guarantee;
+            As a continuing obligation I/we shall indemnify and keep indemnified
+            the Insurer from and against all claims, demands, payment, actions,
+            suits, proceedings, losses, expenses including legal costs on an
+            indemnity basis and all other liabilities of whatsoever nature or
+            description which may be made or taken against or incurred by the
+            Insurer in relation to or arising out of the Security Bond and/or
+            this Counter-Indemnity.
           </li>
           <li>
-            That ECICS may at its absolute discretion compromise all claims,
-            payments, demands, actions, suits, proceedings, losses, liabilities,
-            costs, interests and expenses which may be taken or made against
-            ECICS under the Guarantee;
+            Where any request is made upon the Insurer by the MOM for payment of
+            any sum of money pursuant to the Security Bond (“such request”) the
+            Insurer shall at its absolute discretion be at liberty to contest or
+            compromise or immediately pay upon such request and such request
+            shall be sufficient authority to the Insurer for making any payment
+            thereon without requiring or obtaining any evidence or proof that
+            the amount so claimed or requested is due and payable to the MOM and
+            without any notice or reference to or further authority from me/us
+            notwithstanding that I/we may dispute the validity of any such claim
+            or request.
           </li>
           <li>
-            To accept all receipts, vouchers and other evidence of all payments
-            made by ECICS or of all liabilities or obligations incurred by ECICS
-            by reason of the Guarantee as conclusive evidence against me and my
-            estate of the fact and extent of my liability herein;
+            I/We shall not at any time question or challenge the validity
+            legality or otherwise of any payment made by the Insurer to the MOM
+            pursuant to such request or deny any liability under this
+            Counter-Indemnity on the ground that such payment or any part
+            thereof made by the Insurer was not due or payable under the
+            Security Bond or on any other ground whatsoever.
           </li>
           <li>
-            To pay ECICS interest based on 6% per annum on all sums paid by
-            ECICS under the Guarantee calculated from the date when payment was
-            made by ECICS until the date when full payment is received by ECICS
-            from me, and to pay on an indemnity basis, all costs and expenses
-            ECICS incurred or may incur in enforcing its rights under this
-            Counter Indemnity including but not limited to any action or legal
-            proceedings that may be commenced by ECICS;
+            I/We shall not be discharged or released from this Counter-Indemnity
+            by any compromise, variation or arrangement made between the MOM and
+            the Insurer in relation to the obligations undertaken by the Insurer
+            under the Security Bond or by any forbearance whether as to payment,
+            time, performance or otherwise given by the Controller to the
+            Insurer.
           </li>
           <li>
-            That this Counter Indemnity shall be a continuing indemnity and
-            ECICS may at any time or times at its discretion without giving any
-            notice to me extend the validity of or renew the Guarantee, or grant
-            any indulgence or make any arrangement or compromise in relation to
-            the Guarantee, without discharging or impairing my liability under
-            this Counter Indemnity;
+            My/Our liability hereunder is irrevocable and shall remain in full
+            force and effect until the Insurer’s liability under the Security
+            Bond is fully discharged to the Insurer’s satisfaction.
           </li>
           <li>
-            That no delay or omission on the part of ECICS in exercising any
-            rights, power, privilege or remedy in respect of this Counter
-            Indemnity shall impair such rights, power, privilege or remedy. The
-            rights, powers, privileges and remedies provided in this Counter
-            Indemnity are cumulative and not exclusive of any rights, powers,
-            privileges and remedies provided by law;
+            This Counter-Indemnity shall be governed by and construed in
+            accordance with the laws of Singapore.
           </li>
           <li>
-            My liability herein is irrevocable and shall remain in full force
-            and effect until the liability of ECICS under the Guarantee has been
-            fully discharged to the satisfaction of ECICS; and
-          </li>
-          <li>
-            That this Counter Indemnity shall be governed and construed by the
-            laws of the Republic of Singapore, and I irrevocably submit to the
-            jurisdiction of the Courts of the Republic of Singapore.
+            I/We agreed that a copy of this letter of indemnity, either by way
+            of fax or otherwise, shall be deemed binding and legally enforceable
+            in a court of law and shall have the same legal effects as that of
+            the original.
           </li>
         </ol>
       </div>
       <div className='flex flex-col gap-4'>
-        <p className='text-sm font-semibold text-[#000000]'>
+        <p className='text-justify text-sm font-semibold text-[#000000]'>
           By agreeing, you acknowledge that you have read and agree to the
-          Counter Indemnity and Declaration applicable to Online Payment.
+          Declaration and Counter Indemnity applicable to Online Payment.
         </p>
         <div className='flex flex-row justify-between'>
           <SecondaryButton
