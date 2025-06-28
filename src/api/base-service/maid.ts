@@ -1,10 +1,11 @@
-import { API_GET_QUOTE_BY_KEY, API_SAVE_QUOTE } from '@/constants/api.constant';
-
-import baseClient from './api.config';
 import {
   MaidQuoteCreationPayload,
   MaidQuoteResponse,
 } from '@/libs/types/maidQuote';
+
+import { API_GET_QUOTE_BY_KEY, API_SAVE_QUOTE } from '@/constants/api.constant';
+
+import baseClient from './api.config';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {

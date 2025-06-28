@@ -17,3 +17,5 @@ export const GROUP_COUNTRY = {
   country_for_maid: 'country_for_maid',
   country_for_employer: 'country_for_employer',
 };
+
+export const ECICS_URL = 'https://www.ecics.com/';

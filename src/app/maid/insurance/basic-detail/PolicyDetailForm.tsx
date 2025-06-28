@@ -492,6 +492,7 @@ const PolicyDetailForm = ({
                         name={MAID_QUOTE.nationality}
                         label='Nationality'
                         placeholder='Select Helpers Nationality'
+                        disabled={isLoading}
                         options={nationalOptionsFormatted}
                         onChange={() => {
                           // Reset model when make changes

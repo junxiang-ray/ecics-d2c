@@ -95,7 +95,7 @@ const MyInfoLoginSection = ({
           <LinkButton
             type='link'
             className='h-0 text-wrap px-0 text-xs'
-            href='https://www.ecics.com/privacy-policy'
+            href='https://www.ecics.com/documents/website-use-terms-and-conditions.pdf'
             target='_blank'
           >
             Terms of Use
@@ -104,7 +104,7 @@ const MyInfoLoginSection = ({
           <LinkButton
             type='link'
             className='h-0 text-wrap px-0 text-xs'
-            href='https://www.ecics.com/documents/website-use-terms-and-conditions.pdf'
+            href='https://www.ecics.com/privacy-policy'
             target='_blank'
           >
             Privacy Policy
