@@ -64,6 +64,26 @@ const singpassFlowFields = {
     invalid_type_error: 'This field is required',
   }),
   [MAID_QUOTE.promo_code]: z.string().optional(),
+  [MAID_QUOTE.nationality]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
+  [MAID_QUOTE.maid_dob]: z.date({
+    required_error: 'This field is required',
+    invalid_type_error: 'This field is required',
+  }),
+  [MAID_QUOTE.maid_type]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
+
+  [MAID_QUOTE.plan_period]: z
+    .string({
+      required_error: 'This field is required',
+    })
+    .nonempty('This field is required'),
 };
 
 const nonSingpassFlowFields = {
@@ -343,177 +363,165 @@ const PolicyDetailForm = ({
             {...props}
           >
             <div className='w-full'>
-              {!isSingpassFlow && (
-                <>
-                  <div className='relative w-full' style={{ zIndex: '99' }}>
-                    <div className='flex flex-col gap-3'>
-                      <div className='text-base font-bold underline decoration-gray-400'>
-                        Contact Info
-                      </div>
-                      <div className='mb-4 grid w-full grid-cols-1 gap-4 md:mb-8 md:grid-cols-3 md:gap-6'>
-                        <Form.Item
-                          name={MAID_QUOTE.email}
-                          validateStatus={
-                            errors[MAID_QUOTE.email] ? 'error' : ''
-                          }
-                        >
-                          <InputField
-                            name={MAID_QUOTE.email}
-                            label='Email Address'
-                            placeholder='Enter Your Email Address'
-                            isRequired={true}
-                          />
-                        </Form.Item>
-
-                        <Form.Item
-                          name={MAID_QUOTE.mobile}
-                          validateStatus={
-                            errors[MAID_QUOTE.mobile] ? 'error' : ''
-                          }
-                        >
-                          <InputField
-                            name={MAID_QUOTE.mobile}
-                            label='Mobile Number'
-                            placeholder='Enter Your Mobile Number'
-                            onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>,
-                            ) => {
-                              const onlyNums = e.target.value.replace(
-                                /\D/g,
-                                '',
-                              );
-                              methods.setValue(MAID_QUOTE.mobile, onlyNums, {
-                                shouldValidate: true,
-                              });
-                            }}
-                            value={String(watch(MAID_QUOTE.mobile) ?? '')}
-                            isRequired={true}
-                          />
-                        </Form.Item>
-                        <div></div>
-                      </div>
+              <div className='relative w-full' style={{ zIndex: '99' }}>
+                {!isSingpassFlow && (
+                  <div className='flex flex-col gap-3'>
+                    <div className='text-base font-bold underline decoration-gray-400'>
+                      Contact Info
                     </div>
+                    <div className='mb-4 grid w-full grid-cols-1 gap-4 md:mb-8 md:grid-cols-3 md:gap-6'>
+                      <Form.Item
+                        name={MAID_QUOTE.email}
+                        validateStatus={errors[MAID_QUOTE.email] ? 'error' : ''}
+                      >
+                        <InputField
+                          name={MAID_QUOTE.email}
+                          label='Email Address'
+                          placeholder='Enter Your Email Address'
+                          isRequired={true}
+                        />
+                      </Form.Item>
 
-                    <div className='flex flex-col gap-3'>
-                      <div className='text-base font-bold underline decoration-gray-400'>
-                        Basic Information
-                      </div>
-                      <div className='grid grid-cols-1 gap-6 gap-y-4 md:grid-cols-3'>
-                        <Form.Item
-                          name={MAID_QUOTE.maid_type}
-                          validateStatus={
-                            errors[MAID_QUOTE.maid_type] ? 'error' : ''
-                          }
-                        >
-                          <RadioField
-                            name={MAID_QUOTE.maid_type}
-                            label='Helper Type'
-                            options={HELPER_TYPE_OPTIONS}
-                            className='flex w-full !flex-col'
-                            isRequired={true}
-                          />
-                        </Form.Item>
-
-                        <Form.Item
-                          name={MAID_QUOTE.plan_period}
-                          validateStatus={
-                            errors[MAID_QUOTE.plan_period] ? 'error' : ''
-                          }
-                        >
-                          <RadioField
-                            name={MAID_QUOTE.plan_period}
-                            label='Policy Duration'
-                            options={
-                              helperType === HelperTypeValue.NEW_MAID
-                                ? POLICY_DURATION_OPTIONS.filter(
-                                    (opt) =>
-                                      opt.value ===
-                                      PolicyDurationValue.TWENTY_SIX,
-                                  )
-                                : POLICY_DURATION_OPTIONS
-                            }
-                            isRequired={true}
-                            disabled={isLoading}
-                          />
-                        </Form.Item>
-
-                        <Form.Item
-                          name={MAID_QUOTE.start_date}
-                          validateStatus={
-                            errors[MAID_QUOTE.start_date] ? 'error' : ''
-                          }
-                        >
-                          <DatePickerField
-                            name={MAID_QUOTE.start_date}
-                            label='Policy Start Date'
-                            minDate={minPolicyStartDate}
-                            maxDate={maxPolicyStartDate}
-                            onChange={handleChangeStartDate}
-                            disabledDate={(current) => {
-                              return (
-                                current && current < dayjs().startOf('day')
-                              );
-                            }}
-                            isRequired={true}
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name={MAID_QUOTE.end_date}
-                          validateStatus={
-                            errors[MAID_QUOTE.end_date] ? 'error' : ''
-                          }
-                        >
-                          <DatePickerField
-                            label='Policy End Date'
-                            name={MAID_QUOTE.end_date}
-                            disabled
-                            isRequired={true}
-                          />
-                        </Form.Item>
-
-                        <Form.Item
-                          name={MAID_QUOTE.nationality}
-                          validateStatus={
-                            errors[MAID_QUOTE.nationality] ? 'error' : ''
-                          }
-                        >
-                          <LongOptionDropdownField
-                            name={MAID_QUOTE.nationality}
-                            label='Nationality'
-                            placeholder='Select Helpers Nationality'
-                            disabled={isLoading}
-                            options={nationalOptionsFormatted}
-                            onChange={() => {
-                              // Reset model when make changes
-                              methods.setValue(
-                                MAID_QUOTE.vehicle_model,
-                                null as any,
-                              );
-                            }}
-                            showSearch
-                            isRequired={true}
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name={MAID_QUOTE.maid_dob}
-                          validateStatus={
-                            errors[MAID_QUOTE.maid_dob] ? 'error' : ''
-                          }
-                        >
-                          <DatePickerField
-                            name={MAID_QUOTE.maid_dob}
-                            minDate={minDob}
-                            maxDate={maxDob}
-                            label='Date of birth'
-                            isRequired={true}
-                          />
-                        </Form.Item>
-                      </div>
+                      <Form.Item
+                        name={MAID_QUOTE.mobile}
+                        validateStatus={
+                          errors[MAID_QUOTE.mobile] ? 'error' : ''
+                        }
+                      >
+                        <InputField
+                          name={MAID_QUOTE.mobile}
+                          label='Mobile Number'
+                          placeholder='Enter Your Mobile Number'
+                          onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>,
+                          ) => {
+                            const onlyNums = e.target.value.replace(/\D/g, '');
+                            methods.setValue(MAID_QUOTE.mobile, onlyNums, {
+                              shouldValidate: true,
+                            });
+                          }}
+                          value={String(watch(MAID_QUOTE.mobile) ?? '')}
+                          isRequired={true}
+                        />
+                      </Form.Item>
+                      <div></div>
                     </div>
                   </div>
-                </>
-              )}
+                )}
+                <div className='flex flex-col gap-3'>
+                  <div className='text-base font-bold underline decoration-gray-400'>
+                    Basic Information
+                  </div>
+                  <div className='grid grid-cols-1 gap-6 gap-y-4 md:grid-cols-3'>
+                    <Form.Item
+                      name={MAID_QUOTE.maid_type}
+                      validateStatus={
+                        errors[MAID_QUOTE.maid_type] ? 'error' : ''
+                      }
+                    >
+                      <RadioField
+                        name={MAID_QUOTE.maid_type}
+                        label='Helper Type'
+                        options={HELPER_TYPE_OPTIONS}
+                        className='flex w-full !flex-col'
+                        isRequired={true}
+                      />
+                    </Form.Item>
 
+                    <Form.Item
+                      name={MAID_QUOTE.plan_period}
+                      validateStatus={
+                        errors[MAID_QUOTE.plan_period] ? 'error' : ''
+                      }
+                    >
+                      <RadioField
+                        name={MAID_QUOTE.plan_period}
+                        label='Policy Duration'
+                        options={
+                          helperType === HelperTypeValue.NEW_MAID
+                            ? POLICY_DURATION_OPTIONS.filter(
+                                (opt) =>
+                                  opt.value === PolicyDurationValue.TWENTY_SIX,
+                              )
+                            : POLICY_DURATION_OPTIONS
+                        }
+                        isRequired={true}
+                        disabled={isLoading}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      name={MAID_QUOTE.start_date}
+                      validateStatus={
+                        errors[MAID_QUOTE.start_date] ? 'error' : ''
+                      }
+                    >
+                      <DatePickerField
+                        name={MAID_QUOTE.start_date}
+                        label='Policy Start Date'
+                        minDate={minPolicyStartDate}
+                        maxDate={maxPolicyStartDate}
+                        onChange={handleChangeStartDate}
+                        disabledDate={(current) => {
+                          return current && current < dayjs().startOf('day');
+                        }}
+                        isRequired={true}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={MAID_QUOTE.end_date}
+                      validateStatus={
+                        errors[MAID_QUOTE.end_date] ? 'error' : ''
+                      }
+                    >
+                      <DatePickerField
+                        label='Policy End Date'
+                        name={MAID_QUOTE.end_date}
+                        disabled
+                        isRequired={true}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      name={MAID_QUOTE.nationality}
+                      validateStatus={
+                        errors[MAID_QUOTE.nationality] ? 'error' : ''
+                      }
+                    >
+                      <LongOptionDropdownField
+                        name={MAID_QUOTE.nationality}
+                        label='Nationality'
+                        placeholder='Select Helpers Nationality'
+                        disabled={isLoading}
+                        options={nationalOptionsFormatted}
+                        onChange={() => {
+                          // Reset model when make changes
+                          methods.setValue(
+                            MAID_QUOTE.vehicle_model,
+                            null as any,
+                          );
+                        }}
+                        showSearch
+                        isRequired={true}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={MAID_QUOTE.maid_dob}
+                      validateStatus={
+                        errors[MAID_QUOTE.maid_dob] ? 'error' : ''
+                      }
+                    >
+                      <DatePickerField
+                        name={MAID_QUOTE.maid_dob}
+                        minDate={minDob}
+                        maxDate={maxDob}
+                        label='Date of birth'
+                        isRequired={true}
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
+              </div>
               <div className='mt-6 w-full justify-items-center'>
                 <div className='w-[90vw] md:w-96'>
                   <PromoCodeField

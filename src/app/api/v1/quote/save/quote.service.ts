@@ -50,8 +50,6 @@ export async function saveQuote(data: saveQuoteDTO) {
           ? new Date(data.expiration_date)
           : undefined,
         key: data.key,
-        personal_info_id:
-          data.personal_info_id || existingQuote.personal_info_id,
         company_id: data.company_id || existingQuote.company_id,
         payment_result_id:
           data.payment_result_id || existingQuote.payment_result_id,
@@ -77,22 +75,6 @@ export async function saveQuote(data: saveQuoteDTO) {
           select: {
             id: true,
             name: true,
-          },
-        },
-        personal_info: {
-          select: {
-            id: true,
-            phone: true,
-            email: true,
-            name: true,
-            gender: true,
-            nric: true,
-            marital_status: true,
-            date_of_birth: true,
-            address: true,
-            vehicle_info_selected: true,
-            year_of_registration: true,
-            vehicles: true,
           },
         },
         country_nationality: {
@@ -170,7 +152,6 @@ export async function saveQuote(data: saveQuoteDTO) {
         ? new Date(data.expiration_date)
         : undefined,
       key: data.key,
-      personal_info_id: data.personal_info_id,
       company_id: data.company_id,
       payment_result_id: data.payment_result_id,
       country_nationality_id: data.country_nationality_id,
