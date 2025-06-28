@@ -490,7 +490,7 @@ const SingpassPolicyDetailForm = ({
     },
     {
       title: 'Power Rate',
-      value: vehicle.powerrate?.value || 'N/A',
+      value: vehicle.powerrate?.value?.toString() || 'N/A',
     },
     {
       title: 'Engine Capacity',
