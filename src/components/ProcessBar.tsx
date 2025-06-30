@@ -45,7 +45,7 @@ export default function ProcessBar({
   productType,
 }: ProcessBarProps) {
   const stepsDataSingPass = [
-    { step: -1, title: '' },
+    { step: StepProcessBar.FIRST, title: '' },
     {
       step: StepProcessBar.POLICY_DETAILS,
       title:
@@ -73,6 +73,10 @@ export default function ProcessBar({
     { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
   ];
   const selectedStepsData = isManual ? stepsData : stepsDataSingPass;
+
+  const currentStepIndex = selectedStepsData.findIndex(
+    (item) => item.step === currentStep,
+  );
 
   const steps: StepsProps['items'] = selectedStepsData.map(
     ({ title, step }, index) => {
@@ -111,11 +115,21 @@ export default function ProcessBar({
       };
     },
   );
+
+  const handleChange = (index: number) => {
+    if (onChange) {
+      const stepEnum = selectedStepsData[index]?.step;
+      if (stepEnum !== undefined) {
+        onChange(stepEnum);
+      }
+    }
+  };
+
   return (
     <div className='w-full justify-center'>
       <Steps
-        current={currentStep}
-        onChange={onChange}
+        current={currentStepIndex}
+        onChange={handleChange}
         labelPlacement='vertical'
         direction='horizontal'
         responsive={false}

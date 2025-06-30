@@ -49,6 +49,8 @@ function InsuranceLayout({
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
+  const [isShowPopupSingPass, setIsShowPopupSingPass] = useState(false);
+
   const isMaid = productType === ProductType.MAID;
   const isFinalized = useAppSelector((state) =>
     isMaid
@@ -74,9 +76,15 @@ function InsuranceLayout({
   }, [pathName]);
 
   const handleChangeStep = (step: StepProcessBar) => {
+    console.log(step, currentStep, 'chinh123');
     if (step === currentStep) return;
     if (step === StepProcessBar.POLICY_DETAILS) {
       setIsShowPopupImportant(true);
+      return;
+    }
+    if (step === StepProcessBar.FIRST) {
+      setIsShowPopupSingPass(true);
+      // router.push(ROUTES.MAID.REVIEW_INFO_DETAIL, { preserveQuery: false });
       return;
     }
     const path = stepToRoute[step];
@@ -206,17 +214,29 @@ function InsuranceLayout({
               })
             : children}
         </div>
-        {isShowPopupImportant && (
+        {(isShowPopupImportant || isShowPopupSingPass) && (
           <ModalImportant
-            isShowPopupImportant={isShowPopupImportant}
-            handleRedirect={() =>
-              router.push(
-                productType === ProductType.MAID
-                  ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
-                  : ROUTES.INSURANCE.BASIC_DETAIL,
-              )
+            isShowPopupImportant={isShowPopupImportant || isShowPopupSingPass}
+            handleRedirect={() => {
+              if (isShowPopupSingPass) {
+                router.push(ROUTES.MAID.REVIEW_INFO_DETAIL, {
+                  preserveQuery: false,
+                });
+                setIsShowPopupSingPass(false);
+              } else {
+                router.push(
+                  productType === ProductType.MAID
+                    ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
+                    : ROUTES.INSURANCE.BASIC_DETAIL,
+                );
+                setIsShowPopupImportant(false);
+              }
+            }}
+            setIsShowPopupImportant={
+              isShowPopupSingPass
+                ? setIsShowPopupSingPass
+                : setIsShowPopupImportant
             }
-            setIsShowPopupImportant={setIsShowPopupImportant}
           />
         )}
         <NavigationConfirmModal

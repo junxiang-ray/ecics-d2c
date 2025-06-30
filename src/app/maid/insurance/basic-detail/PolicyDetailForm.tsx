@@ -40,6 +40,7 @@ import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -170,6 +171,7 @@ const PolicyDetailForm = ({
   });
   const [descriptionQuote, setDescriptionQuote] = useState('');
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
+  const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -564,7 +566,9 @@ const PolicyDetailForm = ({
               disabled={isLoading}
               onClick={(e) => {
                 e.stopPropagation();
-                handleBackLogin?.();
+                isSingpassFlow
+                  ? setIsQuoteModalVisible(true)
+                  : handleBackLogin?.();
               }}
             />
             <PrimaryButton
@@ -578,6 +582,13 @@ const PolicyDetailForm = ({
             </PrimaryButton>
           </div>
         </div>
+        <ModalImportant
+          isShowPopupImportant={isQuoteModalVisible}
+          setIsShowPopupImportant={setIsQuoteModalVisible}
+          handleRedirect={() => {
+            handleBackLogin?.();
+          }}
+        />
       </div>
     </>
   );
