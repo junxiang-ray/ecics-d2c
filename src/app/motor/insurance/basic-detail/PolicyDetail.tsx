@@ -11,8 +11,6 @@ import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import SingpassPolicyDetailForm from '@/app/motor/insurance/basic-detail/SingpassPolicyDetailForm';
-import HeaderVehicleInfo from '@/app/motor/insurance/plan/components/HeaderVehicleInfo';
-import HeaderVehicleInfoMobile from '@/app/motor/insurance/plan/components/HeaderVehicleInfoMobile';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -149,24 +147,6 @@ export const PolicyDetail = ({
 
   return (
     <div className='mt-4 w-full md:px-0'>
-      {/* turn on Day 1.5 */}
-      {/* {isSingPassFlow && (
-          <>
-            <div className='mb-8 hidden items-center justify-between md:flex md:flex-col md:gap-4'>
-              <HeaderVehicleInfo
-                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                insuranceAdditionalInfo={
-                  quoteInfo?.data.insurance_additional_info
-                }
-              />
-            </div>
-            <div className='py-4 md:hidden'>
-              <HeaderVehicleInfoMobile
-                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-              />
-            </div>
-          </>
-        )} */}
       <FormComponent
         onSubmit={onSubmit}
         hirePurchaseOptions={hirePurchaseListFormatted}

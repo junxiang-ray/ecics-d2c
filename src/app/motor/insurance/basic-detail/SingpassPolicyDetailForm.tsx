@@ -20,6 +20,7 @@ import {
 import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
 
 import { PricingSummary } from '@/components/page/FeeBar';
+import UnMatchVehicleModal from '@/components/page/insurance/policy-detail/modal/UnMatchVehicleModal';
 import HeaderVehicleOption from '@/components/page/review-info-detail/HeaderVehicleOption';
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
@@ -28,15 +29,10 @@ import {
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
-import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
 import { MOTOR_QUOTE } from '@/constants';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
-import {
-  useGetVehicleMakes,
-  useGetVehicleModels,
-} from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import { QuoteModal } from './modal/QuoteModal';
@@ -230,6 +226,12 @@ const SingpassPolicyDetailForm = ({
     description: '',
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
+  const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+  const [missingFields, setMissingFields] = useState<{
+    engine_number?: boolean;
+    chassis_number?: boolean;
+    reg_yyyy?: boolean;
+  }>({});
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -250,35 +252,10 @@ const SingpassPolicyDetailForm = ({
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
   const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
-  const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
-
-  const { data: makeOptions } = useGetVehicleMakes();
-  const vehicleMakeId = makeOptions?.find(
-    (item: any) => item.name === vehicle_make,
-  )?.id;
-
-  const { data: modelOptions, isLoading: isLoadingModelOptions } =
-    useGetVehicleModels(vehicleMakeId as string);
 
   const handleBackLogin = () => {
     router.push(ROUTES.MOTOR.LOGIN);
   };
-
-  const makeOptionsFormatted: DropdownOption[] = useMemo(() => {
-    if (!makeOptions) return [];
-    return makeOptions?.map((item: any) => ({
-      text: item.name,
-      value: item.name,
-    }));
-  }, [makeOptions]);
-
-  const modelOptionsFormatted: DropdownOption[] = useMemo(() => {
-    if (!modelOptions) return [];
-    return modelOptions?.map((item: any) => ({
-      text: item.name,
-      value: item.name,
-    }));
-  }, [modelOptions]);
 
   useEffect(() => {
     setApplyPromoCode(initPromoCode);
@@ -520,68 +497,78 @@ const SingpassPolicyDetailForm = ({
               isMobile={isMobile}
               getVehicleTopRow={getVehicleTopRow}
               getVehicleBottomRow={getVehicleBottomRow}
+              onVehicleSelect={(missing, vehicleAge) => {
+                setMissingFields(missing);
+                if (vehicleAge != null && vehicleAge > 15) {
+                  setShowCSModal({
+                    visible: true,
+                    description:
+                      'The vehicle is more than 15 years old based on its registration year.',
+                  });
+                }
+
+                // Show UnMatchVehicleModal if missing make or model
+                if (missing?.make || missing?.model) {
+                  setShowUnMatchModal(true);
+                } else {
+                  setShowUnMatchModal(false);
+                }
+              }}
             />
-            <div className='mt-[32px] w-full'>
-              <div className='my-3 text-lg font-bold underline'>
-                Missing Information (Missing from Singpass)
+
+            {['engine_number', 'chassis_number', 'reg_yyyy'].some(
+              (key) => missingFields[key as keyof typeof missingFields],
+            ) && (
+              <div className='mt-[32px] w-full'>
+                <div className='my-3 text-lg font-bold underline'>
+                  Missing Information (Missing from Singpass)
+                </div>
+                <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+                  {missingFields.engine_number && (
+                    <Form.Item
+                      name={MOTOR_QUOTE.engine_number}
+                      validateStatus={
+                        errors[MOTOR_QUOTE.engine_number] ? 'error' : ''
+                      }
+                    >
+                      <InputField
+                        name={MOTOR_QUOTE.engine_number}
+                        label='Engine Number'
+                        placeholder='Enter your engine number'
+                      />
+                    </Form.Item>
+                  )}
+
+                  {missingFields.chassis_number && (
+                    <Form.Item
+                      name={MOTOR_QUOTE.chassis_number}
+                      validateStatus={
+                        errors[MOTOR_QUOTE.chassis_number] ? 'error' : ''
+                      }
+                    >
+                      <InputField
+                        name={MOTOR_QUOTE.chassis_number}
+                        label='Chassis Number'
+                        isRequired
+                        placeholder='Enter your chassis number'
+                      />
+                    </Form.Item>
+                  )}
+
+                  {missingFields.reg_yyyy && (
+                    <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
+                      <DropdownField
+                        name={MOTOR_QUOTE.reg_yyyy}
+                        label="Vehicle's Year of Registration"
+                        isRequired
+                        placeholder='Select registration year'
+                        options={REG_YEAR_OPTIONS}
+                      />
+                    </Form.Item>
+                  )}
+                </div>
               </div>
-              <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                <Form.Item
-                  name={MOTOR_QUOTE.engine_number}
-                  validateStatus={
-                    errors[MOTOR_QUOTE.engine_number] ? 'error' : ''
-                  }
-                >
-                  <InputField
-                    name={MOTOR_QUOTE.engine_number}
-                    label='Engine Number'
-                    placeholder='Enter your engine number'
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name={MOTOR_QUOTE.chassis_number}
-                  validateStatus={
-                    errors[MOTOR_QUOTE.chassis_number] ? 'error' : ''
-                  }
-                >
-                  <InputField
-                    name={MOTOR_QUOTE.chassis_number}
-                    label='Chassis Number'
-                    isRequired
-                    placeholder='Enter your chassis number'
-                  />
-                </Form.Item>
-
-                <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
-                  <DropdownField
-                    name={MOTOR_QUOTE.reg_yyyy}
-                    label="Vehicle's Year of Registration"
-                    isRequired
-                    placeholder='Select registration year'
-                    options={REG_YEAR_OPTIONS}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name={MOTOR_QUOTE.owner_drv_exp}
-                  validateStatus={
-                    errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''
-                  }
-                >
-                  <InputNumberField
-                    name={MOTOR_QUOTE.owner_drv_exp}
-                    label='Years of Driving Experience'
-                    isRequired
-                    placeholder='Enter your driving experience'
-                    min={0}
-                    max={60}
-                    suffix='year(s)'
-                    precision={0}
-                  />
-                </Form.Item>
-              </div>
-            </div>
+            )}
 
             <div className='mt-[32px] w-full'>
               <div className='my-3 text-lg font-bold underline'>
@@ -681,6 +668,10 @@ const SingpassPolicyDetailForm = ({
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
         visible={showCSModal.visible}
         description={showCSModal.description}
+      />
+      <UnMatchVehicleModal
+        onClose={() => setShowUnMatchModal(false)}
+        visible={showUnMatchModal}
       />
     </>
   );

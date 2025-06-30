@@ -16,7 +16,6 @@ import {
 import {
   calculateDrivingExperienceFromLicences,
   convertDateToDDMMYYYY,
-  extractYear,
 } from '@/libs/utils/date-utils';
 import { calculateAge, capitalizeWords } from '@/libs/utils/utils';
 
@@ -255,11 +254,14 @@ const ReviewInfoDetail = () => {
         },
         vehicles:
           parsedSingpass.vehicles?.map((v: any) => ({
-            chassis_number: v.vehicleno?.value || '',
             vehicle_make: v.make?.value || '',
             vehicle_model: v.model?.value || '',
-            first_registered_year:
-              extractYear(v.firstregistrationdate?.value) || '',
+            first_registered_year: v.firstregistrationdate?.value || '',
+            year_of_manufacture: v.yearofmanufacture?.value || '',
+            engine_number: v.engineno?.value || '',
+            chassis_number: v.vehicleno?.value || '',
+            power_rate: v.powerrate?.value || '',
+            engine_capacity: v.enginecapacity?.value || '',
           })) || [],
         data_from_singpass: parsedSingpass,
       };

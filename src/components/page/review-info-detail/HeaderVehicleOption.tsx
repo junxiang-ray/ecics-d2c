@@ -1,7 +1,16 @@
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { capitalizeWords } from '@/libs/utils/utils';
+
+interface MissingFields {
+  engine_number?: boolean;
+  chassis_number?: boolean;
+  reg_yyyy?: boolean;
+  make?: boolean;
+  model?: boolean;
+}
 
 interface Props {
   vehicles: VehicleSingPassResponse[];
@@ -12,6 +21,10 @@ interface Props {
   getVehicleBottomRow: (
     vehicle: VehicleSingPassResponse,
   ) => { title: string; value: string }[];
+  onVehicleSelect?: (
+    missingFields: MissingFields,
+    vehicleAge: number | null,
+  ) => void;
 }
 
 const HeaderVehicleOption: React.FC<Props> = ({
@@ -19,6 +32,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
   isMobile,
   getVehicleTopRow,
   getVehicleBottomRow,
+  onVehicleSelect: onVehicleSelect,
 }) => {
   const liveVehicles = vehicles?.filter((v) => v.status?.desc === 'LIVE') || [];
   const [selectedIndex, setSelectedIndex] = useState<number | null>(
@@ -29,15 +43,32 @@ const HeaderVehicleOption: React.FC<Props> = ({
   useEffect(() => {
     if (liveVehicles.length === 1) {
       setSelectedIndex(0);
+    } else {
+      setSelectedIndex(null);
     }
-  }, [vehicles]);
+  }, [liveVehicles.length]);
+
+  const chooseVehicle = (vehicle: VehicleSingPassResponse) => {
+    const missing = {
+      engine_number: !vehicle.engineno?.value?.trim(),
+      chassis_number: !vehicle.chassisno?.value?.trim(),
+      reg_yyyy: !vehicle.yearofmanufacture?.value?.toString().trim(),
+      make: !vehicle.make?.value?.trim(),
+      model: !vehicle.model?.value?.trim(),
+    };
+    const regDateStr = vehicle.firstregistrationdate?.value;
+    const vehicleAge = regDateStr
+      ? dayjs().diff(dayjs(regDateStr), 'year')
+      : null;
+
+    onVehicleSelect?.(missing, vehicleAge);
+  };
 
   return (
     <div className='mt-[32px] w-full'>
       <div className='my-3 text-lg font-bold underline'>
         Choose a Vehicle to insure
       </div>
-
       <div
         className={`grid gap-y-4 sm:gap-x-6 sm:gap-y-4 ${
           isMobile ? 'grid-cols-1' : 'sm:grid-cols-2'
@@ -74,10 +105,13 @@ const HeaderVehicleOption: React.FC<Props> = ({
 
                 <button
                   className='flex h-8 w-8 items-center justify-center rounded-full border-[2px] border-[#00ADEF] bg-white'
-                  onClick={() => setSelectedIndex(index)}
+                  onClick={() => {
+                    setSelectedIndex(index);
+                    chooseVehicle(vehicle);
+                  }}
                 >
                   {isSelected && (
-                    <div className='h-6 w-6 rounded-full bg-[#00ADEF]'></div>
+                    <div className='h-6 w-6 rounded-full bg-[#00ADEF]' />
                   )}
                 </button>
               </div>
