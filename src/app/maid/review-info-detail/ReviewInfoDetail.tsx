@@ -18,6 +18,7 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useAppDispatch } from '@/redux/store';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import dayjs from 'dayjs';
+import { ROUTES } from '@/constants/routes';
 
 interface Props {
   personalInfo: any;
@@ -260,7 +261,7 @@ export const ReviewInfoDetailMaid = ({
         <div className='flex w-full max-w-[1280px] flex-row items-center justify-between gap-6'>
           <Button
             onClick={() => {
-              setIsShowModal(true);
+              router.push(ROUTES.MAID.LOGIN);
             }}
             disabled={isPending}
             className='h-[40px] w-[90vw] rounded-none border border-[#FF3B30] bg-white text-center text-base font-bold leading-[21px] !text-[#FF3B30] md:w-40'
