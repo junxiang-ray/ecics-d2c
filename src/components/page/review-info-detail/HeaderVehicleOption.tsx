@@ -24,6 +24,9 @@ interface Props {
   onVehicleSelect?: (
     missingFields: MissingFields,
     vehicleAge: number | null,
+    vehicleNumber: string,
+    make: string,
+    model: string,
   ) => void;
 }
 
@@ -56,12 +59,17 @@ const HeaderVehicleOption: React.FC<Props> = ({
       make: !vehicle.make?.value?.trim(),
       model: !vehicle.model?.value?.trim(),
     };
+
     const regDateStr = vehicle.firstregistrationdate?.value;
     const vehicleAge = regDateStr
       ? dayjs().diff(dayjs(regDateStr), 'year')
       : null;
 
-    onVehicleSelect?.(missing, vehicleAge);
+    const vehicleNumber = vehicle.vehicleno?.value;
+    const make = vehicle.make?.value;
+    const model = vehicle.model?.value;
+
+    onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
   };
 
   return (

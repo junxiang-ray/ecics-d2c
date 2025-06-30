@@ -45,6 +45,8 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+import { useGetQuote } from '@/hook/insurance/quote';
+import { usePostCheckVehicle } from '@/hook/insurance/common';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -208,13 +210,14 @@ const SingpassPolicyDetailForm = ({
   const [form] = Form.useForm();
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
+
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
-
-  const carUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
-  const userInfoCar = carUserInfo ? JSON.parse(carUserInfo) : null;
-
   const key = searchParams.get('key') || '';
+
+  const { data: quoteInfo } = useGetQuote(key);
+  const userInfoCar = quoteInfo?.data.data_from_singpass;
+
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
   const schema = useMemo(() => createSchema(), []);
@@ -227,11 +230,16 @@ const SingpassPolicyDetailForm = ({
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+  const [vehicleNumber, setVehicleNumber] = useState<string>('');
   const [missingFields, setMissingFields] = useState<{
     engine_number?: boolean;
     chassis_number?: boolean;
     reg_yyyy?: boolean;
   }>({});
+
+  const { mutate: postCheckVehicle, isSuccess } = usePostCheckVehicle(() => {
+    setShowUnMatchModal(true);
+  });
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -497,8 +505,16 @@ const SingpassPolicyDetailForm = ({
               isMobile={isMobile}
               getVehicleTopRow={getVehicleTopRow}
               getVehicleBottomRow={getVehicleBottomRow}
-              onVehicleSelect={(missing, vehicleAge) => {
+              onVehicleSelect={(
+                missing,
+                vehicleAge,
+                vehicleNumber,
+                make,
+                model,
+              ) => {
+                // Check missing fields
                 setMissingFields(missing);
+                // Check vehicle age
                 if (vehicleAge != null && vehicleAge > 15) {
                   setShowCSModal({
                     visible: true,
@@ -506,13 +522,18 @@ const SingpassPolicyDetailForm = ({
                       'The vehicle is more than 15 years old based on its registration year.',
                   });
                 }
-
+                setVehicleNumber(vehicleNumber);
                 // Show UnMatchVehicleModal if missing make or model
                 if (missing?.make || missing?.model) {
                   setShowUnMatchModal(true);
                 } else {
                   setShowUnMatchModal(false);
                 }
+                // Check Vehicle (make,model)
+                postCheckVehicle({
+                  vehicle_make: make,
+                  vehicle_model: model,
+                });
               }}
             />
 
@@ -670,6 +691,7 @@ const SingpassPolicyDetailForm = ({
         description={showCSModal.description}
       />
       <UnMatchVehicleModal
+        vehicleNumber={vehicleNumber}
         onClose={() => setShowUnMatchModal(false)}
         visible={showUnMatchModal}
       />

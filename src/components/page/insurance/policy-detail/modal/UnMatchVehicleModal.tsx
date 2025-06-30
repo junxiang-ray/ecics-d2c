@@ -34,11 +34,13 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 interface UnMatchVehicleModalProps {
   onClose: () => void;
   visible: boolean;
+  vehicleNumber: string;
 }
 
 const UnMatchVehicleModal = ({
   onClose,
   visible,
+  vehicleNumber,
 }: UnMatchVehicleModalProps) => {
   const methods = useForm();
   const partnerCode = localStorage.getItem(PARTNER_CODE);
@@ -200,7 +202,7 @@ const UnMatchVehicleModal = ({
           <p className='text-sm font-normal text-[#00000073]'>
             We are unable to match your vehicle model with our system.
           </p>
-          <p className='text-2xl font-semibold'>SBA123A</p>
+          <p className='text-2xl font-semibold'>{vehicleNumber}</p>
         </div>
         <FormProvider {...methods}>
           <div>
