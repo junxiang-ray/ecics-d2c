@@ -44,20 +44,6 @@ export default function ProcessBar({
   isLoading,
   productType,
 }: ProcessBarProps) {
-  const stepsDataSingPass = [
-    { step: StepProcessBar.FIRST, title: '' },
-    {
-      step: StepProcessBar.POLICY_DETAILS,
-      title:
-        productType === ProductType.MAID
-          ? 'Helper’s Information'
-          : 'Policy Details',
-    },
-    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
-    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
-    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
-  ];
-
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
   const isManual = searchParams.get('manual') === 'true';
@@ -72,8 +58,22 @@ export default function ProcessBar({
     },
     { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
   ];
-  const selectedStepsData = isManual ? stepsData : stepsDataSingPass;
 
+  const stepsDataSingPass = [
+    { step: StepProcessBar.FIRST, title: '' },
+    {
+      step: StepProcessBar.POLICY_DETAILS,
+      title:
+        productType === ProductType.MAID
+          ? 'Helper’s Information'
+          : 'Policy Details',
+    },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
+
+  const selectedStepsData = isManual ? stepsData : stepsDataSingPass;
   const currentStepIndex = selectedStepsData.findIndex(
     (item) => item.step === currentStep,
   );
