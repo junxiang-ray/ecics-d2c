@@ -261,7 +261,6 @@ export const ReviewInfoDetailMaid = ({
         <div className='flex w-full max-w-[1280px] flex-row items-center justify-between gap-6'>
           <Button
             onClick={() => {
-              // setIsShowModal(true);
               router.push(ROUTES.MAID.LOGIN);
             }}
             disabled={isPending}

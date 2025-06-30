@@ -76,7 +76,6 @@ function InsuranceLayout({
   }, [pathName]);
 
   const handleChangeStep = (step: StepProcessBar) => {
-    console.log(step, currentStep, 'chinh123');
     if (step === currentStep) return;
     if (step === StepProcessBar.POLICY_DETAILS) {
       setIsShowPopupImportant(true);
@@ -84,7 +83,6 @@ function InsuranceLayout({
     }
     if (step === StepProcessBar.FIRST) {
       setIsShowPopupSingPass(true);
-      // router.push(ROUTES.MAID.REVIEW_INFO_DETAIL, { preserveQuery: false });
       return;
     }
     const path = stepToRoute[step];
