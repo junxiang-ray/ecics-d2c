@@ -1,5 +1,7 @@
 'use client';
 
+import { useAppSelector } from '@/redux/store';
+
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import MotorInsuranceLayout from '../MotorInsuranceLayout';
 
@@ -10,12 +12,18 @@ interface PolicyDetailPageProps {
 export default function PolicyDetailPage({
   searchParams,
 }: PolicyDetailPageProps) {
-  const params = searchParams;
-  const isManual = params?.manual === 'true' ? true : false;
+  const isSingPassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
 
   return (
     <MotorInsuranceLayout>
-      {({ onSave }) => <CompletePurchaseDetail onSaveRegister={onSave} />}
+      {({ onSave }) => (
+        <CompletePurchaseDetail
+          onSaveRegister={onSave}
+          isSingPassFlow={isSingPassFlow}
+        />
+      )}
     </MotorInsuranceLayout>
   );
 }

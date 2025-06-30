@@ -27,12 +27,15 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 import { ProductType } from '../basic-detail/options';
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
+  isSingPassFlow = false,
 }: {
   onSaveRegister: (fn: () => any) => void;
+  isSingPassFlow: boolean;
 }) {
   const dispatch = useAppDispatch();
   const router = useRouterWithQuery();
@@ -212,72 +215,126 @@ export default function CompletePurchaseDetail({
         title: 'Phone Number',
         value: quote?.data?.personal_info?.phone,
       },
-      {
-        title: 'Date of Birth',
-        value: quote?.data?.personal_info?.date_of_birth,
-      },
+      ...(isSingPassFlow
+        ? []
+        : [
+            {
+              title: 'Date of Birth',
+              value: quote?.data?.personal_info?.date_of_birth,
+            },
+          ]),
     ],
-    vehicle: [
-      {
-        title: 'Vehicle Make',
-        value: vehicleSelected?.vehicle_make || 'N/A',
-      },
-      {
-        title: 'Vehicle Model',
-        value: vehicleSelected?.vehicle_model || 'N/A',
-      },
-      {
-        title: "Vehicle's Year of Registration",
-        value: vehicleSelected?.first_registered_year || 'N/A',
-      },
-      {
-        title: 'Vehicle Financed By',
-        value: quote?.company?.name || 'N/A',
-      },
-      // { title: 'Engine Capacity', value: 'N/A' },
-      // { title: 'Power Rate', value: 'N/A' },
-      // { title: 'Year of Manufacture', value: 'N/A' },
-    ],
-    policy: [
-      {
-        title: 'Policy Start Date',
-        value: quote?.data?.insurance_additional_info?.start_date || 'N/A',
-      },
-      {
-        title: 'Policy End Date',
-        value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
-      },
-    ],
-    driving_experiences: [
-      {
-        title: 'Years of Driving Experience',
-        value: quote?.data?.personal_info?.driving_experience
-          ? `${quote.data.personal_info.driving_experience} years`
-          : 'N/A',
-      },
-      {
-        title: 'Your No Claim Discount',
-        value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
-      },
-      {
-        title: 'Number of claims in the past 3 years',
-        value: quote?.data?.insurance_additional_info?.no_of_claim || 'N/A',
-      },
-    ],
-    vehicle_details: [
-      {
-        title: 'Chassis Number',
-        value: vehicleSelected?.chasis_number || 'N/A',
-      },
-      {
-        title: 'Engine Number',
-        value: vehicleSelected?.engine_number || 'N/A',
-      },
-      {
-        title: 'Vehicle Number',
-        value: vehicleSelected?.vehicle_number || 'N/A',
-      },
-    ],
+    ...(isSingPassFlow
+      ? {
+          vehicle_details: [
+            {
+              title: 'Vehicle Number',
+              value: vehicleSelected?.vehicle_number || 'N/A',
+            },
+            {
+              title: 'Vehicle Make',
+              value: vehicleSelected?.vehicle_make || 'N/A',
+            },
+            {
+              title: 'Vehicle Model',
+              value: vehicleSelected?.vehicle_model || 'N/A',
+            },
+            {
+              title: 'First Registration Date',
+              value: vehicleSelected?.first_registered_year || 'N/A',
+            },
+            {
+              title: 'Years of Manufacture',
+              value: vehicleSelected?.year_of_manufacture || 'N/A',
+            },
+            {
+              title: 'Engine Number',
+              value: vehicleSelected?.engine_number || 'N/A',
+            },
+            {
+              title: 'Chassis Number',
+              value: vehicleSelected?.chasis_number || 'N/A',
+            },
+            {
+              title: 'Engine Capacity',
+              value: vehicleSelected?.engine_capacity || 'N/A',
+            },
+            {
+              title: 'Power Rate',
+              value: vehicleSelected?.power_rate || 'N/A',
+            },
+          ],
+        }
+      : {
+          vehicle: [
+            {
+              title: 'Vehicle Make',
+              value: vehicleSelected?.vehicle_make || 'N/A',
+            },
+            {
+              title: 'Vehicle Model',
+              value: vehicleSelected?.vehicle_model || 'N/A',
+            },
+            {
+              title: "Vehicle's Year of Registration",
+              value: vehicleSelected?.first_registered_year || 'N/A',
+            },
+            {
+              title: 'Vehicle Financed By',
+              value: quote?.company?.name || 'N/A',
+            },
+          ],
+        }),
+    ...(isSingPassFlow
+      ? {}
+      : {
+          policy: [
+            {
+              title: 'Policy Start Date',
+              value:
+                quote?.data?.insurance_additional_info?.start_date || 'N/A',
+            },
+            {
+              title: 'Policy End Date',
+              value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
+            },
+          ],
+          driving_experiences: [
+            {
+              title: 'Years of Driving Experience',
+              value: quote?.data?.personal_info?.driving_experience
+                ? `${quote.data.personal_info.driving_experience} years`
+                : 'N/A',
+            },
+            {
+              title: 'Your No Claim Discount',
+              value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
+            },
+            {
+              title: 'Number of claims in the past 3 years',
+              value:
+                quote?.data?.insurance_additional_info?.no_of_claim || 'N/A',
+            },
+          ],
+        }),
+    ...(isSingPassFlow
+      ? {}
+      : {
+          vehicle_details: [
+            {
+              title: 'Chassis Number',
+              value: vehicleSelected?.chasis_number || 'N/A',
+            },
+            {
+              title: 'Engine Number',
+              value: vehicleSelected?.engine_number || 'N/A',
+            },
+            {
+              title: 'Vehicle Number',
+              value: vehicleSelected?.vehicle_number || 'N/A',
+            },
+          ],
+        }),
     policy_plan: [
       {
         title: 'Selected Plan',
@@ -298,62 +355,170 @@ export default function CompletePurchaseDetail({
             ...addonsIncludedData,
             ...filteredAddonsAdditionalDriver,
           ],
+    ...(isSingPassFlow
+      ? {
+          policy: [
+            {
+              title: 'Policy Start Date',
+              value:
+                quote?.data?.insurance_additional_info?.start_date || 'N/A',
+            },
+            {
+              title: 'Policy End Date',
+              value: quote?.data?.insurance_additional_info?.end_date || 'N/A',
+            },
+          ],
+        }
+      : {}),
+    ...(isSingPassFlow
+      ? {
+          owner: [
+            {
+              title: 'Name as per NRIC',
+              value: quote?.data?.personal_info?.name ?? 'N/A',
+            },
+            {
+              title: 'Gender',
+              value: quote?.data?.personal_info?.gender ?? 'N/A',
+            },
+            {
+              title: 'Date of Birth',
+              value: quote?.data?.personal_info?.date_of_birth ?? 'N/A',
+            },
+            {
+              title: 'NRIC/FIN',
+              value: quote?.data?.personal_info?.nric ?? 'N/A',
+            },
+            {
+              title: 'Marital Status',
+              value: quote?.data?.personal_info?.marital_status ?? 'N/A',
+            },
+            {
+              title: 'Address Line 1',
+              value: quote?.data?.personal_info?.address?.[0] ?? 'N/A',
+            },
+            {
+              title: 'Address Line 2',
+              value: quote?.data?.personal_info?.address?.[1]
+                ? quote?.data?.personal_info?.address?.[1]
+                : 'N/A',
+            },
+            {
+              title: 'Address Line 3',
+              value: quote?.data?.personal_info?.address?.[2]
+                ? quote?.data?.personal_info?.address?.[2]
+                : 'N/A',
+            },
+            {
+              title: 'Postal Code',
+              value: quote?.data?.personal_info?.post_code ?? 'N/A',
+            },
+          ],
+        }
+      : {
+          owner: [
+            {
+              title: 'Name as per NRIC',
+              value: quote?.data?.personal_info?.name ?? 'N/A',
+            },
+            {
+              title: 'NRIC/FIN',
+              value: quote?.data?.personal_info?.nric ?? 'N/A',
+            },
+            {
+              title: 'Gender',
+              value: quote?.data?.personal_info?.gender ?? 'N/A',
+            },
+            {
+              title: 'Marital Status',
+              value: quote?.data?.personal_info?.marital_status ?? 'N/A',
+            },
+            {
+              title: 'Address Line 1',
+              value: quote?.data?.personal_info?.address?.[0] ?? 'N/A',
+            },
+            {
+              title: 'Address Line 2',
+              value: quote?.data?.personal_info?.address?.[1]
+                ? quote?.data?.personal_info?.address?.[1]
+                : 'N/A',
+            },
+            {
+              title: 'Address Line 3',
+              value: quote?.data?.personal_info?.address?.[2]
+                ? quote?.data?.personal_info?.address?.[2]
+                : 'N/A',
+            },
+            {
+              title: 'Postal Code',
+              value: quote?.data?.personal_info?.post_code ?? 'N/A',
+            },
+          ],
+        }),
+    ...(isSingPassFlow
+      ? {
+          driving_licenses: [
+            {
+              title: 'Your No Claim Discount',
+              value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
+            },
+            {
+              title: 'Number of claims in the past 3 years',
+              value:
+                quote?.data?.insurance_additional_info?.no_of_claim || 'N/A',
+            },
+          ],
+
+          driving_experiences: [
+            {
+              title: 'Your No Claim Discount',
+              value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
+            },
+            {
+              title: 'Number of claims in the past 3 years',
+              value:
+                quote?.data?.insurance_additional_info?.no_of_claim || 'N/A',
+            },
+          ],
+        }
+      : {}),
     driver: getAdditionalDriverData(quote?.data?.add_named_driver_info),
-    owner: [
-      {
-        title: 'Name as per NRIC',
-        value: quote?.data?.personal_info?.name ?? 'N/A',
-      },
-      { title: 'NRIC/FIN', value: quote?.data?.personal_info?.nric ?? 'N/A' },
-      { title: 'Gender', value: quote?.data?.personal_info?.gender ?? 'N/A' },
-      {
-        title: 'Marital Status',
-        value: quote?.data?.personal_info?.marital_status ?? 'N/A',
-      },
-      {
-        title: 'Address Line 1',
-        value: quote?.data?.personal_info?.address?.[0] ?? 'N/A',
-      },
-      {
-        title: 'Address Line 2',
-        value: quote?.data?.personal_info?.address?.[1]
-          ? quote?.data?.personal_info?.address?.[1]
-          : 'N/A',
-      },
-      {
-        title: 'Address Line 3',
-        value: quote?.data?.personal_info?.address?.[2]
-          ? quote?.data?.personal_info?.address?.[2]
-          : 'N/A',
-      },
-      {
-        title: 'Postal Code',
-        value: quote?.data?.personal_info?.post_code ?? 'N/A',
-      },
-    ],
   };
 
   const sections = [
     {
       key: 'personal',
-      title: 'Personal Information',
+      title: isSingPassFlow ? 'Contact Info' : 'Personal Information',
     },
-    {
-      key: 'vehicle',
-      title: 'Vehicle Information',
-      description: `${vehicleSelected?.vehicle_make} ${vehicleSelected?.vehicle_model} ${vehicleSelected?.chasis_number}`,
-      icon: <CarIcon className='text-white' />,
-    },
-    {
-      key: 'policy',
-      title: 'Policy Start & End Date',
-      description: `${plan?.title} Plan`,
-      icon: <PolicyPlanIcon className='text-white' />,
-    },
-    {
-      key: 'driving_experiences',
-      title: 'Driving Experiences',
-    },
+    ...(isSingPassFlow
+      ? [
+          {
+            key: 'vehicle_details',
+            title: 'Vehicle Details',
+          },
+        ]
+      : [
+          {
+            key: 'vehicle',
+            title: 'Vehicle Information',
+            description: `${vehicleSelected?.vehicle_make} ${vehicleSelected?.vehicle_model} ${vehicleSelected?.chasis_number}`,
+            icon: <CarIcon className='text-white' />,
+          },
+        ]),
+    ...(isSingPassFlow
+      ? []
+      : [
+          {
+            key: 'policy',
+            title: 'Policy Start & End Date',
+            description: `${plan?.title} Plan`,
+            icon: <PolicyPlanIcon className='text-white' />,
+          },
+          {
+            key: 'driving_experiences',
+            title: 'Driving Experiences',
+          },
+        ]),
     {
       key: 'policy_plan',
       title: 'Policy Plan',
@@ -364,16 +529,42 @@ export default function CompletePurchaseDetail({
       description: 'Additional Named Driver(s)',
       icon: <AddOnsSelectedIcon className='text-white' />,
     },
-    {
-      key: 'vehicle_details',
-      title: 'Vehicle Details',
-    },
+    ...(isSingPassFlow
+      ? [
+          {
+            key: 'policy',
+            title: 'Policy Start & End Date',
+            description: `${plan?.title} Plan`,
+            icon: <PolicyPlanIcon className='text-white' />,
+          },
+        ]
+      : []),
+    ...(isSingPassFlow
+      ? []
+      : [
+          {
+            key: 'vehicle_details',
+            title: 'Vehicle Details',
+          },
+        ]),
     {
       key: 'owner',
       title: 'Personal Info (Main Driver)',
       description: `${quote?.data?.personal_info?.name}  ${quote?.data?.vehicle_info_selected?.vehicle_number}`,
       icon: <PersonIcon className='text-white' />,
     },
+    ...(isSingPassFlow
+      ? [
+          {
+            key: 'driving_licenses',
+            title: 'Driving Licenses',
+          },
+          {
+            key: 'driving_experiences',
+            title: 'Driving Experiences',
+          },
+        ]
+      : []),
     {
       key: 'driver',
       title: 'Additional Driver Details',
@@ -482,6 +673,7 @@ export default function CompletePurchaseDetail({
                     editRoute={ROUTES.INSURANCE.ADD_ON}
                     isPendingSave={isPendingSave}
                     isPendingPay={isPendingPay}
+                    isSingPassFlow={isSingPassFlow}
                   />
                 ));
               }
@@ -508,6 +700,7 @@ export default function CompletePurchaseDetail({
                       editRoute={routerBySectionKey('policy_plan')}
                       isPendingSave={isPendingSave}
                       isPendingPay={isPendingPay}
+                      isSingPassFlow={isSingPassFlow}
                     />
                     <ReviewSection
                       key='addons'
@@ -520,6 +713,7 @@ export default function CompletePurchaseDetail({
                       editRoute={routerBySectionKey('addons')}
                       isPendingSave={isPendingSave}
                       isPendingPay={isPendingPay}
+                      isSingPassFlow={isSingPassFlow}
                     />
                   </div>
                 );
@@ -547,6 +741,7 @@ export default function CompletePurchaseDetail({
                   editRoute={routerBySectionKey(section.key)}
                   isPendingSave={isPendingSave}
                   isPendingPay={isPendingPay}
+                  isSingPassFlow={isSingPassFlow}
                 />
               );
             })}

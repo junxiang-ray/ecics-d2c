@@ -27,6 +27,7 @@ interface ReviewSectionProps {
   isPendingPay?: boolean;
   sectionKey?: string;
   productType?: ProductType;
+  isSingPassFlow?: boolean;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
@@ -42,6 +43,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   isPendingPay,
   sectionKey,
   productType,
+  isSingPassFlow,
 }) => {
   const router = useRouterWithQuery();
   const isMaid = productType === ProductType.MAID;
@@ -95,24 +97,33 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 </div>
               </div>
               <div onClick={onToggle} className='cursor-pointer'>
-                {isExpanded && !isFinalized && (
-                  <div className='gap flex flex-row items-center'>
-                    <p
-                      className={`mr-2 font-bold ${
-                        isPendingSave || isPendingPay
-                          ? 'cursor-not-allowed text-gray-400'
-                          : 'cursor-pointer text-[#00ADEF]'
-                      }`}
-                      onClick={() => {
-                        if (!isPendingSave && !isPendingPay) {
-                          handleEditClick();
-                        }
-                      }}
-                    >
-                      Edit
-                    </p>
-                  </div>
-                )}
+                {isExpanded &&
+                  !isFinalized &&
+                  !(
+                    isSingPassFlow &&
+                    [
+                      'Driving Licenses',
+                      'Vehicle Details',
+                      'Personal Info (Main Driver)',
+                    ].includes(title)
+                  ) && (
+                    <div className='gap flex flex-row items-center'>
+                      <p
+                        className={`mr-2 font-bold ${
+                          isPendingSave || isPendingPay
+                            ? 'cursor-not-allowed text-gray-400'
+                            : 'cursor-pointer text-[#00ADEF]'
+                        }`}
+                        onClick={() => {
+                          if (!isPendingSave && !isPendingPay) {
+                            handleEditClick();
+                          }
+                        }}
+                      >
+                        Edit
+                      </p>
+                    </div>
+                  )}
               </div>
             </div>
           </div>

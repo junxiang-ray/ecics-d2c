@@ -33,6 +33,8 @@ import { InputField } from '@/components/ui/form/inputfield';
 import { MOTOR_QUOTE } from '@/constants';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
+import { usePostCheckVehicle } from '@/hook/insurance/common';
+import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import { QuoteModal } from './modal/QuoteModal';
@@ -45,8 +47,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { useGetQuote } from '@/hook/insurance/quote';
-import { usePostCheckVehicle } from '@/hook/insurance/common';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -216,7 +216,10 @@ const SingpassPolicyDetailForm = ({
   const key = searchParams.get('key') || '';
 
   const { data: quoteInfo } = useGetQuote(key);
-  const userInfoCar = quoteInfo?.data.data_from_singpass;
+  // const userInfoCar = quoteInfo?.data.data_from_singpass;
+
+  const carUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
+  const userInfoCar = carUserInfo ? JSON.parse(carUserInfo) : null;
 
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
