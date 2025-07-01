@@ -16,8 +16,9 @@ import {
   adjustDateInDayjs,
   convertDateToDDMMYYYY,
   dateToDayjs,
+  extractYear,
 } from '@/libs/utils/date-utils';
-import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 import { PricingSummary } from '@/components/page/FeeBar';
 import UnMatchVehicleModal from '@/components/page/insurance/policy-detail/modal/UnMatchVehicleModal';
@@ -31,18 +32,18 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { MOTOR_QUOTE } from '@/constants';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { QuoteModal } from './modal/QuoteModal';
 import {
   NCD_OPTIONS,
   NO_CLAIM_OPTIONS,
   NumberClaim,
-  NumberDriverExperience,
   ProductType,
   REG_YEAR_OPTIONS,
 } from './options';
@@ -54,7 +55,13 @@ dayjs.extend(isSameOrBefore);
 const sryMsg =
   'Please contact us for assistance at +65 6206 5588 or customerservice@ecics.com.sg';
 
-const singpassFlowFields = {
+type MissingFields = {
+  engine_number?: boolean;
+  chassis_number?: boolean;
+  reg_yyyy?: boolean;
+};
+
+const singpassFlowFields = (missing: MissingFields = {}) => ({
   [MOTOR_QUOTE.hire_purchase]: z.number({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
@@ -86,25 +93,20 @@ const singpassFlowFields = {
     .refine((val) => val !== NumberClaim.TWO_MANY_CLAIMS, {
       message: sryMsg,
     }),
-  [MOTOR_QUOTE.owner_drv_exp]: z.coerce
-    .number({
-      required_error: 'This field is required',
-      invalid_type_error: 'This field is required',
-    })
-    .min(2, { message: sryMsg }),
-  [MOTOR_QUOTE.reg_yyyy]: z.string({
-    required_error: 'This field is required',
-  }),
   [MOTOR_QUOTE.engine_number]: z.string().optional(),
-  [MOTOR_QUOTE.chassis_number]: z.string({
-    required_error: 'This field is required',
-  }),
+  [MOTOR_QUOTE.chassis_number]: missing?.chassis_number
+    ? z.string({ required_error: 'This field is required' })
+    : z.string().optional(),
+  [MOTOR_QUOTE.reg_yyyy]: missing?.reg_yyyy
+    ? z.string({ required_error: 'This field is required' })
+    : z.string().optional(),
   [MOTOR_QUOTE.promo_code]: z.string().optional(),
-};
+});
 
 const ID_OPTION_OTHER = 2; //-- Others (Not Available in this list) --
-const createSchema = () => {
-  const baseSchema = z.object(singpassFlowFields);
+
+const createSchema = (missing: MissingFields = {}) => {
+  const baseSchema = z.object(singpassFlowFields(missing));
 
   return baseSchema
     .refine(
@@ -161,34 +163,10 @@ const createSchema = () => {
           });
         }
       }
-
-      // driver experience validation based on age at policy start date
-      if (
-        data[MOTOR_QUOTE.owner_dob] &&
-        data[MOTOR_QUOTE.owner_drv_exp] &&
-        data[MOTOR_QUOTE.start_date]
-      ) {
-        const age = calculateAge(
-          data[MOTOR_QUOTE.owner_dob] as string,
-          data[MOTOR_QUOTE.start_date] as Date,
-        );
-        const drvExp = Number(data[MOTOR_QUOTE.owner_drv_exp]);
-        const maxDrvExp = age - 18;
-
-        if (drvExp > maxDrvExp) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message:
-              "Please provide driving experience suitable for the driver's age.",
-            path: [MOTOR_QUOTE.owner_drv_exp],
-          });
-        }
-      }
     });
 };
 
-const singpassSchema = z.object(singpassFlowFields);
-type SingpassFlowFields = z.infer<typeof singpassSchema>;
+type SingpassFlowFields = z.infer<ReturnType<typeof createSchema>>;
 type FormData = SingpassFlowFields;
 
 interface PolicyDetailProps extends FormProps {
@@ -208,6 +186,7 @@ const SingpassPolicyDetailForm = ({
 }: PolicyDetailProps) => {
   const router = useRouter();
   const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
 
@@ -216,14 +195,17 @@ const SingpassPolicyDetailForm = ({
   const key = searchParams.get('key') || '';
 
   const { data: quoteInfo } = useGetQuote(key);
-  // const userInfoCar = quoteInfo?.data.data_from_singpass;
+  useEffect(() => {
+    const userInfoCarSingpass = quoteInfo?.data.data_from_singpass;
+    if (userInfoCarSingpass && Object.keys(userInfoCarSingpass).length > 0) {
+      dispatch(setUserInfoCar(userInfoCarSingpass));
+    }
+  }, [quoteInfo, dispatch]);
 
-  const carUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
-  const userInfoCar = carUserInfo ? JSON.parse(carUserInfo) : null;
+  const userInfoCar = useAppSelector((state) => state.userInfoCar?.userInfoCar);
 
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
-  const schema = useMemo(() => createSchema(), []);
   const [showCSModal, setShowCSModal] = useState<{
     visible: boolean;
     description: string;
@@ -239,6 +221,8 @@ const SingpassPolicyDetailForm = ({
     chassis_number?: boolean;
     reg_yyyy?: boolean;
   }>({});
+
+  const schema = useMemo(() => createSchema(missingFields), [missingFields]);
 
   const { mutate: postCheckVehicle, isSuccess } = usePostCheckVehicle(() => {
     setShowUnMatchModal(true);
@@ -262,7 +246,6 @@ const SingpassPolicyDetailForm = ({
   const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
-  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
 
   const handleBackLogin = () => {
     router.push(ROUTES.MOTOR.LOGIN);
@@ -278,21 +261,6 @@ const SingpassPolicyDetailForm = ({
     }
   }, [hire_purchase]);
 
-  // to open Customer Service Modal - Unable to provide quote online
-  useEffect(() => {
-    if (
-      touchedFields[MOTOR_QUOTE.owner_drv_exp] &&
-      drvExp !== null &&
-      drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
-    ) {
-      setShowCSModal({
-        visible: true,
-        description:
-          'The listed driver has less than 2 years of driving experience',
-      });
-    }
-  }, [drvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
-
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
       setShowCSModal({
@@ -307,8 +275,23 @@ const SingpassPolicyDetailForm = ({
   useEffect(() => {
     onSaveRegister(() => {
       const value = methods.getValues();
-      let vehicle_info_selected;
-      let personal_info;
+      const vehicle_info_selected = {
+        vehicle_make: userInfoCar.vehicles[0].make.value,
+        vehicle_model: userInfoCar.vehicles[0].model.value,
+        first_registered_year: missingFields.reg_yyyy
+          ? (value[MOTOR_QUOTE.reg_yyyy] as string)
+          : extractYear(userInfoCar.vehicles[0].firstregistrationdate.value),
+      };
+
+      const personalInfo = quoteInfo?.data?.personal_info;
+      const personal_info = {
+        date_of_birth: dayjs(personalInfo?.date_of_birth, 'DD/MM/YYYY').format(
+          'DD/MM/YYYY',
+        ),
+        driving_experience: personalInfo?.driving_experience || '',
+        phone: personalInfo?.phone || '',
+        email: personalInfo?.email || '',
+      };
 
       const payload = {
         key: key,
@@ -382,8 +365,23 @@ const SingpassPolicyDetailForm = ({
   );
 
   const handleSubmit = (value: FormData) => {
-    let vehicle_info_selected;
-    let personal_info;
+    const vehicle_info_selected = {
+      vehicle_make: userInfoCar.vehicles[0].make.value,
+      vehicle_model: userInfoCar.vehicles[0].model.value,
+      first_registered_year: missingFields.reg_yyyy
+        ? (value[MOTOR_QUOTE.reg_yyyy] as string)
+        : extractYear(userInfoCar.vehicles[0].firstregistrationdate.value),
+    };
+
+    const personalInfo = quoteInfo?.data?.personal_info;
+    const personal_info = {
+      date_of_birth: dayjs(personalInfo?.date_of_birth, 'DD/MM/YYYY').format(
+        'DD/MM/YYYY',
+      ),
+      driving_experience: personalInfo?.driving_experience || '',
+      phone: personalInfo?.phone || '',
+      email: personalInfo?.email || '',
+    };
 
     const noOfClaim = value[MOTOR_QUOTE.owner_no_of_claims];
     const promoCode =
@@ -407,6 +405,7 @@ const SingpassPolicyDetailForm = ({
         ),
       },
     };
+
     onSubmit(payload);
   };
 

@@ -122,9 +122,9 @@ export const PolicyDetail = ({
       payload = {
         ...payload,
         personal_info: personal_info,
-        vehicle_info_selected: selectedVehicle,
       };
     }
+
     generateQuote(payload)
       .then((res) => {
         if (res) {

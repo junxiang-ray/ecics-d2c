@@ -87,7 +87,6 @@ const ConfirmInfoModal = ({
         date_of_birth: parsed.dob?.value
           ? convertDateToDDMMYYYY(parsed.dob.value)
           : '',
-        year_of_registration: parsed.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
             ? drivingYears >= 6

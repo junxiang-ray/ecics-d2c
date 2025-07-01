@@ -247,7 +247,6 @@ const ReviewInfoDetail = () => {
           date_of_birth: parsedSingpass.dob?.value
             ? convertDateToDDMMYYYY(parsedSingpass.dob.value)
             : '',
-          year_of_registration: parsedSingpass.year_of_registration || '',
           driving_experience: String(drivingYears) || '',
           phone: `${parsedSingpass.mobileno?.nbr?.value || ''}`,
           email: parsedSingpass.email?.value?.toLowerCase() || '',
