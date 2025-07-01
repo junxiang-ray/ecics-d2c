@@ -66,9 +66,11 @@ const LoginPage = () => {
           src={bgMobile}
           alt='Background Image'
         />
-        <div className='text-center text-[18px] font-semibold leading-[100%] text-brand-blue'>
-          Get an instant quote with{' '}
-          <span className='text-red-logo'>Myinfo</span> login
+        <div
+          className={`text-center text-[18px] font-semibold leading-[100%] text-[#007AFF]`}
+        >
+          Get an instant quote with your <br />
+          <span className='ml-[4px] text-red-logo'>Personal Details</span>
         </div>
         <MyInfoLoginSection
           promoCode={promoCodeDefault}
@@ -102,16 +104,10 @@ const LoginPage = () => {
           <div className='flex w-full justify-center'>
             <img src='ecics.svg' alt='Logo' />
           </div>
-          <div className='mt-4 text-center text-2xl font-semibold text-brand-blue'>
-            Get an instant quote with <br />
-            <span className='text-red-logo'>Myinfo</span> login
+          <div className='mt-4 text-center text-2xl font-semibold text-[#00adef]'>
+            Get a quote with your <br />
+            <span className='ml-[4px] text-red-logo'>Personal Details</span>
           </div>
-          {productType === ProductType.MAID && (
-            <div className='mt-4 text-center text-sm'>
-              Save time by securely retrieving your personal info directly from
-              Myinfo
-            </div>
-          )}
           <MyInfoLoginSection
             promoCode={promoCodeDefault}
             partnerCode={partnerCode}
