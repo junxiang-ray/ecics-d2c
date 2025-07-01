@@ -123,7 +123,6 @@ export const VehicleSelectionModal = ({
           date_of_birth: updatedParsed.dob?.value
             ? convertDateToDDMMYYYY(updatedParsed.dob.value)
             : '',
-          year_of_registration: updatedParsed.year_of_registration || '',
           driving_experience:
             qdlClasses.length > 0
               ? drivingYears >= 6

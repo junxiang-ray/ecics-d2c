@@ -22,11 +22,6 @@ const LoginPage = () => {
     ? ProductType.MAID
     : ProductType.CAR;
 
-  useEffect(() => {
-    sessionStorage.clear();
-    localStorage.clear();
-  }, []);
-
   const partnerCode = searchParams.get('partner_code') || '';
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
 
@@ -38,7 +33,6 @@ const LoginPage = () => {
       saveToLocalStorage({ [PROMO_CODE]: promoCodeDefault });
     }
   }, [partnerCode, promoCodeDefault]);
-
   const { mutate: verifyPromoCode, data: promoCodeData } =
     useVerifyPromoCode(productType);
 
