@@ -44,6 +44,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   productType,
 }) => {
   const router = useRouterWithQuery();
+  const isSingPassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
   const isMaid = productType === ProductType.MAID;
   const isFinalized = useAppSelector((state) =>
     isMaid
@@ -95,24 +98,26 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 </div>
               </div>
               <div onClick={onToggle} className='cursor-pointer'>
-                {isExpanded && !isFinalized && (
-                  <div className='gap flex flex-row items-center'>
-                    <p
-                      className={`mr-2 font-bold ${
-                        isPendingSave || isPendingPay
-                          ? 'cursor-not-allowed text-gray-400'
-                          : 'cursor-pointer text-[#00ADEF]'
-                      }`}
-                      onClick={() => {
-                        if (!isPendingSave && !isPendingPay) {
-                          handleEditClick();
-                        }
-                      }}
-                    >
-                      Edit
-                    </p>
-                  </div>
-                )}
+                {isExpanded &&
+                  !isFinalized &&
+                  !(isSingPassFlow && title === 'Employer Details') && (
+                    <div className='gap flex flex-row items-center'>
+                      <p
+                        className={`mr-2 font-bold ${
+                          isPendingSave || isPendingPay
+                            ? 'cursor-not-allowed text-gray-400'
+                            : 'cursor-pointer text-[#00ADEF]'
+                        }`}
+                        onClick={() => {
+                          if (!isPendingSave && !isPendingPay) {
+                            handleEditClick();
+                          }
+                        }}
+                      >
+                        Edit
+                      </p>
+                    </div>
+                  )}
               </div>
             </div>
           </div>
