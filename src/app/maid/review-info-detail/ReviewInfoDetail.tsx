@@ -189,7 +189,7 @@ export const ReviewInfoDetailMaid = ({
           </div>
         </div>
 
-        <div className='mt-16 md:mt-20'>
+        <div className='scrollbar-hide mt-16 h-screen overflow-y-auto pb-44 md:mt-20 md:pb-0'>
           <p className='mb-4 text-[22px] font-bold leading-[35px] text-[#080808] md:text-[32px]'>
             Review your Myinfo details
           </p>

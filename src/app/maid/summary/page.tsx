@@ -197,7 +197,7 @@ export default function Summary() {
 
   return (
     <div className='flex w-full justify-center '>
-      <div className='w-full max-w-[1280px]'>
+      <div className='scrollbar-hide h-screen w-full max-w-[1280px] overflow-y-auto'>
         <div className='flex w-full flex-col items-center justify-center gap-6 px-6 py-4'>
           {_renderCongratulation()}
           <p className='text-[15px] font-normal leading-5 text-[#9f9f9f]'>
