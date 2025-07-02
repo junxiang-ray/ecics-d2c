@@ -202,7 +202,7 @@ export default function CompletePurchaseDetail({
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
-    mode: 'onChange',
+    mode: 'onTouched',
     reValidateMode: 'onChange',
     criteriaMode: 'all',
     values: initFormDate,
