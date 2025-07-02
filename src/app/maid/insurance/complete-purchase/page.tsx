@@ -3,13 +3,13 @@
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import MaidInsuranceLayout from '../MaidInsuranceLayout';
 
-interface PolicyDetailPageProps {
+interface CompletePurchaseDetailPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default function PolicyDetailPage({
+export default function CompletePurchaseDetailPage({
   searchParams,
-}: PolicyDetailPageProps) {
+}: CompletePurchaseDetailPageProps) {
   const params = searchParams;
   const isManual = params?.manual === 'true' ? true : false;
 
