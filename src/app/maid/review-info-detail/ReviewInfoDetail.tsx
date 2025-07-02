@@ -1,6 +1,6 @@
 'use client';
 
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { MAID_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
@@ -12,7 +12,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ModalProgress } from './ModalProgress';
+import { ModalAge } from './ModalAge';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useAppDispatch } from '@/redux/store';
@@ -57,7 +57,7 @@ export const ReviewInfoDetailMaid = ({
   const partnerCode = searchParams.get('partner_code') || '';
   const promoDefault = searchParams.get('promo_code') || '';
   const [key, setKey] = useState(initKey);
-  const [isShowModal, setIsShowModal] = useState(false);
+  const [isShowModalAge, setIsShowModalAge] = useState(false);
 
   const {
     mutate: savePersonalInfoMaid,
@@ -86,6 +86,14 @@ export const ReviewInfoDetailMaid = ({
   } = methods;
 
   const handleSubmit = async (values: FormData) => {
+    const dob = personalInfo?.dob?.value;
+    if (dob) {
+      const age = dayjs().diff(dayjs(dob), 'year');
+      if (age < 21 || age > 120) {
+        setIsShowModalAge(true);
+        return;
+      }
+    }
     const data = {
       key: key,
       partner_code: partnerCode,
@@ -280,10 +288,10 @@ export const ReviewInfoDetailMaid = ({
         </div>
       </div>
 
-      {/* <ModalProgress
-        isShowModal={isShowModal}
-        setIsShowModal={setIsShowModal}
-      /> */}
+      <ModalAge
+        isShowModal={isShowModalAge}
+        setIsShowModal={setIsShowModalAge}
+      />
     </div>
   );
 };
