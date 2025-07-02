@@ -31,7 +31,12 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { ProductType } from '../basic-detail/options';
 import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
 import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
-import { ErrorModalType } from '@/libs/enums/modalEnums';
+
+enum ErrorModalType {
+  NONE = 0,
+  WARNING_PAYMENT = 1,
+  PAYMENT_GATEWAY = 2,
+}
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
