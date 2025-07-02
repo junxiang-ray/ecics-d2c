@@ -448,11 +448,9 @@ const ReviewInfoDetail = () => {
                             }
                           >
                             <>
-                              <div className='text-sm font-semibold'>
-                                Marital Status
-                              </div>
                               <DropdownField
                                 name='marital_status'
+                                label='Marital Status'
                                 placeholder='Select Marital Status'
                                 options={MARITAL_STATUS_OPTIONS}
                                 isRequired
@@ -469,7 +467,9 @@ const ReviewInfoDetail = () => {
 
                       return (
                         <div key={index}>
-                          <div className='font-medium'>{item.title}</div>
+                          <div className='text-base font-medium'>
+                            {item.title}
+                          </div>
                           <div className='whitespace-normal break-words'>
                             {item.value}
                           </div>
