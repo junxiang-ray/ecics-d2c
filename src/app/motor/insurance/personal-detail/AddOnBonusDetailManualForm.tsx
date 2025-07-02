@@ -183,7 +183,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
-    defaultValues: initFormDate,
+    values: initFormDate,
   });
 
   const planFreeTotal =

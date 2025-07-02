@@ -306,7 +306,7 @@ const HelpersDetail = (props: Props) => {
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
-    defaultValues: initFormDate,
+    values: initFormDate,
   });
 
   const selectedCompanyName = methods.watch(MAID_QUOTE.company_name);
