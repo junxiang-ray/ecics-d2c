@@ -51,9 +51,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 }) => {
   const router = useRouterWithQuery();
   const { isMobile } = useDeviceDetection();
-  const isSingPassFlow = useAppSelector(
-    (state) => state.general.isSingpassFlow,
-  );
+
   const isMaid = productType === ProductType.MAID;
   const isFinalized = useAppSelector((state) =>
     isMaid
