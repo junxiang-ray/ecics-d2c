@@ -40,6 +40,7 @@ import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -170,6 +171,7 @@ const PolicyDetailForm = ({
   });
   const [descriptionQuote, setDescriptionQuote] = useState('');
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
+  const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -344,6 +346,10 @@ const PolicyDetailForm = ({
   };
 
   const handleBackLogin = () => {
+    if (isSingpassFlow) {
+      router.push(ROUTES.MAID.REVIEW_INFO_DETAIL);
+      return;
+    }
     router.push(ROUTES.MAID.LOGIN);
   };
 
@@ -410,7 +416,9 @@ const PolicyDetailForm = ({
                 )}
                 <div className='flex flex-col gap-3'>
                   <div className='text-base font-bold underline decoration-gray-400'>
-                    Basic Information
+                    {isSingpassFlow
+                      ? 'Helper’s Information'
+                      : 'Basic Information'}
                   </div>
                   <div className='grid grid-cols-1 gap-6 gap-y-4 md:grid-cols-3'>
                     <Form.Item
@@ -558,7 +566,9 @@ const PolicyDetailForm = ({
               disabled={isLoading}
               onClick={(e) => {
                 e.stopPropagation();
-                handleBackLogin?.();
+                isSingpassFlow
+                  ? setIsQuoteModalVisible(true)
+                  : handleBackLogin?.();
               }}
             />
             <PrimaryButton
@@ -572,6 +582,13 @@ const PolicyDetailForm = ({
             </PrimaryButton>
           </div>
         </div>
+        <ModalImportant
+          isShowPopupImportant={isQuoteModalVisible}
+          setIsShowPopupImportant={setIsQuoteModalVisible}
+          handleRedirect={() => {
+            handleBackLogin?.();
+          }}
+        />
       </div>
     </>
   );

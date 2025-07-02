@@ -51,6 +51,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 }) => {
   const router = useRouterWithQuery();
   const { isMobile } = useDeviceDetection();
+  const isSingPassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
   const isMaid = productType === ProductType.MAID;
   const isFinalized = useAppSelector((state) =>
     isMaid
@@ -110,6 +113,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                       'Driving Licenses',
                       'Vehicle Details',
                       'Personal Info (Main Driver)',
+                      'Employer Details',
                     ].includes(title)
                   ) && (
                     <div className='gap flex flex-row items-center'>

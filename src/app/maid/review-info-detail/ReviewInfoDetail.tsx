@@ -1,6 +1,6 @@
 'use client';
 
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { MAID_QUOTE } from '@/constants';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
@@ -12,12 +12,13 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ModalProgress } from './ModalProgress';
+import { ModalAge } from './ModalAge';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useAppDispatch } from '@/redux/store';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import dayjs from 'dayjs';
+import { ROUTES } from '@/constants/routes';
 
 interface Props {
   personalInfo: any;
@@ -56,7 +57,7 @@ export const ReviewInfoDetailMaid = ({
   const partnerCode = searchParams.get('partner_code') || '';
   const promoDefault = searchParams.get('promo_code') || '';
   const [key, setKey] = useState(initKey);
-  const [isShowModal, setIsShowModal] = useState(false);
+  const [isShowModalAge, setIsShowModalAge] = useState(false);
 
   const {
     mutate: savePersonalInfoMaid,
@@ -85,6 +86,14 @@ export const ReviewInfoDetailMaid = ({
   } = methods;
 
   const handleSubmit = async (values: FormData) => {
+    const dob = personalInfo?.dob?.value;
+    if (dob) {
+      const age = dayjs().diff(dayjs(dob), 'year');
+      if (age < 21 || age > 120) {
+        setIsShowModalAge(true);
+        return;
+      }
+    }
     const data = {
       key: key,
       partner_code: partnerCode,
@@ -180,7 +189,7 @@ export const ReviewInfoDetailMaid = ({
           </div>
         </div>
 
-        <div className='mt-16 md:mt-20'>
+        <div className='mt-16 h-screen overflow-y-auto pb-44 md:mt-20 md:pb-0'>
           <p className='mb-4 text-[22px] font-bold leading-[35px] text-[#080808] md:text-[32px]'>
             Review your Myinfo details
           </p>
@@ -260,7 +269,7 @@ export const ReviewInfoDetailMaid = ({
         <div className='flex w-full max-w-[1280px] flex-row items-center justify-between gap-6'>
           <Button
             onClick={() => {
-              setIsShowModal(true);
+              router.push(ROUTES.MAID.LOGIN);
             }}
             disabled={isPending}
             className='h-[40px] w-[90vw] rounded-none border border-[#FF3B30] bg-white text-center text-base font-bold leading-[21px] !text-[#FF3B30] md:w-40'
@@ -279,10 +288,10 @@ export const ReviewInfoDetailMaid = ({
         </div>
       </div>
 
-      {/* <ModalProgress
-        isShowModal={isShowModal}
-        setIsShowModal={setIsShowModal}
-      /> */}
+      <ModalAge
+        isShowModal={isShowModalAge}
+        setIsShowModal={setIsShowModalAge}
+      />
     </div>
   );
 };
