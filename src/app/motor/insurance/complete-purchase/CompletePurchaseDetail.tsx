@@ -164,6 +164,23 @@ export default function CompletePurchaseDetail({
     ]);
   };
 
+  const getDrivingLicenses = (drivingData?: any) => {
+    if (!drivingData || !drivingData.qdl?.classes) return [];
+
+    const validityDesc = drivingData.qdl.validity?.desc || '';
+    const expiryDate = drivingData.qdl.expirydate?.value || '';
+
+    return drivingData.qdl.classes.map((cls: any) => ({
+      title: '',
+      value: {
+        class: cls.class?.value,
+        issuedDate: cls.issuedate?.value,
+        expiryDate: expiryDate,
+        validity: validityDesc,
+      },
+    }));
+  };
+
   const getDriverSections = (drivers: any[] = []) => {
     return drivers.map((driver, index) => {
       const data = [
@@ -257,7 +274,9 @@ export default function CompletePurchaseDetail({
             },
             {
               title: 'Engine Capacity',
-              value: vehicleSelected?.engine_capacity || 'N/A',
+              value: vehicleSelected?.engine_capacity
+                ? `${vehicleSelected?.engine_capacity} CC`
+                : 'N/A',
             },
             {
               title: 'Power Rate',
@@ -457,18 +476,9 @@ export default function CompletePurchaseDetail({
         }),
     ...(isSingPassFlow
       ? {
-          driving_licenses: [
-            {
-              title: 'Your No Claim Discount',
-              value: `${quote?.data?.insurance_additional_info?.no_claim_discount}%`,
-            },
-            {
-              title: 'Number of claims in the past 3 years',
-              value:
-                quote?.data?.insurance_additional_info?.no_of_claim || 'N/A',
-            },
-          ],
-
+          driving_licenses: getDrivingLicenses(
+            quote?.data?.data_from_singpass?.drivinglicence,
+          ),
           driving_experiences: [
             {
               title: 'Your No Claim Discount',

@@ -195,14 +195,31 @@ const SingpassPolicyDetailForm = ({
   const key = searchParams.get('key') || '';
 
   const { data: quoteInfo } = useGetQuote(key);
+
   useEffect(() => {
-    const userInfoCarSingpass = quoteInfo?.data.data_from_singpass;
-    if (userInfoCarSingpass && Object.keys(userInfoCarSingpass).length > 0) {
-      dispatch(setUserInfoCar(userInfoCarSingpass));
+    const carUserInfo = quoteInfo?.data;
+
+    // Data has been updated later via Singpass or user selected manually
+    const hasSelectedVehicle = !!userInfo?.vehicle_selected;
+    const hasListAfterSelected =
+      userInfo?.list_after_selected_vehicle?.length > 0;
+
+    const hasSingpassVehicles =
+      userInfo?.data_from_singpass?.vehicles?.length > 0;
+
+    if (
+      carUserInfo &&
+      !hasSelectedVehicle &&
+      !hasListAfterSelected &&
+      !hasSingpassVehicles
+    ) {
+      dispatch(setUserInfoCar(carUserInfo));
     }
   }, [quoteInfo, dispatch]);
 
-  const userInfoCar = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+  const userInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+
+  const userInfoCarSingPass = userInfo.data_from_singpass;
 
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
@@ -224,7 +241,7 @@ const SingpassPolicyDetailForm = ({
 
   const schema = useMemo(() => createSchema(missingFields), [missingFields]);
 
-  const { mutate: postCheckVehicle, isSuccess } = usePostCheckVehicle(() => {
+  const { mutate: postCheckVehicle } = usePostCheckVehicle(() => {
     setShowUnMatchModal(true);
   });
 
@@ -238,7 +255,7 @@ const SingpassPolicyDetailForm = ({
 
   const {
     watch,
-    formState: { errors, touchedFields },
+    formState: { errors },
   } = methods;
 
   // input field change
@@ -276,11 +293,20 @@ const SingpassPolicyDetailForm = ({
     onSaveRegister(() => {
       const value = methods.getValues();
       const vehicle_info_selected = {
-        vehicle_make: userInfoCar.vehicles[0].make.value,
-        vehicle_model: userInfoCar.vehicles[0].model.value,
+        vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
+        vehicle_make: userInfo?.vehicle_selected?.make.value,
+        vehicle_model: userInfo?.vehicle_selected?.model.value,
         first_registered_year: missingFields.reg_yyyy
           ? (value[MOTOR_QUOTE.reg_yyyy] as string)
-          : extractYear(userInfoCar.vehicles[0].firstregistrationdate.value),
+          : extractYear(
+              userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
+            ),
+        year_of_manufacture:
+          userInfo?.vehicle_selected?.yearofmanufacture.value,
+        engine_number: userInfo?.vehicle_selected?.engineno.value,
+        chasis_number: userInfo?.vehicle_selected?.chassisno.value,
+        engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value,
+        power_rate: userInfo?.vehicle_selected?.powerrate.value,
       };
 
       const personalInfo = quoteInfo?.data?.personal_info;
@@ -366,11 +392,19 @@ const SingpassPolicyDetailForm = ({
 
   const handleSubmit = (value: FormData) => {
     const vehicle_info_selected = {
-      vehicle_make: userInfoCar.vehicles[0].make.value,
-      vehicle_model: userInfoCar.vehicles[0].model.value,
+      vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
+      vehicle_make: userInfo?.vehicle_selected?.make.value,
+      vehicle_model: userInfo?.vehicle_selected?.model.value,
       first_registered_year: missingFields.reg_yyyy
         ? (value[MOTOR_QUOTE.reg_yyyy] as string)
-        : extractYear(userInfoCar.vehicles[0].firstregistrationdate.value),
+        : extractYear(
+            userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
+          ),
+      year_of_manufacture: userInfo?.vehicle_selected?.yearofmanufacture.value,
+      engine_number: userInfo?.vehicle_selected?.engineno.value,
+      chasis_number: userInfo?.vehicle_selected?.chassisno.value,
+      engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value,
+      power_rate: userInfo?.vehicle_selected?.powerrate.value,
     };
 
     const personalInfo = quoteInfo?.data?.personal_info;
@@ -503,7 +537,10 @@ const SingpassPolicyDetailForm = ({
         >
           <div className='max-w-[1200px]'>
             <HeaderVehicleOption
-              vehicles={userInfoCar?.vehicles ?? []}
+              vehicles={userInfoCarSingPass?.vehicles ?? []}
+              listAfterSelectedVehicle={
+                userInfo?.list_after_selected_vehicle ?? []
+              }
               isMobile={isMobile}
               getVehicleTopRow={getVehicleTopRow}
               getVehicleBottomRow={getVehicleBottomRow}

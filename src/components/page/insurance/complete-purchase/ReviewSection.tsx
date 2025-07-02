@@ -2,10 +2,14 @@
 
 import React, { useState } from 'react';
 
+import { convertDateToDDMMYYYY } from '@/libs/utils/date-utils';
+import { capitalizeWords } from '@/libs/utils/utils';
+
 import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { useAppSelector } from '@/redux/store';
 
@@ -46,6 +50,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   isSingPassFlow,
 }) => {
   const router = useRouterWithQuery();
+  const { isMobile } = useDeviceDetection();
   const isMaid = productType === ProductType.MAID;
   const isFinalized = useAppSelector((state) =>
     isMaid
@@ -132,72 +137,135 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
       {isExpanded && (
         <div className='flex min-h-1 flex-col gap-2 rounded-bl-[6px] rounded-br-[6px] border border-t-0 px-4 pb-2 pt-[20px]'>
-          <div
-            className={`grid grid-cols-1 text-start md:gap-4 ${sectionKey === 'addons' || sectionKey === 'policy_plan' ? '' : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}
-          >
-            {data.map((item, index) => (
-              <div
-                key={index}
-                className={`flex flex-col text-sm ${sectionKey === 'addons' ? 'rounded border p-[14px]' : 'p-2'}`}
-              >
-                {sectionKey === 'addons' ? (
-                  <>
-                    <div
-                      className={`-mx-[14px] flex flex-row justify-between px-[14px] ${
-                        item.coverage_amount ||
-                        item.number_of_additional_drivers
-                          ? 'border-b pb-2'
-                          : ''
-                      }`}
-                    >
-                      <div className='font-semibold'>{item.title}</div>
-                      <div>{item.value || '-'}</div>
+          {sectionKey === 'driving_licenses' ? (
+            <div
+              className={`grid gap-y-4 sm:gap-x-6 sm:gap-y-4 ${
+                isMobile ? 'grid-cols-1' : 'sm:grid-cols-3'
+              }`}
+            >
+              {data.map((item, index) => {
+                const {
+                  class: className,
+                  issuedDate,
+                  expiryDate,
+                  validity,
+                } = item.value;
+                return (
+                  <div
+                    key={index}
+                    className='relative rounded-[6px] border-[1px] border-gray-300 bg-white px-4 py-2 shadow-sm'
+                  >
+                    <div className='flex items-center justify-between'>
+                      <div className='mb-2 text-base font-bold'>
+                        Class {className}
+                      </div>
+                      <div
+                        className={`mb-2 rounded-[10px] px-[14px] py-[4px] text-sm font-semibold text-white ${
+                          validity === 'VALID'
+                            ? 'bg-[#34C759]'
+                            : validity === 'EXPIRED'
+                              ? 'bg-[#F9B776]'
+                              : validity === 'INVALID'
+                                ? 'bg-[#FF3B30]'
+                                : ''
+                        }`}
+                      >
+                        {capitalizeWords(validity)}
+                      </div>
                     </div>
-                    {item.coverage_amount && (
-                      <div className='mt-2 pt-2'>
-                        <div className='text-gray-500'>Selected Benefit</div>
-                        <div className='font-semibold'>
-                          {item.coverage_amount}
+                    <div className='absolute left-0 right-0 h-[1px] bg-gray-200'></div>
+                    <div className='mt-4 grid grid-cols-2 gap-x-5 text-sm'>
+                      <div>
+                        <div className='text-sm font-light'>Issued Date</div>
+                        <div className='text-base font-semibold'>
+                          {convertDateToDDMMYYYY(issuedDate) || 'N/A'}
                         </div>
                       </div>
-                    )}
-                    {item.number_of_additional_drivers && (
-                      <div className='mt-2 pt-2'>
-                        <div className='text-gray-500'>
-                          Number of Additional Drivers
-                        </div>
-                        <div className='font-semibold'>
-                          {item.number_of_additional_drivers}
+                      <div>
+                        <div className='text-sm font-light'>Expiry Date</div>
+                        <div className='text-base font-semibold'>
+                          {convertDateToDDMMYYYY(expiryDate) || 'N/A'}
                         </div>
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <div>{item.title}</div>
-                    <div className='whitespace-pre-wrap break-words font-semibold'>
-                      {item.value ? (
-                        sectionKey === 'policy_plan' &&
-                        item.title === 'Plan Details' ? (
-                          <ul className='list-inside list-disc'>
-                            {(item.value as string)
-                              .split(/,(?!\d)/)
-                              .map((part: string, idx: number) => (
-                                <li key={idx}>{part.trim()}</li>
-                              ))}
-                          </ul>
-                        ) : (
-                          item.value
-                        )
-                      ) : (
-                        '-'
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div
+              className={`grid grid-cols-1 text-start md:gap-4 ${
+                sectionKey === 'addons' || sectionKey === 'policy_plan'
+                  ? ''
+                  : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+              }`}
+            >
+              {data.map((item, index) => (
+                <div
+                  key={index}
+                  className={`flex flex-col text-sm ${
+                    sectionKey === 'addons' ? 'rounded border p-[14px]' : 'p-2'
+                  }`}
+                >
+                  {sectionKey === 'addons' ? (
+                    <>
+                      <div
+                        className={`-mx-[14px] flex flex-row justify-between px-[14px] ${
+                          item.coverage_amount ||
+                          item.number_of_additional_drivers
+                            ? 'border-b pb-2'
+                            : ''
+                        }`}
+                      >
+                        <div className='font-semibold'>{item.title}</div>
+                        <div>{item.value || '-'}</div>
+                      </div>
+                      {item.coverage_amount && (
+                        <div className='mt-2 pt-2'>
+                          <div className='text-gray-500'>Selected Benefit</div>
+                          <div className='font-semibold'>
+                            {item.coverage_amount}
+                          </div>
+                        </div>
                       )}
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
+                      {item.number_of_additional_drivers && (
+                        <div className='mt-2 pt-2'>
+                          <div className='text-gray-500'>
+                            Number of Additional Drivers
+                          </div>
+                          <div className='font-semibold'>
+                            {item.number_of_additional_drivers}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div>{item.title}</div>
+                      <div className='whitespace-pre-wrap break-words font-semibold'>
+                        {item.value ? (
+                          sectionKey === 'policy_plan' &&
+                          item.title === 'Plan Details' ? (
+                            <ul className='list-inside list-disc'>
+                              {(item.value as string)
+                                .split(/,(?!\d)/)
+                                .map((part: string, idx: number) => (
+                                  <li key={idx}>{part.trim()}</li>
+                                ))}
+                            </ul>
+                          ) : (
+                            item.value
+                          )
+                        ) : (
+                          '-'
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

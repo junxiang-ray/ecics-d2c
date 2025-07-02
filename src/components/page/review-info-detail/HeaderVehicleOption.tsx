@@ -14,6 +14,7 @@ interface MissingFields {
 
 interface Props {
   vehicles: VehicleSingPassResponse[];
+  listAfterSelectedVehicle: VehicleSingPassResponse[];
   isMobile: boolean;
   getVehicleTopRow: (
     vehicle: VehicleSingPassResponse,
@@ -31,31 +32,46 @@ interface Props {
 }
 
 const HeaderVehicleOption: React.FC<Props> = ({
+  listAfterSelectedVehicle,
   vehicles,
   isMobile,
   getVehicleTopRow,
   getVehicleBottomRow,
   onVehicleSelect: onVehicleSelect,
 }) => {
-  const liveVehicles = vehicles?.filter((v) => v.status?.desc === 'LIVE') || [];
+  const sourceVehicles =
+    listAfterSelectedVehicle?.length > 0 ? listAfterSelectedVehicle : vehicles;
+  const liveVehicles =
+    sourceVehicles?.filter((v) => v.status?.desc === 'LIVE') || [];
+
   const [selectedIndex, setSelectedIndex] = useState<number | null>(
     liveVehicles.length === 1 ? 0 : null,
   );
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   useEffect(() => {
+    if (selectedIndex !== null) return;
+
     if (liveVehicles.length === 1) {
       setSelectedIndex(0);
-    } else {
-      setSelectedIndex(null);
+      chooseVehicle(liveVehicles[0]);
+    } else if (listAfterSelectedVehicle?.length > 0) {
+      const selectedNo = listAfterSelectedVehicle[0].vehicleno?.value;
+      const index = liveVehicles.findIndex(
+        (v) => v.vehicleno?.value === selectedNo,
+      );
+      if (index !== -1) {
+        setSelectedIndex(index);
+        chooseVehicle(liveVehicles[index]);
+      }
     }
-  }, [liveVehicles.length]);
+  }, [liveVehicles, listAfterSelectedVehicle]);
 
   const chooseVehicle = (vehicle: VehicleSingPassResponse) => {
     const missing = {
       engine_number: !vehicle.engineno?.value?.trim(),
       chassis_number: !vehicle.chassisno?.value?.trim(),
-      reg_yyyy: !vehicle.yearofmanufacture?.value?.toString().trim(),
+      reg_yyyy: !vehicle.firstregistrationdate?.value?.toString().trim(),
       make: !vehicle.make?.value?.trim(),
       model: !vehicle.model?.value?.trim(),
     };

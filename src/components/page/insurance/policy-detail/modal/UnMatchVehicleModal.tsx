@@ -36,7 +36,8 @@ const UnMatchVehicleModal = ({
   const selectedMakeId = watch('vehicle_make');
   const selectedModelId = watch('vehicle_model');
   const isSubmitDisabled = !selectedMakeId || !selectedModelId;
-  const userInfoCar = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+  const carUserInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+  const userInfoCarSingPass = carUserInfo.data_from_singpass;
 
   const handleSubmit = methods.handleSubmit((data) => {
     const { vehicle_make, vehicle_model } = data;
@@ -49,22 +50,29 @@ const UnMatchVehicleModal = ({
     );
 
     if (selectedMake && selectedModel) {
-      // Clone userInfoCar to avoid mutation
-      const updatedVehicles = userInfoCar.vehicles.map((vehicle: any) => {
-        if (vehicle.vehicleno?.value === vehicleNumber) {
-          return {
-            ...vehicle,
-            make: { value: selectedMake.text },
-            model: { value: selectedModel.text },
-          };
-        }
-        return vehicle;
-      });
+      const updatedVehicles = userInfoCarSingPass.vehicles.map(
+        (vehicle: any) => {
+          if (vehicle.vehicleno?.value === vehicleNumber) {
+            return {
+              ...vehicle,
+              make: { value: selectedMake.text },
+              model: { value: selectedModel.text },
+            };
+          }
+          return vehicle;
+        },
+      );
+
+      const updatedVehicleSelected = updatedVehicles.find(
+        (v: any) => v.vehicleno?.value === vehicleNumber,
+      );
 
       const updatedUserInfoCar = {
-        ...userInfoCar,
-        vehicles: updatedVehicles,
+        ...carUserInfo,
+        vehicle_selected: updatedVehicleSelected,
+        list_after_selected_vehicle: updatedVehicles,
       };
+
       dispatch(setUserInfoCar(updatedUserInfoCar));
       onClose();
     }
