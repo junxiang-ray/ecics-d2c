@@ -26,6 +26,14 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
+import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
+
+enum ErrorModalType {
+  NONE = 0,
+  WARNING_PAYMENT = 1,
+  PAYMENT_GATEWAY = 2,
+}
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
@@ -42,6 +50,10 @@ export default function CompletePurchaseDetail({
   }>({});
   const [showModal, setShowModal] = useState(false);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
+  const [paymentErrorCount, setPaymentErrorCount] = useState(0);
+  const [errorModalType, setErrorModalType] = useState<ErrorModalType>(
+    ErrorModalType.NONE,
+  );
   const { isMobile } = useDeviceDetection();
 
   const toggleSection = (key: string) => {
@@ -67,7 +79,23 @@ export default function CompletePurchaseDetail({
     mutateAsync: saveProposal,
     isSuccess,
     isPending: isPendingSave,
+    isError,
   } = useSaveProposal();
+
+  useEffect(() => {
+    if (isError) {
+      setPaymentErrorCount((prev) => {
+        const next = prev + 1;
+        setErrorModalType(
+          next === 1
+            ? ErrorModalType.WARNING_PAYMENT
+            : ErrorModalType.PAYMENT_GATEWAY,
+        );
+        return next;
+      });
+    }
+  }, [isError]);
+
   const handleEditClick = (key: string) => {
     toggleSection(key);
   };
@@ -497,6 +525,18 @@ export default function CompletePurchaseDetail({
         onOk={handleDeclarationConfirm}
         onCancel={handleDeclarationCancel}
       />
+      {errorModalType === ErrorModalType.WARNING_PAYMENT && (
+        <WarningPaymentModal
+          visible={true}
+          setShowFirstErrorModal={() => setErrorModalType(ErrorModalType.NONE)}
+        />
+      )}
+      {errorModalType === ErrorModalType.PAYMENT_GATEWAY && (
+        <PaymentGatewayModal
+          visible={true}
+          setShowSecondErrorModal={() => setErrorModalType(ErrorModalType.NONE)}
+        />
+      )}
     </div>
   );
 }
