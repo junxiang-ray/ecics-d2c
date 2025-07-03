@@ -57,6 +57,35 @@ function InsuranceLayout({
       ? state.maidQuote?.maidQuote?.is_finalized
       : state.quote.quote?.is_finalized,
   );
+  const isSingPassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
+
+  const stepsData = [
+    { step: StepProcessBar.POLICY_DETAILS, title: 'Basic Information' },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    {
+      step: StepProcessBar.PERSONAL_DETAIL,
+      title: productType === ProductType.MAID ? 'Helper’s Details' : 'Details',
+    },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
+
+  const stepsDataSingPass = [
+    { step: StepProcessBar.FIRST, title: '' },
+    {
+      step: StepProcessBar.POLICY_DETAILS,
+      title:
+        productType === ProductType.MAID
+          ? 'Helper’s Information'
+          : 'Policy Details',
+    },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
+
   const isLoadingStep = useAppSelector((state) => state.general.isLoadingStep);
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
@@ -93,17 +122,28 @@ function InsuranceLayout({
 
   const handleBack = () => {
     if (currentStep === undefined) return;
+
     if (currentStep === StepProcessBar.SELECT_PLAN || isFinalized) {
       setIsShowPopupImportant(true);
       return;
     }
+
     if (currentStep === StepProcessBar.POLICY_DETAILS && redirectToLoginPath) {
       router.push(redirectToLoginPath, { preserveQuery: false });
       return;
     }
-    const previousStep = currentStep - 1;
-    const previousRouter = stepToRoute[previousStep as StepProcessBar];
-    router.push(previousRouter);
+    const selectedStepsData = isSingPassFlow ? stepsDataSingPass : stepsData;
+
+    const currentIndex = selectedStepsData.findIndex(
+      (item: any) => item.step === currentStep,
+    );
+
+    const previousStep = selectedStepsData[currentIndex - 1]?.step;
+
+    if (previousStep !== undefined) {
+      const previousRouter = stepToRoute[previousStep];
+      router.push(previousRouter);
+    }
   };
 
   const handleSave = () => {

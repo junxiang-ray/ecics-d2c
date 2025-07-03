@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, Spin } from 'antd';
+import { Form } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -11,10 +11,18 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
-import { calculateAge, formatPromoCode } from '@/libs/utils/utils';
+import { VehicleSingPassResponse } from '@/libs/types/auth';
+import {
+  adjustDateInDayjs,
+  convertDateToDDMMYYYY,
+  dateToDayjs,
+  extractYear,
+} from '@/libs/utils/date-utils';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 import { PricingSummary } from '@/components/page/FeeBar';
+import UnMatchVehicleModal from '@/components/page/insurance/policy-detail/modal/UnMatchVehicleModal';
+import HeaderVehicleOption from '@/components/page/review-info-detail/HeaderVehicleOption';
 import { DatePickerField } from '@/components/ui//form/datepicker';
 import {
   DropdownField,
@@ -22,23 +30,20 @@ import {
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
-import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
-import { MAID_QUOTE, MOTOR_QUOTE } from '@/constants';
+import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
-import { emailRegex, phoneRegex } from '@/constants/validation.constant';
-import {
-  useGetVehicleMakes,
-  useGetVehicleModels,
-} from '@/hook/insurance/common';
+import { usePostCheckVehicle } from '@/hook/insurance/common';
+import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { QuoteModal } from './modal/QuoteModal';
 import {
   NCD_OPTIONS,
   NO_CLAIM_OPTIONS,
   NumberClaim,
-  NumberDriverExperience,
   ProductType,
   REG_YEAR_OPTIONS,
 } from './options';
@@ -50,7 +55,13 @@ dayjs.extend(isSameOrBefore);
 const sryMsg =
   'Please contact us for assistance at +65 6206 5588 or customerservice@ecics.com.sg';
 
-const nonSingpassFlowFields = {
+type MissingFields = {
+  engine_number?: boolean;
+  chassis_number?: boolean;
+  reg_yyyy?: boolean;
+};
+
+const singpassFlowFields = (missing: MissingFields = {}) => ({
   [MOTOR_QUOTE.hire_purchase]: z.number({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
@@ -82,51 +93,20 @@ const nonSingpassFlowFields = {
     .refine((val) => val !== NumberClaim.TWO_MANY_CLAIMS, {
       message: sryMsg,
     }),
+  [MOTOR_QUOTE.engine_number]: z.string().optional(),
+  [MOTOR_QUOTE.chassis_number]: missing?.chassis_number
+    ? z.string({ required_error: 'This field is required' })
+    : z.string().optional(),
+  [MOTOR_QUOTE.reg_yyyy]: missing?.reg_yyyy
+    ? z.string({ required_error: 'This field is required' })
+    : z.string().optional(),
   [MOTOR_QUOTE.promo_code]: z.string().optional(),
-  [MOTOR_QUOTE.email]: z
-    .string({
-      required_error: 'This field is required',
-    })
-    .regex(emailRegex, 'Please enter a valid email address.'),
-  [MOTOR_QUOTE.mobile]: z
-    .string({
-      required_error: 'This field is required',
-    })
-    .length(8, "Please enter an 8-digit number starting with '8' or '9'.")
-    .regex(
-      phoneRegex,
-      "Please enter an 8-digit number starting with '8' or '9'.",
-    ),
-  [MOTOR_QUOTE.owner_dob]: z.date({
-    required_error: 'This field is required',
-    invalid_type_error: 'This field is required',
-  }),
-  [MOTOR_QUOTE.owner_drv_exp]: z.coerce
-    .number({
-      required_error: 'This field is required',
-      invalid_type_error: 'This field is required',
-    })
-    .min(2, { message: sryMsg }),
-  [MOTOR_QUOTE.vehicle_make]: z
-    .string({
-      required_error: 'This field is required',
-      invalid_type_error: 'This field is required',
-    })
-    .nonempty('This field is required'),
-  [MOTOR_QUOTE.vehicle_model]: z
-    .string({
-      required_error: 'This field is required',
-      invalid_type_error: 'This field is required',
-    })
-    .nonempty('This field is required'),
-  [MOTOR_QUOTE.reg_yyyy]: z.string({
-    required_error: 'This field is required',
-  }),
-};
+});
 
 const ID_OPTION_OTHER = 2; //-- Others (Not Available in this list) --
-const createSchema = () => {
-  const baseSchema = z.object(nonSingpassFlowFields);
+
+const createSchema = (missing: MissingFields = {}) => {
+  const baseSchema = z.object(singpassFlowFields(missing));
 
   return baseSchema
     .refine(
@@ -183,35 +163,11 @@ const createSchema = () => {
           });
         }
       }
-
-      // driver experience validation based on age at policy start date
-      if (
-        data[MOTOR_QUOTE.owner_dob] &&
-        data[MOTOR_QUOTE.owner_drv_exp] &&
-        data[MOTOR_QUOTE.start_date]
-      ) {
-        const age = calculateAge(
-          data[MOTOR_QUOTE.owner_dob] as string,
-          data[MOTOR_QUOTE.start_date] as Date,
-        );
-        const drvExp = Number(data[MOTOR_QUOTE.owner_drv_exp]);
-        const maxDrvExp = age - 18;
-
-        if (drvExp > maxDrvExp) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message:
-              "Please provide driving experience suitable for the driver's age.",
-            path: [MOTOR_QUOTE.owner_drv_exp],
-          });
-        }
-      }
     });
 };
 
-const nonSingpassSchema = z.object(nonSingpassFlowFields);
-type NonSingpassFlowFields = z.infer<typeof nonSingpassSchema>;
-type FormData = NonSingpassFlowFields;
+type SingpassFlowFields = z.infer<ReturnType<typeof createSchema>>;
+type FormData = SingpassFlowFields;
 
 interface PolicyDetailProps extends FormProps {
   onSubmit: (value: any) => void;
@@ -220,7 +176,7 @@ interface PolicyDetailProps extends FormProps {
   isLoading?: boolean;
 }
 
-const PolicyDetailForm = ({
+const SingpassPolicyDetailForm = ({
   onSubmit,
   onSaveRegister,
   hirePurchaseOptions,
@@ -230,14 +186,43 @@ const PolicyDetailForm = ({
 }: PolicyDetailProps) => {
   const router = useRouter();
   const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const { isMobile } = useDeviceDetection();
+
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
+
+  const { data: quoteInfo } = useGetQuote(key);
+
+  useEffect(() => {
+    const carUserInfo = quoteInfo?.data;
+
+    // Data has been updated later via Singpass or user selected manually
+    const hasSelectedVehicle = !!userInfo?.vehicle_selected;
+    const hasListAfterSelected =
+      userInfo?.list_after_selected_vehicle?.length > 0;
+
+    const hasSingpassVehicles =
+      userInfo?.data_from_singpass?.vehicles?.length > 0;
+
+    if (
+      carUserInfo &&
+      !hasSelectedVehicle &&
+      !hasListAfterSelected &&
+      !hasSingpassVehicles
+    ) {
+      dispatch(setUserInfoCar(carUserInfo));
+    }
+  }, [quoteInfo, dispatch]);
+
+  const userInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+
+  const userInfoCarSingPass = userInfo.data_from_singpass;
+
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
-  const schema = useMemo(() => createSchema(), []);
   const [showCSModal, setShowCSModal] = useState<{
     visible: boolean;
     description: string;
@@ -246,6 +231,19 @@ const PolicyDetailForm = ({
     description: '',
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
+  const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+  const [vehicleNumber, setVehicleNumber] = useState<string>('');
+  const [missingFields, setMissingFields] = useState<{
+    engine_number?: boolean;
+    chassis_number?: boolean;
+    reg_yyyy?: boolean;
+  }>({});
+
+  const schema = useMemo(() => createSchema(missingFields), [missingFields]);
+
+  const { mutate: postCheckVehicle } = usePostCheckVehicle(() => {
+    setShowUnMatchModal(true);
+  });
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -257,7 +255,7 @@ const PolicyDetailForm = ({
 
   const {
     watch,
-    formState: { errors, touchedFields },
+    formState: { errors },
   } = methods;
 
   // input field change
@@ -265,36 +263,10 @@ const PolicyDetailForm = ({
   const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
-  const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
-  const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
-
-  const { data: makeOptions } = useGetVehicleMakes();
-  const vehicleMakeId = makeOptions?.find(
-    (item: any) => item.name === vehicle_make,
-  )?.id;
-
-  const { data: modelOptions, isLoading: isLoadingModelOptions } =
-    useGetVehicleModels(vehicleMakeId as string);
 
   const handleBackLogin = () => {
     router.push(ROUTES.MOTOR.LOGIN);
   };
-
-  const makeOptionsFormatted: DropdownOption[] = useMemo(() => {
-    if (!makeOptions) return [];
-    return makeOptions?.map((item: any) => ({
-      text: item.name,
-      value: item.name,
-    }));
-  }, [makeOptions]);
-
-  const modelOptionsFormatted: DropdownOption[] = useMemo(() => {
-    if (!modelOptions) return [];
-    return modelOptions?.map((item: any) => ({
-      text: item.name,
-      value: item.name,
-    }));
-  }, [modelOptions]);
 
   useEffect(() => {
     setApplyPromoCode(initPromoCode);
@@ -305,21 +277,6 @@ const PolicyDetailForm = ({
       methods.setValue(MOTOR_QUOTE.other_hire_purchase, '');
     }
   }, [hire_purchase]);
-
-  // to open Customer Service Modal - Unable to provide quote online
-  useEffect(() => {
-    if (
-      touchedFields[MOTOR_QUOTE.owner_drv_exp] &&
-      drvExp !== null &&
-      drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
-    ) {
-      setShowCSModal({
-        visible: true,
-        description:
-          'The listed driver has less than 2 years of driving experience',
-      });
-    }
-  }, [drvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
@@ -335,20 +292,31 @@ const PolicyDetailForm = ({
   useEffect(() => {
     onSaveRegister(() => {
       const value = methods.getValues();
-
       const vehicle_info_selected = {
-        vehicle_make: value[MOTOR_QUOTE.vehicle_make],
-        vehicle_model: value[MOTOR_QUOTE.vehicle_model],
-        first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
+        vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
+        vehicle_make: userInfo?.vehicle_selected?.make.value,
+        vehicle_model: userInfo?.vehicle_selected?.model.value,
+        first_registered_year: missingFields.reg_yyyy
+          ? (value[MOTOR_QUOTE.reg_yyyy] as string)
+          : extractYear(
+              userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
+            ),
+        year_of_manufacture:
+          userInfo?.vehicle_selected?.yearofmanufacture.value,
+        engine_number: userInfo?.vehicle_selected?.engineno.value,
+        chasis_number: userInfo?.vehicle_selected?.chassisno.value,
+        engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value,
+        power_rate: userInfo?.vehicle_selected?.powerrate.value,
       };
 
+      const personalInfo = quoteInfo?.data?.personal_info;
       const personal_info = {
-        date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
+        date_of_birth: dayjs(personalInfo?.date_of_birth, 'DD/MM/YYYY').format(
           'DD/MM/YYYY',
         ),
-        driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
-        phone: value[MOTOR_QUOTE.mobile],
-        email: (value[MAID_QUOTE.email] as string)?.toLowerCase(),
+        driving_experience: personalInfo?.driving_experience || '',
+        phone: personalInfo?.phone || '',
+        email: personalInfo?.email || '',
       };
 
       const payload = {
@@ -375,11 +343,6 @@ const PolicyDetailForm = ({
     });
   }, [methods, onSaveRegister]);
 
-  const handleChangeDob = () => {
-    methods.setValue(MOTOR_QUOTE.start_date, null as any);
-    methods.setValue(MOTOR_QUOTE.end_date, null as any);
-  };
-
   const handleChangeStartDate = (date: any) => {
     const startDate = dateToDayjs(date?.toDate());
     const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
@@ -402,7 +365,6 @@ const PolicyDetailForm = ({
           name={MOTOR_QUOTE.hire_purchase}
           label='Vehicle Financed By'
           isRequired
-          disabled={isLoading}
           placeholder='Select name of finance company'
           options={hirePurchaseOptions}
           showSearch
@@ -430,18 +392,29 @@ const PolicyDetailForm = ({
 
   const handleSubmit = (value: FormData) => {
     const vehicle_info_selected = {
-      vehicle_make: value[MOTOR_QUOTE.vehicle_make],
-      vehicle_model: value[MOTOR_QUOTE.vehicle_model],
-      first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
+      vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
+      vehicle_make: userInfo?.vehicle_selected?.make.value,
+      vehicle_model: userInfo?.vehicle_selected?.model.value,
+      first_registered_year: missingFields.reg_yyyy
+        ? (value[MOTOR_QUOTE.reg_yyyy] as string)
+        : extractYear(
+            userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
+          ),
+      year_of_manufacture: userInfo?.vehicle_selected?.yearofmanufacture.value,
+      engine_number: userInfo?.vehicle_selected?.engineno.value,
+      chasis_number: userInfo?.vehicle_selected?.chassisno.value,
+      engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value,
+      power_rate: userInfo?.vehicle_selected?.powerrate.value,
     };
 
+    const personalInfo = quoteInfo?.data?.personal_info;
     const personal_info = {
-      date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
+      date_of_birth: dayjs(personalInfo?.date_of_birth, 'DD/MM/YYYY').format(
         'DD/MM/YYYY',
       ),
-      driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
-      phone: value[MOTOR_QUOTE.mobile],
-      email: value[MOTOR_QUOTE.email],
+      driving_experience: personalInfo?.driving_experience || '',
+      phone: personalInfo?.phone || '',
+      email: personalInfo?.email || '',
     };
 
     const noOfClaim = value[MOTOR_QUOTE.owner_no_of_claims];
@@ -466,13 +439,12 @@ const PolicyDetailForm = ({
         ),
       },
     };
+
     onSubmit(payload);
   };
 
   const isEnablePromoCode = no_claim === NumberClaim.NEVER || !no_claim;
 
-  const minDob = useMemo(() => dayjs().subtract(100, 'year'), []);
-  const maxDob = useMemo(() => dayjs(), []);
   const minPolicyStartDate = useMemo(() => dayjs(), []);
   const maxPolicyStartDate = useMemo(() => dayjs().add(90, 'day'), []);
 
@@ -509,6 +481,46 @@ const PolicyDetailForm = ({
     }
   }, [start_date, date_of_birth]);
 
+  const getVehicleTopRow = (vehicle: VehicleSingPassResponse) => [
+    {
+      title: 'Vehicle Make',
+      value: vehicle.make?.value || 'N/A',
+    },
+    {
+      title: 'Vehicle Model',
+      value: vehicle.model?.value || 'N/A',
+    },
+    {
+      title: 'First Registration Date',
+      value: convertDateToDDMMYYYY(vehicle.firstregistrationdate?.value || ''),
+    },
+    {
+      title: 'Year of Manufacture',
+      value: vehicle.yearofmanufacture?.value || 'N/A',
+    },
+  ];
+
+  const getVehicleBottomRow = (vehicle: VehicleSingPassResponse) => [
+    {
+      title: 'Engine Number',
+      value: vehicle.engineno?.value || 'N/A',
+    },
+    {
+      title: 'Chassis Number',
+      value: vehicle.chassisno?.value || 'N/A',
+    },
+    {
+      title: 'Power Rate',
+      value: vehicle.powerrate?.value?.toString() || 'N/A',
+    },
+    {
+      title: 'Engine Capacity',
+      value: vehicle.enginecapacity?.value
+        ? `${vehicle.enginecapacity.value} CC`
+        : 'N/A',
+    },
+  ];
+
   return (
     <>
       <FormProvider {...methods}>
@@ -524,171 +536,103 @@ const PolicyDetailForm = ({
           {...props}
         >
           <div className='max-w-[1200px]'>
-            <div className='relative w-full' style={{ zIndex: '99' }}>
-              <div className='w-full'>
-                <div className='my-3 text-lg font-bold'>
-                  Personal Information
+            <HeaderVehicleOption
+              vehicles={userInfoCarSingPass?.vehicles ?? []}
+              listAfterSelectedVehicle={
+                userInfo?.list_after_selected_vehicle ?? []
+              }
+              isMobile={isMobile}
+              getVehicleTopRow={getVehicleTopRow}
+              getVehicleBottomRow={getVehicleBottomRow}
+              onVehicleSelect={(
+                missing,
+                vehicleAge,
+                vehicleNumber,
+                make,
+                model,
+              ) => {
+                // Check missing fields
+                setMissingFields(missing);
+                // Check vehicle age
+                if (vehicleAge != null && vehicleAge > 15) {
+                  setShowCSModal({
+                    visible: true,
+                    description:
+                      'The vehicle is more than 15 years old based on its registration year.',
+                  });
+                }
+                setVehicleNumber(vehicleNumber);
+                // Show UnMatchVehicleModal if missing make or model
+                if (missing?.make || missing?.model) {
+                  setShowUnMatchModal(true);
+                } else {
+                  setShowUnMatchModal(false);
+                }
+                // Check Vehicle (make,model)
+                postCheckVehicle({
+                  vehicle_make: make,
+                  vehicle_model: model,
+                });
+              }}
+            />
+
+            {['engine_number', 'chassis_number', 'reg_yyyy'].some(
+              (key) => missingFields[key as keyof typeof missingFields],
+            ) && (
+              <div className='mt-[32px] w-full'>
+                <div className='my-3 text-lg font-bold underline'>
+                  Missing Information (Missing from Singpass)
                 </div>
                 <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                  <Form.Item
-                    name={MOTOR_QUOTE.email}
-                    validateStatus={errors[MOTOR_QUOTE.email] ? 'error' : ''}
-                  >
-                    <InputField
-                      name={MOTOR_QUOTE.email}
-                      label='Email Address'
-                      isRequired
-                      placeholder='Enter your email address'
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name={MOTOR_QUOTE.mobile}
-                    validateStatus={errors[MOTOR_QUOTE.mobile] ? 'error' : ''}
-                  >
-                    <InputField
-                      name={MOTOR_QUOTE.mobile}
-                      label='Mobile Number'
-                      isRequired
-                      placeholder='Enter your phone number'
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        const onlyNums = e.target.value.replace(/\D/g, '');
-                        methods.setValue(MOTOR_QUOTE.mobile, onlyNums, {
-                          shouldValidate: true,
-                        });
-                      }}
-                      value={String(watch(MOTOR_QUOTE.mobile) ?? '')}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name={MOTOR_QUOTE.owner_dob}
-                    validateStatus={
-                      errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
-                    }
-                  >
-                    <DatePickerField
-                      name={MOTOR_QUOTE.owner_dob}
-                      label='Date of birth'
-                      minDate={minDob}
-                      maxDate={maxDob}
-                      isRequired
-                      onChange={handleChangeDob}
-                    />
-                  </Form.Item>
-                </div>
-              </div>
-
-              <div className='my-6 mt-[32px] w-full'>
-                <div className='my-3 text-lg font-bold'>
-                  Vehicle Information
-                </div>
-                <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                  <Form.Item name={MOTOR_QUOTE.vehicle_make}>
-                    <LongOptionDropdownField
-                      name={MOTOR_QUOTE.vehicle_make}
-                      label='Vehicle Make'
-                      isRequired
-                      placeholder='Select vehicle make'
-                      options={makeOptionsFormatted}
-                      disabled={isLoading}
-                      onChange={() => {
-                        // Reset model when make changes
-                        methods.setValue(
-                          MOTOR_QUOTE.vehicle_model,
-                          null as any,
-                        );
-                      }}
-                      showSearch
-                    />
-                  </Form.Item>
-
-                  <Form.Item name={MOTOR_QUOTE.vehicle_model}>
-                    <LongOptionDropdownField
-                      name={MOTOR_QUOTE.vehicle_model}
-                      label='Vehicle Model'
-                      isRequired
-                      placeholder='Select vehicle model'
-                      options={modelOptionsFormatted}
-                      disabled={!vehicle_make || isLoading}
-                      notFoundContent={
-                        isLoadingModelOptions ? (
-                          <Spin size='small' />
-                        ) : (
-                          'No results found'
-                        )
+                  {missingFields.engine_number && (
+                    <Form.Item
+                      name={MOTOR_QUOTE.engine_number}
+                      validateStatus={
+                        errors[MOTOR_QUOTE.engine_number] ? 'error' : ''
                       }
-                      showSearch
-                    />
-                  </Form.Item>
+                    >
+                      <InputField
+                        name={MOTOR_QUOTE.engine_number}
+                        label='Engine Number'
+                        placeholder='Enter your engine number'
+                      />
+                    </Form.Item>
+                  )}
 
-                  <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
-                    <DropdownField
-                      name={MOTOR_QUOTE.reg_yyyy}
-                      label="Vehicle's Year of Registration"
-                      isRequired
-                      placeholder='Select registration year'
-                      options={REG_YEAR_OPTIONS}
-                    />
-                  </Form.Item>
-                  {hire_purchase_section}
+                  {missingFields.chassis_number && (
+                    <Form.Item
+                      name={MOTOR_QUOTE.chassis_number}
+                      validateStatus={
+                        errors[MOTOR_QUOTE.chassis_number] ? 'error' : ''
+                      }
+                    >
+                      <InputField
+                        name={MOTOR_QUOTE.chassis_number}
+                        label='Chassis Number'
+                        isRequired
+                        placeholder='Enter your chassis number'
+                      />
+                    </Form.Item>
+                  )}
+
+                  {missingFields.reg_yyyy && (
+                    <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
+                      <DropdownField
+                        name={MOTOR_QUOTE.reg_yyyy}
+                        label="Vehicle's Year of Registration"
+                        isRequired
+                        placeholder='Select registration year'
+                        options={REG_YEAR_OPTIONS}
+                      />
+                    </Form.Item>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
 
             <div className='mt-[32px] w-full'>
-              <div className='my-3 text-lg font-bold'>
-                Your Driving Experience
-              </div>
-              <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                <Form.Item
-                  name={MOTOR_QUOTE.owner_drv_exp}
-                  validateStatus={
-                    errors[MOTOR_QUOTE.owner_drv_exp] ? 'error' : ''
-                  }
-                >
-                  <InputNumberField
-                    name={MOTOR_QUOTE.owner_drv_exp}
-                    label='Years of Driving Experience'
-                    isRequired
-                    placeholder='Enter your driving experience'
-                    min={0}
-                    max={60}
-                    suffix='year(s)'
-                    precision={0}
-                  />
-                </Form.Item>
-
-                <Form.Item name={MOTOR_QUOTE.owner_ncd}>
-                  <DropdownField
-                    name={MOTOR_QUOTE.owner_ncd}
-                    label='No Claim Discount'
-                    isRequired
-                    placeholder='Select your current NCD'
-                    options={NCD_OPTIONS}
-                  ></DropdownField>
-                </Form.Item>
-
-                <Form.Item
-                  name={MOTOR_QUOTE.owner_no_of_claims}
-                  validateStatus={
-                    errors[MOTOR_QUOTE.owner_no_of_claims] ? 'error' : ''
-                  }
-                >
-                  <DropdownField
-                    name={MOTOR_QUOTE.owner_no_of_claims}
-                    label='Number of claims in the past 3 years'
-                    isRequired
-                    placeholder='Select number of claims'
-                    options={NO_CLAIM_OPTIONS}
-                  />
-                </Form.Item>
-              </div>
-            </div>
-
-            <div className='mt-[32px] w-full'>
-              <div className='my-3 text-lg font-bold'>
-                Policy Start & End Date
+              <div className='my-3 text-lg font-bold underline'>
+                Policy Details
               </div>
               <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
                 <Form.Item
@@ -721,6 +665,32 @@ const PolicyDetailForm = ({
                     disabled={!start_date || isLoading}
                   />
                 </Form.Item>
+
+                <Form.Item name={MOTOR_QUOTE.owner_ncd}>
+                  <DropdownField
+                    name={MOTOR_QUOTE.owner_ncd}
+                    label='No Claim Discount'
+                    isRequired
+                    placeholder='Select your current NCD'
+                    options={NCD_OPTIONS}
+                  ></DropdownField>
+                </Form.Item>
+
+                <Form.Item
+                  name={MOTOR_QUOTE.owner_no_of_claims}
+                  validateStatus={
+                    errors[MOTOR_QUOTE.owner_no_of_claims] ? 'error' : ''
+                  }
+                >
+                  <DropdownField
+                    name={MOTOR_QUOTE.owner_no_of_claims}
+                    label='Number of claims in the past 3 years'
+                    isRequired
+                    placeholder='Select number of claims'
+                    options={NO_CLAIM_OPTIONS}
+                  />
+                </Form.Item>
+                {hire_purchase_section}
               </div>
             </div>
 
@@ -759,8 +729,13 @@ const PolicyDetailForm = ({
         visible={showCSModal.visible}
         description={showCSModal.description}
       />
+      <UnMatchVehicleModal
+        vehicleNumber={vehicleNumber}
+        onClose={() => setShowUnMatchModal(false)}
+        visible={showUnMatchModal}
+      />
     </>
   );
 };
 
-export default PolicyDetailForm;
+export default SingpassPolicyDetailForm;

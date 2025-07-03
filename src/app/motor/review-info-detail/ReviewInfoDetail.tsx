@@ -16,7 +16,6 @@ import {
 import {
   calculateDrivingExperienceFromLicences,
   convertDateToDDMMYYYY,
-  extractYear,
 } from '@/libs/utils/date-utils';
 import { calculateAge, capitalizeWords } from '@/libs/utils/utils';
 
@@ -80,7 +79,7 @@ const ReviewInfoDetail = () => {
 
   const { mutate: requestLog } = useRequestLog(PRODUCT_NAME.CAR);
 
-  const { mutate: savePersonalInfo } = usePostPersonalInfo();
+  const { mutate: savePersonalInfo, isPending } = usePostPersonalInfo();
   const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
 
   const [showVehicleNotFoundModal, setShowVehicleNotFoundModal] =
@@ -248,18 +247,20 @@ const ReviewInfoDetail = () => {
           date_of_birth: parsedSingpass.dob?.value
             ? convertDateToDDMMYYYY(parsedSingpass.dob.value)
             : '',
-          year_of_registration: parsedSingpass.year_of_registration || '',
           driving_experience: String(drivingYears) || '',
           phone: `${parsedSingpass.mobileno?.nbr?.value || ''}`,
           email: parsedSingpass.email?.value?.toLowerCase() || '',
         },
         vehicles:
           parsedSingpass.vehicles?.map((v: any) => ({
-            chassis_number: v.vehicleno?.value || '',
             vehicle_make: v.make?.value || '',
             vehicle_model: v.model?.value || '',
-            first_registered_year:
-              extractYear(v.firstregistrationdate?.value) || '',
+            first_registered_year: v.firstregistrationdate?.value || '',
+            year_of_manufacture: v.yearofmanufacture?.value || '',
+            engine_number: v.engineno?.value || '',
+            chassis_number: v.vehicleno?.value || '',
+            power_rate: v.powerrate?.value || '',
+            engine_capacity: v.enginecapacity?.value || '',
           })) || [],
         data_from_singpass: parsedSingpass,
       };
@@ -447,11 +448,9 @@ const ReviewInfoDetail = () => {
                             }
                           >
                             <>
-                              <div className='text-sm font-semibold'>
-                                Marital Status
-                              </div>
                               <DropdownField
                                 name='marital_status'
+                                label='Marital Status'
                                 placeholder='Select Marital Status'
                                 options={MARITAL_STATUS_OPTIONS}
                                 isRequired
@@ -468,7 +467,9 @@ const ReviewInfoDetail = () => {
 
                       return (
                         <div key={index}>
-                          <div className='font-medium'>{item.title}</div>
+                          <div className='text-base font-medium'>
+                            {item.title}
+                          </div>
                           <div className='whitespace-normal break-words'>
                             {item.value}
                           </div>
@@ -539,60 +540,62 @@ const ReviewInfoDetail = () => {
                 </div>
               )}
 
-              <div className='mt-[32px] w-full'>
-                <div className='my-3 text-lg font-bold underline'>
-                  Vehicle Details
-                </div>
-                <div
-                  className={`grid gap-y-4 sm:gap-x-6 sm:gap-y-4 ${
-                    isMobile ? 'grid-cols-1' : 'sm:grid-cols-2'
-                  }`}
-                >
-                  {(userInfoCar?.vehicles as VehicleSingPassResponse[])
-                    ?.filter((vehicle) => vehicle.status?.desc === 'LIVE')
-                    ?.map((vehicle, index) => (
-                      <div
-                        key={index}
-                        className='rounded-md border border-gray-300 bg-white shadow-sm'
-                      >
-                        <div className='flex items-center justify-between px-4 py-2'>
-                          <div className='text-base font-bold'>
-                            {vehicle.vehicleno?.value ?? 'N/A'}
-                          </div>
-                          <div className='rounded-[10px] bg-[#34C759] px-[14px] py-[2px] text-base font-semibold text-white'>
-                            {capitalizeWords(vehicle.status?.desc) ?? 'N/A'}
-                          </div>
-                        </div>
-                        <div className='h-[1px] w-full bg-gray-200'></div>
-                        <div className='mb-2 mt-[10px] grid grid-cols-2 gap-4 px-4 text-sm md:grid-cols-4'>
-                          {getVehicleTopRow(vehicle).map((item, idx) => (
-                            <div key={idx}>
-                              <div className='text-sm font-light'>
-                                {item.title}
-                              </div>
-                              <div className='whitespace-normal break-words text-base font-semibold'>
-                                {item.value || 'N/A'}
-                              </div>
+              {userInfoCar?.vehicles.length > 0 && (
+                <div className='mt-[32px] w-full'>
+                  <div className='my-3 text-lg font-bold underline'>
+                    Vehicle Details
+                  </div>
+                  <div
+                    className={`grid gap-y-4 sm:gap-x-6 sm:gap-y-4 ${
+                      isMobile ? 'grid-cols-1' : 'sm:grid-cols-2'
+                    }`}
+                  >
+                    {(userInfoCar?.vehicles as VehicleSingPassResponse[])
+                      ?.filter((vehicle) => vehicle.status?.desc === 'LIVE')
+                      ?.map((vehicle, index) => (
+                        <div
+                          key={index}
+                          className='rounded-md border border-gray-300 bg-white shadow-sm'
+                        >
+                          <div className='flex items-center justify-between px-4 py-2'>
+                            <div className='text-base font-bold'>
+                              {vehicle.vehicleno?.value ?? 'N/A'}
                             </div>
-                          ))}
-                        </div>
+                            <div className='rounded-[10px] bg-[#34C759] px-[14px] py-[2px] text-base font-semibold text-white'>
+                              {capitalizeWords(vehicle.status?.desc) ?? 'N/A'}
+                            </div>
+                          </div>
+                          <div className='h-[1px] w-full bg-gray-200'></div>
+                          <div className='mb-2 mt-[10px] grid grid-cols-2 gap-4 px-4 text-sm md:grid-cols-4'>
+                            {getVehicleTopRow(vehicle).map((item, idx) => (
+                              <div key={idx}>
+                                <div className='text-sm font-light'>
+                                  {item.title}
+                                </div>
+                                <div className='whitespace-normal break-words text-base font-semibold'>
+                                  {item.value || 'N/A'}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
 
-                        <div className='mb-[12px] mt-4 grid grid-cols-2 gap-4 px-4 text-sm md:grid-cols-4'>
-                          {getVehicleBottomRow(vehicle).map((item, idx) => (
-                            <div key={idx}>
-                              <div className='text-sm font-light'>
-                                {item.title}
+                          <div className='mb-[12px] mt-4 grid grid-cols-2 gap-4 px-4 text-sm md:grid-cols-4'>
+                            {getVehicleBottomRow(vehicle).map((item, idx) => (
+                              <div key={idx}>
+                                <div className='text-sm font-light'>
+                                  {item.title}
+                                </div>
+                                <div className='whitespace-normal break-words text-base font-semibold'>
+                                  {item.value || 'N/A'}
+                                </div>
                               </div>
-                              <div className='whitespace-normal break-words text-base font-semibold'>
-                                {item.value || 'N/A'}
-                              </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </Form>
@@ -624,6 +627,7 @@ const ReviewInfoDetail = () => {
               className={`${
                 isMobile ? 'w-full' : 'ml-[6px] md:w-40'
               } bg-green-promo text-right`}
+              loading={isPending}
             >
               Next
             </PrimaryButton>

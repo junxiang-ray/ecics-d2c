@@ -81,7 +81,6 @@ const UnMatchVehicleModal = ({
         date_of_birth: parsedData.dob?.value
           ? convertDateToDDMMYYYY(parsedData.dob.value)
           : '',
-        year_of_registration: parsedData.year_of_registration || '',
         driving_experience:
           qdlClasses.length > 0
             ? drivingYears >= 6

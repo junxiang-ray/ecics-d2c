@@ -5,6 +5,7 @@ import appReducer from './slices/app.slice';
 import generalReducer from './slices/general.slice';
 import maidQuoteReducer from './slices/maidQuote.slice';
 import quoteReducer from './slices/quote.slice';
+import userInfoCarReducer from './slices/userInfoCar.slice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     quote: quoteReducer,
     maidQuote: maidQuoteReducer,
     general: generalReducer,
+    userInfoCar: userInfoCarReducer,
   },
 });
 
