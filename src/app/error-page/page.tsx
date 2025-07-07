@@ -46,7 +46,7 @@ export default function ApiErrorPage() {
           </p>
           <p>
             <span className='mr-2'>📧</span>
-            <span className='text-[#00000073]'>Email us:</span>
+            <span className='text-[#00000073]'>Email us : </span>
             <a
               href='mailto:customerservice@ecics.com.sg'
               className='text-[#00000073] underline'
