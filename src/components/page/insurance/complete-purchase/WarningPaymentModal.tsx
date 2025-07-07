@@ -8,9 +8,13 @@ import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 function WarningPaymentModal({
   visible,
   setShowFirstErrorModal,
+  onTryAgain,
+  isLoading,
 }: {
   visible: boolean;
   setShowFirstErrorModal: (visible: boolean) => void;
+  onTryAgain: () => void;
+  isLoading: boolean;
 }) {
   const { isMobile } = useDeviceDetection();
 
@@ -31,8 +35,10 @@ function WarningPaymentModal({
       </div>
       <div className='w-full'>
         <PrimaryButton
+          loading={isLoading}
+          disabled={isLoading}
           onClick={() => {
-            setShowFirstErrorModal(false);
+            onTryAgain();
           }}
           className='w-full bg-[#00ADEF] py-3 text-center text-base font-bold text-white'
         >

@@ -529,6 +529,8 @@ export default function CompletePurchaseDetail({
         <WarningPaymentModal
           visible={true}
           setShowFirstErrorModal={() => setErrorModalType(ErrorModalType.NONE)}
+          onTryAgain={onPay}
+          isLoading={isPendingSave}
         />
       )}
       {errorModalType === ErrorModalType.PAYMENT_GATEWAY && (
