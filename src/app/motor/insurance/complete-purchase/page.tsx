@@ -5,13 +5,7 @@ import { useAppSelector } from '@/redux/store';
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import MotorInsuranceLayout from '../MotorInsuranceLayout';
 
-interface PolicyDetailPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default function PolicyDetailPage({
-  searchParams,
-}: PolicyDetailPageProps) {
+export default function CompletePurchasePage() {
   const isSingPassFlow = useAppSelector(
     (state) => state.general.isSingpassFlow,
   );

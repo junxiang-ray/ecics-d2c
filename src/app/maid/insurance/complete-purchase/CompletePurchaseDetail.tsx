@@ -51,6 +51,14 @@ import {
 } from '@/components/ui/form/dropdownfield';
 import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import { finValidator } from '@/libs/utils/validation-utils';
+import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
+import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
+
+enum ErrorModalType {
+  NONE = 0,
+  WARNING_PAYMENT = 1,
+  PAYMENT_GATEWAY = 2,
+}
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
@@ -155,6 +163,10 @@ export default function CompletePurchaseDetail({
   }>({});
   const [showModal, setShowModal] = useState(false);
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
+  const [paymentErrorCount, setPaymentErrorCount] = useState(0);
+  const [errorModalType, setErrorModalType] = useState<ErrorModalType>(
+    ErrorModalType.NONE,
+  );
   const { isMobile } = useDeviceDetection();
 
   const toggleSection = (key: string) => {
@@ -223,6 +235,7 @@ export default function CompletePurchaseDetail({
     mutateAsync: saveProposal,
     isSuccess,
     isPending: isPendingSave,
+    isError,
   } = useSaveProposal();
   const { mutateAsync: saveMaidQuote, isPending: isPendingSaveQuote } =
     useSaveMaidQuote();
@@ -244,6 +257,20 @@ export default function CompletePurchaseDetail({
       methods.setValue(MAID_QUOTE.company_name_other, '');
     }
   }, [selectedCompanyName, methods]);
+
+  useEffect(() => {
+    if (isError) {
+      setPaymentErrorCount((prev) => {
+        const next = prev + 1;
+        setErrorModalType(
+          next === 1
+            ? ErrorModalType.WARNING_PAYMENT
+            : ErrorModalType.PAYMENT_GATEWAY,
+        );
+        return next;
+      });
+    }
+  }, [isError]);
 
   const handleEditClick = (key: string) => {
     toggleSection(key);
@@ -846,6 +873,20 @@ export default function CompletePurchaseDetail({
         onOk={handleDeclarationConfirm}
         onCancel={handleDeclarationCancel}
       />
+      {errorModalType === ErrorModalType.WARNING_PAYMENT && (
+        <WarningPaymentModal
+          visible={true}
+          setShowFirstErrorModal={() => setErrorModalType(ErrorModalType.NONE)}
+          onTryAgain={onPay}
+          isLoading={isPendingSave}
+        />
+      )}
+      {errorModalType === ErrorModalType.PAYMENT_GATEWAY && (
+        <PaymentGatewayModal
+          visible={true}
+          setShowSecondErrorModal={() => setErrorModalType(ErrorModalType.NONE)}
+        />
+      )}
     </div>
   );
 }
