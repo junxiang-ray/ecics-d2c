@@ -186,7 +186,7 @@ function DeclarationConfirmModal({
       <div className='flex flex-col gap-4'>
         <p className='text-justify text-sm font-semibold text-[#000000]'>
           By agreeing, you acknowledge that you have read and agree to the
-          Declaration and Counter Indemnity applicable to Online Payment.
+          Declaration and Undertaking.
         </p>
         <div className='flex flex-row justify-between'>
           <SecondaryButton
