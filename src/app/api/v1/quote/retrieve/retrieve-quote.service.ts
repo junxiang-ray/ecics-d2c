@@ -29,22 +29,6 @@ export async function retrieveQuote(data: retrieveQuoteDTO) {
           name: true,
         },
       },
-      personal_info: {
-        select: {
-          id: true,
-          phone: true,
-          email: true,
-          name: true,
-          gender: true,
-          nric: true,
-          marital_status: true,
-          date_of_birth: true,
-          address: true,
-          vehicle_info_selected: true,
-          year_of_registration: true,
-          vehicles: true,
-        },
-      },
       country_nationality: {
         select: {
           id: true,

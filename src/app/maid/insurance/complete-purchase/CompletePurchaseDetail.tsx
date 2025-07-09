@@ -1,6 +1,6 @@
 'use client';
 
-import { Drawer, Modal } from 'antd';
+import { Drawer, Form, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -18,14 +18,39 @@ import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import DeclarationConfirmModal from '@/app/maid/insurance/complete-purchase/modal/DeclarationConfirmModal';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
-import { MAID_PAYMENT_URL } from '@/constants/general.constant';
+import {
+  HAS_HELPER_WORKED_OPTION,
+  HasHelperValue,
+  ProductType,
+} from '@/app/motor/insurance/basic-detail/options';
+import {
+  MAID_PAYMENT_URL,
+  VALUE_OPTION_COMPANY,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
-import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
+import {
+  useGetHirePurchaseList,
+  usePayment,
+  useSaveProposal,
+} from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { MAID_QUOTE } from '@/constants';
+import { z } from 'zod';
+import { passportRegex } from '@/constants/validation.constant';
+import { InputField } from '@/components/ui/form/inputfield';
+import { REGEX_TEXT } from '@/app/api/utils/regex';
+import { RadioField } from '@/components/ui/form/radiofield';
+import {
+  DropdownOption,
+  LongOptionDropdownField,
+} from '@/components/ui/form/dropdownfield';
+import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
+import { finValidator } from '@/libs/utils/validation-utils';
 import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
 import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
 
@@ -37,11 +62,99 @@ enum ErrorModalType {
 
 export default function CompletePurchaseDetail({
   onSaveRegister,
+  isSingPassFlow,
 }: {
   onSaveRegister: (fn: () => any) => void;
+  isSingPassFlow: boolean;
 }) {
   const dispatch = useAppDispatch();
   const router = useRouterWithQuery();
+  const [form] = Form.useForm();
+
+  const schema = z
+    .object({
+      name: z
+        .string({
+          required_error: 'Name is required',
+          invalid_type_error: 'Name is required',
+        })
+        .min(3, 'Name must be at least 3 characters')
+        .max(60, 'Name must be at most 60 characters')
+        .nonempty('Name is required'),
+      [MAID_QUOTE.fin]: z
+        .string({
+          required_error: 'Fin is required',
+          invalid_type_error: 'Fin is required',
+        })
+        .min(3, 'FIN must be at least 3 characters')
+        .max(9, 'FIN must be at most 9 characters')
+        .nonempty('Fin is required')
+        .refine(finValidator, { message: 'Please enter a valid FIN.' }),
+      [MAID_QUOTE.passport_number]: z
+        .string({
+          required_error: 'Passport number is required',
+          invalid_type_error: 'Passport number is required',
+        })
+        .nonempty('Passport number is required')
+        .min(6, 'Passport number must be at least 6 characters')
+        .max(20, 'Passport number must be at most 20 characters')
+        .regex(
+          passportRegex,
+          'Passport number must not contain special characters',
+        ),
+      [MAID_QUOTE.has_helper_worked_12_months]: z
+        .string({
+          required_error: 'Has the helper is required',
+          invalid_type_error: 'Has the helper is required',
+        })
+        .nonempty('Has the helper is required'),
+
+      [MAID_QUOTE.company_name]: z.string({
+        required_error: 'Previous Insurer Name is required',
+        invalid_type_error: 'Previous Insurer Name is required',
+      }),
+
+      [MAID_QUOTE.company_name_other]: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (data[MAID_QUOTE.has_helper_worked_12_months] === HasHelperValue.YES) {
+        if (!data[MAID_QUOTE.company_name]) {
+          ctx.addIssue({
+            path: [MAID_QUOTE.company_name],
+            code: z.ZodIssueCode.custom,
+            message: 'Previous Insurer Name is required',
+          });
+        }
+        if (
+          data[MAID_QUOTE.company_name] === VALUE_OPTION_COMPANY &&
+          !data[MAID_QUOTE.company_name_other]
+        ) {
+          ctx.addIssue({
+            path: [MAID_QUOTE.company_name_other],
+            code: z.ZodIssueCode.custom,
+            message: 'Other Insurer Name is required',
+          });
+        }
+      }
+      const fin = data[MAID_QUOTE.fin];
+      const nric = maidQuote?.data?.personal_info?.nric;
+      if (
+        fin !== undefined &&
+        nric !== undefined &&
+        String(fin).trim() !== '' &&
+        String(nric).trim() !== '' &&
+        String(fin).toUpperCase() === String(nric).toUpperCase()
+      ) {
+        ctx.addIssue({
+          path: [MAID_QUOTE.fin],
+          code: z.ZodIssueCode.custom,
+          message: 'FIN must not be the same as NRIC/FIN.',
+        });
+      }
+    });
+
+  type FormData = z.infer<typeof schema>;
+
   const { handleBack } = useInsurance();
   const [showDeclarationModal, setShowDeclarationModal] = useState(false);
 
@@ -66,9 +179,52 @@ export default function CompletePurchaseDetail({
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';
   const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
+  const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.MAID);
+
   const isFinalized = useSelector(
     (state: any) => state.maidQuote.maidQuote?.is_finalized,
   );
+
+  const hirePurchaseListFormatted: DropdownOption[] = [
+    ...(Array.isArray(hirePurchaseList)
+      ? hirePurchaseList.map((item: any) => ({
+          value: String(item.id),
+          text: item.name,
+        }))
+      : []),
+  ];
+
+  const companyOption = hirePurchaseListFormatted.find(
+    (item) => item.text === maidQuote?.data?.maid_info?.company_name,
+  );
+
+  const companyId = companyOption ? String(companyOption.value) : '';
+
+  const initFormDate: FormData = {
+    name: maidQuote?.data?.maid_info?.name || '',
+    [MAID_QUOTE.fin]: maidQuote?.data?.maid_info?.fin || '',
+    [MAID_QUOTE.passport_number]:
+      maidQuote?.data?.maid_info?.passport_number || '',
+    [MAID_QUOTE.has_helper_worked_12_months]:
+      maidQuote?.data?.maid_info?.has_helper_worked_12_months || '',
+    [MAID_QUOTE.company_name]: companyId,
+    [MAID_QUOTE.company_name_other]:
+      maidQuote?.data?.maid_info?.company_name_other || '',
+  };
+
+  const methods = useForm<FormData>({
+    resolver: zodResolver(schema),
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
+    criteriaMode: 'all',
+    values: initFormDate,
+  });
+
+  const {
+    watch,
+    setValue,
+    formState: { errors, isDirty },
+  } = methods;
 
   const {
     mutate: payment,
@@ -81,6 +237,26 @@ export default function CompletePurchaseDetail({
     isPending: isPendingSave,
     isError,
   } = useSaveProposal();
+  const { mutateAsync: saveMaidQuote, isPending: isPendingSaveQuote } =
+    useSaveMaidQuote();
+
+  const selectedCompanyName = methods.watch(MAID_QUOTE.company_name);
+  const selectedHasTheHelper = methods.watch(
+    MAID_QUOTE.has_helper_worked_12_months,
+  );
+
+  useEffect(() => {
+    if (selectedHasTheHelper === HasHelperValue.NO) {
+      methods.setValue(MAID_QUOTE.company_name, '');
+      methods.setValue(MAID_QUOTE.company_name_other, '');
+    }
+  }, [selectedHasTheHelper, methods]);
+
+  useEffect(() => {
+    if (selectedCompanyName !== VALUE_OPTION_COMPANY) {
+      methods.setValue(MAID_QUOTE.company_name_other, '');
+    }
+  }, [selectedCompanyName, methods]);
 
   useEffect(() => {
     if (isError) {
@@ -148,32 +324,36 @@ export default function CompletePurchaseDetail({
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
   } = {
-    helper_details: [
-      {
-        title: 'Helper’s Full Name',
-        value: maidQuote?.data?.maid_info?.name || 'N/A',
-      },
-      {
-        title: 'FIN',
-        value: maidQuote?.data?.maid_info?.fin || 'N/A',
-      },
-      {
-        title: 'Passport Number',
-        value: maidQuote?.data?.maid_info?.passport_number || 'N/A',
-      },
-      {
-        title: 'Has the helper been employed by you for more than 12 months?',
-        value: maidQuote?.data?.maid_info?.has_helper_worked_12_months || 'N/A',
-      },
-      {
-        title: 'Previous Insurer Name',
-        value: maidQuote?.data?.maid_info?.company_name || 'N/A',
-      },
-      {
-        title: 'Other Insurer Name',
-        value: maidQuote?.data?.maid_info?.company_name_other || 'N/A',
-      },
-    ],
+    helper_details: isSingPassFlow
+      ? []
+      : [
+          {
+            title: 'Helper’s Full Name',
+            value: maidQuote?.data?.maid_info?.name || 'N/A',
+          },
+          {
+            title: 'FIN',
+            value: maidQuote?.data?.maid_info?.fin || 'N/A',
+          },
+          {
+            title: 'Passport Number',
+            value: maidQuote?.data?.maid_info?.passport_number || 'N/A',
+          },
+          {
+            title:
+              'Has the helper been employed by you for more than 12 months?',
+            value:
+              maidQuote?.data?.maid_info?.has_helper_worked_12_months || 'N/A',
+          },
+          {
+            title: 'Previous Insurer Name',
+            value: maidQuote?.data?.maid_info?.company_name || 'N/A',
+          },
+          {
+            title: 'Other Insurer Name',
+            value: maidQuote?.data?.maid_info?.company_name_other || 'N/A',
+          },
+        ],
     helper_basic_information: [
       {
         title: 'Helper Type',
@@ -341,8 +521,58 @@ export default function CompletePurchaseDetail({
     }
   };
 
-  const handlePayClick = () => {
-    setShowDeclarationModal(true);
+  const handlePayClick = async (formValues?: FormData) => {
+    if (isSingPassFlow) {
+      const isValid = await methods.trigger();
+      if (!isValid) return;
+
+      if (!isDirty) {
+        setShowDeclarationModal(true);
+        return;
+      }
+      const formData = formValues || methods.getValues();
+
+      let companyNameText = formData[MAID_QUOTE.company_name];
+      if (companyNameText && hirePurchaseListFormatted.length > 0) {
+        const found = hirePurchaseListFormatted.find(
+          (item) => item.value === companyNameText,
+        );
+        if (found) {
+          companyNameText = found.text;
+        }
+      }
+
+      if (
+        companyNameText === VALUE_OPTION_COMPANY &&
+        formData[MAID_QUOTE.company_name_other]
+      ) {
+        companyNameText = formData[MAID_QUOTE.company_name_other];
+      }
+
+      const newFormData = {
+        ...formData,
+        [MAID_QUOTE.company_name]: companyNameText,
+      };
+
+      saveMaidQuote({
+        key: key,
+        is_sending_email: false,
+        data: {
+          current_step: 5,
+          maid_info: {
+            ...maidQuote?.data?.maid_info,
+            ...newFormData,
+          },
+        },
+      }).then((res) => {
+        if (res) {
+          dispatch(updateMaidQuote(res));
+          setShowDeclarationModal(true);
+        }
+      });
+    } else {
+      setShowDeclarationModal(true);
+    }
   };
 
   const handleDeclarationConfirm = () => {
@@ -406,6 +636,113 @@ export default function CompletePurchaseDetail({
     />
   );
 
+  const HelperDetailsForm = () => (
+    <FormProvider {...methods}>
+      <Form
+        form={form}
+        className='flex flex-col gap-2'
+        onFinish={methods.handleSubmit(handlePayClick)}
+        disabled={isPendingSave || isPendingPay || isPendingSaveQuote}
+      >
+        <div className='flex flex-col gap-4 rounded-b-lg border border-t-0 border-[#F0F0F0] p-4'>
+          <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8'>
+            <Form.Item
+              name='name'
+              validateStatus={errors['name'] ? 'error' : ''}
+            >
+              <InputField
+                name='name'
+                label='Full Name'
+                isRequired
+                placeholder='Enter Helper’s Full Name as per FIN'
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const value = e.target.value.replace(REGEX_TEXT, '');
+                  methods.setValue('name', value, {
+                    shouldValidate: true,
+                  });
+                }}
+              />
+            </Form.Item>
+            <Form.Item
+              name={MAID_QUOTE.fin}
+              validateStatus={errors[MAID_QUOTE.fin] ? 'error' : ''}
+            >
+              <InputField
+                name={MAID_QUOTE.fin}
+                label='FIN'
+                isRequired
+                placeholder='Enter Helper’s FIN Number'
+                maxLength={9}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name={MAID_QUOTE.passport_number}
+              validateStatus={errors[MAID_QUOTE.passport_number] ? 'error' : ''}
+            >
+              <InputField
+                name={MAID_QUOTE.passport_number}
+                label='Passport Number'
+                isRequired
+                placeholder='Enter Helper’s Passport number'
+              />
+            </Form.Item>
+
+            <Form.Item
+              name={MAID_QUOTE.has_helper_worked_12_months}
+              validateStatus={
+                errors[MAID_QUOTE.has_helper_worked_12_months] ? 'error' : ''
+              }
+            >
+              <RadioField
+                name={MAID_QUOTE.has_helper_worked_12_months}
+                label='Has the helper been employed by you for more than 12 months?'
+                isRequired
+                options={HAS_HELPER_WORKED_OPTION}
+              />
+            </Form.Item>
+
+            {selectedHasTheHelper === HasHelperValue.YES && (
+              <>
+                <Form.Item
+                  name={MAID_QUOTE.company_name}
+                  validateStatus={
+                    errors[MAID_QUOTE.company_name] ? 'error' : ''
+                  }
+                >
+                  <LongOptionDropdownField
+                    name={MAID_QUOTE.company_name}
+                    label='Previous Insurer Name'
+                    placeholder='Select Insurer'
+                    options={hirePurchaseListFormatted}
+                    showSearch
+                    isRequired={true}
+                  />
+                </Form.Item>
+
+                {selectedCompanyName === VALUE_OPTION_COMPANY && (
+                  <Form.Item
+                    name={MAID_QUOTE.company_name_other}
+                    validateStatus={
+                      errors[MAID_QUOTE.company_name_other] ? 'error' : ''
+                    }
+                  >
+                    <InputField
+                      name={MAID_QUOTE.company_name_other}
+                      label='Other Insurer Name'
+                      isRequired
+                      placeholder='Enter Other Insurer Name'
+                    />
+                  </Form.Item>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </Form>
+    </FormProvider>
+  );
+
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
       <div
@@ -461,6 +798,17 @@ export default function CompletePurchaseDetail({
                 sections[index - 1]?.key === 'policy_plan'
               ) {
                 return null;
+              }
+
+              if (section.key === 'helper_details' && isSingPassFlow) {
+                return (
+                  <div key='helper_details'>
+                    <div className='rounded-t-lg bg-[#F4FBFD] px-4 py-3 font-bold'>
+                      {section.title}
+                    </div>
+                    <HelperDetailsForm />
+                  </div>
+                );
               }
 
               return (

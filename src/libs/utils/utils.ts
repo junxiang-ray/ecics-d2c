@@ -1,7 +1,5 @@
 import { v4 as uuid } from 'uuid';
 
-import { AddonOption } from '@/libs/types/quote';
-
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
@@ -58,7 +56,9 @@ export const generateYearOptions = (): DropdownOption[] => {
 /**
  * Capitalize first letter of each word
  */
-export const capitalizeWords = (str: string): string => {
+export const capitalizeWords = (str: string | undefined | null): string => {
+  if (!str) return '';
+
   return str
     .toLowerCase()
     .split(' ')

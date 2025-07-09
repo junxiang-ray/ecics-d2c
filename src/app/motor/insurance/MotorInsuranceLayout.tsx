@@ -14,6 +14,7 @@ import { useAppDispatch } from '@/redux/store';
 import { ProductType } from './basic-detail/options';
 
 const motorSteps = {
+  [StepProcessBar.FIRST]: ROUTES.MOTOR.REVIEW_INFO_DETAIL,
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE.BASIC_DETAIL,
   [StepProcessBar.SELECT_PLAN]: ROUTES.INSURANCE.PLAN,
   [StepProcessBar.SELECT_ADD_ON]: ROUTES.INSURANCE.ADD_ON,

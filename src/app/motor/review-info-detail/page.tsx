@@ -2,12 +2,14 @@
 
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { usePostUserInfo } from '@/hook/auth/login';
 
 import ReviewInfoDetail from './ReviewInfoDetail';
 
 export default function ReviewInfoDetailPage() {
+  const dispatch = useDispatch();
   const [params, setParams] = useState({ code: '', state: '' });
   const [payload, setPayload] = useState({
     code_verifier: '',
@@ -34,6 +36,12 @@ export default function ReviewInfoDetailPage() {
     params,
     payload,
   });
+
+  // useEffect(() => {
+  //     if (data) {
+  //         dispatch(setUserInfoCar(data));
+  //     }
+  // }, [data, dispatch]);
 
   if (!clientReady || isLoading) {
     return (

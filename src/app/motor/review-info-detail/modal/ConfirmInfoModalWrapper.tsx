@@ -26,7 +26,7 @@ const ConfirmInfoModalWrapper = (props: ConfirmInfoModalWrapperProps) => {
   return (
     showConfirmModal && (
       <div
-        className={`fixed inset-0 z-50 flex justify-center bg-black bg-opacity-50 ${isMobile ? 'items-end' : 'items-center'}`}
+        className={`fixed inset-0 z-[150] flex justify-center bg-black bg-opacity-50 ${isMobile ? 'items-end' : 'items-center'}`}
       >
         <div
           className={`flex max-h-screen w-full animate-slide-up flex-col ${isMobile ? 'rounded-t-lg' : 'rounded-lg'} bg-white shadow-lg sm:w-[490px]`}
