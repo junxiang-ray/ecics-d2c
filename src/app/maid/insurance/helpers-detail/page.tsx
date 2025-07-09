@@ -3,7 +3,7 @@
 import HelpersDetail from './HelpersDetail';
 import MaidInsuranceLayout from '../MaidInsuranceLayout';
 
-export default function AddonPage() {
+export default function HelpersDetailPage() {
   return (
     <MaidInsuranceLayout>
       {({ onSave }) => <HelpersDetail onSaveRegister={onSave} />}

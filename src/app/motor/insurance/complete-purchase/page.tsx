@@ -3,13 +3,13 @@
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import MotorInsuranceLayout from '../MotorInsuranceLayout';
 
-interface PolicyDetailPageProps {
+interface CompletePurchasePageProps {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default function PolicyDetailPage({
+export default function CompletePurchasePage({
   searchParams,
-}: PolicyDetailPageProps) {
+}: CompletePurchasePageProps) {
   const params = searchParams;
   const isManual = params?.manual === 'true' ? true : false;
 

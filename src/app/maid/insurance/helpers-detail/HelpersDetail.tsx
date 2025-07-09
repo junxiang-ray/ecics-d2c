@@ -306,7 +306,7 @@ const HelpersDetail = (props: Props) => {
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
-    defaultValues: initFormDate,
+    values: initFormDate,
   });
 
   const selectedCompanyName = methods.watch(MAID_QUOTE.company_name);
@@ -466,6 +466,7 @@ const HelpersDetail = (props: Props) => {
                       name={MAID_QUOTE.company_name}
                       label='Previous Insurer Name'
                       placeholder='Select Insurer'
+                      disabled={isPending}
                       options={hirePurchaseListFormatted}
                       showSearch
                       isRequired={true}
@@ -552,6 +553,7 @@ const HelpersDetail = (props: Props) => {
                   label='Nationality'
                   placeholder={`Select Employer's Nationality`}
                   options={nationalOptionsFormatted}
+                  disabled={isPending}
                   onChange={() => {
                     // Reset model when make changes
                     methods.setValue(MAID_QUOTE.nationality, null as any);
