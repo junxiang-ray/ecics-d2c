@@ -540,7 +540,7 @@ const ReviewInfoDetail = () => {
                 </div>
               )}
 
-              {userInfoCar?.vehicles.length > 0 && (
+              {userInfoCar?.vehicles?.length > 0 && (
                 <div className='mt-[32px] w-full'>
                   <div className='my-3 text-lg font-bold underline'>
                     Vehicle Details

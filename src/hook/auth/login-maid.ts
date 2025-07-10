@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { SavePersonalInfoPayload, UserInfoPayload } from '@/libs/types/auth';
+import { UserInfoPayload } from '@/libs/types/auth';
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import insurance from '@/api/base-service/insurance';
+import auth from '@/api/singpass-maid-service/auth';
+import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
@@ -11,23 +13,23 @@ import {
   PROMO_CODE,
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
-import auth from '@/api/singpass-maid-service/auth';
 
-export const useRequestLoginMaid = () => {
+export const useRequestLoginMaid = (productType: ProductTypeWeb) => {
   const requestLoginMaid = async () => {
-    const res = await auth.requestLoginMaid();
+    const res = await auth.requestLoginMaid(productType);
     return res.data;
   };
 
   return useMutation({
     mutationFn: requestLoginMaid,
-    mutationKey: ['login'],
+    mutationKey: ['login', productType],
     onSuccess: (data) => {
-      window.location.href = data.url;
+      const { url, state, nonce, code_verifier } = data.data;
+      window.location.href = url;
       saveToSessionStorage({
-        state: data.state,
-        nonce: data.nonce,
-        code_verifier: data.code_verifier,
+        state: state,
+        nonce: nonce,
+        code_verifier: code_verifier,
       });
     },
     onError: (error) => {
@@ -37,26 +39,28 @@ export const useRequestLoginMaid = () => {
 };
 
 export const usePostUserInfoMaid = ({
-  params,
   payload,
+  productType,
 }: {
-  params: any;
   payload: UserInfoPayload;
+  productType: ProductTypeWeb;
 }) => {
   const postUserInfoMaid = async () => {
-    const res = await auth.postUserInfoMaid({ params, payload });
-    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data) });
-    saveToSessionStorage({ [DATA_FROM_SINGPASS]: JSON.stringify(res.data) });
+    const res = await auth.postUserInfoMaid({ payload, productType });
+    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data.data) });
+    saveToSessionStorage({
+      [DATA_FROM_SINGPASS]: JSON.stringify(res.data.data),
+    });
     return res.data;
   };
   return useQuery({
     queryFn: postUserInfoMaid,
-    queryKey: ['user-info-maid', params],
+    queryKey: ['user-info-maid', payload],
     enabled:
       !!payload.code_verifier &&
       !!payload.nonce &&
       !!payload.state &&
-      !!params?.code,
+      !!payload?.code,
   });
 };
 

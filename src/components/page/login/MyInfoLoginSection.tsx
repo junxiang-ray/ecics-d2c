@@ -9,9 +9,9 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useRequestLogin } from '@/hook/auth/login';
+import { useRequestLoginMaid } from '@/hook/auth/login-maid';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRequestLoginMaid } from '@/hook/auth/login-maid';
 
 interface MyInfoLoginSectionProps {
   promoCode?: string;
@@ -29,8 +29,8 @@ const MyInfoLoginSection = ({
   const [isUserActive, setIsUserActive] = useState(false);
   const isMaid = productType === ProductType.MAID;
 
-  const { mutate: requestLogin } = useRequestLogin();
-  const { mutate: requestLoginMaid } = useRequestLoginMaid();
+  const { mutate: requestLogin } = useRequestLogin(PRODUCT_NAME.CAR);
+  const { mutate: requestLoginMaid } = useRequestLoginMaid(PRODUCT_NAME.MAID);
 
   const { mutate: requestLog } = useRequestLog(
     isMaid ? PRODUCT_NAME.MAID : PRODUCT_NAME.CAR,

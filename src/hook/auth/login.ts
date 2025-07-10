@@ -5,6 +5,7 @@ import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import insurance from '@/api/base-service/insurance';
 import auth from '@/api/singpass-car-service/auth';
+import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,
@@ -13,21 +14,22 @@ import {
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 
-export const useRequestLogin = () => {
+export const useRequestLogin = (productType: ProductTypeWeb) => {
   const requestLogin = async () => {
-    const res = await auth.requestLogin();
+    const res = await auth.requestLogin(productType);
     return res.data;
   };
 
   return useMutation({
     mutationFn: requestLogin,
-    mutationKey: ['login'],
+    mutationKey: ['login', productType],
     onSuccess: (data) => {
-      window.location.href = data.url;
+      const { url, state, nonce, code_verifier } = data.data;
+      window.location.href = url;
       saveToSessionStorage({
-        state: data.state,
-        nonce: data.nonce,
-        code_verifier: data.code_verifier,
+        state: state,
+        nonce: nonce,
+        code_verifier: code_verifier,
       });
     },
     onError: (error) => {
@@ -37,26 +39,28 @@ export const useRequestLogin = () => {
 };
 
 export const usePostUserInfo = ({
-  params,
   payload,
+  productType,
 }: {
-  params: any;
   payload: UserInfoPayload;
+  productType: ProductTypeWeb;
 }) => {
   const postUserInfo = async () => {
-    const res = await auth.postUserInfo({ params, payload });
-    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data) });
-    saveToSessionStorage({ [DATA_FROM_SINGPASS]: JSON.stringify(res.data) });
+    const res = await auth.postUserInfo({ payload, productType });
+    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data.data) });
+    saveToSessionStorage({
+      [DATA_FROM_SINGPASS]: JSON.stringify(res.data.data),
+    });
     return res.data;
   };
   return useQuery({
     queryFn: postUserInfo,
-    queryKey: ['user-info', params],
+    queryKey: ['user-info', payload],
     enabled:
       !!payload.code_verifier &&
       !!payload.nonce &&
       !!payload.state &&
-      !!params?.code,
+      !!payload?.code,
   });
 };
 
