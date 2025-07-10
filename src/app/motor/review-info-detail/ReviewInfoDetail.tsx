@@ -289,7 +289,6 @@ const ReviewInfoDetail = () => {
       vehicles.length > 0 && vehicles.some((v: any) => v?.vehicleno?.value);
     if (!hasVehicle) {
       setShowVehicleNotFoundModal(true);
-      return;
     }
     // Check hasClass3Or3A
     const hasClass3Or3A = drivingClasses.some(
@@ -352,7 +351,7 @@ const ReviewInfoDetail = () => {
     setShowContactModal(false);
     router.push(ROUTES.MOTOR.LOGIN);
   };
-
+  console.log('showVehicleNotFoundModal', showVehicleNotFoundModal);
   return (
     <>
       <FormProvider {...methods}>
@@ -640,22 +639,20 @@ const ReviewInfoDetail = () => {
       {/*        setShowConfirmModal={setShowConfirmModal}*/}
       {/*    />*/}
       {/*)}*/}
-      {showVehicleNotFoundModal && (
-        <NoInfoModal
-          title='Vehicle Information Not Found'
-          onExit={handleCancel}
-          onContinue={handleCancel}
-          description='unable to detect a registered vehicle under your name.'
-        />
-      )}
-      {showNotDetectClass3Or3AModal && (
-        <NoInfoModal
-          title='No Valid Driving License'
-          onExit={handleExit}
-          onContinue={handleContinue}
-          description='unable to detect a valid Class 3 driving license'
-        />
-      )}
+      <NoInfoModal
+        visible={showVehicleNotFoundModal}
+        title='Vehicle Information Not Found'
+        onExit={handleCancel}
+        onContinue={handleCancel}
+        description='unable to detect a registered vehicle under your name.'
+      />
+      <NoInfoModal
+        visible={showNotDetectClass3Or3AModal}
+        title='No Valid Driving License'
+        onExit={handleExit}
+        onContinue={handleContinue}
+        description='unable to detect a valid Class 3 driving license'
+      />
       <QuoteModal
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
         visible={showCSModal.visible}
