@@ -1,16 +1,22 @@
 import { DataFromSingpass } from '@/libs/types/quote';
 
-export interface LoginResponse {
+export interface LoginData {
   state: string;
   nonce: string;
   code_verifier: string;
   url: string;
 }
 
+export interface LoginResponse {
+  message: string;
+  data: LoginData;
+}
+
 export interface UserInfoPayload {
   nonce: string;
   code_verifier: string;
   state: string;
+  code?: string;
 }
 
 export interface SavePersonalInfoPayload {

@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { usePostUserInfo } from '@/hook/auth/login';
 
 import ReviewInfoDetail from './ReviewInfoDetail';
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 
 export default function ReviewInfoDetailPage() {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ export default function ReviewInfoDetailPage() {
     code_verifier: '',
     nonce: '',
     state: '',
+    code: '',
   });
   const [clientReady, setClientReady] = useState(false);
 
@@ -27,14 +29,14 @@ export default function ReviewInfoDetailPage() {
       const nonce = sessionStorage.getItem('nonce') || '';
 
       setParams({ code, state });
-      setPayload({ code_verifier, nonce, state });
+      setPayload({ code_verifier, nonce, state, code });
       setClientReady(true);
     }
   }, []);
 
   const { data, isLoading } = usePostUserInfo({
-    params,
     payload,
+    productType: PRODUCT_NAME.CAR,
   });
 
   // useEffect(() => {

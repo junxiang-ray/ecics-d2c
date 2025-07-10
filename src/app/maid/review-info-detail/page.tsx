@@ -6,6 +6,7 @@ import { usePostUserInfoMaid } from '@/hook/auth/login-maid';
 import { ReviewInfoDetailMaid } from './ReviewInfoDetail';
 import { DATA_FROM_SINGPASS } from '@/constants/general.constant';
 import { MAID_QUOTE } from '@/constants';
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 
 export default function ReviewInfoDetailPage() {
   const [params, setParams] = useState({ code: '', state: '' });
@@ -13,6 +14,7 @@ export default function ReviewInfoDetailPage() {
     code_verifier: '',
     nonce: '',
     state: '',
+    code: '',
   });
 
   const [clientReady, setClientReady] = useState(false);
@@ -33,14 +35,14 @@ export default function ReviewInfoDetailPage() {
       const nonce = sessionStorage.getItem('nonce') || '';
 
       setParams({ code, state });
-      setPayload({ code_verifier, nonce, state });
+      setPayload({ code_verifier, nonce, state, code });
       setClientReady(true);
     }
   }, []);
 
   const { data, isLoading } = usePostUserInfoMaid({
-    params,
     payload,
+    productType: PRODUCT_NAME.MAID,
   });
 
   useEffect(() => {
