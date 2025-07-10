@@ -7,12 +7,10 @@ import { generators } from 'openid-client';
 export async function LoginSingpassService(product: string) {
   try {
     const client = await createSingpassClient(product);
-
     const code_verifier = generators.codeVerifier();
     const code_challenge = generators.codeChallenge(code_verifier);
     const nonce = crypto.randomUUID();
     const state = crypto.randomBytes(16).toString('hex');
-
     const redirectUri =
       process.env[`${product.toUpperCase()}_REDIRECT_URI`] || '';
     const scope = process.env[`${product.toUpperCase()}_SCOPES`] || '';
