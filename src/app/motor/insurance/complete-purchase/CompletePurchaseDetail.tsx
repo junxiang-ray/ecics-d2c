@@ -16,7 +16,9 @@ import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDeta
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import { PricingSummary } from '@/components/page/FeeBar';
+import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
 import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
+import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
@@ -29,8 +31,6 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { ProductType } from '../basic-detail/options';
-import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
-import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
 
 enum ErrorModalType {
   NONE = 0,
@@ -120,6 +120,9 @@ export default function CompletePurchaseDetail({
     }
     if (['addons', 'driver'].includes(key)) {
       return ROUTES.INSURANCE.ADD_ON;
+    }
+    if (['contact_info'].includes(key)) {
+      return ROUTES.MOTOR.REVIEW_INFO_DETAIL;
     }
     return undefined;
   };
@@ -251,24 +254,38 @@ export default function CompletePurchaseDetail({
   const sharedDataMap: {
     [key: string]: { title: string; value: any; coverage_amount?: string }[];
   } = {
-    personal: [
-      {
-        title: 'Email Address',
-        value: quote?.data?.personal_info?.email || 'N/A',
-      },
-      {
-        title: 'Phone Number',
-        value: quote?.data?.personal_info?.phone,
-      },
-      ...(isSingPassFlow
-        ? []
-        : [
+    ...(isSingPassFlow
+      ? {
+          contact_info: [
+            {
+              title: 'Email Address',
+              value: quote?.data?.personal_info?.email || 'N/A',
+            },
+            {
+              title: 'Phone Number',
+              value: quote?.data?.personal_info?.phone,
+            },
+          ],
+        }
+      : {}),
+    ...(isSingPassFlow
+      ? {}
+      : {
+          personal: [
+            {
+              title: 'Email Address',
+              value: quote?.data?.personal_info?.email || 'N/A',
+            },
+            {
+              title: 'Phone Number',
+              value: quote?.data?.personal_info?.phone,
+            },
             {
               title: 'Date of Birth',
               value: quote?.data?.personal_info?.date_of_birth,
             },
-          ]),
-    ],
+          ],
+        }),
     ...(isSingPassFlow
       ? {
           vehicle_details: [
@@ -524,10 +541,22 @@ export default function CompletePurchaseDetail({
   };
 
   const sections = [
-    {
-      key: 'personal',
-      title: isSingPassFlow ? 'Contact Info' : 'Personal Information',
-    },
+    ...(isSingPassFlow
+      ? [
+          {
+            key: 'contact_info',
+            title: 'Contact Info',
+          },
+        ]
+      : []),
+    ...(isSingPassFlow
+      ? []
+      : [
+          {
+            key: 'personal',
+            title: 'Personal Information',
+          },
+        ]),
     ...(isSingPassFlow
       ? [
           {

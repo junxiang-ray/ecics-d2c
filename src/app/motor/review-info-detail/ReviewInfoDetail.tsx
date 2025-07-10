@@ -289,6 +289,7 @@ const ReviewInfoDetail = () => {
       vehicles.length > 0 && vehicles.some((v: any) => v?.vehicleno?.value);
     if (!hasVehicle) {
       setShowVehicleNotFoundModal(true);
+      return;
     }
     // Check hasClass3Or3A
     const hasClass3Or3A = drivingClasses.some(
@@ -351,7 +352,7 @@ const ReviewInfoDetail = () => {
     setShowContactModal(false);
     router.push(ROUTES.MOTOR.LOGIN);
   };
-  console.log('showVehicleNotFoundModal', showVehicleNotFoundModal);
+
   return (
     <>
       <FormProvider {...methods}>
