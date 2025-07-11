@@ -86,6 +86,7 @@ const ReviewInfoDetail = () => {
     useState(false);
   const [showNotDetectClass3Or3AModal, setShowNotDetectClass3Or3AModal] =
     useState(false);
+  const [showCombinedErrorModal, setShowCombinedErrorModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showRenewalModal, setShowRenewalModal] = useState(false);
   const [showCSModal, setShowCSModal] = useState<{
@@ -217,15 +218,40 @@ const ReviewInfoDetail = () => {
   const expiryDate = qdl.expirydate?.value ?? 'N/A';
   const validityDesc = qdl.validity?.desc ?? 'N/A';
 
+  useEffect(() => {
+    if (!userInfoCar) return;
+    // Check vehicle not found
+    const vehicles = userInfoCar?.vehicles || [];
+    const liveVehicles = vehicles.filter(
+      (v: any) => v?.vehicleno?.value && v?.status?.desc === 'LIVE',
+    );
+    const hasVehicle = liveVehicles.length > 0;
+
+    // Check hasClass3Or3A
+    const hasClass3Or3A = drivingClasses.some(
+      (cls: any) => cls.class?.value === '3' || cls.class?.value === '3A',
+    );
+    //  Check do not hasClass3Or3A and hasVehicle
+    if (!hasVehicle && !hasClass3Or3A) {
+      setShowCombinedErrorModal(true);
+      return;
+    }
+    if (!hasVehicle) {
+      setShowVehicleNotFoundModal(true);
+      return;
+    }
+    if (!hasClass3Or3A) {
+      setShowNotDetectClass3Or3AModal(true);
+      return;
+    }
+  }, [userInfoCar]);
+
   const callApiPersonalInfo = () => {
     const singpassDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
     if (!singpassDataRaw) return;
     const parsedSingpass = JSON.parse(singpassDataRaw);
 
-    if (
-      Array.isArray(parsedSingpass.vehicles) &&
-      parsedSingpass.vehicles.length === 1
-    ) {
+    if (Array.isArray(parsedSingpass.vehicles)) {
       const qdlClasses = parsedSingpass?.drivinglicence?.qdl?.classes || [];
       const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
@@ -241,8 +267,10 @@ const ReviewInfoDetail = () => {
           marital_status: parsedSingpass.marital?.desc || '',
           nric: parsedSingpass.uinfin?.value || '',
           address: [
-            `${parsedSingpass.regadd?.block?.value || ''} ${parsedSingpass.regadd?.street?.value || ''} #${parsedSingpass.regadd?.floor?.value || ''}-${parsedSingpass.regadd?.unit?.value || ''}, ${parsedSingpass.regadd?.postal?.value || ''}, ${parsedSingpass.regadd?.country?.desc || ''}`,
-          ].filter(Boolean),
+            `${parsedSingpass.regadd?.block?.value || ''} ${parsedSingpass.regadd?.street?.value || ''}`.trim(),
+            `#${parsedSingpass.regadd?.floor?.value || ''}-${parsedSingpass.regadd?.unit?.value || ''}`.trim(),
+            `${parsedSingpass.regadd?.country?.desc || ''} ${parsedSingpass.regadd?.postal?.value || ''}`.trim(),
+          ],
           post_code: parsedSingpass.regadd?.postal?.value || '',
           date_of_birth: parsedSingpass.dob?.value
             ? convertDateToDDMMYYYY(parsedSingpass.dob.value)
@@ -283,22 +311,6 @@ const ReviewInfoDetail = () => {
   };
 
   const handleNext = () => {
-    // Check vehicle not found
-    const vehicles = userInfoCar?.vehicles || [];
-    const hasVehicle =
-      vehicles.length > 0 && vehicles.some((v: any) => v?.vehicleno?.value);
-    if (!hasVehicle) {
-      setShowVehicleNotFoundModal(true);
-      return;
-    }
-    // Check hasClass3Or3A
-    const hasClass3Or3A = drivingClasses.some(
-      (cls: any) => cls.class?.value === '3' || cls.class?.value === '3A',
-    );
-    if (!hasClass3Or3A) {
-      setShowNotDetectClass3Or3AModal(true);
-      return;
-    }
     // Check driver age
     const driverAge = userInfoCar?.dob?.value || [];
     if (driverAge) {
@@ -540,7 +552,9 @@ const ReviewInfoDetail = () => {
                 </div>
               )}
 
-              {userInfoCar?.vehicles?.length > 0 && (
+              {userInfoCar?.vehicles?.some(
+                (v: any) => v.status?.desc === 'LIVE',
+              ) && (
                 <div className='mt-[32px] w-full'>
                   <div className='my-3 text-lg font-bold underline'>
                     Vehicle Details
@@ -644,7 +658,7 @@ const ReviewInfoDetail = () => {
         visible={showVehicleNotFoundModal}
         title='Vehicle Information Not Found'
         onExit={handleCancel}
-        onContinue={handleCancel}
+        onContinue={handleContinue}
         description='unable to detect a registered vehicle under your name.'
       />
       <NoInfoModal
@@ -653,6 +667,13 @@ const ReviewInfoDetail = () => {
         onExit={handleExit}
         onContinue={handleContinue}
         description='unable to detect a valid Class 3 driving license'
+      />
+      <NoInfoModal
+        visible={showCombinedErrorModal}
+        title='Missing Information'
+        onExit={handleCancel}
+        onContinue={handleContinue}
+        description='unable to detect a registered vehicle under your name and a valid Class 3 driving license.'
       />
       <QuoteModal
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}

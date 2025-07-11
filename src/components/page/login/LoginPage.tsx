@@ -42,6 +42,11 @@ const LoginPage = () => {
     }
   }, [promoCodeDefault, verifyPromoCode]);
 
+  useEffect(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  }, []);
+
   const showPromo =
     !!promoCodeDefault && promoCodeData?.data?.is_valid === true;
 
