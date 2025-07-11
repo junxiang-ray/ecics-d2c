@@ -66,7 +66,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       ? editRoute === ROUTES.INSURANCE_MAID.BASIC_DETAIL
       : editRoute === ROUTES.INSURANCE.BASIC_DETAIL;
 
-    if (isBasicDetailRoute) {
+    const isMotorReviewDetail = editRoute === ROUTES.MOTOR.REVIEW_INFO_DETAIL;
+
+    if (isBasicDetailRoute || isMotorReviewDetail) {
       setIsShowPopupImportant(true);
     } else {
       handleRedirect();
