@@ -321,15 +321,6 @@ const ReviewInfoDetail = () => {
           'The listed driver has less than 2 years of driving experience.',
       });
     }
-    // Check vehicle number
-    const vehicleNumber = userInfoCar?.vehicles?.find(
-      (v: any) => v?.vehicleno?.value,
-    );
-
-    if (!vehicleNumber?.vehicleno?.value) {
-      setShowVehicleNotFoundModal(true);
-      return;
-    }
     // Call api savePersonalInfo
     callApiPersonalInfo();
   };
