@@ -86,6 +86,7 @@ const ReviewInfoDetail = () => {
     useState(false);
   const [showNotDetectClass3Or3AModal, setShowNotDetectClass3Or3AModal] =
     useState(false);
+  const [showCombinedErrorModal, setShowCombinedErrorModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showRenewalModal, setShowRenewalModal] = useState(false);
   const [showCSModal, setShowCSModal] = useState<{
@@ -299,6 +300,12 @@ const ReviewInfoDetail = () => {
       setShowNotDetectClass3Or3AModal(true);
       return;
     }
+    //  Check do not hasClass3Or3A and hasVehicle
+    if (!hasVehicle && !hasClass3Or3A) {
+      setShowCombinedErrorModal(true);
+      return;
+    }
+
     // Check driver age
     const driverAge = userInfoCar?.dob?.value || [];
     if (driverAge) {
@@ -653,6 +660,13 @@ const ReviewInfoDetail = () => {
         onExit={handleExit}
         onContinue={handleContinue}
         description='unable to detect a valid Class 3 driving license'
+      />
+      <NoInfoModal
+        visible={showCombinedErrorModal}
+        title='Missing Information'
+        onExit={handleCancel}
+        onContinue={handleCancel}
+        description='unable to detect a registered vehicle under your name and a valid Class 3 driving license.'
       />
       <QuoteModal
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
