@@ -251,10 +251,7 @@ const ReviewInfoDetail = () => {
     if (!singpassDataRaw) return;
     const parsedSingpass = JSON.parse(singpassDataRaw);
 
-    if (
-      Array.isArray(parsedSingpass.vehicles) &&
-      parsedSingpass.vehicles.length === 1
-    ) {
+    if (Array.isArray(parsedSingpass.vehicles)) {
       const qdlClasses = parsedSingpass?.drivinglicence?.qdl?.classes || [];
       const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
