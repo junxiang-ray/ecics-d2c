@@ -2,16 +2,13 @@
 
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { usePostUserInfo } from '@/hook/auth/login';
 
 import ReviewInfoDetail from './ReviewInfoDetail';
-import { PRODUCT_NAME } from '@/app/api/constants/product';
 
 export default function ReviewInfoDetailPage() {
-  const dispatch = useDispatch();
-  const [params, setParams] = useState({ code: '', state: '' });
   const [payload, setPayload] = useState({
     code_verifier: '',
     nonce: '',
@@ -28,7 +25,6 @@ export default function ReviewInfoDetailPage() {
       const code_verifier = sessionStorage.getItem('code_verifier') || '';
       const nonce = sessionStorage.getItem('nonce') || '';
 
-      setParams({ code, state });
       setPayload({ code_verifier, nonce, state, code });
       setClientReady(true);
     }
