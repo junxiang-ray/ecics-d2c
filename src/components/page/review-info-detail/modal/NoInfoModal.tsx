@@ -11,6 +11,7 @@ interface NoInfoModalProps {
   onExit: () => void;
   onContinue: () => void;
   description: string;
+  visible: boolean;
 }
 
 export const NoInfoModal = ({
@@ -18,6 +19,7 @@ export const NoInfoModal = ({
   onContinue,
   title,
   description,
+  visible,
 }: NoInfoModalProps) => {
   const { isMobile } = useDeviceDetection();
 
@@ -42,7 +44,7 @@ export const NoInfoModal = ({
             to proceed. Otherwise, you may exit the page.
           </p>
         </div>
-        <div className='mt-[10px] flex flex-row items-center justify-between'>
+        <div className='mt-[10px] flex flex-row items-center justify-between gap-[10px]'>
           <SecondaryButton
             className={`${
               isMobile
@@ -55,7 +57,7 @@ export const NoInfoModal = ({
             Exit
           </SecondaryButton>
           <PrimaryButton
-            className={`${isMobile ? 'w-full' : 'ml-[6px] md:w-40'} bg-brand-blue`}
+            className={`${isMobile ? 'w-full' : 'md:w-40'} bg-brand-blue`}
             onClick={onContinue}
           >
             Continue
@@ -70,6 +72,7 @@ export const NoInfoModal = ({
       <Drawer
         placement='bottom'
         onClose={onContinue}
+        open={visible}
         closable={false}
         height='auto'
         className='rounded-t-xl'
@@ -81,6 +84,7 @@ export const NoInfoModal = ({
 
   return (
     <Modal
+      open={visible}
       onOk={onContinue}
       onCancel={onContinue}
       closable={false}
