@@ -70,7 +70,6 @@ export const ModalAge = ({ isShowModal, setIsShowModal }: Props) => {
         <Drawer
           placement='bottom'
           open={isShowModal}
-          onClose={() => setIsShowModal(false)}
           closable={false}
           height='auto'
           className='rounded-t-xl'
@@ -80,7 +79,6 @@ export const ModalAge = ({ isShowModal, setIsShowModal }: Props) => {
       ) : (
         <Modal
           open={isShowModal}
-          onCancel={() => setIsShowModal(false)}
           closable={false}
           maskClosable={true}
           keyboard={true}
