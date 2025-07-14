@@ -1,5 +1,5 @@
 import { Drawer, Modal, Spin } from 'antd';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
@@ -39,6 +39,15 @@ const UnMatchVehicleModal = ({
   const carUserInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
   const userInfoCarSingPass = carUserInfo.data_from_singpass;
 
+  useEffect(() => {
+    if (visible && vehicleNumber) {
+      methods.reset({
+        vehicle_make: null,
+        vehicle_model: null,
+      });
+    }
+  }, [visible, vehicleNumber]);
+
   const handleSubmit = methods.handleSubmit((data) => {
     const { vehicle_make, vehicle_model } = data;
 
@@ -50,18 +59,20 @@ const UnMatchVehicleModal = ({
     );
 
     if (selectedMake && selectedModel) {
-      const updatedVehicles = userInfoCarSingPass.vehicles.map(
-        (vehicle: any) => {
-          if (vehicle.vehicleno?.value === vehicleNumber) {
-            return {
-              ...vehicle,
-              make: { value: selectedMake.text },
-              model: { value: selectedModel.text },
-            };
-          }
-          return vehicle;
-        },
-      );
+      const vehicleList = carUserInfo.list_after_selected_vehicle?.length
+        ? carUserInfo.list_after_selected_vehicle
+        : userInfoCarSingPass.vehicles;
+
+      const updatedVehicles = vehicleList.map((vehicle: any) => {
+        if (vehicle.vehicleno?.value === vehicleNumber) {
+          return {
+            ...vehicle,
+            make: { value: selectedMake.text },
+            model: { value: selectedModel.text },
+          };
+        }
+        return vehicle;
+      });
 
       const updatedVehicleSelected = updatedVehicles.find(
         (v: any) => v.vehicleno?.value === vehicleNumber,

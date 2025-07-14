@@ -304,7 +304,7 @@ const SingpassPolicyDetailForm = ({
         first_registered_year: missingFields.reg_yyyy
           ? (value[MOTOR_QUOTE.reg_yyyy] as string)
           : extractYear(
-              userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
+              userInfo?.vehicle_selected?.firstregistrationdate.value,
             ),
         year_of_manufacture:
           userInfo?.vehicle_selected?.yearofmanufacture.value,
@@ -402,9 +402,7 @@ const SingpassPolicyDetailForm = ({
       vehicle_model: userInfo?.vehicle_selected?.model.value,
       first_registered_year: missingFields.reg_yyyy
         ? (value[MOTOR_QUOTE.reg_yyyy] as string)
-        : extractYear(
-            userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
-          ),
+        : extractYear(userInfo?.vehicle_selected?.firstregistrationdate.value),
       year_of_manufacture: userInfo?.vehicle_selected?.yearofmanufacture.value,
       engine_number: userInfo?.vehicle_selected?.engineno.value,
       chasis_number: userInfo?.vehicle_selected?.chassisno.value,
@@ -444,7 +442,6 @@ const SingpassPolicyDetailForm = ({
         ),
       },
     };
-
     onSubmit(payload);
   };
 
