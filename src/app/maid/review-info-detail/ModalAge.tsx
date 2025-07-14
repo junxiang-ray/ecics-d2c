@@ -1,6 +1,6 @@
 'use client';
 
-import { Drawer, Modal } from 'antd';
+import { Button, Drawer, Modal } from 'antd';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { PrimaryButton } from '@/components/ui/buttons';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
@@ -43,14 +43,14 @@ export const ModalAge = ({ isShowModal, setIsShowModal }: Props) => {
         </p>
       </div>
       <div className='flex flex-col justify-between gap-4 md:flex-row'>
-        <PrimaryButton
-          className='w-[90vw] rounded-lg border border-[#C80F1E] bg-white text-center text-base font-bold leading-[21px] !text-[#C80F1E] md:w-40'
+        <Button
+          className='h-[40px] w-[90vw] rounded-lg border border-[#C80F1E] bg-white text-center text-base font-bold leading-[21px] text-[#C80F1E] md:w-40'
           onClick={() => {
             router.push(ROUTES.MAID.LOGIN, { preserveQuery: false });
           }}
         >
           Exit
-        </PrimaryButton>
+        </Button>
         <PrimaryButton
           className='w-[90vw] bg-[#00ADEF] md:w-40'
           onClick={() => {
