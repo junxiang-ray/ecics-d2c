@@ -254,6 +254,17 @@ const ReviewInfoDetail = () => {
       setShowNotDetectClass3Or3AModal(true);
       return;
     }
+    // Check driver age
+    const driverAge = userInfoCar?.dob?.value || [];
+    if (driverAge) {
+      const age = calculateAge(driverAge);
+      if (age >= 71) {
+        setShowCSModal({
+          visible: true,
+          description: 'The driver is above 70 years of age.',
+        });
+      }
+    }
   }, [userInfoCar]);
 
   const callApiPersonalInfo = () => {
@@ -321,17 +332,6 @@ const ReviewInfoDetail = () => {
   };
 
   const handleNext = () => {
-    // Check driver age
-    const driverAge = userInfoCar?.dob?.value || [];
-    if (driverAge) {
-      const age = calculateAge(driverAge);
-      if (age >= 71) {
-        setShowCSModal({
-          visible: true,
-          description: 'The driver is above 70 years of age.',
-        });
-      }
-    }
     // Check years of driving experience.
     const drivingExperience = calculateDrivingExperienceFromLicences(
       userInfoCar?.drivinglicence?.qdl?.classes || [],
