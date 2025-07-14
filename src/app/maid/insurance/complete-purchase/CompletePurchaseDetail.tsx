@@ -774,6 +774,7 @@ export default function CompletePurchaseDetail({
                       editRoute={routerBySectionKey('policy_plan')}
                       isPendingSave={isPendingSave}
                       isPendingPay={isPendingPay}
+                      isSingPassFlow={isSingPassFlow}
                     />
                     <ReviewSection
                       productType={ProductType.MAID}
@@ -786,6 +787,7 @@ export default function CompletePurchaseDetail({
                       editRoute={routerBySectionKey('addons')}
                       isPendingSave={isPendingSave}
                       isPendingPay={isPendingPay}
+                      isSingPassFlow={isSingPassFlow}
                     />
                   </div>
                 );
@@ -823,6 +825,7 @@ export default function CompletePurchaseDetail({
                   editRoute={routerBySectionKey(section.key)}
                   isPendingSave={isPendingSave}
                   isPendingPay={isPendingPay}
+                  isSingPassFlow={isSingPassFlow}
                 />
               );
             })}
