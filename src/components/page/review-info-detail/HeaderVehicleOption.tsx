@@ -128,6 +128,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
                 </div>
 
                 <button
+                  type='button'
                   className='flex h-8 w-8 items-center justify-center rounded-full border-[2px] border-[#00ADEF] bg-white'
                   onClick={() => {
                     setSelectedIndex(index);
