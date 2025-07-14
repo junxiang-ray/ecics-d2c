@@ -254,19 +254,32 @@ function InsuranceLayout({
         </div>
         {(isShowPopupImportant || isShowPopupSingPass) && (
           <ModalImportant
-            isShowPopupImportant={isShowPopupImportant || isShowPopupSingPass}
+            isShowPopupImportant={true}
             handleRedirect={() => {
               if (isShowPopupSingPass) {
-                router.push(ROUTES.MAID.REVIEW_INFO_DETAIL, {
-                  preserveQuery: false,
-                });
+                const code = sessionStorage.getItem('code') || '';
+                const state = sessionStorage.getItem('state') || '';
+                const query = new URLSearchParams({ code, state }).toString();
+
+                const targetUrl =
+                  productType === ProductType.MAID
+                    ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
+                    : `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`;
+
+                router.push(
+                  targetUrl,
+                  productType === ProductType.CAR
+                    ? { preserveQuery: false }
+                    : undefined,
+                );
                 setIsShowPopupSingPass(false);
               } else {
-                router.push(
+                const targetUrl =
                   productType === ProductType.MAID
                     ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
-                    : ROUTES.INSURANCE.BASIC_DETAIL,
-                );
+                    : ROUTES.INSURANCE.BASIC_DETAIL;
+
+                router.push(targetUrl);
                 setIsShowPopupImportant(false);
               }
             }}

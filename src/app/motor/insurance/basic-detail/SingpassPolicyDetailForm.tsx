@@ -21,6 +21,7 @@ import {
 import { formatPromoCode } from '@/libs/utils/utils';
 
 import { PricingSummary } from '@/components/page/FeeBar';
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 import UnMatchVehicleModal from '@/components/page/insurance/policy-detail/modal/UnMatchVehicleModal';
 import HeaderVehicleOption from '@/components/page/review-info-detail/HeaderVehicleOption';
 import { DatePickerField } from '@/components/ui//form/datepicker';
@@ -194,6 +195,7 @@ const SingpassPolicyDetailForm = ({
   const partnerCode = searchParams.get('partner_code') || '';
   const key = searchParams.get('key') || '';
 
+  const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
   const { data: quoteInfo } = useGetQuote(key);
 
   useEffect(() => {
@@ -264,8 +266,11 @@ const SingpassPolicyDetailForm = ({
   const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
 
-  const handleBackLogin = () => {
-    router.push(ROUTES.MOTOR.LOGIN);
+  const handleBackReviewSingpass = () => {
+    const code = sessionStorage.getItem('code') || '';
+    const state = sessionStorage.getItem('state') || '';
+    const query = new URLSearchParams({ code, state }).toString();
+    router.push(`${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`);
   };
 
   useEffect(() => {
@@ -299,7 +304,7 @@ const SingpassPolicyDetailForm = ({
         first_registered_year: missingFields.reg_yyyy
           ? (value[MOTOR_QUOTE.reg_yyyy] as string)
           : extractYear(
-              userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
+              userInfo?.vehicle_selected?.firstregistrationdate.value,
             ),
         year_of_manufacture:
           userInfo?.vehicle_selected?.yearofmanufacture.value,
@@ -397,9 +402,7 @@ const SingpassPolicyDetailForm = ({
       vehicle_model: userInfo?.vehicle_selected?.model.value,
       first_registered_year: missingFields.reg_yyyy
         ? (value[MOTOR_QUOTE.reg_yyyy] as string)
-        : extractYear(
-            userInfoCarSingPass.vehicles[0].firstregistrationdate.value,
-          ),
+        : extractYear(userInfo?.vehicle_selected?.firstregistrationdate.value),
       year_of_manufacture: userInfo?.vehicle_selected?.yearofmanufacture.value,
       engine_number: userInfo?.vehicle_selected?.engineno.value,
       chasis_number: userInfo?.vehicle_selected?.chassisno.value,
@@ -439,7 +442,6 @@ const SingpassPolicyDetailForm = ({
         ),
       },
     };
-
     onSubmit(payload);
   };
 
@@ -717,7 +719,9 @@ const SingpassPolicyDetailForm = ({
           loading={isLoading}
           isBasicDetailScreen={true}
           textButton='Generate Quote'
-          handleBack={handleBackLogin}
+          handleBack={() => {
+            setIsQuoteModalVisible(true);
+          }}
           onClick={() => {
             form.submit();
           }}
@@ -728,6 +732,13 @@ const SingpassPolicyDetailForm = ({
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
         visible={showCSModal.visible}
         description={showCSModal.description}
+      />
+      <ModalImportant
+        isShowPopupImportant={isQuoteModalVisible}
+        setIsShowPopupImportant={setIsQuoteModalVisible}
+        handleRedirect={() => {
+          handleBackReviewSingpass?.();
+        }}
       />
       <UnMatchVehicleModal
         vehicleNumber={vehicleNumber}

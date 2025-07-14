@@ -8,7 +8,10 @@ import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { generateKeyAndAttachToUrl } from '@/libs/utils/utils';
+import {
+  generateKeyAndAttachToUrl,
+  saveToSessionStorage,
+} from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
@@ -53,6 +56,11 @@ export const ReviewInfoDetailMaid = () => {
   const initKey = searchParams.get('key') || '';
   const partnerCode = searchParams.get('partner_code') || '';
   const promoDefault = searchParams.get('promo_code') || '';
+  const code = searchParams.get('code');
+  if (code) {
+    saveToSessionStorage({ code });
+  }
+
   const [key, setKey] = useState(initKey);
   const [isShowModalAge, setIsShowModalAge] = useState(false);
 

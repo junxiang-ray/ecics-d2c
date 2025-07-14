@@ -4,6 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { capitalizeWords } from '@/libs/utils/utils';
 
+import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 interface MissingFields {
   engine_number?: boolean;
   chassis_number?: boolean;
@@ -39,6 +42,9 @@ const HeaderVehicleOption: React.FC<Props> = ({
   getVehicleBottomRow,
   onVehicleSelect: onVehicleSelect,
 }) => {
+  const dispatch = useAppDispatch();
+  const carUserInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+
   const sourceVehicles =
     listAfterSelectedVehicle?.length > 0 ? listAfterSelectedVehicle : vehicles;
   const liveVehicles =
@@ -85,6 +91,11 @@ const HeaderVehicleOption: React.FC<Props> = ({
     const make = vehicle.make?.value;
     const model = vehicle.model?.value;
 
+    const updatedUserInfoCar = {
+      ...carUserInfo,
+      vehicle_selected: vehicle,
+    };
+    dispatch(setUserInfoCar(updatedUserInfoCar));
     onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
   };
 
@@ -128,6 +139,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
                 </div>
 
                 <button
+                  type='button'
                   className='flex h-8 w-8 items-center justify-center rounded-full border-[2px] border-[#00ADEF] bg-white'
                   onClick={() => {
                     setSelectedIndex(index);

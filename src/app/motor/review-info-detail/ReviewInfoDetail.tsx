@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
@@ -17,7 +17,11 @@ import {
   calculateDrivingExperienceFromLicences,
   convertDateToDDMMYYYY,
 } from '@/libs/utils/date-utils';
-import { calculateAge, capitalizeWords } from '@/libs/utils/utils';
+import {
+  calculateAge,
+  capitalizeWords,
+  saveToSessionStorage,
+} from '@/libs/utils/utils';
 
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
@@ -76,6 +80,12 @@ const ReviewInfoDetail = () => {
 
   const carUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
   const userInfoCar = carUserInfo ? JSON.parse(carUserInfo) : null;
+
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code');
+  if (code) {
+    saveToSessionStorage({ code });
+  }
 
   const { mutate: requestLog } = useRequestLog(PRODUCT_NAME.CAR);
 
@@ -264,7 +274,7 @@ const ReviewInfoDetail = () => {
         personal_info: {
           name: parsedSingpass.name?.value || '',
           gender: parsedSingpass.sex?.desc || '',
-          marital_status: parsedSingpass.marital?.desc || '',
+          marital_status: methods.getValues('marital_status') || '',
           nric: parsedSingpass.uinfin?.value || '',
           address: [
             `${parsedSingpass.regadd?.block?.value || ''} ${parsedSingpass.regadd?.street?.value || ''}`.trim(),
