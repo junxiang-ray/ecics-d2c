@@ -187,7 +187,7 @@ const UnMatchVehicleModal = ({
       onOk={onClose}
       onCancel={onClose}
       closable={false}
-      maskClosable={true}
+      maskClosable={false}
       keyboard={true}
       footer={null}
       centered
