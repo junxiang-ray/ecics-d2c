@@ -1,33 +1,49 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Drawer, Form, Modal } from 'antd';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { z } from 'zod';
 
 import {
   formatCurrency,
   formatCurrencyString,
   saveToLocalStorage,
 } from '@/libs/utils/utils';
+import { finValidator } from '@/libs/utils/validation-utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
+import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
 import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
+import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
+import {
+  DropdownOption,
+  LongOptionDropdownField,
+} from '@/components/ui/form/dropdownfield';
+import { InputField } from '@/components/ui/form/inputfield';
+import { RadioField } from '@/components/ui/form/radiofield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { REGEX_TEXT } from '@/app/api/utils/regex';
 import DeclarationConfirmModal from '@/app/maid/insurance/complete-purchase/modal/DeclarationConfirmModal';
 import {
   HAS_HELPER_WORKED_OPTION,
   HasHelperValue,
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
+import { MAID_QUOTE } from '@/constants';
 import {
   MAID_PAYMENT_URL,
   VALUE_OPTION_COMPANY,
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
+import { passportRegex } from '@/constants/validation.constant';
+import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import {
   useGetHirePurchaseList,
   usePayment,
@@ -37,22 +53,6 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { MAID_QUOTE } from '@/constants';
-import { z } from 'zod';
-import { passportRegex } from '@/constants/validation.constant';
-import { InputField } from '@/components/ui/form/inputfield';
-import { REGEX_TEXT } from '@/app/api/utils/regex';
-import { RadioField } from '@/components/ui/form/radiofield';
-import {
-  DropdownOption,
-  LongOptionDropdownField,
-} from '@/components/ui/form/dropdownfield';
-import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
-import { finValidator } from '@/libs/utils/validation-utils';
-import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
-import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
 
 enum ErrorModalType {
   NONE = 0,
@@ -636,113 +636,6 @@ export default function CompletePurchaseDetail({
     />
   );
 
-  const HelperDetailsForm = () => (
-    <FormProvider {...methods}>
-      <Form
-        form={form}
-        className='flex flex-col gap-2'
-        onFinish={methods.handleSubmit(handlePayClick)}
-        disabled={isPendingSave || isPendingPay || isPendingSaveQuote}
-      >
-        <div className='flex flex-col gap-4 rounded-b-lg border border-t-0 border-[#F0F0F0] p-4'>
-          <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8'>
-            <Form.Item
-              name='name'
-              validateStatus={errors['name'] ? 'error' : ''}
-            >
-              <InputField
-                name='name'
-                label='Full Name'
-                isRequired
-                placeholder='Enter Helper’s Full Name as per FIN'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  const value = e.target.value.replace(REGEX_TEXT, '');
-                  methods.setValue('name', value, {
-                    shouldValidate: true,
-                  });
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name={MAID_QUOTE.fin}
-              validateStatus={errors[MAID_QUOTE.fin] ? 'error' : ''}
-            >
-              <InputField
-                name={MAID_QUOTE.fin}
-                label='FIN'
-                isRequired
-                placeholder='Enter Helper’s FIN Number'
-                maxLength={9}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name={MAID_QUOTE.passport_number}
-              validateStatus={errors[MAID_QUOTE.passport_number] ? 'error' : ''}
-            >
-              <InputField
-                name={MAID_QUOTE.passport_number}
-                label='Passport Number'
-                isRequired
-                placeholder='Enter Helper’s Passport number'
-              />
-            </Form.Item>
-
-            <Form.Item
-              name={MAID_QUOTE.has_helper_worked_12_months}
-              validateStatus={
-                errors[MAID_QUOTE.has_helper_worked_12_months] ? 'error' : ''
-              }
-            >
-              <RadioField
-                name={MAID_QUOTE.has_helper_worked_12_months}
-                label='Has the helper been employed by you for more than 12 months?'
-                isRequired
-                options={HAS_HELPER_WORKED_OPTION}
-              />
-            </Form.Item>
-
-            {selectedHasTheHelper === HasHelperValue.YES && (
-              <>
-                <Form.Item
-                  name={MAID_QUOTE.company_name}
-                  validateStatus={
-                    errors[MAID_QUOTE.company_name] ? 'error' : ''
-                  }
-                >
-                  <LongOptionDropdownField
-                    name={MAID_QUOTE.company_name}
-                    label='Previous Insurer Name'
-                    placeholder='Select Insurer'
-                    options={hirePurchaseListFormatted}
-                    showSearch
-                    isRequired={true}
-                  />
-                </Form.Item>
-
-                {selectedCompanyName === VALUE_OPTION_COMPANY && (
-                  <Form.Item
-                    name={MAID_QUOTE.company_name_other}
-                    validateStatus={
-                      errors[MAID_QUOTE.company_name_other] ? 'error' : ''
-                    }
-                  >
-                    <InputField
-                      name={MAID_QUOTE.company_name_other}
-                      label='Other Insurer Name'
-                      isRequired
-                      placeholder='Enter Other Insurer Name'
-                    />
-                  </Form.Item>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </Form>
-    </FormProvider>
-  );
-
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
       <div
@@ -774,6 +667,7 @@ export default function CompletePurchaseDetail({
                       editRoute={routerBySectionKey('policy_plan')}
                       isPendingSave={isPendingSave}
                       isPendingPay={isPendingPay}
+                      isSingPassFlow={isSingPassFlow}
                     />
                     <ReviewSection
                       productType={ProductType.MAID}
@@ -786,6 +680,7 @@ export default function CompletePurchaseDetail({
                       editRoute={routerBySectionKey('addons')}
                       isPendingSave={isPendingSave}
                       isPendingPay={isPendingPay}
+                      isSingPassFlow={isSingPassFlow}
                     />
                   </div>
                 );
@@ -806,7 +701,130 @@ export default function CompletePurchaseDetail({
                     <div className='rounded-t-lg bg-[#F4FBFD] px-4 py-3 font-bold'>
                       {section.title}
                     </div>
-                    <HelperDetailsForm />
+                    <FormProvider {...methods}>
+                      <Form
+                        form={form}
+                        className='flex flex-col gap-2'
+                        onFinish={methods.handleSubmit(handlePayClick)}
+                        disabled={
+                          isPendingSave || isPendingPay || isPendingSaveQuote
+                        }
+                      >
+                        <div className='flex flex-col gap-4 rounded-b-lg border border-t-0 border-[#F0F0F0] p-4'>
+                          <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8'>
+                            <Form.Item
+                              name='name'
+                              validateStatus={errors['name'] ? 'error' : ''}
+                            >
+                              <InputField
+                                name='name'
+                                label='Full Name'
+                                isRequired
+                                placeholder='Enter Helper’s Full Name as per FIN'
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) => {
+                                  const value = e.target.value.replace(
+                                    REGEX_TEXT,
+                                    '',
+                                  );
+                                  methods.setValue('name', value, {
+                                    shouldValidate: true,
+                                  });
+                                }}
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              name={MAID_QUOTE.fin}
+                              validateStatus={
+                                errors[MAID_QUOTE.fin] ? 'error' : ''
+                              }
+                            >
+                              <InputField
+                                name={MAID_QUOTE.fin}
+                                label='FIN'
+                                isRequired
+                                placeholder='Enter Helper’s FIN Number'
+                                maxLength={9}
+                              />
+                            </Form.Item>
+
+                            <Form.Item
+                              name={MAID_QUOTE.passport_number}
+                              validateStatus={
+                                errors[MAID_QUOTE.passport_number]
+                                  ? 'error'
+                                  : ''
+                              }
+                            >
+                              <InputField
+                                name={MAID_QUOTE.passport_number}
+                                label='Passport Number'
+                                isRequired
+                                placeholder='Enter Helper’s Passport number'
+                              />
+                            </Form.Item>
+
+                            <Form.Item
+                              name={MAID_QUOTE.has_helper_worked_12_months}
+                              validateStatus={
+                                errors[MAID_QUOTE.has_helper_worked_12_months]
+                                  ? 'error'
+                                  : ''
+                              }
+                            >
+                              <RadioField
+                                name={MAID_QUOTE.has_helper_worked_12_months}
+                                label='Has the helper been employed by you for more than 12 months?'
+                                isRequired
+                                options={HAS_HELPER_WORKED_OPTION}
+                              />
+                            </Form.Item>
+
+                            {selectedHasTheHelper === HasHelperValue.YES && (
+                              <>
+                                <Form.Item
+                                  name={MAID_QUOTE.company_name}
+                                  validateStatus={
+                                    errors[MAID_QUOTE.company_name]
+                                      ? 'error'
+                                      : ''
+                                  }
+                                >
+                                  <LongOptionDropdownField
+                                    name={MAID_QUOTE.company_name}
+                                    label='Previous Insurer Name'
+                                    placeholder='Select Insurer'
+                                    options={hirePurchaseListFormatted}
+                                    showSearch
+                                    isRequired={true}
+                                  />
+                                </Form.Item>
+
+                                {selectedCompanyName ===
+                                  VALUE_OPTION_COMPANY && (
+                                  <Form.Item
+                                    name={MAID_QUOTE.company_name_other}
+                                    validateStatus={
+                                      errors[MAID_QUOTE.company_name_other]
+                                        ? 'error'
+                                        : ''
+                                    }
+                                  >
+                                    <InputField
+                                      name={MAID_QUOTE.company_name_other}
+                                      label='Other Insurer Name'
+                                      isRequired
+                                      placeholder='Enter Other Insurer Name'
+                                    />
+                                  </Form.Item>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </Form>
+                    </FormProvider>
                   </div>
                 );
               }
@@ -823,6 +841,7 @@ export default function CompletePurchaseDetail({
                   editRoute={routerBySectionKey(section.key)}
                   isPendingSave={isPendingSave}
                   isPendingPay={isPendingPay}
+                  isSingPassFlow={isSingPassFlow}
                 />
               );
             })}
