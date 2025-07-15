@@ -26,6 +26,11 @@ const LoginPage = () => {
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
 
   useEffect(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  }, []);
+
+  useEffect(() => {
     if (partnerCode) {
       saveToLocalStorage({ [PARTNER_CODE]: partnerCode });
     }
@@ -41,11 +46,6 @@ const LoginPage = () => {
       verifyPromoCode(promoCodeDefault);
     }
   }, [promoCodeDefault, verifyPromoCode]);
-
-  useEffect(() => {
-    sessionStorage.clear();
-    localStorage.clear();
-  }, []);
 
   const showPromo =
     !!promoCodeDefault && promoCodeData?.data?.is_valid === true;
@@ -105,12 +105,10 @@ const LoginPage = () => {
             Get an instant quote with <br />
             <span className='text-red-logo'>Myinfo</span> login
           </div>
-          {productType === ProductType.MAID && (
-            <div className='mt-4 text-center text-sm'>
-              Save time by securely retrieving your personal info directly from
-              Myinfo
-            </div>
-          )}
+          <div className='mt-4 text-center text-sm'>
+            Save time by securely retrieving your personal info directly from
+            Myinfo
+          </div>
           <MyInfoLoginSection
             promoCode={promoCodeDefault}
             partnerCode={partnerCode}
