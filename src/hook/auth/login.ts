@@ -61,6 +61,7 @@ export const usePostUserInfo = ({
       !!payload.nonce &&
       !!payload.state &&
       !!payload?.code,
+    retry: false,
   });
 };
 

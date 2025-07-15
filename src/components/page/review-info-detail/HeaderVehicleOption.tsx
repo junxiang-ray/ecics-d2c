@@ -1,9 +1,17 @@
 import dayjs from 'dayjs';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { capitalizeWords } from '@/libs/utils/utils';
+import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 
+import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
+
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
+import { ROUTES } from '@/constants/routes';
+import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -42,7 +50,12 @@ const HeaderVehicleOption: React.FC<Props> = ({
   getVehicleBottomRow,
   onVehicleSelect: onVehicleSelect,
 }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const partner_code = localStorage.getItem(PARTNER_CODE);
+  const promo_code = localStorage.getItem(PROMO_CODE);
+
   const carUserInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
 
   const sourceVehicles =
@@ -54,6 +67,10 @@ const HeaderVehicleOption: React.FC<Props> = ({
     liveVehicles.length === 1 ? 0 : null,
   );
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [isVehicleNumberInvalidModal, setIsVehicleNumberInvalidModal] =
+    useState(false);
+
+  const { mutate: requestLog } = useRequestLog(PRODUCT_NAME.CAR);
 
   useEffect(() => {
     if (selectedIndex !== null) return;
@@ -96,7 +113,35 @@ const HeaderVehicleOption: React.FC<Props> = ({
       vehicle_selected: vehicle,
     };
     dispatch(setUserInfoCar(updatedUserInfoCar));
+
+    // Check if the vehicle number is valid
+    const isValid = sgCarRegNoValidator(vehicleNumber);
+    if (!isValid) {
+      setIsVehicleNumberInvalidModal(true);
+      return;
+    }
+
     onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
+  };
+
+  const handleExit = () => {
+    setIsVehicleNumberInvalidModal(false);
+    router.push(ROUTES.MOTOR.LOGIN);
+  };
+
+  const handleContinue = () => {
+    requestLog();
+
+    const currentParams = new URLSearchParams(searchParams.toString());
+    // Override or add parameters
+    currentParams.set('manual', 'true');
+    if (promo_code) currentParams.set('promo_code', promo_code);
+    if (partner_code) currentParams.set('partner_code', partner_code);
+
+    const queryString = currentParams.toString();
+
+    const basePath = '/motor/insurance/basic-detail';
+    router.push(`${basePath}?${queryString}`);
   };
 
   return (
@@ -194,6 +239,13 @@ const HeaderVehicleOption: React.FC<Props> = ({
           );
         })}
       </div>
+      <NoInfoModal
+        visible={isVehicleNumberInvalidModal}
+        title='Vehicle Information Not Found'
+        onExit={handleExit}
+        onContinue={handleContinue}
+        description='unable to detect a registered vehicle under your name.'
+      />
     </div>
   );
 };

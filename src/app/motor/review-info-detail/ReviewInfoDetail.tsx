@@ -120,6 +120,14 @@ const ReviewInfoDetail = () => {
   } = methods;
 
   useEffect(() => {
+    document.documentElement.classList.add('no-scroll');
+
+    return () => {
+      document.documentElement.classList.remove('no-scroll');
+    };
+  }, []);
+
+  useEffect(() => {
     if (userInfoCar) {
       // initial email
       methods.setValue('email_address', userInfoCar?.email?.value ?? '');
