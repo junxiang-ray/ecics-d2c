@@ -70,7 +70,11 @@ export const ModalAge = ({ isShowModal, setIsShowModal }: Props) => {
         <Drawer
           placement='bottom'
           open={isShowModal}
-          onClose={() => setIsShowModal(false)}
+          onClose={() =>
+            router.push(ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL, {
+              preserveQuery: false,
+            })
+          }
           closable={false}
           height='auto'
           className='rounded-t-xl'
@@ -80,7 +84,11 @@ export const ModalAge = ({ isShowModal, setIsShowModal }: Props) => {
       ) : (
         <Modal
           open={isShowModal}
-          onCancel={() => setIsShowModal(false)}
+          onCancel={() =>
+            router.push(ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL, {
+              preserveQuery: false,
+            })
+          }
           closable={false}
           maskClosable={true}
           keyboard={true}
