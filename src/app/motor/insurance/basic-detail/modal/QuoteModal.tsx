@@ -36,12 +36,11 @@ export const QuoteModal = ({
             the following reasons:
           </p>
           <ul className='list-inside list-disc'>
-            <li
-              className='font-bold underline'
-              style={{ listStyleType: 'disc' }}
-            >
-              {description}
-            </li>
+            {description.split('\n').map((line, idx) => (
+              <li key={idx} className='font-bold underline'>
+                {line}
+              </li>
+            ))}
           </ul>
           <p>
             However, you may still be eligible for coverage. We encourage you to

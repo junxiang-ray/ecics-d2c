@@ -263,20 +263,19 @@ const ReviewInfoDetail = () => {
       setShowNotDetectClass3Or3AModal(true);
       return;
     }
+    const descriptions: string[] = [];
+
     // Check driver age
     const driverAge = userInfoCar?.dob?.value || [];
     if (driverAge) {
       const age = calculateAge(driverAge);
-      if (age < 26 || age >= 71) {
-        setShowCSModal({
-          visible: true,
-          description:
-            age < 26
-              ? 'The driver is below 26 years of age.'
-              : 'The driver is above 70 years of age.',
-        });
+      if (age < 26) {
+        descriptions.push('The driver is below 26 years of age.');
+      } else if (age >= 71) {
+        descriptions.push('The driver is above 70 years of age.');
       }
     }
+
     // Check vehicle age (applies only if there's one vehicle)
     if (vehicles?.length === 1) {
       const vehicle = vehicles[0];
@@ -286,12 +285,45 @@ const ReviewInfoDetail = () => {
         : null;
 
       if (vehicleAge != null && vehicleAge > 15) {
-        setShowCSModal({
-          visible: true,
-          description:
-            'The vehicle is more than 15 years old based on its registration year.',
-        });
+        descriptions.push(
+          'The vehicle is more than 15 years old based on its registration year.',
+        );
       }
+    }
+
+    // Check vehicle age (allVehiclesOver15Years)
+    const allVehiclesOver15Years =
+      vehicles.length >= 2 &&
+      vehicles.every((v: any) => {
+        const age = v?.firstregistrationdate?.value
+          ? dayjs().diff(dayjs(v.firstregistrationdate.value), 'year')
+          : null;
+        return age !== null && age > 15;
+      });
+    if (allVehiclesOver15Years) {
+      setShowCSModal({
+        visible: true,
+        description:
+          'The vehicles are more than 15 years old based on its registration year.',
+      });
+    }
+
+    // Check years of driving experience
+    const drivingExperience = calculateDrivingExperienceFromLicences(
+      userInfoCar?.drivinglicence?.qdl?.classes || [],
+    );
+    if (drivingExperience < 2) {
+      descriptions.push(
+        'The listed driver has less than 2 years of driving experience.',
+      );
+    }
+
+    // Show modal if there’s at least one issue
+    if (descriptions.length > 0 && !showCSModal.visible) {
+      setShowCSModal({
+        visible: true,
+        description: descriptions.join('\n'),
+      });
     }
   }, [userInfoCar]);
 
@@ -310,7 +342,6 @@ const ReviewInfoDetail = () => {
 
     if (liveVehicles.length === 0) {
       // scenario 1: user have one vehicle, status = deregistered
-      // Scenario 3: user have two vehicle, status = deregistered
       setShowVehicleNotFoundModal(true);
       return;
     }
@@ -378,17 +409,6 @@ const ReviewInfoDetail = () => {
   };
 
   const handleNext = () => {
-    // Check years of driving experience.
-    const drivingExperience = calculateDrivingExperienceFromLicences(
-      userInfoCar?.drivinglicence?.qdl?.classes || [],
-    );
-    if (drivingExperience < 2) {
-      setShowCSModal({
-        visible: true,
-        description:
-          'The listed driver has less than 2 years of driving experience.',
-      });
-    }
     // Call api savePersonalInfo
     callApiPersonalInfo();
   };
