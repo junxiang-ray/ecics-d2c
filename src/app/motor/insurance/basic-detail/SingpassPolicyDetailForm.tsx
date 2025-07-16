@@ -222,6 +222,7 @@ const SingpassPolicyDetailForm = ({
   const userInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
 
   const userInfoCarSingPass = userInfo.data_from_singpass;
+  const vehicles = userInfoCarSingPass?.vehicles ?? [];
 
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
@@ -523,6 +524,17 @@ const SingpassPolicyDetailForm = ({
     },
   ];
 
+  const isShowOnlyCloseButton = (vehicles: any[]): boolean => {
+    if (!Array.isArray(vehicles) || vehicles.length < 2) return false;
+
+    return vehicles.some((v: any) => {
+      const age = v?.firstregistrationdate?.value
+        ? dayjs().diff(dayjs(v.firstregistrationdate.value), 'year')
+        : null;
+      return age !== null && age <= 15;
+    });
+  };
+
   return (
     <>
       <FormProvider {...methods}>
@@ -539,7 +551,7 @@ const SingpassPolicyDetailForm = ({
         >
           <div className='max-w-[1200px]'>
             <HeaderVehicleOption
-              vehicles={userInfoCarSingPass?.vehicles ?? []}
+              vehicles={vehicles}
               listAfterSelectedVehicle={
                 userInfo?.list_after_selected_vehicle ?? []
               }
@@ -732,6 +744,7 @@ const SingpassPolicyDetailForm = ({
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
         visible={showCSModal.visible}
         description={showCSModal.description}
+        isShowOnlyCloseButton={isShowOnlyCloseButton(vehicles)}
       />
       <ModalImportant
         isShowPopupImportant={isQuoteModalVisible}

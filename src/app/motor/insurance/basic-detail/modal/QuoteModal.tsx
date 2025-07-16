@@ -4,6 +4,7 @@ import React from 'react';
 import MailIcon from '@/components/icons/MailIcon';
 import PhoneIcon from '@/components/icons/PhoneIcon';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
+import { PrimaryButton } from '@/components/ui/buttons';
 
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -11,9 +12,11 @@ interface QuoteModalProps {
   visible: boolean;
   onClick: () => void;
   description: string;
+  isShowOnlyCloseButton?: boolean;
 }
 
 export const QuoteModal = ({
+  isShowOnlyCloseButton,
   onClick,
   visible,
   description,
@@ -50,30 +53,39 @@ export const QuoteModal = ({
             helping you.
           </p>
         </div>
-        <div className='flex flex-row items-center justify-between'>
-          <a
-            href='tel:+6562065588'
-            className='flex w-[150px] flex-row items-center justify-center gap-1 rounded-lg bg-green-promo py-3 text-base font-normal text-white hover:opacity-90'
+        {isShowOnlyCloseButton ? (
+          <PrimaryButton
+            onClick={onClick}
+            className='w-full rounded-lg text-base font-medium text-white hover:opacity-90'
           >
-            <PhoneIcon
-              className='relative top-[1px] mr-1 text-white'
-              size={15}
-            />
-            Call
-          </a>
-          <a
-            href='mailto:customerservice@ecics.com.sg'
-            target='_blank'
-            rel='noopener noreferrer'
-            className='flex w-[150px] flex-row items-center justify-center gap-1 rounded-lg bg-[#00ADEF] py-3 text-base font-normal text-white hover:opacity-90'
-          >
-            <MailIcon
-              className='relative top-[1px] mr-1 text-white'
-              size={15}
-            />
-            Email
-          </a>
-        </div>
+            Close
+          </PrimaryButton>
+        ) : (
+          <div className='flex flex-row items-center justify-between'>
+            <a
+              href='tel:+6562065588'
+              className='flex w-[150px] flex-row items-center justify-center gap-1 rounded-lg bg-green-promo py-3 text-base font-normal text-white hover:opacity-90'
+            >
+              <PhoneIcon
+                className='relative top-[1px] mr-1 text-white'
+                size={15}
+              />
+              Call
+            </a>
+            <a
+              href='mailto:customerservice@ecics.com.sg'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='flex w-[150px] flex-row items-center justify-center gap-1 rounded-lg bg-[#00ADEF] py-3 text-base font-normal text-white hover:opacity-90'
+            >
+              <MailIcon
+                className='relative top-[1px] mr-1 text-white'
+                size={15}
+              />
+              Email
+            </a>
+          </div>
+        )}
       </div>
     </>
   );
@@ -99,7 +111,7 @@ export const QuoteModal = ({
       onOk={onClick}
       onCancel={onClick}
       closable={false}
-      maskClosable={true}
+      maskClosable={false}
       keyboard={true}
       footer={null}
       centered
