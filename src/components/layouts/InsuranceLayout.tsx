@@ -266,12 +266,7 @@ function InsuranceLayout({
                     ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
                     : `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`;
 
-                router.push(
-                  targetUrl,
-                  productType === ProductType.CAR
-                    ? { preserveQuery: false }
-                    : undefined,
-                );
+                router.push(targetUrl, { preserveQuery: false });
                 setIsShowPopupSingPass(false);
               } else {
                 const targetUrl =
