@@ -98,6 +98,15 @@ export const ReviewInfoDetailMaid = () => {
     setKey(keyQuote);
   }, []);
 
+  useEffect(() => {
+    if (personalInfo?.dob?.value) {
+      const age = dayjs().diff(dayjs(personalInfo.dob.value), 'year');
+      if (age < 21 || age > 120) {
+        setIsShowModalAge(true);
+      }
+    }
+  }, [personalInfo]);
+
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
@@ -113,14 +122,6 @@ export const ReviewInfoDetailMaid = () => {
   } = methods;
 
   const handleSubmit = async (values: FormData) => {
-    const dob = personalInfo?.dob?.value;
-    if (dob) {
-      const age = dayjs().diff(dayjs(dob), 'year');
-      if (age < 21 || age > 120) {
-        setIsShowModalAge(true);
-        return;
-      }
-    }
     const data = {
       key: key,
       partner_code: partnerCode,
