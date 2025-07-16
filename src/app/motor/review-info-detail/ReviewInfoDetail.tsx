@@ -267,10 +267,13 @@ const ReviewInfoDetail = () => {
     const driverAge = userInfoCar?.dob?.value || [];
     if (driverAge) {
       const age = calculateAge(driverAge);
-      if (age >= 71) {
+      if (age < 26 || age >= 71) {
         setShowCSModal({
           visible: true,
-          description: 'The driver is above 70 years of age.',
+          description:
+            age < 26
+              ? 'The driver is below 26 years of age.'
+              : 'The driver is above 70 years of age.',
         });
       }
     }

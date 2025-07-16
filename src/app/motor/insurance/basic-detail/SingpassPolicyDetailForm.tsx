@@ -237,6 +237,7 @@ const SingpassPolicyDetailForm = ({
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+
   const [vehicleNumber, setVehicleNumber] = useState<string>('');
   const [missingFields, setMissingFields] = useState<{
     engine_number?: boolean;
@@ -567,13 +568,14 @@ const SingpassPolicyDetailForm = ({
                 make,
                 model,
               ) => {
-                // Check missing fields
-                setMissingFields(missing);
-                // Check vehicle age
+                setVehicleNumber(vehicleNumber);
+                // Check vehicle age first
                 if (vehicleAge != null && vehicleAge > 15) {
                   setIsMoreThan15YearsModal(true);
+                  return;
                 }
-                setVehicleNumber(vehicleNumber);
+                // Check missing fields
+                setMissingFields(missing);
                 // Show UnMatchVehicleModal if missing make or model
                 if (missing?.make || missing?.model) {
                   setShowUnMatchModal(true);
