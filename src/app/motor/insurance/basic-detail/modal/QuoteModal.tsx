@@ -111,7 +111,6 @@ export const QuoteModal = ({
       onOk={onClick}
       onCancel={onClick}
       closable={false}
-      maskClosable={false}
       keyboard={true}
       footer={null}
       centered

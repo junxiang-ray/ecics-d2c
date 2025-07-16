@@ -74,6 +74,7 @@ export const NoInfoModal = ({
         onClose={onContinue}
         open={visible}
         closable={false}
+        maskClosable={false}
         height='auto'
         className='rounded-t-xl'
       >

@@ -196,6 +196,8 @@ const SingpassPolicyDetailForm = ({
   const key = searchParams.get('key') || '';
 
   const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
+  const [isMoreThan15YearsModal, setIsMoreThan15YearsModal] = useState(false);
+
   const { data: quoteInfo } = useGetQuote(key);
 
   useEffect(() => {
@@ -569,11 +571,7 @@ const SingpassPolicyDetailForm = ({
                 setMissingFields(missing);
                 // Check vehicle age
                 if (vehicleAge != null && vehicleAge > 15) {
-                  setShowCSModal({
-                    visible: true,
-                    description:
-                      'The vehicle is more than 15 years old based on its registration year.',
-                  });
+                  setIsMoreThan15YearsModal(true);
                 }
                 setVehicleNumber(vehicleNumber);
                 // Show UnMatchVehicleModal if missing make or model
@@ -744,6 +742,11 @@ const SingpassPolicyDetailForm = ({
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
         visible={showCSModal.visible}
         description={showCSModal.description}
+      />
+      <QuoteModal
+        onClick={() => setIsMoreThan15YearsModal(false)}
+        visible={isMoreThan15YearsModal}
+        description='The vehicle is more than 15 years old based on its registration year.'
         isShowOnlyCloseButton={isShowOnlyCloseButton(vehicles)}
       />
       <ModalImportant
