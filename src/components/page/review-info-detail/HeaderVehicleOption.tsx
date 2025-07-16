@@ -79,7 +79,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
       setSelectedIndex(0);
       chooseVehicle(liveVehicles[0]);
     } else if (listAfterSelectedVehicle?.length > 0) {
-      const selectedNo = listAfterSelectedVehicle[0].vehicleno?.value;
+      const selectedNo = carUserInfo?.vehicle_selected?.vehicleno?.value;
       const index = liveVehicles.findIndex(
         (v) => v.vehicleno?.value === selectedNo,
       );

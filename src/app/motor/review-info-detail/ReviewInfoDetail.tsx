@@ -569,10 +569,7 @@ const ReviewInfoDetail = () => {
                   </div>
                 </div>
               )}
-
-              {userInfoCar?.vehicles?.some(
-                (v: any) => v.status?.desc === 'LIVE',
-              ) && (
+              {userInfoCar?.vehicles?.length > 0 && (
                 <div className='mt-[32px] w-full'>
                   <div className='my-3 text-lg font-bold underline'>
                     Vehicle Details
@@ -582,9 +579,8 @@ const ReviewInfoDetail = () => {
                       isMobile ? 'grid-cols-1' : 'sm:grid-cols-2'
                     }`}
                   >
-                    {(userInfoCar?.vehicles as VehicleSingPassResponse[])
-                      ?.filter((vehicle) => vehicle.status?.desc === 'LIVE')
-                      ?.map((vehicle, index) => (
+                    {(userInfoCar?.vehicles as VehicleSingPassResponse[])?.map(
+                      (vehicle, index) => (
                         <div
                           key={index}
                           className='rounded-md border border-gray-300 bg-white shadow-sm'
@@ -593,7 +589,13 @@ const ReviewInfoDetail = () => {
                             <div className='text-base font-bold'>
                               {vehicle.vehicleno?.value ?? 'N/A'}
                             </div>
-                            <div className='rounded-[10px] bg-[#34C759] px-[14px] py-[2px] text-base font-semibold text-white'>
+                            <div
+                              className={`rounded-[10px] px-[14px] py-[2px] text-base font-semibold text-white ${
+                                vehicle.status?.desc === 'LIVE'
+                                  ? 'bg-[#34C759]'
+                                  : 'bg-[#FF3B30]'
+                              }`}
+                            >
                               {capitalizeWords(vehicle.status?.desc) ?? 'N/A'}
                             </div>
                           </div>
@@ -610,7 +612,6 @@ const ReviewInfoDetail = () => {
                               </div>
                             ))}
                           </div>
-
                           <div className='mb-[12px] mt-4 grid grid-cols-2 gap-4 px-4 text-sm md:grid-cols-4'>
                             {getVehicleBottomRow(vehicle).map((item, idx) => (
                               <div key={idx}>
@@ -624,7 +625,8 @@ const ReviewInfoDetail = () => {
                             ))}
                           </div>
                         </div>
-                      ))}
+                      ),
+                    )}
                   </div>
                 </div>
               )}
