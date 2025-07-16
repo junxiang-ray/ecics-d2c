@@ -4,14 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Form } from 'antd';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import {
-  generateKeyAndAttachToUrl,
-  saveToSessionStorage,
-} from '@/libs/utils/utils';
+import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
@@ -25,8 +22,8 @@ import { usePostPersonalInfoMaid } from '@/hook/auth/login-maid';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch } from '@/redux/store';
-
 import { ModalAge } from './ModalAge';
+import { v4 as uuid } from 'uuid';
 
 const schema = z.object({
   [MAID_QUOTE.email]: z
@@ -52,16 +49,12 @@ export const ReviewInfoDetailMaid = () => {
   const router = useRouterWithQuery();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-
-  const initKey = searchParams.get('key') || '';
   const partnerCode = searchParams.get('partner_code') || '';
   const promoDefault = searchParams.get('promo_code') || '';
   const code = searchParams.get('code');
   if (code) {
     saveToSessionStorage({ code });
   }
-
-  const [key, setKey] = useState(initKey);
   const [isShowModalAge, setIsShowModalAge] = useState(false);
 
   const maidUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
@@ -93,11 +86,6 @@ export const ReviewInfoDetailMaid = () => {
     isPending,
   } = usePostPersonalInfoMaid();
 
-  useEffect(() => {
-    const keyQuote = generateKeyAndAttachToUrl(initKey);
-    setKey(keyQuote);
-  }, []);
-
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
@@ -121,8 +109,9 @@ export const ReviewInfoDetailMaid = () => {
         return;
       }
     }
+
     const data = {
-      key: key,
+      key: `${uuid()}`,
       partner_code: partnerCode,
       promo_code: promoDefault,
       is_sending_email: false,
