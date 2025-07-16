@@ -275,18 +275,20 @@ const ReviewInfoDetail = () => {
       }
     }
     // Check vehicle age (applies only if there's one vehicle)
-    const vehicle = userInfoCar?.vehicles?.[0];
-    const regDateStr = vehicle?.firstregistrationdate?.value;
-    const vehicleAge = regDateStr
-      ? dayjs().diff(dayjs(regDateStr), 'year')
-      : null;
+    if (vehicles?.length === 1) {
+      const vehicle = vehicles[0];
+      const regDateStr = vehicle?.firstregistrationdate?.value;
+      const vehicleAge = regDateStr
+        ? dayjs().diff(dayjs(regDateStr), 'year')
+        : null;
 
-    if (vehicleAge != null && vehicleAge > 15) {
-      setShowCSModal({
-        visible: true,
-        description:
-          'The vehicle is more than 15 years old based on its registration year.',
-      });
+      if (vehicleAge != null && vehicleAge > 15) {
+        setShowCSModal({
+          visible: true,
+          description:
+            'The vehicle is more than 15 years old based on its registration year.',
+        });
+      }
     }
   }, [userInfoCar]);
 
