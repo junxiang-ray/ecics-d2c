@@ -88,7 +88,7 @@ export const NoInfoModal = ({
       onOk={onContinue}
       onCancel={onContinue}
       closable={false}
-      maskClosable={true}
+      maskClosable={false}
       keyboard={true}
       footer={null}
       centered
