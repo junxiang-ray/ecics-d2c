@@ -524,6 +524,17 @@ const SingpassPolicyDetailForm = ({
     },
   ];
 
+  const isShowOnlyCloseButton = (vehicles: any[]): boolean => {
+    if (!Array.isArray(vehicles) || vehicles.length < 2) return false;
+
+    return vehicles.some((v: any) => {
+      const age = v?.firstregistrationdate?.value
+        ? dayjs().diff(dayjs(v.firstregistrationdate.value), 'year')
+        : null;
+      return age !== null && age <= 15;
+    });
+  };
+
   return (
     <>
       <FormProvider {...methods}>
@@ -733,15 +744,7 @@ const SingpassPolicyDetailForm = ({
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
         visible={showCSModal.visible}
         description={showCSModal.description}
-        showOnlyCloseButton={
-          vehicles?.length >= 2 &&
-          vehicles.some((v: any) => {
-            const age = v?.firstregistrationdate?.value
-              ? dayjs().diff(dayjs(v.firstregistrationdate.value), 'year')
-              : null;
-            return age !== null && age <= 15;
-          })
-        }
+        isShowOnlyCloseButton={isShowOnlyCloseButton(vehicles)}
       />
       <ModalImportant
         isShowPopupImportant={isQuoteModalVisible}

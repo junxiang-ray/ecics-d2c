@@ -12,11 +12,11 @@ interface QuoteModalProps {
   visible: boolean;
   onClick: () => void;
   description: string;
-  showOnlyCloseButton?: boolean;
+  isShowOnlyCloseButton?: boolean;
 }
 
 export const QuoteModal = ({
-  showOnlyCloseButton,
+  isShowOnlyCloseButton,
   onClick,
   visible,
   description,
@@ -53,7 +53,7 @@ export const QuoteModal = ({
             helping you.
           </p>
         </div>
-        {showOnlyCloseButton ? (
+        {isShowOnlyCloseButton ? (
           <PrimaryButton
             onClick={onClick}
             className='w-full rounded-lg text-base font-medium text-white hover:opacity-90'
