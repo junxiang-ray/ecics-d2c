@@ -135,7 +135,7 @@ export const VehicleSelectionModal = ({
         vehicle_info_selected,
         vehicles:
           updatedParsed.vehicles?.map((v: any) => ({
-            chasis_number: v.vehicleno?.value || '',
+            chassis_number: v.vehicleno?.value || '',
             vehicle_make: v.make?.value || '',
             vehicle_model: v.model?.value || '',
             first_registered_year:

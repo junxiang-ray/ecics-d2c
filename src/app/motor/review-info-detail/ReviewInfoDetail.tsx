@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
+import dayjs from 'dayjs';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -273,14 +274,47 @@ const ReviewInfoDetail = () => {
         });
       }
     }
+    // Check vehicle age (applies only if there's one vehicle)
+    const vehicle = userInfoCar?.vehicles?.[0];
+    const regDateStr = vehicle?.firstregistrationdate?.value;
+    const vehicleAge = regDateStr
+      ? dayjs().diff(dayjs(regDateStr), 'year')
+      : null;
+
+    if (vehicleAge != null && vehicleAge > 15) {
+      setShowCSModal({
+        visible: true,
+        description:
+          'The vehicle is more than 15 years old based on its registration year.',
+      });
+    }
   }, [userInfoCar]);
 
   const callApiPersonalInfo = () => {
     const singpassDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
     if (!singpassDataRaw) return;
-    const parsedSingpass = JSON.parse(singpassDataRaw);
 
-    if (Array.isArray(parsedSingpass.vehicles)) {
+    const parsedSingpass = JSON.parse(singpassDataRaw);
+    const vehicles = parsedSingpass.vehicles || [];
+
+    if (!Array.isArray(vehicles)) return;
+
+    const liveVehicles = vehicles.filter(
+      (v: any) => v.status?.desc?.toUpperCase() === 'LIVE',
+    );
+
+    if (liveVehicles.length === 0) {
+      // scenario 1: user have one vehicle, status = deregistered
+      // Scenario 3: user have two vehicle, status = deregistered
+      setShowVehicleNotFoundModal(true);
+      return;
+    }
+
+    if (liveVehicles.length >= 1) {
+      // Scenario 2: user have two vehicle, one status = live | one status = deregistered
+      // Scenario 4: user have >= 2 vehicle, both = live
+      // Scenario 5: user have one vehicle, status = live
+
       const qdlClasses = parsedSingpass?.drivinglicence?.qdl?.classes || [];
       const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
@@ -308,20 +342,19 @@ const ReviewInfoDetail = () => {
           phone: `${parsedSingpass.mobileno?.nbr?.value || ''}`,
           email: parsedSingpass.email?.value?.toLowerCase() || '',
         },
-        vehicles:
-          parsedSingpass.vehicles?.map((v: any) => ({
-            vehicle_make: v.make?.value || '',
-            vehicle_model: v.model?.value || '',
-            first_registered_year: v.firstregistrationdate?.value || '',
-            year_of_manufacture: v.yearofmanufacture?.value || '',
-            engine_number: v.engineno?.value || '',
-            chassis_number: v.vehicleno?.value || '',
-            power_rate: v.powerrate?.value || '',
-            engine_capacity: v.enginecapacity?.value || '',
-          })) || [],
+        vehicles: liveVehicles.map((v: any) => ({
+          vehicle_make: v.make?.value || '',
+          vehicle_model: v.model?.value || '',
+          first_registered_year: v.firstregistrationdate?.value || '',
+          year_of_manufacture: v.yearofmanufacture?.value || '',
+          engine_number: v.engineno?.value || '',
+          chassis_number: v.vehicleno?.value || '',
+          vehicle_number: v.vehicleno?.value || '',
+          power_rate: v.powerrate?.value || '',
+          engine_capacity: v.enginecapacity?.value || '',
+        })),
         data_from_singpass: parsedSingpass,
       };
-
       verifyRestrictedUser({
         national_identity_no: parsedSingpass.uinfin?.value,
       })

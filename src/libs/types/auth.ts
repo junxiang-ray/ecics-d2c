@@ -54,11 +54,11 @@ export interface SavePersonalInfoPayload {
 }
 
 export interface Vehicle {
-  chasis_number: string;
+  chassis_number: string;
   vehicle_make: string;
   vehicle_model: string;
   first_registered_year: string;
-  vehicle_number: string;
+  vehicle_number?: string;
 }
 
 export interface VehicleSingPassResponse {
