@@ -379,6 +379,7 @@ const AdditionDriver = ({
       placement='bottom'
       open={isShowAdditionDriver}
       closable={false}
+      maskClosable={false}
       height='auto'
       className='w-full rounded-t-xl'
       onClose={() => setIsShowAdditionDriver(false)}

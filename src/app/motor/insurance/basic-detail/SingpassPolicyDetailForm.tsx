@@ -196,6 +196,8 @@ const SingpassPolicyDetailForm = ({
   const key = searchParams.get('key') || '';
 
   const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
+  const [isMoreThan15YearsModal, setIsMoreThan15YearsModal] = useState(false);
+
   const { data: quoteInfo } = useGetQuote(key);
 
   useEffect(() => {
@@ -235,6 +237,7 @@ const SingpassPolicyDetailForm = ({
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+
   const [vehicleNumber, setVehicleNumber] = useState<string>('');
   const [missingFields, setMissingFields] = useState<{
     engine_number?: boolean;
@@ -565,17 +568,14 @@ const SingpassPolicyDetailForm = ({
                 make,
                 model,
               ) => {
+                setVehicleNumber(vehicleNumber);
+                // Check vehicle age first
+                if (vehicleAge != null && vehicleAge > 15) {
+                  setIsMoreThan15YearsModal(true);
+                  return;
+                }
                 // Check missing fields
                 setMissingFields(missing);
-                // Check vehicle age
-                if (vehicleAge != null && vehicleAge > 15) {
-                  setShowCSModal({
-                    visible: true,
-                    description:
-                      'The vehicle is more than 15 years old based on its registration year.',
-                  });
-                }
-                setVehicleNumber(vehicleNumber);
                 // Show UnMatchVehicleModal if missing make or model
                 if (missing?.make || missing?.model) {
                   setShowUnMatchModal(true);
@@ -744,6 +744,11 @@ const SingpassPolicyDetailForm = ({
         onClick={() => setShowCSModal({ ...showCSModal, visible: false })}
         visible={showCSModal.visible}
         description={showCSModal.description}
+      />
+      <QuoteModal
+        onClick={() => setIsMoreThan15YearsModal(false)}
+        visible={isMoreThan15YearsModal}
+        description='The vehicle is more than 15 years old based on its registration year.'
         isShowOnlyCloseButton={isShowOnlyCloseButton(vehicles)}
       />
       <ModalImportant

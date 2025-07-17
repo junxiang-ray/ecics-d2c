@@ -173,6 +173,7 @@ const UnMatchVehicleModal = ({
         open={visible}
         onClose={onClose}
         closable={false}
+        maskClosable={false}
         height='auto'
         className='rounded-t-xl'
       >
