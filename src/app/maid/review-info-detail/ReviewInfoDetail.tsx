@@ -89,7 +89,7 @@ export const ReviewInfoDetailMaid = () => {
   useEffect(() => {
     if (personalInfo?.dob?.value) {
       const age = dayjs().diff(dayjs(personalInfo.dob.value), 'year');
-      if (age < 21 || age > 120) {
+      if (age < 21) {
         setIsShowModalAge(true);
       }
     }
@@ -124,18 +124,15 @@ export const ReviewInfoDetailMaid = () => {
         ),
         nric: personalInfo?.uinfin?.value ?? '',
         address: [
-          [
-            personalInfo?.regadd?.block?.value,
-            personalInfo?.regadd?.street?.value,
-            personalInfo?.regadd?.building?.value,
-            personalInfo?.regadd?.floor?.value &&
-            personalInfo?.regadd?.unit?.value
-              ? `${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
-              : null,
-            '',
-          ]
-            .filter(Boolean)
-            .join(' '),
+          personalInfo?.regadd?.block?.value &&
+          personalInfo?.regadd?.street?.value
+            ? `${personalInfo.regadd.block.value} ${personalInfo.regadd.street.value}`
+            : '',
+          personalInfo?.regadd?.building?.value || '',
+          personalInfo?.regadd?.floor?.value &&
+          personalInfo?.regadd?.unit?.value
+            ? `${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
+            : '',
         ],
         post_code: personalInfo?.regadd?.postal?.value ?? '',
         email: values[MAID_QUOTE.email],
