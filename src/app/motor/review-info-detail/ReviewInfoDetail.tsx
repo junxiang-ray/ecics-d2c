@@ -450,7 +450,7 @@ const ReviewInfoDetail = () => {
                 />
               </div>
             </div>
-            <div className='scrollbar-hide h-screen overflow-y-auto pb-[150px] pt-[25px]'>
+            <div className='scrollbar-hide h-screen overflow-y-auto pb-[200px] pt-[25px]'>
               <div className='mt-6 text-2xl font-bold'>
                 Review your Myinfo details
               </div>
