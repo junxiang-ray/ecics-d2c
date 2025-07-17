@@ -89,7 +89,7 @@ export const ReviewInfoDetailMaid = () => {
   useEffect(() => {
     if (personalInfo?.dob?.value) {
       const age = dayjs().diff(dayjs(personalInfo.dob.value), 'year');
-      if (age < 21 || age > 120) {
+      if (age < 21) {
         setIsShowModalAge(true);
       }
     }
