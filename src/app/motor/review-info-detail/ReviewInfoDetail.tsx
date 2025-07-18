@@ -236,14 +236,21 @@ const ReviewInfoDetail = () => {
   const drivingClasses = qdl.classes ?? [];
   const expiryDate = qdl.expirydate?.value ?? 'N/A';
   const validityDesc = qdl.validity?.desc ?? 'N/A';
+  const vehicles = userInfoCar?.vehicles || [];
+  const liveVehicles = vehicles.filter(
+    (v: any) => v?.vehicleno?.value && v?.status?.desc === 'LIVE',
+  );
 
   useEffect(() => {
     if (!userInfoCar) return;
     // Check vehicle not found
-    const vehicles = userInfoCar?.vehicles || [];
-    const liveVehicles = vehicles.filter(
-      (v: any) => v?.vehicleno?.value && v?.status?.desc === 'LIVE',
-    );
+
+    if (liveVehicles.length === 0) {
+      // scenario 1: user have one vehicle, status = deregistered
+      setShowVehicleNotFoundModal(true);
+      return;
+    }
+
     const hasVehicle = liveVehicles.length > 0;
 
     // Check hasClass3Or3A
@@ -328,30 +335,14 @@ const ReviewInfoDetail = () => {
   }, [userInfoCar]);
 
   const callApiPersonalInfo = () => {
-    const singpassDataRaw = sessionStorage.getItem(ECICS_USER_INFO);
-    if (!singpassDataRaw) return;
-
-    const parsedSingpass = JSON.parse(singpassDataRaw);
-    const vehicles = parsedSingpass.vehicles || [];
-
     if (!Array.isArray(vehicles)) return;
-
-    const liveVehicles = vehicles.filter(
-      (v: any) => v.status?.desc?.toUpperCase() === 'LIVE',
-    );
-
-    if (liveVehicles.length === 0) {
-      // scenario 1: user have one vehicle, status = deregistered
-      setShowVehicleNotFoundModal(true);
-      return;
-    }
 
     if (liveVehicles.length >= 1) {
       // Scenario 2: user have two vehicle, one status = live | one status = deregistered
       // Scenario 4: user have >= 2 vehicle, both = live
       // Scenario 5: user have one vehicle, status = live
 
-      const qdlClasses = parsedSingpass?.drivinglicence?.qdl?.classes || [];
+      const qdlClasses = userInfoCar?.drivinglicence?.qdl?.classes || [];
       const drivingYears = calculateDrivingExperienceFromLicences(qdlClasses);
 
       const payload: SavePersonalInfoPayload = {
@@ -361,22 +352,22 @@ const ReviewInfoDetail = () => {
         partner_code: partner_code || '',
         product_type: 'car',
         personal_info: {
-          name: parsedSingpass.name?.value || '',
-          gender: parsedSingpass.sex?.desc || '',
+          name: userInfoCar.name?.value || '',
+          gender: userInfoCar.sex?.desc || '',
           marital_status: methods.getValues('marital_status') || '',
-          nric: parsedSingpass.uinfin?.value || '',
+          nric: userInfoCar.uinfin?.value || '',
           address: [
-            `${parsedSingpass.regadd?.block?.value || ''} ${parsedSingpass.regadd?.street?.value || ''}`.trim(),
-            `#${parsedSingpass.regadd?.floor?.value || ''}-${parsedSingpass.regadd?.unit?.value || ''}`.trim(),
-            `${parsedSingpass.regadd?.country?.desc || ''} ${parsedSingpass.regadd?.postal?.value || ''}`.trim(),
+            `${userInfoCar.regadd?.block?.value || ''} ${userInfoCar.regadd?.street?.value || ''}`.trim(),
+            `#${userInfoCar.regadd?.floor?.value || ''}-${userInfoCar.regadd?.unit?.value || ''}`.trim(),
+            `${userInfoCar.regadd?.country?.desc || ''} ${userInfoCar.regadd?.postal?.value || ''}`.trim(),
           ],
-          post_code: parsedSingpass.regadd?.postal?.value || '',
-          date_of_birth: parsedSingpass.dob?.value
-            ? convertDateToDDMMYYYY(parsedSingpass.dob.value)
+          post_code: userInfoCar.regadd?.postal?.value || '',
+          date_of_birth: userInfoCar.dob?.value
+            ? convertDateToDDMMYYYY(userInfoCar.dob.value)
             : '',
           driving_experience: String(drivingYears) || '',
-          phone: `${parsedSingpass.mobileno?.nbr?.value || ''}`,
-          email: parsedSingpass.email?.value?.toLowerCase() || '',
+          phone: `${userInfoCar.mobileno?.nbr?.value || ''}`,
+          email: userInfoCar.email?.value?.toLowerCase() || '',
         },
         vehicles: liveVehicles.map((v: any) => ({
           vehicle_make: v.make?.value || '',
@@ -389,10 +380,10 @@ const ReviewInfoDetail = () => {
           power_rate: v.powerrate?.value || '',
           engine_capacity: v.enginecapacity?.value || '',
         })),
-        data_from_singpass: parsedSingpass,
+        data_from_singpass: userInfoCar,
       };
       verifyRestrictedUser({
-        national_identity_no: parsedSingpass.uinfin?.value,
+        national_identity_no: userInfoCar.uinfin?.value,
       })
         .then((res) => {
           if (res?.isAllowNewBiz === false) {

@@ -6,6 +6,7 @@ import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { capitalizeWords } from '@/libs/utils/utils';
 import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 
+import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
@@ -144,19 +145,42 @@ const HeaderVehicleOption: React.FC<Props> = ({
     router.push(`${basePath}?${queryString}`);
   };
 
+  const getVehicleAge = (vehicle: VehicleSingPassResponse): number | null => {
+    const regDateStr = vehicle.firstregistrationdate?.value;
+    return regDateStr ? dayjs().diff(dayjs(regDateStr), 'year') : null;
+  };
+
+  const isVehicleOver15YearsOld = (vehicle: VehicleSingPassResponse) => {
+    const age = getVehicleAge(vehicle);
+    return age !== null && age > 15;
+  };
+
+  const hasVehicleOver15YearsOld = liveVehicles.some(isVehicleOver15YearsOld);
+
   return (
     <div className='mt-[32px] w-full'>
       <div className='my-3 text-lg font-bold underline'>
         Choose a Vehicle to insure
       </div>
+      {hasVehicleOver15YearsOld && (
+        <div className='flex items-center'>
+          <WarningTriangleIcon size={25} />
+          <div className='ml-[10px] text-justify text-sm font-bold text-[#FF3B30]'>
+            We regret to inform you that we are currently unable to provide an
+            online motor insurance quote for vehicles that were first registered
+            more than 15 years ago.
+          </div>
+        </div>
+      )}
       <div
-        className={`grid gap-y-4 sm:gap-x-6 sm:gap-y-4 ${
+        className={`mt-[10px] grid gap-y-4 sm:gap-x-6 sm:gap-y-4 ${
           isMobile ? 'grid-cols-1' : 'sm:grid-cols-2'
         }`}
       >
         {liveVehicles.map((vehicle, index) => {
           const isSelected = selectedIndex === index;
           const isExpanded = expandedIndex === index;
+          const isOver15y = isVehicleOver15YearsOld(vehicle);
 
           const topRow = getVehicleTopRow(vehicle);
           const bottomRow = getVehicleBottomRow(vehicle);
@@ -169,8 +193,12 @@ const HeaderVehicleOption: React.FC<Props> = ({
           return (
             <div
               key={index}
-              className={`rounded-md border bg-white shadow-sm ${
-                isSelected ? 'border-[#00ADEF]' : 'border-gray-300'
+              className={`rounded-md border shadow-sm ${
+                isOver15y
+                  ? 'cursor-not-allowed border-gray-300 bg-gray-100 opacity-60'
+                  : isSelected
+                    ? 'border-[#00ADEF] bg-white'
+                    : 'border-gray-300 bg-white'
               }`}
             >
               <div className='flex items-center justify-between px-4 py-2'>
@@ -185,13 +213,19 @@ const HeaderVehicleOption: React.FC<Props> = ({
 
                 <button
                   type='button'
-                  className='flex h-8 w-8 items-center justify-center rounded-full border-[2px] border-[#00ADEF] bg-white'
+                  disabled={isOver15y}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border-[2px] ${
+                    isOver15y
+                      ? 'border-gray-400 bg-gray-200'
+                      : 'border-[#00ADEF] bg-white'
+                  }`}
                   onClick={() => {
+                    if (isOver15y) return;
                     setSelectedIndex(index);
                     chooseVehicle(vehicle);
                   }}
                 >
-                  {isSelected && (
+                  {isSelected && !isOver15y && (
                     <div className='h-6 w-6 rounded-full bg-[#00ADEF]' />
                   )}
                 </button>
