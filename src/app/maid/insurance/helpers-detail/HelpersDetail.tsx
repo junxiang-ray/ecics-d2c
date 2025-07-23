@@ -648,7 +648,7 @@ const HelpersDetail = (props: Props) => {
           }
         />
       </div>
-      <div className='mt-20 w-full bg-[#FFFEFF] md:mt-10'>
+      <div className='md:mt-15 mt-36 w-full bg-[#FFFEFF]'>
         <PricingSummary
           productType={ProductType.MAID}
           planFee={planFreeTotal}
