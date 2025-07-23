@@ -98,6 +98,7 @@ function PlanDetail({
       key: key,
     };
     saveQuote({ key, data, is_sending_email: false }).then((res) => {
+      console.log('res', res);
       if (res) {
         dispatch(updateQuote(res));
       }
