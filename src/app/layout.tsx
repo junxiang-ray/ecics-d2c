@@ -54,7 +54,7 @@ export default function RootLayout({
           <ReduxProvider>
             <ReactQueryProvider>
               <AntdRegistry>
-                <NavigationConfirmProvider />
+                {/*<NavigationConfirmProvider />*/}
                 {children}
               </AntdRegistry>
             </ReactQueryProvider>
