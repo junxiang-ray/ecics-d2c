@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { capitalizeWords } from '@/libs/utils/utils';
-import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
@@ -114,13 +113,6 @@ const HeaderVehicleOption: React.FC<Props> = ({
       vehicle_selected: vehicle,
     };
     dispatch(setUserInfoCar(updatedUserInfoCar));
-
-    // Check if the vehicle number is valid
-    const isValid = sgCarRegNoValidator(vehicleNumber);
-    if (!isValid) {
-      setIsVehicleNumberInvalidModal(true);
-      return;
-    }
 
     onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
   };
