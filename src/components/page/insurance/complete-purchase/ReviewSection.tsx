@@ -140,7 +140,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       </div>
 
       {isExpanded && (
-        <div className='flex min-h-1 flex-col gap-2 rounded-bl-[6px] rounded-br-[6px] border border-t-0 px-4 pb-2 pt-[20px]'>
+        <div className='flex min-h-1 flex-auto flex-col gap-2 rounded-bl-[6px] rounded-br-[6px] border border-t-0 px-4 pb-2 pt-[20px]'>
           {sectionKey === 'driving_licenses' ? (
             <div
               className={`grid gap-y-4 sm:gap-x-6 sm:gap-y-4 ${
@@ -198,7 +198,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             </div>
           ) : (
             <div
-              className={`grid grid-cols-1 text-start md:gap-4 ${
+              className={`grid grid-cols-1 gap-1 text-start md:gap-4 ${
                 sectionKey === 'addons' || sectionKey === 'policy_plan'
                   ? ''
                   : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
