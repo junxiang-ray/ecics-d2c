@@ -38,6 +38,24 @@ export default function RootLayout({
     <html lang='en'>
       <head>
         <title>ECICS Insurance</title>
+
+        {/* Google Analytics */}
+        <script
+          async
+          src='https://www.googletagmanager.com/gtag/js?id=G-HYWYT61GW5'
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-HYWYT61GW5');
+            `,
+          }}
+        />
+
+        {/* Microsoft Clarity */}
         <script
           type='text/javascript'
           dangerouslySetInnerHTML={{
@@ -54,7 +72,7 @@ export default function RootLayout({
           <ReduxProvider>
             <ReactQueryProvider>
               <AntdRegistry>
-                <NavigationConfirmProvider />
+                {/*<NavigationConfirmProvider />*/}
                 {children}
               </AntdRegistry>
             </ReactQueryProvider>
