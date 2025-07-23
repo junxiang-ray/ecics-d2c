@@ -101,7 +101,7 @@ export default function ProcessBar({
         disabled: stepStatus === 'wait' || isFinalized || isLoading,
         icon: (
           <div
-            className={`custom-step-wait bg-red-500${
+            className={`custom-step-wait ${
               stepStatus === 'finish'
                 ? 'border border-[#11CE00] bg-[#2ECC71] text-white'
                 : stepStatus === 'process'

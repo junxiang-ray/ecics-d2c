@@ -355,7 +355,7 @@ const PolicyDetailForm = ({
 
   return (
     <>
-      <div className='flex w-full justify-center'>
+      <div className='mb-16 flex w-full justify-center md:mb-10'>
         <FormProvider {...methods}>
           <Form
             form={form}
