@@ -31,6 +31,7 @@ import {
   useGetVehicleMakes,
   useGetVehicleModels,
 } from '@/hook/insurance/common';
+import { useDebounce } from '@/hook/useDebounce';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import { QuoteModal } from './modal/QuoteModal';
@@ -268,6 +269,8 @@ const PolicyDetailForm = ({
   const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
 
+  const debouncedDrvExp = useDebounce(+drvExp, 1000);
+
   const { data: makeOptions } = useGetVehicleMakes();
   const vehicleMakeId = makeOptions?.find(
     (item: any) => item.name === vehicle_make,
@@ -310,8 +313,8 @@ const PolicyDetailForm = ({
   useEffect(() => {
     if (
       touchedFields[MOTOR_QUOTE.owner_drv_exp] &&
-      drvExp !== null &&
-      drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
+      debouncedDrvExp !== null &&
+      debouncedDrvExp < NumberDriverExperience.LESS_THAN_2_YEARS
     ) {
       setShowCSModal({
         visible: true,
@@ -319,7 +322,7 @@ const PolicyDetailForm = ({
           'The listed driver has less than 2 years of driving experience',
       });
     }
-  }, [drvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
+  }, [debouncedDrvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
