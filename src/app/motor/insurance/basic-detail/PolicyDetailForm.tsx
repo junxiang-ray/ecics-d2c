@@ -269,7 +269,7 @@ const PolicyDetailForm = ({
   const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
 
-  const debouncedDrvExp = useDebounce(drvExp, 500); // 0.5s delay
+  const debouncedDrvExp = useDebounce(+drvExp, 1000);
 
   const { data: makeOptions } = useGetVehicleMakes();
   const vehicleMakeId = makeOptions?.find(
