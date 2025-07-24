@@ -8,6 +8,7 @@ import {
   formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
+  getPlanGroupPrefix,
 } from '@/libs/utils/utils';
 
 import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
@@ -23,6 +24,7 @@ import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
+import { UnMatchAddonModal } from '@/app/motor/insurance/complete-purchase/review-your-detail/modal/UnmatchAddonModal';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -58,6 +60,7 @@ export default function CompletePurchaseDetail({
   const [errorModalType, setErrorModalType] = useState<ErrorModalType>(
     ErrorModalType.NONE,
   );
+  const [showUnmatchAddonModal, setShowUnmatchAddonModal] = useState(false);
   const { isMobile } = useDeviceDetection();
 
   const toggleSection = (key: string) => {
@@ -72,6 +75,8 @@ export default function CompletePurchaseDetail({
   const quote = useAppSelector((state) => state.quote?.quote);
   const vehicleSelected = quote?.data?.vehicle_info_selected;
   const drivers = quote?.data?.add_named_driver_info ?? [];
+  const selectedAddons = quote?.data?.selected_addons;
+  const selectedPlan = quote?.data?.selected_plan;
 
   const plan = quote?.data?.plans?.find(
     (plan) => quote.data?.selected_plan === plan.title,
@@ -653,19 +658,35 @@ export default function CompletePurchaseDetail({
   }, [dataPayment]);
 
   const onPay = async () => {
+    // Check mismatch
+    if (selectedAddons && selectedPlan) {
+      const expectedPrefix = getPlanGroupPrefix(selectedPlan, PRODUCT_NAME.CAR);
+      const addonKeys = Object.keys(selectedAddons);
+      const hasUnmatchedAddon = addonKeys.some((key) => {
+        const parts = key.split('_');
+        return parts.length > 1 && parts[1] !== expectedPrefix;
+      });
+
+      if (hasUnmatchedAddon) {
+        setShowUnmatchAddonModal(true);
+        return;
+      }
+    }
+
     const data: any = {
       key: key,
-      selected_plan: quote?.data?.selected_plan,
-      selected_addons: quote?.data?.selected_addons,
+      selected_plan: selectedPlan,
+      selected_addons: selectedAddons,
       add_named_driver_info: quote?.data?.add_named_driver_info,
     };
-    saveProposal({
+
+    const res = await saveProposal({
       data,
       productType: PRODUCT_NAME.CAR,
-    }).then((res) => {
-      if (!res?.final_premium) return;
-      dispatch(updateQuote({ is_finalized: true }));
     });
+
+    if (!res?.final_premium) return;
+    dispatch(updateQuote({ is_finalized: true }));
   };
 
   const totalAddonFeeSelected =
@@ -714,6 +735,10 @@ export default function CompletePurchaseDetail({
       onClose={() => setIsShowPopupPremium(false)}
     />
   );
+
+  const handleBackToStepThree = () => {
+    router.push(ROUTES.INSURANCE.ADD_ON);
+  };
 
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
@@ -868,6 +893,12 @@ export default function CompletePurchaseDetail({
           setShowSecondErrorModal={() => setErrorModalType(ErrorModalType.NONE)}
         />
       )}
+      <UnMatchAddonModal
+        visible={showUnmatchAddonModal}
+        onExit={() => setShowUnmatchAddonModal(false)}
+        onContinue={handleBackToStepThree}
+        description={selectedPlan}
+      />
     </div>
   );
 }

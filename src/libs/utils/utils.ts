@@ -4,6 +4,7 @@ import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
 
 export const removeFromLocalStorage = (keys: string[]) => {
   keys.forEach((key) => {
@@ -160,4 +161,28 @@ export const getPaymentType = (
     return isElectric ? ProductType.EVCAR : ProductType.CAR;
   }
   return undefined;
+};
+
+export const getPlanGroupPrefix = (
+  planName: string,
+  planType: PlanGroupType,
+): string => {
+  const mapping = {
+    [PRODUCT_NAME.CAR]: [
+      { keyword: 'Family NCD Builder', prefix: 'FNCD' },
+      { keyword: 'Comprehensive', prefix: 'COM' },
+      { keyword: 'Third Party, Fire & Theft', prefix: 'TPFT' },
+      { keyword: 'Third Party Only', prefix: 'TPO' },
+    ],
+    [PRODUCT_NAME.MAID]: [
+      { keyword: 'Classic', prefix: 'CLASS' },
+      { keyword: 'Exclusive', prefix: 'EXCLU' },
+      { keyword: 'Deluxe', prefix: 'DELU' },
+    ],
+  };
+
+  const matched = mapping[planType]?.find((item) =>
+    planName.includes(item.keyword),
+  );
+  return matched ? matched.prefix : '';
 };
