@@ -529,6 +529,7 @@ const HelpersDetail = (props: Props) => {
                   maxDate={maxDate}
                   isRequired={true}
                   placeholder='Select your Date of Birth'
+                  defaultPickerValue={dayjs().subtract(40, 'year')}
                 />
               </Form.Item>
 

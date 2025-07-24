@@ -577,6 +577,7 @@ const PolicyDetailForm = ({
                       maxDate={maxDob}
                       isRequired
                       onChange={handleChangeDob}
+                      defaultPickerValue={dayjs().subtract(40, 'year')}
                     />
                   </Form.Item>
                 </div>
