@@ -1,4 +1,8 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+} from '@tanstack/react-query';
 
 import { UserInfoPayload } from '@/libs/types/auth';
 import { saveToSessionStorage } from '@/libs/utils/utils';
@@ -14,7 +18,10 @@ import {
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 
-export const useRequestLoginMaid = (productType: ProductTypeWeb) => {
+export const useRequestLoginMaid = (
+  productType: ProductTypeWeb,
+  options?: UseMutationOptions<any, unknown, void, unknown>,
+) => {
   const requestLoginMaid = async () => {
     const res = await auth.requestLoginMaid(productType);
     return res.data;
@@ -32,8 +39,9 @@ export const useRequestLoginMaid = (productType: ProductTypeWeb) => {
         code_verifier: code_verifier,
       });
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
       console.log(error);
+      options?.onError?.(error, variables, context);
     },
   });
 };

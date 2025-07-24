@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { SingpassDownModal } from '@/components/page/login/SingpassDownModal';
 import { LinkButton } from '@/components/ui/buttons';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
@@ -28,9 +29,19 @@ const MyInfoLoginSection = ({
   const { isMobile } = useDeviceDetection();
   const [isUserActive, setIsUserActive] = useState(false);
   const isMaid = productType === ProductType.MAID;
+  const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
 
-  const { mutate: requestLogin } = useRequestLogin(PRODUCT_NAME.CAR);
-  const { mutate: requestLoginMaid } = useRequestLoginMaid(PRODUCT_NAME.MAID);
+  const { mutate: requestLogin } = useRequestLogin(PRODUCT_NAME.CAR, {
+    onError: () => {
+      setIsShowSingpassDownModal(true);
+    },
+  });
+
+  const { mutate: requestLoginMaid } = useRequestLoginMaid(PRODUCT_NAME.MAID, {
+    onError: () => {
+      setIsShowSingpassDownModal(true);
+    },
+  });
 
   const { mutate: requestLog } = useRequestLog(
     isMaid ? PRODUCT_NAME.MAID : PRODUCT_NAME.CAR,
@@ -111,6 +122,11 @@ const MyInfoLoginSection = ({
           </LinkButton>
         </span>
       </div>
+      <SingpassDownModal
+        visible={isShowSingpassDownModal}
+        onExit={() => setIsShowSingpassDownModal(false)}
+        onContinue={handleContinueWithoutMyinfo}
+      />
     </div>
   );
 };
