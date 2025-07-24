@@ -286,15 +286,7 @@ const AdditionDriver = ({
                       0,
                       0,
                     )}
-                    defaultPickerValue={
-                      selectedDate ??
-                      adjustDateInDayjs(
-                        dateToDayjs(policyStartDate as Date),
-                        -27,
-                        0,
-                        0,
-                      )
-                    }
+                    defaultPickerValue={dayjs().subtract(26, 'year')}
                     isRequired={true}
                   />
                 </div>

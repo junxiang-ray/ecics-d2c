@@ -525,6 +525,7 @@ const PolicyDetailForm = ({
                         maxDate={maxDob}
                         label='Date of birth'
                         isRequired={true}
+                        defaultPickerValue={dayjs().subtract(40, 'year')}
                       />
                     </Form.Item>
                   </div>
