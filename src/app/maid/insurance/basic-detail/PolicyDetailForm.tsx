@@ -41,7 +41,8 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
-import { WheelPickerDateDemo } from '@/components/ui/form/WheelPickerDemo';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -157,6 +158,8 @@ const PolicyDetailForm = ({
 }: PolicyDetailProps) => {
   const router = useRouterWithQuery();
   const [form] = Form.useForm();
+  const { isMobile } = useDeviceDetection();
+
   const searchParams = useSearchParams();
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
@@ -520,17 +523,26 @@ const PolicyDetailForm = ({
                       validateStatus={
                         errors[MAID_QUOTE.maid_dob] ? 'error' : ''
                       }
-                      // label='Date of Birth'
                     >
-                      <DatePickerField
-                        name={MAID_QUOTE.maid_dob}
-                        minDate={minDob}
-                        maxDate={maxDob}
-                        label='Date of birth'
-                        isRequired={true}
-                        defaultPickerValue={dayjs().subtract(40, 'year')}
-                      />
-                      <WheelPickerDateDemo name={MAID_QUOTE.maid_dob} />
+                      {isMobile ? (
+                        <DatePickerFieldWheel
+                          name={MAID_QUOTE.maid_dob}
+                          label='Date of birth'
+                          isRequired={true}
+                          minDate={minDob}
+                          maxDate={maxDob}
+                          defaultPickerValue={dayjs().subtract(40, 'year')}
+                        />
+                      ) : (
+                        <DatePickerField
+                          name={MAID_QUOTE.maid_dob}
+                          minDate={minDob}
+                          maxDate={maxDob}
+                          label='Date of birth'
+                          isRequired={true}
+                          defaultPickerValue={dayjs().subtract(40, 'year')}
+                        />
+                      )}
                     </Form.Item>
                   </div>
                 </div>
