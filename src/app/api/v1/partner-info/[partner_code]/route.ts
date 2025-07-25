@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
+
+import { ErrBadRequest, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
-import { ErrBadRequest, ErrNotFound } from '@/app/api/core/error.response';
+
 import { getInfoPartnerName } from './partner-info.service';
 
 export const GET = async (

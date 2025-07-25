@@ -5,3 +5,5 @@ export const PRODUCT_NAME = {
 } as const;
 
 export type ProductTypeWeb = (typeof PRODUCT_NAME)[keyof typeof PRODUCT_NAME];
+
+export type PlanGroupType = Exclude<ProductTypeWeb, typeof PRODUCT_NAME.MOTOR>;

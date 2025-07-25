@@ -11,6 +11,7 @@ import { z } from 'zod';
 import {
   formatCurrency,
   formatCurrencyString,
+  getPlanGroupPrefix,
   saveToLocalStorage,
 } from '@/libs/utils/utils';
 import { finValidator } from '@/libs/utils/validation-utils';
@@ -36,6 +37,7 @@ import {
   HasHelperValue,
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
+import { UnMatchAddonModal } from '@/app/motor/insurance/complete-purchase/review-your-detail/modal/UnmatchAddonModal';
 import { MAID_QUOTE } from '@/constants';
 import {
   MAID_PAYMENT_URL,
@@ -156,6 +158,7 @@ export default function CompletePurchaseDetail({
   type FormData = z.infer<typeof schema>;
 
   const { handleBack } = useInsurance();
+  const { isMobile } = useDeviceDetection();
   const [showDeclarationModal, setShowDeclarationModal] = useState(false);
 
   const [expandedSections, setExpandedSections] = useState<{
@@ -167,7 +170,7 @@ export default function CompletePurchaseDetail({
   const [errorModalType, setErrorModalType] = useState<ErrorModalType>(
     ErrorModalType.NONE,
   );
-  const { isMobile } = useDeviceDetection();
+  const [showUnmatchAddonModal, setShowUnmatchAddonModal] = useState(false);
 
   const toggleSection = (key: string) => {
     setExpandedSections((prev) => ({
@@ -180,6 +183,9 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const maidQuote = useAppSelector((state) => state.maidQuote?.maidQuote);
   const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.MAID);
+
+  const selectedAddons = maidQuote?.data?.selected_addons;
+  const selectedPlan = maidQuote?.data?.selected_plan;
 
   const isFinalized = useSelector(
     (state: any) => state.maidQuote.maidQuote?.is_finalized,
@@ -522,6 +528,24 @@ export default function CompletePurchaseDetail({
   };
 
   const handlePayClick = async (formValues?: FormData) => {
+    // Check mismatch
+    if (selectedAddons && selectedPlan) {
+      const expectedPrefix = getPlanGroupPrefix(
+        selectedPlan,
+        PRODUCT_NAME.MAID,
+      );
+      const addonKeys = Object.keys(selectedAddons);
+      const hasUnmatchedAddon = addonKeys.some((key) => {
+        const parts = key.split('_');
+        return parts.length > 1 && parts[1] !== expectedPrefix;
+      });
+
+      if (hasUnmatchedAddon) {
+        setShowUnmatchAddonModal(true);
+        return;
+      }
+    }
+
     if (isSingPassFlow) {
       const isValid = await methods.trigger();
       if (!isValid) return;
@@ -635,6 +659,10 @@ export default function CompletePurchaseDetail({
       onClose={() => setIsShowPopupPremium(false)}
     />
   );
+
+  const handleBackToStepThree = () => {
+    router.push(ROUTES.INSURANCE_MAID.ADD_ON);
+  };
 
   return (
     <div className='flex w-full flex-col items-center px-4 py-4 md:py-4'>
@@ -906,6 +934,12 @@ export default function CompletePurchaseDetail({
           setShowSecondErrorModal={() => setErrorModalType(ErrorModalType.NONE)}
         />
       )}
+      <UnMatchAddonModal
+        visible={showUnmatchAddonModal}
+        onExit={() => setShowUnmatchAddonModal(false)}
+        onContinue={handleBackToStepThree}
+        description={selectedPlan}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import { Issuer, Client } from 'openid-client';
-import { ErrBadRequest } from '../../core/error.response';
+import { Client, Issuer } from 'openid-client';
+
 import logger from '../logger';
 
 const createSingpassClient = async (product: string): Promise<Client> => {
