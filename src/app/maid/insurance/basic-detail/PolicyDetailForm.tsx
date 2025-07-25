@@ -41,6 +41,7 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
+import { WheelPickerDateDemo } from '@/components/ui/form/WheelPickerDemo';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -352,6 +353,7 @@ const PolicyDetailForm = ({
     }
     router.push(ROUTES.MAID.LOGIN);
   };
+  // console.log(initialValues, 'chinh89')
 
   return (
     <>
@@ -518,6 +520,7 @@ const PolicyDetailForm = ({
                       validateStatus={
                         errors[MAID_QUOTE.maid_dob] ? 'error' : ''
                       }
+                      // label='Date of Birth'
                     >
                       <DatePickerField
                         name={MAID_QUOTE.maid_dob}
@@ -527,6 +530,7 @@ const PolicyDetailForm = ({
                         isRequired={true}
                         defaultPickerValue={dayjs().subtract(40, 'year')}
                       />
+                      <WheelPickerDateDemo name={MAID_QUOTE.maid_dob} />
                     </Form.Item>
                   </div>
                 </div>
