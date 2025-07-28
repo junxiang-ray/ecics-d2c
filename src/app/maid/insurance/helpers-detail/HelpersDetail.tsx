@@ -14,6 +14,7 @@ import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
 import { DatePickerField } from '@/components/ui/form/datepicker';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import {
   DropdownOption,
   LongOptionDropdownField,
@@ -522,15 +523,27 @@ const HelpersDetail = (props: Props) => {
                 name={MAID_QUOTE.maid_dob}
                 validateStatus={errors[MAID_QUOTE.maid_dob] ? 'error' : ''}
               >
-                <DatePickerField
-                  name={MAID_QUOTE.maid_dob}
-                  label='Date of birth'
-                  minDate={minDate}
-                  maxDate={maxDate}
-                  isRequired={true}
-                  placeholder='Select your Date of Birth'
-                  defaultPickerValue={dayjs().subtract(40, 'year')}
-                />
+                {isMobile ? (
+                  <DatePickerFieldWheel
+                    name={MAID_QUOTE.maid_dob}
+                    label='Date of birth'
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    isRequired={true}
+                    placeholder='Select your Date of Birth'
+                    defaultPickerValue={dayjs().subtract(40, 'year')}
+                  />
+                ) : (
+                  <DatePickerField
+                    name={MAID_QUOTE.maid_dob}
+                    label='Date of birth'
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    isRequired={true}
+                    placeholder='Select your Date of Birth'
+                    defaultPickerValue={dayjs().subtract(40, 'year')}
+                  />
+                )}
               </Form.Item>
 
               <Form.Item

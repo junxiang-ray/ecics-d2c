@@ -20,6 +20,7 @@ interface DatePickerFieldWheelProps {
   disabled?: boolean;
   onChange?: (value: any) => void;
   disabledDate?: (current: Dayjs) => boolean;
+  placeholder?: string;
 }
 
 const createYearOptions = (
@@ -108,6 +109,7 @@ export const DatePickerFieldWheel = ({
   onChange,
   defaultPickerValue,
   disabledDate,
+  placeholder,
 }: DatePickerFieldWheelProps) => {
   const { control, getValues, setValue } = useFormContext();
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -257,7 +259,7 @@ export const DatePickerFieldWheel = ({
               status={fieldState.invalid ? 'error' : undefined}
               readOnly
               disabled={disabled}
-              placeholder='Select date'
+              placeholder={placeholder || 'Select date'}
               value={formattedValue}
               onClick={() => {
                 if (!disabled) {
