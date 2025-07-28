@@ -1,7 +1,9 @@
+import { Input } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import CalendarIcon from '@/components/icons/CalendarIcon';
 import {
   WheelPicker,
   WheelPickerOption,
@@ -15,42 +17,113 @@ interface DatePickerFieldWheelProps {
   maxDate?: Dayjs;
   isRequired?: boolean;
   defaultPickerValue?: Dayjs;
+  disabled?: boolean;
+  onChange?: (value: any) => void;
+  disabledDate?: (current: Dayjs) => boolean;
 }
 
-const monthOptions: WheelPickerOption[] = Array.from(
-  { length: 12 },
-  (_, i) => ({
-    label: dayjs().month(i).format('MMMM'),
-    value: (i + 1).toString().padStart(2, '0'),
-  }),
-);
+const createYearOptions = (
+  minDate?: Dayjs,
+  maxDate?: Dayjs,
+): WheelPickerOption[] => {
+  const currentYear = new Date().getFullYear();
+  const startYear = minDate ? minDate.year() : currentYear - 50;
+  const endYear = maxDate ? maxDate.year() : currentYear + 50;
 
-const createDayOptions = (year: string, month: string): WheelPickerOption[] => {
-  const daysInMonth = dayjs(`${year}-${month}-01`).daysInMonth();
-  return Array.from({ length: daysInMonth }, (_, i) => ({
-    label: (i + 1).toString().padStart(2, '0'),
-    value: (i + 1).toString().padStart(2, '0'),
-  }));
+  return Array.from({ length: endYear - startYear + 1 }, (_, i) => {
+    const year = startYear + i;
+    return { label: year.toString(), value: year.toString() };
+  });
 };
 
-const currentYear = new Date().getFullYear();
-const yearOptions: WheelPickerOption[] = Array.from({ length: 100 }, (_, i) => {
-  const year = currentYear - 50 + i;
-  return { label: year.toString(), value: year.toString() };
-});
+const createMonthOptions = (
+  selectedYear: string,
+  minDate?: Dayjs,
+  maxDate?: Dayjs,
+): WheelPickerOption[] => {
+  const options: (WheelPickerOption | null)[] = Array.from(
+    { length: 12 },
+    (_, i) => {
+      const month = i + 1;
+      const date = dayjs(
+        `${selectedYear}-${month.toString().padStart(2, '0')}-01`,
+      );
+      if (
+        (minDate && date.endOf('month').isBefore(minDate, 'day')) ||
+        (maxDate && date.startOf('month').isAfter(maxDate, 'day'))
+      ) {
+        return null;
+      }
+
+      return {
+        label: date.format('MMMM'),
+        value: month.toString().padStart(2, '0'),
+      };
+    },
+  );
+
+  return options.filter((o): o is WheelPickerOption => o !== null);
+};
+
+const createDayOptions = (
+  year: string,
+  month: string,
+  minDate?: Dayjs,
+  maxDate?: Dayjs,
+  disabledDate?: (current: Dayjs) => boolean,
+): WheelPickerOption[] => {
+  const options: (WheelPickerOption | null)[] = Array.from(
+    { length: dayjs(`${year}-${month}-01`).daysInMonth() },
+    (_, i) => {
+      const day = (i + 1).toString().padStart(2, '0');
+      const date = dayjs(`${year}-${month}-${day}`);
+
+      if (
+        (minDate && date.isBefore(minDate, 'day')) ||
+        (maxDate && date.isAfter(maxDate, 'day')) ||
+        (disabledDate && disabledDate(date))
+      ) {
+        return null;
+      }
+
+      return {
+        label: day,
+        value: day,
+      };
+    },
+  );
+
+  return options.filter(
+    (option): option is WheelPickerOption => option !== null,
+  );
+};
 
 export const DatePickerFieldWheel = ({
   name,
   label,
   minDate,
   maxDate,
+  disabled,
   isRequired,
+  onChange,
   defaultPickerValue,
+  disabledDate,
 }: DatePickerFieldWheelProps) => {
   const { control, getValues, setValue } = useFormContext();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const rawValue = getValues(name);
-  const initial = rawValue ? dayjs(rawValue) : null;
+  const initial = useMemo(() => {
+    const defaultDate = defaultPickerValue ?? dayjs();
+    let date = rawValue ? dayjs(rawValue) : defaultDate;
+    if (minDate && date.isBefore(minDate, 'day')) {
+      date = minDate;
+    }
+    if (maxDate && date.isAfter(maxDate, 'day')) {
+      date = maxDate;
+    }
+    return date;
+  }, [defaultPickerValue, getValues, name, minDate, maxDate]);
+
   const initialYear = initial?.format('YYYY') ?? '';
   const initialMonth = initial?.format('MM') ?? '';
   const initialDay = initial?.format('DD') ?? '';
@@ -58,11 +131,10 @@ export const DatePickerFieldWheel = ({
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [selectedDay, setSelectedDay] = useState(initialDay);
-  const [dayOptions, setDayOptions] = useState(
-    createDayOptions(initialYear, initialMonth),
-  );
+  const [dayOptions, setDayOptions] = useState<WheelPickerOption[]>([]);
+  const [monthOptions, setMonthOptions] = useState<WheelPickerOption[]>([]);
+  const [yearOptions, setYearOptions] = useState<WheelPickerOption[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-
   const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>(
     'down',
   );
@@ -96,8 +168,32 @@ export const DatePickerFieldWheel = ({
   }, []);
 
   useEffect(() => {
-    setDayOptions(createDayOptions(selectedYear, selectedMonth));
-  }, [selectedMonth, selectedYear]);
+    if (selectedYear && selectedMonth) {
+      setDayOptions(
+        createDayOptions(
+          selectedYear,
+          selectedMonth,
+          minDate,
+          maxDate,
+          disabledDate,
+        ),
+      );
+    } else {
+      setDayOptions([]);
+    }
+  }, [selectedMonth, selectedYear, minDate, maxDate, disabledDate]);
+
+  useEffect(() => {
+    if (selectedYear) {
+      setMonthOptions(createMonthOptions(selectedYear, minDate, maxDate));
+    } else {
+      setMonthOptions([]);
+    }
+  }, [selectedYear, minDate, maxDate]);
+
+  useEffect(() => {
+    setYearOptions(createYearOptions(minDate, maxDate));
+  }, [minDate, maxDate]);
 
   useEffect(() => {
     const newDate = dayjs(
@@ -133,11 +229,17 @@ export const DatePickerFieldWheel = ({
     };
   }, [handlePosition]);
 
+  useEffect(() => {
+    if (disabled) {
+      setIsOpen(false);
+    }
+  }, [disabled]);
+
   return (
     <Controller
       name={name}
       control={control}
-      render={({ fieldState }) => (
+      render={({ field, fieldState }) => (
         <div className='relative w-full' ref={wrapperRef}>
           {label && (
             <span className='text-base font-semibold'>
@@ -145,18 +247,39 @@ export const DatePickerFieldWheel = ({
               {isRequired && <span className='text-[#C80F1E]'> *</span>}
             </span>
           )}
-          <input
-            readOnly
-            placeholder='Select date...'
-            value={formattedValue}
-            onClick={() => {
-              setIsOpen(true);
-              handlePosition();
-            }}
-            className={`h-10 w-full rounded border px-3 py-2 text-left ${
-              fieldState.invalid ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
+          <div className='relative'>
+            <Input
+              {...field}
+              onChange={(e) => {
+                field.onChange(e);
+                onChange?.(e);
+              }}
+              status={fieldState.invalid ? 'error' : undefined}
+              readOnly
+              disabled={disabled}
+              placeholder='Select date'
+              value={formattedValue}
+              onClick={() => {
+                if (!disabled) {
+                  setIsOpen(true);
+                  handlePosition();
+                }
+              }}
+              className={`h-10 w-full rounded border py-2 pl-3 pr-10 text-left ${
+                fieldState.invalid ? 'border-red-500' : 'border-gray-300'
+              } ${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-400' : ''}`}
+            />
+            <div className='pointer-events-none absolute inset-y-0 right-3 flex items-center'>
+              <CalendarIcon
+                size={24}
+                className={
+                  disabled
+                    ? 'text-[rgba(0,0,0,0.25)]'
+                    : 'text-[rgba(0,0,0,0.85)]'
+                }
+              />
+            </div>
+          </div>
           {isOpen && (
             <div
               className='absolute z-50 w-full rounded border bg-white shadow-lg'

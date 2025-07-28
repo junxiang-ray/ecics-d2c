@@ -15,12 +15,14 @@ import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
 
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
-import { DatePickerField } from '@/components/ui//form/datepicker';
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
 import { PrimaryButton } from '@/components/ui/buttons';
+import { DatePickerField } from '@/components/ui/form/datepicker';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
@@ -39,10 +41,8 @@ import { GROUP_COUNTRY } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
-import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -356,7 +356,6 @@ const PolicyDetailForm = ({
     }
     router.push(ROUTES.MAID.LOGIN);
   };
-  // console.log(initialValues, 'chinh89')
 
   return (
     <>
@@ -469,17 +468,31 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.start_date] ? 'error' : ''
                       }
                     >
-                      <DatePickerField
-                        name={MAID_QUOTE.start_date}
-                        label='Policy Start Date'
-                        minDate={minPolicyStartDate}
-                        maxDate={maxPolicyStartDate}
-                        onChange={handleChangeStartDate}
-                        disabledDate={(current) => {
-                          return current && current < dayjs().startOf('day');
-                        }}
-                        isRequired={true}
-                      />
+                      {isMobile ? (
+                        <DatePickerFieldWheel
+                          name={MAID_QUOTE.start_date}
+                          label='Policy Start Date'
+                          minDate={minPolicyStartDate}
+                          maxDate={maxPolicyStartDate}
+                          onChange={handleChangeStartDate}
+                          disabledDate={(current) => {
+                            return current && current < dayjs().startOf('day');
+                          }}
+                          isRequired={true}
+                        />
+                      ) : (
+                        <DatePickerField
+                          name={MAID_QUOTE.start_date}
+                          label='Policy Start Date'
+                          minDate={minPolicyStartDate}
+                          maxDate={maxPolicyStartDate}
+                          onChange={handleChangeStartDate}
+                          disabledDate={(current) => {
+                            return current && current < dayjs().startOf('day');
+                          }}
+                          isRequired={true}
+                        />
+                      )}
                     </Form.Item>
                     <Form.Item
                       name={MAID_QUOTE.end_date}
@@ -487,12 +500,21 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.end_date] ? 'error' : ''
                       }
                     >
-                      <DatePickerField
-                        label='Policy End Date'
-                        name={MAID_QUOTE.end_date}
-                        disabled
-                        isRequired={true}
-                      />
+                      {isMobile ? (
+                        <DatePickerFieldWheel
+                          label='Policy End Date'
+                          name={MAID_QUOTE.end_date}
+                          disabled
+                          isRequired={true}
+                        />
+                      ) : (
+                        <DatePickerField
+                          label='Policy End Date'
+                          name={MAID_QUOTE.end_date}
+                          disabled
+                          isRequired={true}
+                        />
+                      )}
                     </Form.Item>
 
                     <Form.Item
