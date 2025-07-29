@@ -177,7 +177,7 @@ function InsuranceLayout({
       <>
         <div className='relative z-10 w-full border-b-2 border-gray-300 shadow-md'>
           <div
-            className={`mx-auto flex w-full items-center p-4 lg:max-w-[1280px] ${isMobile ? 'justify-center' : 'text-left'}`}
+            className={`mx-auto flex w-full items-center p-6 lg:max-w-[1280px] ${isMobile ? 'justify-center' : 'text-left'}`}
           >
             {partnerInfo?.partner_name && (
               <div className='flex items-center'>
@@ -198,7 +198,7 @@ function InsuranceLayout({
           </div>
         </div>
 
-        <div className='no-scroll-mobile mx-auto h-[155px] w-full items-center justify-center bg-white md:h-[135px] lg:max-w-[1280px]'>
+        <div className='no-scroll-mobile mx-auto flex h-[155px] w-full items-center justify-center bg-white md:h-[180px] lg:max-w-[1280px]'>
           {/*{(partnerInfo?.partner_name || partnerInfo) && (*/}
           {/*  <div className='block h-16 md:hidden'>*/}
           {/*    <BusinessPartnerBar*/}
@@ -209,7 +209,7 @@ function InsuranceLayout({
           {/*    />*/}
           {/*  </div>*/}
           {/*)}*/}
-          <div className='relative flex w-full justify-center p-4 px-10 pb-0'>
+          <div className='relative flex w-full justify-center p-6 px-10 pb-0'>
             {/* Reopen in Day 1.5 */}
             {/*<SecondaryButton*/}
             {/*    icon={<ArrowBackIcon size={11}/>}*/}
