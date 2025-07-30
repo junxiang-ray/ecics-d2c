@@ -15,12 +15,14 @@ import { adjustDateInDayjs, dateToDayjs } from '@/libs/utils/date-utils';
 import { formatPromoCode } from '@/libs/utils/utils';
 
 import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
-import { DatePickerField } from '@/components/ui//form/datepicker';
+import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
 import { PrimaryButton } from '@/components/ui/buttons';
+import { DatePickerField } from '@/components/ui/form/datepicker';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
@@ -39,8 +41,8 @@ import { GROUP_COUNTRY } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import ModalImportant from '@/components/page/insurance/complete-purchase/ModalImportant';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -156,6 +158,8 @@ const PolicyDetailForm = ({
 }: PolicyDetailProps) => {
   const router = useRouterWithQuery();
   const [form] = Form.useForm();
+  const { isMobile } = useDeviceDetection();
+
   const searchParams = useSearchParams();
   const promoDefault = formatPromoCode(searchParams.get('promo_code'));
   const partnerCode = searchParams.get('partner_code') || '';
@@ -353,6 +357,8 @@ const PolicyDetailForm = ({
     router.push(ROUTES.MAID.LOGIN);
   };
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <>
       <div className='mb-16 flex w-full justify-center md:mb-10'>
@@ -464,7 +470,7 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.start_date] ? 'error' : ''
                       }
                     >
-                      <DatePickerField
+                      <DatePickerComponent
                         name={MAID_QUOTE.start_date}
                         label='Policy Start Date'
                         minDate={minPolicyStartDate}
@@ -482,7 +488,7 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.end_date] ? 'error' : ''
                       }
                     >
-                      <DatePickerField
+                      <DatePickerComponent
                         label='Policy End Date'
                         name={MAID_QUOTE.end_date}
                         disabled
@@ -519,12 +525,12 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.maid_dob] ? 'error' : ''
                       }
                     >
-                      <DatePickerField
+                      <DatePickerComponent
                         name={MAID_QUOTE.maid_dob}
-                        minDate={minDob}
-                        maxDate={maxDob}
                         label='Date of birth'
                         isRequired={true}
+                        minDate={minDob}
+                        maxDate={maxDob}
                         defaultPickerValue={dayjs().subtract(40, 'year')}
                       />
                     </Form.Item>

@@ -21,6 +21,7 @@ import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
@@ -512,6 +513,8 @@ const PolicyDetailForm = ({
     }
   }, [start_date, date_of_birth]);
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <>
       <FormProvider {...methods}>
@@ -570,7 +573,7 @@ const PolicyDetailForm = ({
                       errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
                     }
                   >
-                    <DatePickerField
+                    <DatePickerComponent
                       name={MOTOR_QUOTE.owner_dob}
                       label='Date of birth'
                       minDate={minDob}
@@ -699,7 +702,7 @@ const PolicyDetailForm = ({
                   name={MOTOR_QUOTE.start_date}
                   validateStatus={errors[MOTOR_QUOTE.start_date] ? 'error' : ''}
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     name={MOTOR_QUOTE.start_date}
                     label='Policy Start Date'
                     isRequired
@@ -716,7 +719,7 @@ const PolicyDetailForm = ({
                   name={MOTOR_QUOTE.end_date}
                   validateStatus={errors[MOTOR_QUOTE.end_date] ? 'error' : ''}
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     label='Policy End Date'
                     name={MOTOR_QUOTE.end_date}
                     isRequired

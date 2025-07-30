@@ -453,7 +453,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           }
         />
       </div>
-      <div className='mt-32 w-full bg-[#FFFEFF] md:mt-24'>
+      <div className='mt-32 w-full bg-[#FFFEFF] md:mt-36'>
         <PricingSummary
           planFee={planFreeTotal}
           addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}

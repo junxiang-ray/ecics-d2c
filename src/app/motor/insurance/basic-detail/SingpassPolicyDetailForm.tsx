@@ -30,6 +30,7 @@ import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { MOTOR_QUOTE } from '@/constants';
@@ -537,6 +538,7 @@ const SingpassPolicyDetailForm = ({
       return age !== null && age <= 15;
     });
   };
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
 
   return (
     <>
@@ -653,7 +655,7 @@ const SingpassPolicyDetailForm = ({
                   name={MOTOR_QUOTE.start_date}
                   validateStatus={errors[MOTOR_QUOTE.start_date] ? 'error' : ''}
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     name={MOTOR_QUOTE.start_date}
                     label='Policy Start Date'
                     isRequired
@@ -670,7 +672,7 @@ const SingpassPolicyDetailForm = ({
                   name={MOTOR_QUOTE.end_date}
                   validateStatus={errors[MOTOR_QUOTE.end_date] ? 'error' : ''}
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     label='Policy End Date'
                     name={MOTOR_QUOTE.end_date}
                     isRequired

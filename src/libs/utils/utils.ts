@@ -5,7 +5,9 @@ import { DropdownOption } from '@/components/ui/form/dropdownfield';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
-
+import type { ClassValue } from 'clsx';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 export const removeFromLocalStorage = (keys: string[]) => {
   keys.forEach((key) => {
     localStorage.removeItem(key);
@@ -185,4 +187,8 @@ export const getPlanGroupPrefix = (
     planName.includes(item.keyword),
   );
   return matched ? matched.prefix : '';
+};
+
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
 };

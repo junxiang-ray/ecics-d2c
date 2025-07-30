@@ -494,7 +494,7 @@ function AddOnDetail({
       </div>
 
       {!isShowBonusDetail && (
-        <div className='mt-32 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+        <div className='mt-32 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-10'>
           <PricingSummary
             planFee={premiumWithGst}
             addonFee={totalAddonFee}

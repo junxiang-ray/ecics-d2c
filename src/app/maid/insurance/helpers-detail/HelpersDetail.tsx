@@ -14,6 +14,7 @@ import { useInsurance } from '@/components/contexts/InsuranceLayoutContext';
 import { PricingSummary } from '@/components/page/FeeBar';
 import ModalPremium from '@/components/page/insurance/add-on/ModalPremium';
 import { DatePickerField } from '@/components/ui/form/datepicker';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import {
   DropdownOption,
   LongOptionDropdownField,
@@ -377,6 +378,8 @@ const HelpersDetail = (props: Props) => {
     });
   };
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <FormProvider {...methods}>
       <div className='flex w-full justify-center'>
@@ -522,7 +525,7 @@ const HelpersDetail = (props: Props) => {
                 name={MAID_QUOTE.maid_dob}
                 validateStatus={errors[MAID_QUOTE.maid_dob] ? 'error' : ''}
               >
-                <DatePickerField
+                <DatePickerComponent
                   name={MAID_QUOTE.maid_dob}
                   label='Date of birth'
                   minDate={minDate}
