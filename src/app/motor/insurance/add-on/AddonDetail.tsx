@@ -410,7 +410,7 @@ function AddOnDetail({
   };
 
   return (
-    <div className='flex w-full flex-col items-center'>
+    <div className='flex w-full flex-col items-center gap-8'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
           {/* Edit bar - hide for now */}

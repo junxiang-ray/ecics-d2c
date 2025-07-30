@@ -114,17 +114,11 @@ export const DatePickerFieldWheel = ({
   const { control, getValues, setValue } = useFormContext();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const rawValue = getValues(name);
+
   const initial = useMemo(() => {
-    const defaultDate = defaultPickerValue ?? dayjs();
-    let date = rawValue ? dayjs(rawValue) : defaultDate;
-    if (minDate && date.isBefore(minDate, 'day')) {
-      date = minDate;
-    }
-    if (maxDate && date.isAfter(maxDate, 'day')) {
-      date = maxDate;
-    }
-    return date;
-  }, [defaultPickerValue, getValues, name, minDate, maxDate]);
+    if (rawValue) return dayjs(rawValue);
+    return null;
+  }, [rawValue]);
 
   const initialYear = initial?.format('YYYY') ?? '';
   const initialMonth = initial?.format('MM') ?? '';
@@ -133,9 +127,11 @@ export const DatePickerFieldWheel = ({
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [selectedDay, setSelectedDay] = useState(initialDay);
+
   const [dayOptions, setDayOptions] = useState<WheelPickerOption[]>([]);
   const [monthOptions, setMonthOptions] = useState<WheelPickerOption[]>([]);
   const [yearOptions, setYearOptions] = useState<WheelPickerOption[]>([]);
+
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>(
     'down',
@@ -149,10 +145,19 @@ export const DatePickerFieldWheel = ({
 
   useEffect(() => {
     if (isOpen) {
-      const current = dayjs(getValues(name) || defaultPickerValue);
-      setSelectedYear(current.format('YYYY'));
-      setSelectedMonth(current.format('MM'));
-      setSelectedDay(current.format('DD'));
+      const current = dayjs(
+        getValues(name) || defaultPickerValue || minDate || new Date(),
+      );
+
+      const validDate = (() => {
+        if (minDate && current.isBefore(minDate, 'day')) return minDate;
+        if (maxDate && current.isAfter(maxDate, 'day')) return maxDate;
+        return current;
+      })();
+
+      setSelectedYear(validDate.format('YYYY'));
+      setSelectedMonth(validDate.format('MM'));
+      setSelectedDay(validDate.format('DD'));
     }
   }, [isOpen]);
 
@@ -198,15 +203,18 @@ export const DatePickerFieldWheel = ({
   }, [minDate, maxDate]);
 
   useEffect(() => {
-    const newDate = dayjs(
-      `${selectedYear}-${selectedMonth}-${selectedDay}`,
-      'YYYY-MM-DD',
-    );
-    if (newDate.isValid()) {
-      setValue(name, newDate.toDate(), {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
+    if (selectedYear && selectedMonth && selectedDay) {
+      const newDate = dayjs(
+        `${selectedYear}-${selectedMonth}-${selectedDay}`,
+        'YYYY-MM-DD',
+      );
+      if (newDate.isValid()) {
+        setValue(name, newDate.toDate(), {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        onChange?.(newDate);
+      }
     }
   }, [selectedYear, selectedMonth, selectedDay]);
 
@@ -252,10 +260,6 @@ export const DatePickerFieldWheel = ({
           <div className='relative'>
             <Input
               {...field}
-              onChange={(e) => {
-                field.onChange(e);
-                onChange?.(e);
-              }}
               status={fieldState.invalid ? 'error' : undefined}
               readOnly
               disabled={disabled}
@@ -282,40 +286,43 @@ export const DatePickerFieldWheel = ({
               />
             </div>
           </div>
-          {isOpen && (
-            <div
-              className='absolute z-50 w-full rounded border bg-white shadow-lg'
-              style={{
-                top: dropdownDirection === 'down' ? '100%' : undefined,
-                bottom: dropdownDirection === 'up' ? '100%' : undefined,
-                transform:
-                  dropdownDirection === 'up'
-                    ? 'translateY(-4px)'
-                    : 'translateY(4px)',
-              }}
-            >
-              <WheelPickerWrapper className='flex min-h-[150px] w-full gap-2'>
-                <WheelPicker
-                  options={monthOptions}
-                  value={selectedMonth}
-                  onValueChange={setSelectedMonth}
-                  infinite
-                />
-                <WheelPicker
-                  options={dayOptions}
-                  value={selectedDay}
-                  onValueChange={setSelectedDay}
-                  infinite
-                />
-                <WheelPicker
-                  options={yearOptions}
-                  value={selectedYear}
-                  onValueChange={setSelectedYear}
-                  infinite={false}
-                />
-              </WheelPickerWrapper>
-            </div>
-          )}
+          {isOpen &&
+            yearOptions.length > 0 &&
+            monthOptions.length > 0 &&
+            dayOptions.length > 0 && (
+              <div
+                className='absolute z-50 w-full rounded border bg-white shadow-lg'
+                style={{
+                  top: dropdownDirection === 'down' ? '100%' : undefined,
+                  bottom: dropdownDirection === 'up' ? '100%' : undefined,
+                  transform:
+                    dropdownDirection === 'up'
+                      ? 'translateY(-4px)'
+                      : 'translateY(4px)',
+                }}
+              >
+                <WheelPickerWrapper className='flex min-h-[150px] w-full gap-2'>
+                  <WheelPicker
+                    options={monthOptions}
+                    value={selectedMonth}
+                    onValueChange={setSelectedMonth}
+                    infinite
+                  />
+                  <WheelPicker
+                    options={dayOptions}
+                    value={selectedDay}
+                    onValueChange={setSelectedDay}
+                    infinite
+                  />
+                  <WheelPicker
+                    options={yearOptions}
+                    value={selectedYear}
+                    onValueChange={setSelectedYear}
+                    infinite={false}
+                  />
+                </WheelPickerWrapper>
+              </div>
+            )}
           {fieldState.error && (
             <span className='mt-1 block text-sm text-red-500'>
               {fieldState.error.message}
