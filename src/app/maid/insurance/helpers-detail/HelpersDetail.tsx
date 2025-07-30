@@ -378,6 +378,8 @@ const HelpersDetail = (props: Props) => {
     });
   };
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <FormProvider {...methods}>
       <div className='flex w-full justify-center'>
@@ -523,27 +525,15 @@ const HelpersDetail = (props: Props) => {
                 name={MAID_QUOTE.maid_dob}
                 validateStatus={errors[MAID_QUOTE.maid_dob] ? 'error' : ''}
               >
-                {isMobile ? (
-                  <DatePickerFieldWheel
-                    name={MAID_QUOTE.maid_dob}
-                    label='Date of birth'
-                    minDate={minDate}
-                    maxDate={maxDate}
-                    isRequired={true}
-                    placeholder='Select your Date of Birth'
-                    defaultPickerValue={dayjs().subtract(40, 'year')}
-                  />
-                ) : (
-                  <DatePickerField
-                    name={MAID_QUOTE.maid_dob}
-                    label='Date of birth'
-                    minDate={minDate}
-                    maxDate={maxDate}
-                    isRequired={true}
-                    placeholder='Select your Date of Birth'
-                    defaultPickerValue={dayjs().subtract(40, 'year')}
-                  />
-                )}
+                <DatePickerComponent
+                  name={MAID_QUOTE.maid_dob}
+                  label='Date of birth'
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  isRequired={true}
+                  placeholder='Select your Date of Birth'
+                  defaultPickerValue={dayjs().subtract(40, 'year')}
+                />
               </Form.Item>
 
               <Form.Item

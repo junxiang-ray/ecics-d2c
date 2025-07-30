@@ -357,6 +357,8 @@ const PolicyDetailForm = ({
     router.push(ROUTES.MAID.LOGIN);
   };
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <>
       <div className='mb-16 flex w-full justify-center md:mb-10'>
@@ -468,31 +470,17 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.start_date] ? 'error' : ''
                       }
                     >
-                      {isMobile ? (
-                        <DatePickerFieldWheel
-                          name={MAID_QUOTE.start_date}
-                          label='Policy Start Date'
-                          minDate={minPolicyStartDate}
-                          maxDate={maxPolicyStartDate}
-                          onChange={handleChangeStartDate}
-                          disabledDate={(current) => {
-                            return current && current < dayjs().startOf('day');
-                          }}
-                          isRequired={true}
-                        />
-                      ) : (
-                        <DatePickerField
-                          name={MAID_QUOTE.start_date}
-                          label='Policy Start Date'
-                          minDate={minPolicyStartDate}
-                          maxDate={maxPolicyStartDate}
-                          onChange={handleChangeStartDate}
-                          disabledDate={(current) => {
-                            return current && current < dayjs().startOf('day');
-                          }}
-                          isRequired={true}
-                        />
-                      )}
+                      <DatePickerComponent
+                        name={MAID_QUOTE.start_date}
+                        label='Policy Start Date'
+                        minDate={minPolicyStartDate}
+                        maxDate={maxPolicyStartDate}
+                        onChange={handleChangeStartDate}
+                        disabledDate={(current) => {
+                          return current && current < dayjs().startOf('day');
+                        }}
+                        isRequired={true}
+                      />
                     </Form.Item>
                     <Form.Item
                       name={MAID_QUOTE.end_date}
@@ -500,21 +488,12 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.end_date] ? 'error' : ''
                       }
                     >
-                      {isMobile ? (
-                        <DatePickerFieldWheel
-                          label='Policy End Date'
-                          name={MAID_QUOTE.end_date}
-                          disabled
-                          isRequired={true}
-                        />
-                      ) : (
-                        <DatePickerField
-                          label='Policy End Date'
-                          name={MAID_QUOTE.end_date}
-                          disabled
-                          isRequired={true}
-                        />
-                      )}
+                      <DatePickerComponent
+                        label='Policy End Date'
+                        name={MAID_QUOTE.end_date}
+                        disabled
+                        isRequired={true}
+                      />
                     </Form.Item>
 
                     <Form.Item
@@ -546,25 +525,14 @@ const PolicyDetailForm = ({
                         errors[MAID_QUOTE.maid_dob] ? 'error' : ''
                       }
                     >
-                      {isMobile ? (
-                        <DatePickerFieldWheel
-                          name={MAID_QUOTE.maid_dob}
-                          label='Date of birth'
-                          isRequired={true}
-                          minDate={minDob}
-                          maxDate={maxDob}
-                          defaultPickerValue={dayjs().subtract(40, 'year')}
-                        />
-                      ) : (
-                        <DatePickerField
-                          name={MAID_QUOTE.maid_dob}
-                          minDate={minDob}
-                          maxDate={maxDob}
-                          label='Date of birth'
-                          isRequired={true}
-                          defaultPickerValue={dayjs().subtract(40, 'year')}
-                        />
-                      )}
+                      <DatePickerComponent
+                        name={MAID_QUOTE.maid_dob}
+                        label='Date of birth'
+                        isRequired={true}
+                        minDate={minDob}
+                        maxDate={maxDob}
+                        defaultPickerValue={dayjs().subtract(40, 'year')}
+                      />
                     </Form.Item>
                   </div>
                 </div>

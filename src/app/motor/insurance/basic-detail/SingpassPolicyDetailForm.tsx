@@ -538,6 +538,7 @@ const SingpassPolicyDetailForm = ({
       return age !== null && age <= 15;
     });
   };
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
 
   return (
     <>
@@ -654,56 +655,31 @@ const SingpassPolicyDetailForm = ({
                   name={MOTOR_QUOTE.start_date}
                   validateStatus={errors[MOTOR_QUOTE.start_date] ? 'error' : ''}
                 >
-                  {isMobile ? (
-                    <DatePickerFieldWheel
-                      name={MOTOR_QUOTE.start_date}
-                      label='Policy Start Date'
-                      isRequired
-                      minDate={minPolicyStartDate}
-                      maxDate={maxPolicyStartDate}
-                      onChange={handleChangeStartDate}
-                      disabledDate={(current) => {
-                        return current && current < dayjs().startOf('day');
-                      }}
-                    />
-                  ) : (
-                    <DatePickerField
-                      name={MOTOR_QUOTE.start_date}
-                      label='Policy Start Date'
-                      isRequired
-                      minDate={minPolicyStartDate}
-                      maxDate={maxPolicyStartDate}
-                      onChange={handleChangeStartDate}
-                      disabledDate={(current) => {
-                        return current && current < dayjs().startOf('day');
-                      }}
-                    />
-                  )}
+                  <DatePickerComponent
+                    name={MOTOR_QUOTE.start_date}
+                    label='Policy Start Date'
+                    isRequired
+                    minDate={minPolicyStartDate}
+                    maxDate={maxPolicyStartDate}
+                    onChange={handleChangeStartDate}
+                    disabledDate={(current) => {
+                      return current && current < dayjs().startOf('day');
+                    }}
+                  />
                 </Form.Item>
 
                 <Form.Item
                   name={MOTOR_QUOTE.end_date}
                   validateStatus={errors[MOTOR_QUOTE.end_date] ? 'error' : ''}
                 >
-                  {isMobile ? (
-                    <DatePickerFieldWheel
-                      label='Policy End Date'
-                      name={MOTOR_QUOTE.end_date}
-                      isRequired
-                      minDate={minPolicyEndDate}
-                      maxDate={maxPolicyEndDate}
-                      disabled={!start_date || isLoading}
-                    />
-                  ) : (
-                    <DatePickerField
-                      label='Policy End Date'
-                      name={MOTOR_QUOTE.end_date}
-                      isRequired
-                      minDate={minPolicyEndDate}
-                      maxDate={maxPolicyEndDate}
-                      disabled={!start_date || isLoading}
-                    />
-                  )}
+                  <DatePickerComponent
+                    label='Policy End Date'
+                    name={MOTOR_QUOTE.end_date}
+                    isRequired
+                    minDate={minPolicyEndDate}
+                    maxDate={maxPolicyEndDate}
+                    disabled={!start_date || isLoading}
+                  />
                 </Form.Item>
 
                 <Form.Item name={MOTOR_QUOTE.owner_ncd}>

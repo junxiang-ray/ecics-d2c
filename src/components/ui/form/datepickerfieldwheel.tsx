@@ -1,6 +1,6 @@
 import { Input } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import CalendarIcon from '@/components/icons/CalendarIcon';
@@ -9,7 +9,9 @@ import {
   WheelPickerOption,
   WheelPickerWrapper,
 } from '@/components/wheel-picker';
+
 import { useHandleClickOutside } from '@/hook/useHandleClickOutside';
+import { useHandlePosition } from '@/hook/useHandlePosition';
 
 interface DatePickerFieldWheelProps {
   name: string;
@@ -134,8 +136,9 @@ export const DatePickerFieldWheel = ({
   const [yearOptions, setYearOptions] = useState<WheelPickerOption[]>([]);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>(
-    'down',
+  const { dropdownDirection, handlePosition } = useHandlePosition(
+    isOpen,
+    wrapperRef,
   );
 
   const formValue = getValues(name);
@@ -199,27 +202,6 @@ export const DatePickerFieldWheel = ({
       onChange?.(newDate);
     }
   };
-
-  const handlePosition = useCallback(() => {
-    if (!isOpen || !wrapperRef.current) return;
-
-    const rect = wrapperRef.current.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const spaceAbove = rect.top;
-
-    const newDirection =
-      spaceBelow < 200 && spaceAbove > spaceBelow ? 'up' : 'down';
-    setDropdownDirection(newDirection);
-  }, [isOpen]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handlePosition, true);
-    window.addEventListener('resize', handlePosition);
-    return () => {
-      window.removeEventListener('scroll', handlePosition, true);
-      window.removeEventListener('resize', handlePosition);
-    };
-  }, [handlePosition]);
 
   useEffect(() => {
     if (disabled) {

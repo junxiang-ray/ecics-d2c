@@ -233,6 +233,8 @@ const AdditionDriver = ({
     setIsShowAdditionDriver(false);
   };
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   const _renderFormInput = () => {
     return (
       <>
@@ -272,45 +274,24 @@ const AdditionDriver = ({
                   />
                 </div>
                 <div className='flex flex-col gap-2'>
-                  {isMobile ? (
-                    <DatePickerFieldWheel
-                      name={`drivers.${index}.date_of_birth`}
-                      label='Date of Birth'
-                      minDate={adjustDateInDayjs(
-                        dateToDayjs(policyStartDate as Date),
-                        -71,
-                        0,
-                        1,
-                      )}
-                      maxDate={adjustDateInDayjs(
-                        dateToDayjs(policyStartDate as Date),
-                        -18,
-                        0,
-                        0,
-                      )}
-                      defaultPickerValue={dayjs().subtract(26, 'year')}
-                      isRequired={true}
-                    />
-                  ) : (
-                    <DatePickerField
-                      name={`drivers.${index}.date_of_birth`}
-                      label='Date of Birth'
-                      minDate={adjustDateInDayjs(
-                        dateToDayjs(policyStartDate as Date),
-                        -71,
-                        0,
-                        1,
-                      )}
-                      maxDate={adjustDateInDayjs(
-                        dateToDayjs(policyStartDate as Date),
-                        -18,
-                        0,
-                        0,
-                      )}
-                      defaultPickerValue={dayjs().subtract(26, 'year')}
-                      isRequired={true}
-                    />
-                  )}
+                  <DatePickerComponent
+                    name={`drivers.${index}.date_of_birth`}
+                    label='Date of Birth'
+                    minDate={adjustDateInDayjs(
+                      dateToDayjs(policyStartDate as Date),
+                      -71,
+                      0,
+                      1,
+                    )}
+                    maxDate={adjustDateInDayjs(
+                      dateToDayjs(policyStartDate as Date),
+                      -18,
+                      0,
+                      0,
+                    )}
+                    defaultPickerValue={dayjs().subtract(26, 'year')}
+                    isRequired={true}
+                  />
                 </div>
                 <div className='flex flex-col gap-2'>
                   <RadioField

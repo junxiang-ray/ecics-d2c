@@ -513,6 +513,8 @@ const PolicyDetailForm = ({
     }
   }, [start_date, date_of_birth]);
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <>
       <FormProvider {...methods}>
@@ -571,27 +573,15 @@ const PolicyDetailForm = ({
                       errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
                     }
                   >
-                    {isMobile ? (
-                      <DatePickerFieldWheel
-                        name={MOTOR_QUOTE.owner_dob}
-                        label='Date of birth'
-                        minDate={minDob}
-                        maxDate={maxDob}
-                        isRequired
-                        onChange={handleChangeDob}
-                        defaultPickerValue={dayjs().subtract(40, 'year')}
-                      />
-                    ) : (
-                      <DatePickerField
-                        name={MOTOR_QUOTE.owner_dob}
-                        label='Date of birth'
-                        minDate={minDob}
-                        maxDate={maxDob}
-                        isRequired
-                        onChange={handleChangeDob}
-                        defaultPickerValue={dayjs().subtract(40, 'year')}
-                      />
-                    )}
+                    <DatePickerComponent
+                      name={MOTOR_QUOTE.owner_dob}
+                      label='Date of birth'
+                      minDate={minDob}
+                      maxDate={maxDob}
+                      isRequired
+                      onChange={handleChangeDob}
+                      defaultPickerValue={dayjs().subtract(40, 'year')}
+                    />
                   </Form.Item>
                 </div>
               </div>
@@ -712,56 +702,31 @@ const PolicyDetailForm = ({
                   name={MOTOR_QUOTE.start_date}
                   validateStatus={errors[MOTOR_QUOTE.start_date] ? 'error' : ''}
                 >
-                  {isMobile ? (
-                    <DatePickerFieldWheel
-                      name={MOTOR_QUOTE.start_date}
-                      label='Policy Start Date'
-                      isRequired
-                      minDate={minPolicyStartDate}
-                      maxDate={maxPolicyStartDate}
-                      onChange={handleChangeStartDate}
-                      disabledDate={(current) => {
-                        return current && current < dayjs().startOf('day');
-                      }}
-                    />
-                  ) : (
-                    <DatePickerField
-                      name={MOTOR_QUOTE.start_date}
-                      label='Policy Start Date'
-                      isRequired
-                      minDate={minPolicyStartDate}
-                      maxDate={maxPolicyStartDate}
-                      onChange={handleChangeStartDate}
-                      disabledDate={(current) => {
-                        return current && current < dayjs().startOf('day');
-                      }}
-                    />
-                  )}
+                  <DatePickerComponent
+                    name={MOTOR_QUOTE.start_date}
+                    label='Policy Start Date'
+                    isRequired
+                    minDate={minPolicyStartDate}
+                    maxDate={maxPolicyStartDate}
+                    onChange={handleChangeStartDate}
+                    disabledDate={(current) => {
+                      return current && current < dayjs().startOf('day');
+                    }}
+                  />
                 </Form.Item>
 
                 <Form.Item
                   name={MOTOR_QUOTE.end_date}
                   validateStatus={errors[MOTOR_QUOTE.end_date] ? 'error' : ''}
                 >
-                  {isMobile ? (
-                    <DatePickerFieldWheel
-                      label='Policy End Date'
-                      name={MOTOR_QUOTE.end_date}
-                      isRequired
-                      minDate={minPolicyEndDate}
-                      maxDate={maxPolicyEndDate}
-                      disabled={!start_date || isLoading}
-                    />
-                  ) : (
-                    <DatePickerField
-                      label='Policy End Date'
-                      name={MOTOR_QUOTE.end_date}
-                      isRequired
-                      minDate={minPolicyEndDate}
-                      maxDate={maxPolicyEndDate}
-                      disabled={!start_date || isLoading}
-                    />
-                  )}
+                  <DatePickerComponent
+                    label='Policy End Date'
+                    name={MOTOR_QUOTE.end_date}
+                    isRequired
+                    minDate={minPolicyEndDate}
+                    maxDate={maxPolicyEndDate}
+                    disabled={!start_date || isLoading}
+                  />
                 </Form.Item>
               </div>
             </div>
