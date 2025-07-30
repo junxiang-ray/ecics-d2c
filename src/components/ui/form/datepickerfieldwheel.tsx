@@ -9,6 +9,7 @@ import {
   WheelPickerOption,
   WheelPickerWrapper,
 } from '@/components/wheel-picker';
+import { useHandleClickOutside } from '@/hook/useHandleClickOutside';
 
 interface DatePickerFieldWheelProps {
   name: string;
@@ -158,18 +159,7 @@ export const DatePickerFieldWheel = ({
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  useHandleClickOutside(wrapperRef, () => setIsOpen(false));
 
   useEffect(() => {
     if (selectedYear && selectedMonth) {
