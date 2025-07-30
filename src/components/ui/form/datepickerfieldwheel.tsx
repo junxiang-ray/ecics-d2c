@@ -138,10 +138,7 @@ export const DatePickerFieldWheel = ({
   );
 
   const formValue = getValues(name);
-  const hasValue = !!formValue;
-  const formattedValue = hasValue
-    ? `${selectedDay}/${selectedMonth}/${selectedYear}`
-    : '';
+  const formattedValue = formValue ? dayjs(formValue).format('DD/MM/YYYY') : '';
 
   useEffect(() => {
     if (isOpen) {
@@ -202,21 +199,16 @@ export const DatePickerFieldWheel = ({
     setYearOptions(createYearOptions(minDate, maxDate));
   }, [minDate, maxDate]);
 
-  useEffect(() => {
-    if (selectedYear && selectedMonth && selectedDay) {
-      const newDate = dayjs(
-        `${selectedYear}-${selectedMonth}-${selectedDay}`,
-        'YYYY-MM-DD',
-      );
-      if (newDate.isValid()) {
-        setValue(name, newDate.toDate(), {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-        onChange?.(newDate);
-      }
+  const handleDateChange = (year: string, month: string, day: string) => {
+    const newDate = dayjs(`${year}-${month}-${day}`, 'YYYY-MM-DD');
+    if (newDate.isValid()) {
+      setValue(name, newDate.toDate(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      onChange?.(newDate);
     }
-  }, [selectedYear, selectedMonth, selectedDay]);
+  };
 
   const handlePosition = useCallback(() => {
     if (!isOpen || !wrapperRef.current) return;
@@ -305,19 +297,28 @@ export const DatePickerFieldWheel = ({
                   <WheelPicker
                     options={monthOptions}
                     value={selectedMonth}
-                    onValueChange={setSelectedMonth}
+                    onValueChange={(value) => {
+                      setSelectedMonth(value);
+                      handleDateChange(selectedYear, value, selectedDay);
+                    }}
                     infinite
                   />
                   <WheelPicker
                     options={dayOptions}
                     value={selectedDay}
-                    onValueChange={setSelectedDay}
+                    onValueChange={(value) => {
+                      setSelectedDay(value);
+                      handleDateChange(selectedYear, selectedMonth, value);
+                    }}
                     infinite
                   />
                   <WheelPicker
                     options={yearOptions}
                     value={selectedYear}
-                    onValueChange={setSelectedYear}
+                    onValueChange={(value) => {
+                      setSelectedYear(value);
+                      handleDateChange(value, selectedMonth, selectedDay);
+                    }}
                     infinite={false}
                   />
                 </WheelPickerWrapper>
