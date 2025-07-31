@@ -22,7 +22,6 @@ interface DatePickerFieldWheelProps {
   defaultPickerValue?: Dayjs;
   disabled?: boolean;
   onChange?: (value: any) => void;
-  disabledDate?: (current: Dayjs) => boolean;
   placeholder?: string;
 }
 
@@ -74,7 +73,6 @@ const createDayOptions = (
   month: string,
   minDate?: Dayjs,
   maxDate?: Dayjs,
-  disabledDate?: (current: Dayjs) => boolean,
 ): WheelPickerOption[] => {
   const options: (WheelPickerOption | null)[] = Array.from(
     { length: dayjs(`${year}-${month}-01`).daysInMonth() },
@@ -84,8 +82,7 @@ const createDayOptions = (
 
       if (
         (minDate && date.isBefore(minDate, 'day')) ||
-        (maxDate && date.isAfter(maxDate, 'day')) ||
-        (disabledDate && disabledDate(date))
+        (maxDate && date.isAfter(maxDate, 'day'))
       ) {
         return null;
       }
@@ -111,7 +108,6 @@ export const DatePickerFieldWheel = ({
   isRequired,
   onChange,
   defaultPickerValue,
-  disabledDate,
   placeholder,
 }: DatePickerFieldWheelProps) => {
   const { control, getValues, setValue } = useFormContext();
@@ -167,18 +163,12 @@ export const DatePickerFieldWheel = ({
   useEffect(() => {
     if (selectedYear && selectedMonth) {
       setDayOptions(
-        createDayOptions(
-          selectedYear,
-          selectedMonth,
-          minDate,
-          maxDate,
-          disabledDate,
-        ),
+        createDayOptions(selectedYear, selectedMonth, minDate, maxDate),
       );
     } else {
       setDayOptions([]);
     }
-  }, [selectedMonth, selectedYear, minDate, maxDate, disabledDate]);
+  }, [selectedMonth, selectedYear, minDate, maxDate]);
 
   useEffect(() => {
     if (selectedYear) {
@@ -208,6 +198,29 @@ export const DatePickerFieldWheel = ({
       setIsOpen(false);
     }
   }, [disabled]);
+
+  useEffect(() => {
+    if (selectedYear && selectedMonth) {
+      const days = createDayOptions(
+        selectedYear,
+        selectedMonth,
+        minDate,
+        maxDate,
+      );
+      setDayOptions(days);
+
+      // Check if current day is valid
+      const isCurrentDayValid = days.some((d) => d.value === selectedDay);
+
+      if (!isCurrentDayValid) {
+        const fallbackDay = days[days.length - 1]?.value || '';
+        if (fallbackDay && fallbackDay !== selectedDay) {
+          setSelectedDay(fallbackDay);
+          handleDateChange(selectedYear, selectedMonth, fallbackDay);
+        }
+      }
+    }
+  }, [selectedMonth, selectedYear, minDate, maxDate]);
 
   return (
     <Controller
@@ -282,7 +295,7 @@ export const DatePickerFieldWheel = ({
                       setSelectedDay(value);
                       handleDateChange(selectedYear, selectedMonth, value);
                     }}
-                    infinite
+                    infinite={dayOptions.length > 7}
                   />
                   <WheelPicker
                     options={yearOptions}

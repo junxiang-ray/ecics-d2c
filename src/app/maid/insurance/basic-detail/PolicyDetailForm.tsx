@@ -476,9 +476,6 @@ const PolicyDetailForm = ({
                         minDate={minPolicyStartDate}
                         maxDate={maxPolicyStartDate}
                         onChange={handleChangeStartDate}
-                        disabledDate={(current) => {
-                          return current && current < dayjs().startOf('day');
-                        }}
                         isRequired={true}
                       />
                     </Form.Item>
