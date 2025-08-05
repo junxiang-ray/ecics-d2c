@@ -27,6 +27,7 @@ const MyInfoLoginSection = ({
   const { isMobile } = useDeviceDetection();
   const [isUserActive, setIsUserActive] = useState(false);
   const isMaid = productType === ProductType.MAID;
+  const isMotorcycle = productType === ProductType.MOTORCYCLE;
 
   const { mutate: requestLogin } = useRequestLogin();
   const { mutate: requestLog } = useRequestLog(
@@ -45,7 +46,9 @@ const MyInfoLoginSection = ({
 
     const basePath = isMaid
       ? ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL
-      : ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
+      : isMotorcycle
+        ? ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL_MANUAL
+        : ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
 
     const queryParams = new URLSearchParams();
     if (promoCode) queryParams.append('promo_code', promoCode);

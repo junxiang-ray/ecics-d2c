@@ -20,7 +20,9 @@ const LoginPage = () => {
 
   const productType: ProductType = pathname.startsWith('/maid')
     ? ProductType.MAID
-    : ProductType.CAR;
+    : pathname.startsWith('/motorcycle')
+      ? ProductType.MOTORCYCLE
+      : ProductType.CAR;
 
   const partnerCode = searchParams.get('partner_code') || '';
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
@@ -46,7 +48,11 @@ const LoginPage = () => {
     !!promoCodeDefault && promoCodeData?.data?.is_valid === true;
 
   const bgTop =
-    productType === ProductType.MAID ? '/maid_bg_top.svg' : '/login_bg_top.svg';
+    productType === ProductType.MAID
+      ? '/maid_bg_top.svg'
+      : productType === ProductType.MOTORCYCLE
+        ? '/motorcycle.jpg'
+        : '/login_bg_top.svg';
   const bgMobile =
     productType === ProductType.MAID
       ? '/login_bg_singpass_maid.png'

@@ -12,6 +12,7 @@ const createInsuranceRoutes = (basePath: string) => ({
 export const ROUTES = {
   INSURANCE: createInsuranceRoutes('/motor/insurance'),
   INSURANCE_MAID: createInsuranceRoutes('/maid/insurance'),
+  INSURANCE_MOTORCYCLE: createInsuranceRoutes('/motorcycle/insurance'),
   API_ERROR: '/error-page',
   MOTOR: {
     LOGIN: '/motor',
@@ -20,6 +21,10 @@ export const ROUTES = {
   MAID: {
     LOGIN: '/maid',
     REVIEW_INFO_DETAIL: '/maid/review-info-detail',
+  },
+  MOTORCYCLE: {
+    LOGIN: '/motorcycle',
+    REVIEW_INFO_DETAIL: '/motorcycle/review-info-detail',
   },
 };
 

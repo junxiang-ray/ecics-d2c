@@ -4,6 +4,7 @@ export enum ProductType {
   MAID = 'maid',
   CAR = 'car',
   EVCAR = 'ev_car',
+  MOTORCYCLE = 'motorcycle',
 }
 
 export enum NumberClaim {
