@@ -840,7 +840,7 @@ export default function CompletePurchaseDetail({
           </div>
         </div>
       </div>
-      <div className='mt-16 w-full bg-[#FFFEFF] md:mt-2'>
+      <div className='mt-20 w-full bg-[#FFFEFF] md:mt-2'>
         <PricingSummary
           planFee={planFreeTotal}
           addonFee={totalAdditionFee}
