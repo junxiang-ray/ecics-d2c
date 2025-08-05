@@ -37,7 +37,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal';
 
 import {
-  NCD_OPTIONS,
+  NCD_OPTIONS_MOTORCYCLE,
   NO_CLAIM_OPTIONS,
   NumberClaim,
   NumberDriverExperience,
@@ -280,13 +280,13 @@ const PolicyDetailForm = ({
   const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
 
-  const { data: makeOptions } = useGetVehicleMakes();
+  const { data: makeOptions } = useGetVehicleMakes('motorcycle');
   const vehicleMakeId = makeOptions?.find(
     (item: any) => item.name === vehicle_make,
   )?.id;
 
   const { data: modelOptions, isLoading: isLoadingModelOptions } =
-    useGetVehicleModels(vehicleMakeId as string);
+    useGetVehicleModels(vehicleMakeId as string, 'motorcycle');
 
   const handleBackLogin = () => {
     router.push(ROUTES.MOTOR.LOGIN);
@@ -694,7 +694,7 @@ const PolicyDetailForm = ({
                     label='No Claim Discount'
                     isRequired
                     placeholder='Select your current NCD'
-                    options={NCD_OPTIONS}
+                    options={NCD_OPTIONS_MOTORCYCLE}
                   ></DropdownField>
                 </Form.Item>
 

@@ -5,6 +5,8 @@ import {
   API_GET_LIST_VEHICLE_MAKES,
   API_GET_LIST_VEHICLE_MODELS,
   API_POST_CHECK_VEHICLE,
+  API_GET_LIST_MOTORCYCLE_VEHICLE_MAKES,
+  API_GET_LIST_MOTORCYCLE_VEHICLE_MODELS,
 } from '@/constants/api.constant';
 
 import baseClient from './api.config';
@@ -54,10 +56,24 @@ export default {
   verifyPromoCode(data: VerifyPromoCodeData) {
     return baseClient.post<PromoCodeResponse>('/promo-code/validation', data);
   },
-  getVehicleMakes() {
+  getVehicleMakes(productType?: string) {
+    if (productType === 'motorcycle') {
+      return baseClient.get<VehicleMakeResponse>(
+        `${API_GET_LIST_MOTORCYCLE_VEHICLE_MAKES}`,
+      );
+    }
+
+    // else default to car
     return baseClient.get<VehicleMakeResponse>(`${API_GET_LIST_VEHICLE_MAKES}`);
   },
-  getVehicleModels(id: string) {
+  getVehicleModels(id: string, productType?: string) {
+    if (productType === 'motorcycle') {
+      return baseClient.get<VehicleModelResponse>(
+        `${API_GET_LIST_MOTORCYCLE_VEHICLE_MODELS}` + id,
+      );
+    }
+
+    // else default to car
     return baseClient.get<VehicleModelResponse>(
       `${API_GET_LIST_VEHICLE_MODELS}` + id,
     );

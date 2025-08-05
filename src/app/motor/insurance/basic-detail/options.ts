@@ -123,6 +123,13 @@ export const NCD_OPTIONS: DropdownOption[] = [
   { value: 50, text: '50%' },
 ];
 
+export const NCD_OPTIONS_MOTORCYCLE: DropdownOption[] = [
+  { value: 0, text: '0%' },
+  { value: 10, text: '10%' },
+  { value: 15, text: '15%' },
+  { value: 20, text: '20%' },
+];
+
 export const NO_CLAIM_OPTIONS: DropdownOption[] = [
   { value: NumberClaim.NEVER, text: '0' },
   { value: NumberClaim.ONE_CLAIM_LESS_THAN_10K, text: '1 claim ≤ SGD 10k' },
