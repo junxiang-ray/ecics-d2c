@@ -247,7 +247,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
 
   return (
     <FormProvider {...methods}>
-      <div className='flex w-full justify-center'>
+      <div className='mb-10 flex w-full justify-center md:mb-0'>
         <Form
           form={form}
           scrollToFirstError={{
