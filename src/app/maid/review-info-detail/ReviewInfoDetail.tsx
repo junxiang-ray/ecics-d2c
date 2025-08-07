@@ -13,7 +13,10 @@ import { saveToSessionStorage } from '@/libs/utils/utils';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import {
+  MARITAL_STATUS_OPTIONS,
+  ProductType,
+} from '@/app/motor/insurance/basic-detail/options';
 import { MAID_QUOTE } from '@/constants';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
@@ -24,6 +27,7 @@ import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch } from '@/redux/store';
 import { ModalAge } from './ModalAge';
 import { v4 as uuid } from 'uuid';
+import { DropdownField } from '@/components/ui/form/dropdownfield';
 
 const schema = z.object({
   [MAID_QUOTE.email]: z
@@ -95,6 +99,12 @@ export const ReviewInfoDetailMaid = () => {
     }
   }, [personalInfo]);
 
+  useEffect(() => {
+    if (personalInfo?.marital?.desc) {
+      methods.setValue('marital_status', personalInfo.marital.desc);
+    }
+  }, [personalInfo?.marital?.desc]);
+
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
@@ -138,11 +148,10 @@ export const ReviewInfoDetailMaid = () => {
         email: values[MAID_QUOTE.email],
         phone: values[MAID_QUOTE.mobile],
         gender: personalInfo?.sex?.desc,
-        marital_status: personalInfo?.marital?.desc,
+        marital_status: methods.getValues('marital_status'),
       },
       data_from_singpass: personalInfo,
     };
-
     savePersonalInfoMaid(data, {
       onSuccess: () => {
         dispatch(updateMaidQuote(data));
@@ -156,8 +165,8 @@ export const ReviewInfoDetailMaid = () => {
       value: personalInfo?.name?.value,
     },
     {
-      label: 'Nationality',
-      value: personalInfo?.nationality?.desc,
+      label: 'Gender',
+      value: personalInfo?.sex?.desc,
     },
     {
       label: 'Date of Birth',
@@ -166,6 +175,10 @@ export const ReviewInfoDetailMaid = () => {
     {
       label: 'NRIC / FIN',
       value: personalInfo?.uinfin?.value,
+    },
+    {
+      label: 'Marital Status',
+      value: personalInfo?.marital?.desc,
     },
     {
       label: 'Address Line 1',
@@ -189,6 +202,10 @@ export const ReviewInfoDetailMaid = () => {
     {
       label: 'Postal Code',
       value: personalInfo?.regadd?.postal?.value,
+    },
+    {
+      label: 'Nationality',
+      value: personalInfo?.nationality?.desc,
     },
   ];
 
@@ -262,14 +279,43 @@ export const ReviewInfoDetailMaid = () => {
                     Personal Info
                   </div>
                   <div className='grid grid-cols-1 justify-between gap-4 md:grid-cols-4 md:gap-10'>
-                    {personalInfoFields.map((item, index) => (
-                      <div className='flex flex-col gap-1' key={index}>
-                        <p className='text-sm text-gray-600'>{item.label}</p>
-                        <p className='text-base font-semibold'>
-                          {item.value ? item.value : 'N/A'}
-                        </p>
-                      </div>
-                    ))}
+                    {personalInfoFields.map((item, index) => {
+                      if (item.label === 'Marital Status') {
+                        return (
+                          <div className='flex flex-col gap-1' key={index}>
+                            <Form.Item
+                              name='marital_status'
+                              validateStatus={
+                                errors.marital_status ? 'error' : ''
+                              }
+                            >
+                              <DropdownField
+                                name='marital_status'
+                                label='Marital Status'
+                                placeholder='Select Marital Status'
+                                options={MARITAL_STATUS_OPTIONS}
+                                isRequired
+                                onChange={(value) => {
+                                  methods.setValue('marital_status', value, {
+                                    shouldValidate: true,
+                                  });
+                                }}
+                                value={watch('marital_status')}
+                              />
+                            </Form.Item>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className='flex flex-col gap-1' key={index}>
+                          <p className='text-sm text-gray-600'>{item.label}</p>
+                          <p className='text-base font-semibold'>
+                            {item.value ? item.value : 'N/A'}
+                          </p>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </Form>
