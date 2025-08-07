@@ -366,8 +366,8 @@ const ReviewInfoDetail = () => {
             ? convertDateToDDMMYYYY(userInfoCar.dob.value)
             : '',
           driving_experience: String(drivingYears) || '',
-          phone: `${userInfoCar.mobileno?.nbr?.value || ''}`,
-          email: userInfoCar.email?.value?.toLowerCase() || '',
+          phone: methods.getValues('mobile_number') || '',
+          email: methods.getValues('email_address')?.toLowerCase() || '',
         },
         vehicles: liveVehicles.map((v: any) => ({
           vehicle_make: v.make?.value || '',
