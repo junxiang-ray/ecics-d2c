@@ -44,6 +44,9 @@ const schema = z.object({
       phoneRegex,
       "Please enter an 8-digit number starting with '8' or '9'.",
     ),
+  [MAID_QUOTE.marital_status]: z.string({
+    required_error: 'This field is required',
+  }),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -81,6 +84,8 @@ export const ReviewInfoDetailMaid = () => {
         ? `${personalInfo.regadd.floor.value}-${personalInfo.regadd.unit.value}`
         : '',
     postal: personalInfo?.regadd?.postal?.value || '',
+    gender: personalInfo?.sex?.desc || '',
+    [MAID_QUOTE.marital_status]: personalInfo?.marital?.desc || '',
   };
 
   const {
@@ -98,12 +103,6 @@ export const ReviewInfoDetailMaid = () => {
       }
     }
   }, [personalInfo]);
-
-  useEffect(() => {
-    if (personalInfo?.marital?.desc) {
-      methods.setValue('marital_status', personalInfo.marital.desc);
-    }
-  }, [personalInfo?.marital?.desc]);
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -148,7 +147,7 @@ export const ReviewInfoDetailMaid = () => {
         email: values[MAID_QUOTE.email],
         phone: values[MAID_QUOTE.mobile],
         gender: personalInfo?.sex?.desc,
-        marital_status: methods.getValues('marital_status'),
+        marital_status: values[MAID_QUOTE.marital_status],
       },
       data_from_singpass: personalInfo,
     };
@@ -284,23 +283,17 @@ export const ReviewInfoDetailMaid = () => {
                         return (
                           <div className='flex flex-col gap-1' key={index}>
                             <Form.Item
-                              name='marital_status'
+                              name={MAID_QUOTE.marital_status}
                               validateStatus={
-                                errors.marital_status ? 'error' : ''
+                                errors[MAID_QUOTE.marital_status] ? 'error' : ''
                               }
                             >
                               <DropdownField
-                                name='marital_status'
+                                name={MAID_QUOTE.marital_status}
                                 label='Marital Status'
                                 placeholder='Select Marital Status'
                                 options={MARITAL_STATUS_OPTIONS}
                                 isRequired
-                                onChange={(value) => {
-                                  methods.setValue('marital_status', value, {
-                                    shouldValidate: true,
-                                  });
-                                }}
-                                value={watch('marital_status')}
                               />
                             </Form.Item>
                           </div>
