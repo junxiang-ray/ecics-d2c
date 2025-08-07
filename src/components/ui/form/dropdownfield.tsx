@@ -1,5 +1,5 @@
 import { Input, Select, SelectProps } from 'antd';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';

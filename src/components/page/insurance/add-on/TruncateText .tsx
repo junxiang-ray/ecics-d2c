@@ -19,7 +19,6 @@ export const TruncateText = ({
   const lineHeight = 19;
   const buttonHeight = 20;
   const buttonMargin = 4;
-  const { isMobile } = useDeviceDetection();
 
   useEffect(() => {
     if (textRef.current) {
