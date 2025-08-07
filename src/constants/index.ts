@@ -48,4 +48,5 @@ export const MAID_QUOTE = {
   company_name: 'company_name',
   company_name_other: 'company_name_other',
   has_helper_worked_12_months: 'has_helper_worked_12_months',
+  marital_status: 'marital_status',
 };
