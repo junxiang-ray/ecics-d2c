@@ -20,13 +20,6 @@ interface ProcessBarProps {
   productType: string;
 }
 
-const stepsDataSingPass = [
-  { step: StepProcessBar.POLICY_DETAILS, title: 'Policy Details' },
-  { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
-  { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
-  { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
-];
-
 const getStepStatus = (step: StepProcessBar, currentStep: ProcessBarType) => {
   if (currentStep !== undefined && step < currentStep) return 'finish';
   if (step === currentStep) return 'process';
@@ -65,7 +58,25 @@ export default function ProcessBar({
     },
     { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
   ];
+
+  const stepsDataSingPass = [
+    { step: StepProcessBar.FIRST, title: '' },
+    {
+      step: StepProcessBar.POLICY_DETAILS,
+      title:
+        productType === ProductType.MAID
+          ? 'Helper’s Information'
+          : 'Policy Details',
+    },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
+
   const selectedStepsData = isManual ? stepsData : stepsDataSingPass;
+  const currentStepIndex = selectedStepsData.findIndex(
+    (item) => item.step === currentStep,
+  );
 
   const steps: StepsProps['items'] = selectedStepsData.map(
     ({ title, step }, index) => {
@@ -90,7 +101,7 @@ export default function ProcessBar({
         disabled: stepStatus === 'wait' || isFinalized || isLoading,
         icon: (
           <div
-            className={`custom-step-wait bg-red-500${
+            className={`custom-step-wait ${
               stepStatus === 'finish'
                 ? 'border border-[#11CE00] bg-[#2ECC71] text-white'
                 : stepStatus === 'process'
@@ -104,11 +115,21 @@ export default function ProcessBar({
       };
     },
   );
+
+  const handleChange = (index: number) => {
+    if (onChange) {
+      const stepEnum = selectedStepsData[index]?.step;
+      if (stepEnum !== undefined) {
+        onChange(stepEnum);
+      }
+    }
+  };
+
   return (
     <div className='w-full justify-center'>
       <Steps
-        current={currentStep}
-        onChange={onChange}
+        current={currentStepIndex}
+        onChange={handleChange}
         labelPlacement='vertical'
         direction='horizontal'
         responsive={false}

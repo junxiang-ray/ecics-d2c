@@ -1,5 +1,6 @@
-import { REGEX_VALUES } from '@/app/api/utils/regex';
 import { z } from 'zod';
+
+import { REGEX_VALUES } from '@/app/api/utils/regex';
 
 export const generateQuoteSchema = z.object({
   key: z.string().min(5, 'Key must be at least 5 characters long'),

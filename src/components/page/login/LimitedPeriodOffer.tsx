@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import CouponIcon from '@/components/icons/CouponIcon';
+import PromoTickIcon from '@/components/icons/PromoTickIcon';
 
 import { PromoCodeResponse } from '@/api/base-service/verify';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
@@ -20,6 +23,17 @@ const LimitedPeriodOffer = ({
   const { isMobile } = useDeviceDetection();
   const description = promoCodeData?.data?.description;
   const isMaid = productType === ProductType.MAID;
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(promoCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy promo code:', err);
+    }
+  };
 
   return (
     <div className='relative z-10 mx-auto max-w-md px-4'>
@@ -58,15 +72,24 @@ const LimitedPeriodOffer = ({
             {description}
           </div>
         )}
-        <div
-          className={`mt-2 flex w-max flex-row items-center gap-2 whitespace-nowrap rounded-lg border-2 p-2 ${
-            isMobile
-              ? 'border-[#C80F1E] bg-white text-[#C80F1E]'
-              : 'border-coupon-red bg-coupon-red text-white'
-          }`}
-        >
-          <CouponIcon size={32} />
-          <div className='text-[12px] text-base font-bold'>{promoCode}</div>
+        <div className='flex items-center'>
+          <div
+            className={`mt-2 flex w-max cursor-pointer flex-row items-center gap-2 whitespace-nowrap rounded-lg border-2 p-2 transition-all ${
+              isMobile
+                ? 'border-[#C80F1E] bg-white text-[#C80F1E]'
+                : 'border-coupon-red bg-coupon-red text-white'
+            }`}
+            onClick={handleCopy}
+          >
+            <CouponIcon size={32} />
+            <div className='text-[12px] text-base font-bold'>{promoCode}</div>
+          </div>
+          {copied && (
+            <div className='ml-4 mt-2 flex items-center gap-1 text-[#52C41A]'>
+              <PromoTickIcon size={24} />
+              <span className='text-[14px] font-bold'>Code Copied</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

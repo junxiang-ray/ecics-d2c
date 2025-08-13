@@ -93,8 +93,6 @@ model Quote {
   update_at  DateTime @default(now()) @updatedAt
 
   // Foreign Keys
-  personal_info_id Int?          @map("personal_info_id")
-  personal_info    PersonalInfo? @relation(fields: [personal_info_id], references: [id])
 
   company_id Int?     @map("company_id")
   company    Company? @relation(fields: [company_id], references: [id])
@@ -127,27 +125,6 @@ model ProductType {
   plan          Plan[]
 
   @@map("product_type")
-}
-
-model PersonalInfo {
-  id                   Int      @id @default(autoincrement())
-  phone                String?
-  email                String?
-  name                 String?
-  gender               String?
-  nric                 String?
-  marital_status       String?
-  date_of_birth        String?  @map("date_of_birth")
-  address              String[] @default([])
-  vehicle_info_selected Json?
-  year_of_registration String?  @map("year_of_registration")
-  vehicles             Json
-  driving_experience   String?  @map("driving_experience")
-  created_at           DateTime @default(now())
-  updated_at           DateTime @default(now()) @updatedAt
-  quotes               Quote[]
-
-  @@map("personal_info")
 }
 
 model Company {
@@ -341,4 +318,14 @@ model Condition {
   dependency_id Int?
 
   @@map("addon_condition")
+}
+
+model SingpassData {
+  id         Int      @id @default(autoincrement())
+  uinfin String
+  value Json
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("singpass_data")
 }

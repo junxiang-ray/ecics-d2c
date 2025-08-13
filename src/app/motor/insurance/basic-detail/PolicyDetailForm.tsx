@@ -21,6 +21,7 @@ import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
@@ -31,6 +32,7 @@ import {
   useGetVehicleMakes,
   useGetVehicleModels,
 } from '@/hook/insurance/common';
+import { useDebounce } from '@/hook/useDebounce';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 import { QuoteModal } from './modal/QuoteModal';
@@ -50,7 +52,7 @@ dayjs.extend(isSameOrBefore);
 const sryMsg =
   'Please contact us for assistance at +65 6206 5588 or customerservice@ecics.com.sg';
 
-const singpassFlowFields = {
+const nonSingpassFlowFields = {
   [MOTOR_QUOTE.hire_purchase]: z.number({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
@@ -83,10 +85,6 @@ const singpassFlowFields = {
       message: sryMsg,
     }),
   [MOTOR_QUOTE.promo_code]: z.string().optional(),
-};
-
-const nonSingpassFlowFields = {
-  ...singpassFlowFields,
   [MOTOR_QUOTE.email]: z
     .string({
       required_error: 'This field is required',
@@ -127,11 +125,10 @@ const nonSingpassFlowFields = {
     required_error: 'This field is required',
   }),
 };
+
 const ID_OPTION_OTHER = 2; //-- Others (Not Available in this list) --
-const createSchema = (isSingpassFlow: boolean) => {
-  const baseSchema = z.object(
-    isSingpassFlow ? singpassFlowFields : nonSingpassFlowFields,
-  );
+const createSchema = () => {
+  const baseSchema = z.object(nonSingpassFlowFields);
 
   return baseSchema
     .refine(
@@ -215,16 +212,13 @@ const createSchema = (isSingpassFlow: boolean) => {
 };
 
 const nonSingpassSchema = z.object(nonSingpassFlowFields);
-const singpassSchema = z.object(singpassFlowFields);
 type NonSingpassFlowFields = z.infer<typeof nonSingpassSchema>;
-type SingpassFlowFields = z.infer<typeof singpassSchema>;
-type FormData = NonSingpassFlowFields | SingpassFlowFields;
+type FormData = NonSingpassFlowFields;
 
 interface PolicyDetailProps extends FormProps {
   onSubmit: (value: any) => void;
   onSaveRegister: (fn: () => any) => void;
   hirePurchaseOptions: DropdownOption[];
-  isSingpassFlow: boolean;
   isLoading?: boolean;
 }
 
@@ -232,7 +226,6 @@ const PolicyDetailForm = ({
   onSubmit,
   onSaveRegister,
   hirePurchaseOptions,
-  isSingpassFlow = false,
   initialValues,
   isLoading = false,
   ...props
@@ -246,7 +239,7 @@ const PolicyDetailForm = ({
   const key = searchParams.get('key') || '';
   const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
 
-  const schema = useMemo(() => createSchema(isSingpassFlow), [isSingpassFlow]);
+  const schema = useMemo(() => createSchema(), []);
   const [showCSModal, setShowCSModal] = useState<{
     visible: boolean;
     description: string;
@@ -276,6 +269,8 @@ const PolicyDetailForm = ({
   const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
   const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
+
+  const debouncedDrvExp = useDebounce(+drvExp, 1000);
 
   const { data: makeOptions } = useGetVehicleMakes();
   const vehicleMakeId = makeOptions?.find(
@@ -319,8 +314,8 @@ const PolicyDetailForm = ({
   useEffect(() => {
     if (
       touchedFields[MOTOR_QUOTE.owner_drv_exp] &&
-      drvExp !== null &&
-      drvExp < NumberDriverExperience.LESS_THAN_2_YEARS
+      debouncedDrvExp !== null &&
+      debouncedDrvExp < NumberDriverExperience.LESS_THAN_2_YEARS
     ) {
       setShowCSModal({
         visible: true,
@@ -328,7 +323,7 @@ const PolicyDetailForm = ({
           'The listed driver has less than 2 years of driving experience',
       });
     }
-  }, [drvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
+  }, [debouncedDrvExp, touchedFields[MOTOR_QUOTE.owner_drv_exp]]);
 
   useEffect(() => {
     if (no_claim === NumberClaim.TWO_MANY_CLAIMS) {
@@ -344,25 +339,21 @@ const PolicyDetailForm = ({
   useEffect(() => {
     onSaveRegister(() => {
       const value = methods.getValues();
-      let vehicle_info_selected;
-      let personal_info;
 
-      if (!isSingpassFlow) {
-        vehicle_info_selected = {
-          vehicle_make: value[MOTOR_QUOTE.vehicle_make],
-          vehicle_model: value[MOTOR_QUOTE.vehicle_model],
-          first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
-        };
+      const vehicle_info_selected = {
+        vehicle_make: value[MOTOR_QUOTE.vehicle_make],
+        vehicle_model: value[MOTOR_QUOTE.vehicle_model],
+        first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
+      };
 
-        personal_info = {
-          date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
-            'DD/MM/YYYY',
-          ),
-          driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
-          phone: value[MOTOR_QUOTE.mobile],
-          email: (value[MAID_QUOTE.email] as string)?.toLowerCase(),
-        };
-      }
+      const personal_info = {
+        date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
+          'DD/MM/YYYY',
+        ),
+        driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
+        phone: value[MOTOR_QUOTE.mobile],
+        email: (value[MAID_QUOTE.email] as string)?.toLowerCase(),
+      };
 
       const payload = {
         key: key,
@@ -442,24 +433,21 @@ const PolicyDetailForm = ({
   );
 
   const handleSubmit = (value: FormData) => {
-    let vehicle_info_selected;
-    let personal_info;
+    const vehicle_info_selected = {
+      vehicle_make: value[MOTOR_QUOTE.vehicle_make],
+      vehicle_model: value[MOTOR_QUOTE.vehicle_model],
+      first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
+    };
 
-    if (!isSingpassFlow) {
-      vehicle_info_selected = {
-        vehicle_make: value[MOTOR_QUOTE.vehicle_make],
-        vehicle_model: value[MOTOR_QUOTE.vehicle_model],
-        first_registered_year: value[MOTOR_QUOTE.reg_yyyy] as string,
-      };
-      personal_info = {
-        date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
-          'DD/MM/YYYY',
-        ),
-        driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
-        phone: value[MOTOR_QUOTE.mobile],
-        email: value[MOTOR_QUOTE.email],
-      };
-    }
+    const personal_info = {
+      date_of_birth: dayjs(value[MOTOR_QUOTE.owner_dob] as Date).format(
+        'DD/MM/YYYY',
+      ),
+      driving_experience: value[MOTOR_QUOTE.owner_drv_exp],
+      phone: value[MOTOR_QUOTE.mobile],
+      email: value[MOTOR_QUOTE.email],
+    };
+
     const noOfClaim = value[MOTOR_QUOTE.owner_no_of_claims];
     const promoCode =
       noOfClaim === NumberClaim.NEVER ? formatPromoCode(applyPromoCode) : '';
@@ -525,6 +513,8 @@ const PolicyDetailForm = ({
     }
   }, [start_date, date_of_birth]);
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <>
       <FormProvider {...methods}>
@@ -536,131 +526,122 @@ const PolicyDetailForm = ({
           }}
           onFinish={methods.handleSubmit(handleSubmit)}
           disabled={isLoading}
-          className=' mb-16 flex w-full flex-col items-center px-4'
+          className='mb-20 flex w-full flex-col items-center px-4 md:mb-28'
           {...props}
         >
           <div className='max-w-[1200px]'>
-            {!isSingpassFlow && (
-              <>
-                <div className='relative w-full' style={{ zIndex: '99' }}>
-                  <div className='w-full'>
-                    <div className='my-3 text-lg font-bold'>
-                      Personal Information
-                    </div>
-                    <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                      <Form.Item
-                        name={MOTOR_QUOTE.email}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.email] ? 'error' : ''
-                        }
-                      >
-                        <InputField
-                          name={MOTOR_QUOTE.email}
-                          label='Email Address'
-                          isRequired
-                          placeholder='Enter your email address'
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={MOTOR_QUOTE.mobile}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.mobile] ? 'error' : ''
-                        }
-                      >
-                        <InputField
-                          name={MOTOR_QUOTE.mobile}
-                          label='Mobile Number'
-                          isRequired
-                          placeholder='Enter your phone number'
-                          onChange={(
-                            e: React.ChangeEvent<HTMLInputElement>,
-                          ) => {
-                            const onlyNums = e.target.value.replace(/\D/g, '');
-                            methods.setValue(MOTOR_QUOTE.mobile, onlyNums, {
-                              shouldValidate: true,
-                            });
-                          }}
-                          value={String(watch(MOTOR_QUOTE.mobile) ?? '')}
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name={MOTOR_QUOTE.owner_dob}
-                        validateStatus={
-                          errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
-                        }
-                      >
-                        <DatePickerField
-                          name={MOTOR_QUOTE.owner_dob}
-                          label='Date of birth'
-                          minDate={minDob}
-                          maxDate={maxDob}
-                          isRequired
-                          onChange={handleChangeDob}
-                        />
-                      </Form.Item>
-                    </div>
-                  </div>
-
-                  <div className='my-6 mt-[32px] w-full'>
-                    <div className='my-3 text-lg font-bold'>
-                      Vehicle Information
-                    </div>
-                    <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
-                      <Form.Item name={MOTOR_QUOTE.vehicle_make}>
-                        <LongOptionDropdownField
-                          name={MOTOR_QUOTE.vehicle_make}
-                          label='Vehicle Make'
-                          isRequired
-                          placeholder='Select vehicle make'
-                          options={makeOptionsFormatted}
-                          disabled={isLoading}
-                          onChange={() => {
-                            // Reset model when make changes
-                            methods.setValue(
-                              MOTOR_QUOTE.vehicle_model,
-                              null as any,
-                            );
-                          }}
-                          showSearch
-                        />
-                      </Form.Item>
-
-                      <Form.Item name={MOTOR_QUOTE.vehicle_model}>
-                        <LongOptionDropdownField
-                          name={MOTOR_QUOTE.vehicle_model}
-                          label='Vehicle Model'
-                          isRequired
-                          placeholder='Select vehicle model'
-                          options={modelOptionsFormatted}
-                          disabled={!vehicle_make || isLoading}
-                          notFoundContent={
-                            isLoadingModelOptions ? (
-                              <Spin size='small' />
-                            ) : (
-                              'No results found'
-                            )
-                          }
-                          showSearch
-                        />
-                      </Form.Item>
-
-                      <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
-                        <DropdownField
-                          name={MOTOR_QUOTE.reg_yyyy}
-                          label="Vehicle's Year of Registration"
-                          isRequired
-                          placeholder='Select registration year'
-                          options={REG_YEAR_OPTIONS}
-                        />
-                      </Form.Item>
-                      {!isSingpassFlow ? hire_purchase_section : null}
-                    </div>
-                  </div>
+            <div className='relative w-full' style={{ zIndex: '99' }}>
+              <div className='w-full'>
+                <div className='my-3 text-lg font-bold'>
+                  Personal Information
                 </div>
-              </>
-            )}
+                <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+                  <Form.Item
+                    name={MOTOR_QUOTE.email}
+                    validateStatus={errors[MOTOR_QUOTE.email] ? 'error' : ''}
+                  >
+                    <InputField
+                      name={MOTOR_QUOTE.email}
+                      label='Email Address'
+                      isRequired
+                      placeholder='Enter your email address'
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name={MOTOR_QUOTE.mobile}
+                    validateStatus={errors[MOTOR_QUOTE.mobile] ? 'error' : ''}
+                  >
+                    <InputField
+                      name={MOTOR_QUOTE.mobile}
+                      label='Mobile Number'
+                      isRequired
+                      placeholder='Enter your phone number'
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const onlyNums = e.target.value.replace(/\D/g, '');
+                        methods.setValue(MOTOR_QUOTE.mobile, onlyNums, {
+                          shouldValidate: true,
+                        });
+                      }}
+                      value={String(watch(MOTOR_QUOTE.mobile) ?? '')}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name={MOTOR_QUOTE.owner_dob}
+                    validateStatus={
+                      errors[MOTOR_QUOTE.owner_dob] ? 'error' : ''
+                    }
+                  >
+                    <DatePickerComponent
+                      name={MOTOR_QUOTE.owner_dob}
+                      label='Date of birth'
+                      minDate={minDob}
+                      maxDate={maxDob}
+                      isRequired
+                      onChange={handleChangeDob}
+                      defaultPickerValue={dayjs().subtract(40, 'year')}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+
+              <div className='my-6 mt-[32px] w-full'>
+                <div className='my-3 text-lg font-bold'>
+                  Vehicle Information
+                </div>
+                <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+                  <Form.Item name={MOTOR_QUOTE.vehicle_make}>
+                    <LongOptionDropdownField
+                      name={MOTOR_QUOTE.vehicle_make}
+                      label='Vehicle Make'
+                      isRequired
+                      placeholder='Select vehicle make'
+                      options={makeOptionsFormatted}
+                      disabled={isLoading}
+                      onChange={() => {
+                        // Reset model when make changes
+                        methods.setValue(
+                          MOTOR_QUOTE.vehicle_model,
+                          null as any,
+                        );
+                      }}
+                      showSearch
+                    />
+                  </Form.Item>
+
+                  <Form.Item name={MOTOR_QUOTE.vehicle_model}>
+                    <LongOptionDropdownField
+                      name={MOTOR_QUOTE.vehicle_model}
+                      label='Vehicle Model'
+                      isRequired
+                      placeholder='Select vehicle model'
+                      options={modelOptionsFormatted}
+                      disabled={!vehicle_make || isLoading}
+                      notFoundContent={
+                        isLoadingModelOptions ? (
+                          <Spin size='small' />
+                        ) : (
+                          'No results found'
+                        )
+                      }
+                      showSearch
+                    />
+                  </Form.Item>
+
+                  <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
+                    <DropdownField
+                      name={MOTOR_QUOTE.reg_yyyy}
+                      label="Vehicle's Year of Registration"
+                      isRequired
+                      placeholder='Select registration year'
+                      options={REG_YEAR_OPTIONS}
+                    />
+                  </Form.Item>
+                  {hire_purchase_section}
+                </div>
+              </div>
+            </div>
 
             <div className='mt-[32px] w-full'>
               <div className='my-3 text-lg font-bold'>
@@ -721,16 +702,13 @@ const PolicyDetailForm = ({
                   name={MOTOR_QUOTE.start_date}
                   validateStatus={errors[MOTOR_QUOTE.start_date] ? 'error' : ''}
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     name={MOTOR_QUOTE.start_date}
                     label='Policy Start Date'
                     isRequired
                     minDate={minPolicyStartDate}
                     maxDate={maxPolicyStartDate}
                     onChange={handleChangeStartDate}
-                    disabledDate={(current) => {
-                      return current && current < dayjs().startOf('day');
-                    }}
                   />
                 </Form.Item>
 
@@ -738,7 +716,7 @@ const PolicyDetailForm = ({
                   name={MOTOR_QUOTE.end_date}
                   validateStatus={errors[MOTOR_QUOTE.end_date] ? 'error' : ''}
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     label='Policy End Date'
                     name={MOTOR_QUOTE.end_date}
                     isRequired
@@ -747,7 +725,6 @@ const PolicyDetailForm = ({
                     disabled={!start_date || isLoading}
                   />
                 </Form.Item>
-                {isSingpassFlow ? hire_purchase_section : null}
               </div>
             </div>
 

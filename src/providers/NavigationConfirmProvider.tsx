@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import NavigationConfirmModal from '@/providers/modal/NavigationConfirmModal';
+import { useAppSelector } from '@/redux/store';
 
 function isPathAllowed(pathname: string) {
   return (
@@ -19,9 +20,12 @@ export function NavigationConfirmProvider() {
   const router = useRouter();
   const pathName = usePathname();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const isSingPassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
 
   useEffect(() => {
-    if (isPathAllowed(pathName)) return;
+    if (!isSingPassFlow && isPathAllowed(pathName)) return;
     // Block the first back action.
     window.history.pushState(null, '', window.location.href);
 
@@ -33,7 +37,7 @@ export function NavigationConfirmProvider() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [pathName]);
+  }, [pathName, isSingPassFlow]);
 
   const handleLeave = () => {
     setIsModalVisible(false);

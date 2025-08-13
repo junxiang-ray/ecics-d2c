@@ -15,6 +15,7 @@ import { calculateAge } from '@/libs/utils/utils';
 import { validateNRIC } from '@/libs/utils/validation-utils';
 
 import { DatePickerField } from '@/components/ui/form/datepicker';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 import { RadioField } from '@/components/ui/form/radiofield';
@@ -232,6 +233,8 @@ const AdditionDriver = ({
     setIsShowAdditionDriver(false);
   };
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   const _renderFormInput = () => {
     return (
       <>
@@ -271,7 +274,7 @@ const AdditionDriver = ({
                   />
                 </div>
                 <div className='flex flex-col gap-2'>
-                  <DatePickerField
+                  <DatePickerComponent
                     name={`drivers.${index}.date_of_birth`}
                     label='Date of Birth'
                     minDate={adjustDateInDayjs(
@@ -286,15 +289,7 @@ const AdditionDriver = ({
                       0,
                       0,
                     )}
-                    defaultPickerValue={
-                      selectedDate ??
-                      adjustDateInDayjs(
-                        dateToDayjs(policyStartDate as Date),
-                        -27,
-                        0,
-                        0,
-                      )
-                    }
+                    defaultPickerValue={dayjs().subtract(26, 'year')}
                     isRequired={true}
                   />
                 </div>
@@ -379,6 +374,7 @@ const AdditionDriver = ({
       placement='bottom'
       open={isShowAdditionDriver}
       closable={false}
+      maskClosable={false}
       height='auto'
       className='w-full rounded-t-xl'
       onClose={() => setIsShowAdditionDriver(false)}

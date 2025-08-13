@@ -49,12 +49,43 @@ function InsuranceLayout({
   const [currentStep, setCurrentStep] = useState<ProcessBarType>(undefined);
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
+  const [isShowPopupSingPass, setIsShowPopupSingPass] = useState(false);
+
   const isMaid = productType === ProductType.MAID;
   const isFinalized = useAppSelector((state) =>
     isMaid
       ? state.maidQuote?.maidQuote?.is_finalized
       : state.quote.quote?.is_finalized,
   );
+  const isSingPassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
+
+  const stepsData = [
+    { step: StepProcessBar.POLICY_DETAILS, title: 'Basic Information' },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    {
+      step: StepProcessBar.PERSONAL_DETAIL,
+      title: productType === ProductType.MAID ? 'Helper’s Details' : 'Details',
+    },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
+
+  const stepsDataSingPass = [
+    { step: StepProcessBar.FIRST, title: '' },
+    {
+      step: StepProcessBar.POLICY_DETAILS,
+      title:
+        productType === ProductType.MAID
+          ? 'Helper’s Information'
+          : 'Policy Details',
+    },
+    { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
+    { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
+    { step: StepProcessBar.COMPLETE_PURCHASE, title: 'Summary' },
+  ];
+
   const isLoadingStep = useAppSelector((state) => state.general.isLoadingStep);
   const { data: partnerInfo } = useVerifyPartnerCode(partner_code);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
@@ -79,6 +110,10 @@ function InsuranceLayout({
       setIsShowPopupImportant(true);
       return;
     }
+    if (step === StepProcessBar.FIRST) {
+      setIsShowPopupSingPass(true);
+      return;
+    }
     const path = stepToRoute[step];
     if (!path) return;
     setCurrentStep(step);
@@ -87,17 +122,28 @@ function InsuranceLayout({
 
   const handleBack = () => {
     if (currentStep === undefined) return;
+
     if (currentStep === StepProcessBar.SELECT_PLAN || isFinalized) {
       setIsShowPopupImportant(true);
       return;
     }
+
     if (currentStep === StepProcessBar.POLICY_DETAILS && redirectToLoginPath) {
       router.push(redirectToLoginPath, { preserveQuery: false });
       return;
     }
-    const previousStep = currentStep - 1;
-    const previousRouter = stepToRoute[previousStep as StepProcessBar];
-    router.push(previousRouter);
+    const selectedStepsData = isSingPassFlow ? stepsDataSingPass : stepsData;
+
+    const currentIndex = selectedStepsData.findIndex(
+      (item: any) => item.step === currentStep,
+    );
+
+    const previousStep = selectedStepsData[currentIndex - 1]?.step;
+
+    if (previousStep !== undefined) {
+      const previousRouter = stepToRoute[previousStep];
+      router.push(previousRouter);
+    }
   };
 
   const handleSave = () => {
@@ -131,7 +177,7 @@ function InsuranceLayout({
       <>
         <div className='relative z-10 w-full border-b-2 border-gray-300 shadow-md'>
           <div
-            className={`mx-auto flex w-full items-center p-4 lg:max-w-[1280px] ${isMobile ? 'justify-center' : 'text-left'}`}
+            className={`mx-auto flex w-full items-center p-6 lg:max-w-[1280px] ${isMobile ? 'justify-center' : 'text-left'}`}
           >
             {partnerInfo?.partner_name && (
               <div className='flex items-center'>
@@ -152,7 +198,7 @@ function InsuranceLayout({
           </div>
         </div>
 
-        <div className='no-scroll-mobile mx-auto h-[135px] w-full items-center justify-center bg-white lg:max-w-[1280px]'>
+        <div className='no-scroll-mobile mx-auto flex h-[155px] w-full items-center justify-center bg-white md:h-[180px] lg:max-w-[1280px]'>
           {/*{(partnerInfo?.partner_name || partnerInfo) && (*/}
           {/*  <div className='block h-16 md:hidden'>*/}
           {/*    <BusinessPartnerBar*/}
@@ -163,7 +209,7 @@ function InsuranceLayout({
           {/*    />*/}
           {/*  </div>*/}
           {/*)}*/}
-          <div className='relative flex w-full justify-center p-4 px-10 pb-0'>
+          <div className='relative flex w-full justify-center p-6 px-10 pb-0'>
             {/* Reopen in Day 1.5 */}
             {/*<SecondaryButton*/}
             {/*    icon={<ArrowBackIcon size={11}/>}*/}
@@ -199,24 +245,44 @@ function InsuranceLayout({
           </div>
         </div>
 
-        <div className='mx-auto flex h-[calc(100svh-280px)] w-full flex-col items-center justify-between overflow-y-auto md:h-[calc(100vh-260px)]'>
+        <div className='mx-auto flex w-full flex-col items-center justify-between'>
           {typeof children === 'function'
             ? children({
                 onSave: (fn: () => any) => (childSaveRef.current = fn),
               })
             : children}
         </div>
-        {isShowPopupImportant && (
+        {(isShowPopupImportant || isShowPopupSingPass) && (
           <ModalImportant
-            isShowPopupImportant={isShowPopupImportant}
-            handleRedirect={() =>
-              router.push(
-                productType === ProductType.MAID
-                  ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
-                  : ROUTES.INSURANCE.BASIC_DETAIL,
-              )
+            isShowPopupImportant={true}
+            handleRedirect={() => {
+              if (isShowPopupSingPass) {
+                const code = sessionStorage.getItem('code') || '';
+                const state = sessionStorage.getItem('state') || '';
+                const query = new URLSearchParams({ code, state }).toString();
+
+                const targetUrl =
+                  productType === ProductType.MAID
+                    ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
+                    : `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`;
+
+                router.push(targetUrl, { preserveQuery: false });
+                setIsShowPopupSingPass(false);
+              } else {
+                const targetUrl =
+                  productType === ProductType.MAID
+                    ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
+                    : ROUTES.INSURANCE.BASIC_DETAIL;
+
+                router.push(targetUrl);
+                setIsShowPopupImportant(false);
+              }
+            }}
+            setIsShowPopupImportant={
+              isShowPopupSingPass
+                ? setIsShowPopupSingPass
+                : setIsShowPopupImportant
             }
-            setIsShowPopupImportant={setIsShowPopupImportant}
           />
         )}
         <NavigationConfirmModal

@@ -1,10 +1,11 @@
 import { Input, Select, SelectProps } from 'antd';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import ArrowDownIcon from '@/components/icons/ArrowDownIcon';
 
 import { useHandleClickOutside } from '@/hook/useHandleClickOutside';
+import { useHandlePosition } from '@/hook/useHandlePosition';
 
 interface DropdownFieldProps extends SelectProps {
   name: string;
@@ -130,31 +131,8 @@ export const LongOptionDropdownField = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dropdownDirection, setDropdownDirection] = useState<'down' | 'up'>(
-    'down',
-  );
 
-  const handlePosition = useCallback(() => {
-    if (!isDropdownOpen || !containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const spaceAbove = rect.top;
-
-    const newDirection =
-      spaceBelow < 200 && spaceAbove > spaceBelow ? 'up' : 'down';
-    setDropdownDirection(newDirection);
-  }, [isDropdownOpen]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handlePosition, true);
-    window.addEventListener('resize', handlePosition);
-
-    return () => {
-      window.removeEventListener('scroll', handlePosition, true);
-      window.removeEventListener('resize', handlePosition);
-    };
-  }, [handlePosition]);
+  const { dropdownDirection } = useHandlePosition(isDropdownOpen, containerRef);
 
   useEffect(() => {
     setSearchTerm('');
