@@ -13,6 +13,7 @@ export const ROUTES = {
   INSURANCE: createInsuranceRoutes('/motor/insurance'),
   INSURANCE_MAID: createInsuranceRoutes('/maid/insurance'),
   INSURANCE_MOTORCYCLE: createInsuranceRoutes('/motorcycle/insurance'),
+  INSURANCE_HOMECONTENTS: createInsuranceRoutes('/home-contents/insurance'),
   API_ERROR: '/error-page',
   MOTOR: {
     LOGIN: '/motor',
@@ -25,6 +26,10 @@ export const ROUTES = {
   MOTORCYCLE: {
     LOGIN: '/motorcycle',
     REVIEW_INFO_DETAIL: '/motorcycle/review-info-detail',
+  },
+  HOMECONTENT: {
+    LOGIN: '/home-contents',
+    REVIEW_INFO_DETAIL: '/home-contents/review-info-detail',
   },
 };
 
