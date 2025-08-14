@@ -27,3 +27,5 @@ export const API_GET_REQUEST_LOG = '/request-log/';
 export const API_GET_HIRE_PURCHASE_LIST = '/companies/';
 
 export const API_POST_PAYMENT = '/payment';
+
+export const API_LOGIN_RENEWAL = '/singpass/login/renewal';

@@ -1,9 +1,11 @@
 'use client';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { CarIcon } from '@/components/icons/add-on-icons';
 import { PricingSummary } from '@/components/page/FeeBar';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
+import { useRequestLoginRenewal } from '@/hook/auth/login-renewal';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import {
   EyeInvisibleOutlined,
@@ -26,6 +28,16 @@ const LoginRenewalPage = () => {
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
   const [showPassword, setShowPassword] = useState(false);
+  const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
+
+  const { mutate: requestLoginMaid } = useRequestLoginRenewal(
+    PRODUCT_NAME.RENEWAL,
+    {
+      onError: () => {
+        setIsShowSingpassDownModal(true);
+      },
+    },
+  );
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -50,7 +62,12 @@ const LoginRenewalPage = () => {
         <img src='/ecics.svg' alt='ecics' />
         <p className='text-2xl font-bold text-[#0A0A0A]'>View Renewal Notice</p>
         <p className='text-lg text-[#717182]'>Securely with Singpass</p>
-        <Button className='shadow- w-full rounded-lg bg-[#F4333D] py-5 text-center font-semibold text-white'>
+        <Button
+          onClick={() => {
+            requestLoginMaid();
+          }}
+          className='shadow- w-full rounded-lg bg-[#F4333D] py-5 text-center font-semibold text-white'
+        >
           Log in with Singpass
         </Button>
         <div className='flex w-full flex-row items-center justify-center gap-6'>
