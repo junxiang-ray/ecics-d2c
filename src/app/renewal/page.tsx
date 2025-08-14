@@ -6,13 +6,16 @@ import RenewalHeader from '@/app/renewal/components/renewal-header/RenewalHeader
 
 export default function RenewalPage() {
   return (
-    <main className='p-6'>
-      <RenewalHeader />
-      <h1 className='text-2xl font-bold'>Welcome back, John</h1>
-      <p className='mb-6 text-gray-500'>
-        Manage your policies and stay protected
-      </p>
-
+    <main className=''>
+      <div className=' border-b border-gray-200'>
+        <RenewalHeader />
+      </div>
+      <div className='px-14 py-8'>
+        <h1 className='mb-2 text-3xl font-bold'>Welcome back, John</h1>
+        <p className='mb-6 text-gray-500'>
+          Manage your policies and stay protected
+        </p>
+      </div>
       <section className='mb-8'>
         <PoliciesPendingRenewal />
       </section>
