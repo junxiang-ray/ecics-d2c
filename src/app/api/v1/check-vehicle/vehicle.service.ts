@@ -1,37 +1,67 @@
 import logger from '@/app/api/libs/logger';
+import apiCheckVehicle from '../../configs/api-check-vehicle.config';
+import { checkVehicleDTO } from './check-vechicle.dto';
 import { prisma } from '@/app/api/libs/prisma';
+import { successRes } from '../../core/success.response';
 
-export async function checkVehicleMakeAndModel(
-  vehicle_make: string,
-  vehicle_model: string,
-) {
+export async function checkVehicleMakeAndModel({
+  vehicle_make,
+  vehicle_model,
+  vehicle_capacity,
+  vehicle_type,
+}: checkVehicleDTO) {
   try {
-    const modelInfo = await prisma.vehicleModel.findFirst({
-      select: {
-        id: true,
-        name: true,
-        vehicle_make: {
-          select: {
-            id: true,
-            name: true,
+    const [{ data: dataFromAIAgent }, vehicle_make_info, vehicle_model_info] =
+      await Promise.all([
+        apiCheckVehicle.get(`/${vehicle_type}`, {
+          params: {
+            make: vehicle_make,
+            model: vehicle_model,
+            capacity: vehicle_capacity,
           },
-        },
+        }),
+        prisma.vehicleMake.findFirst({
+          where: {
+            name: {
+              equals: vehicle_make,
+              mode: 'insensitive',
+            },
+            product_type: {
+              name: vehicle_type === 'motor' ? 'car' : vehicle_type,
+            },
+          },
+        }),
+        prisma.vehicleModel.findFirst({
+          where: {
+            name: {
+              equals: vehicle_model,
+              mode: 'insensitive',
+            },
+            product_type: {
+              name: vehicle_type === 'motor' ? 'car' : vehicle_type,
+            },
+          },
+        }),
+      ]);
+
+    logger.info(
+      `Vehicle data from AI agent: ${JSON.stringify(dataFromAIAgent)}`,
+    );
+    logger.info(`Vehicle make info: ${JSON.stringify(vehicle_make_info)}`);
+    logger.info(`Vehicle model info: ${JSON.stringify(vehicle_model_info)}`);
+
+    return successRes({
+      data: {
+        ...dataFromAIAgent.body,
+        vehicle_make_id: vehicle_make_info?.id || null,
+        vehicle_model_info: vehicle_model_info?.id || null,
       },
-      where: {
-        vehicle_make: {
-          name: vehicle_make,
-        },
-        name: vehicle_model,
-      },
+      message: 'Check vehicle make and model successfully',
     });
-    return modelInfo;
   } catch (error) {
     logger.error(
       `Error occurred while checking vehicle make and model: ${error}`,
     );
-    return {
-      message: 'Internal server error',
-      data: null,
-    };
+    throw new Error('Error occurred while checking vehicle make and model');
   }
 }
