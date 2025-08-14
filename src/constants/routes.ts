@@ -21,6 +21,11 @@ export const ROUTES = {
     LOGIN: '/maid',
     REVIEW_INFO_DETAIL: '/maid/review-info-detail',
   },
+  RENEWAL: {
+    LOGIN: '/renewal',
+    PROFILE: '/renewal/profile',
+    SETTINGS: '/renewal/settings',
+  },
 };
 
 export const STEP_TO_ROUTE: Record<number, string> = {

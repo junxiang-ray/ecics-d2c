@@ -16,6 +16,7 @@ import { InputField } from '@/components/ui/form/inputfield';
 import IconEditDriver from '@/components/icons/EditDriver';
 import { useRouter } from 'next/navigation';
 import ModalVerify from './ModalVerify';
+import { ROUTES } from '@/constants/routes';
 
 const schema = z.object({
   name: z.string(),
@@ -79,7 +80,7 @@ export default function ProfileRenewalPage() {
         <div
           className='absolute left-4 cursor-pointer md:left-14'
           onClick={() => {
-            router.push('/renewal');
+            router.push(ROUTES.RENEWAL.LOGIN);
           }}
         >
           <ArrowLeftOutlined />

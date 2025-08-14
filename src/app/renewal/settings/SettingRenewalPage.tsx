@@ -1,5 +1,6 @@
 'use client';
 
+import { ROUTES } from '@/constants/routes';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 
@@ -12,7 +13,7 @@ export default function SettingRenewalPage() {
         <div
           className='absolute left-4 cursor-pointer md:left-14'
           onClick={() => {
-            router.push('/renewal');
+            router.push(ROUTES.RENEWAL.LOGIN);
           }}
         >
           <ArrowLeftOutlined />

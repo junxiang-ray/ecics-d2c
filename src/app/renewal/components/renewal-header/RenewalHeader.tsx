@@ -1,5 +1,6 @@
 'use client';
 
+import { ROUTES } from '@/constants/routes';
 import {
   ArrowRightOutlined,
   MenuOutlined,
@@ -14,10 +15,10 @@ const RenewalHeader = () => {
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === 'profile') {
-      router.push('/renewal/profile');
+      router.push(ROUTES.RENEWAL.PROFILE);
     }
     if (key === 'settings') {
-      router.push('/renewal/settings');
+      router.push(ROUTES.RENEWAL.SETTINGS);
     }
   };
 
