@@ -183,9 +183,10 @@ export const getPlanGroupPrefix = (
     ],
   };
 
-  const matched = mapping[planType]?.find((item) =>
+  const matched = mapping[planType as keyof typeof mapping]?.find((item) =>
     planName.includes(item.keyword),
   );
+
   return matched ? matched.prefix : '';
 };
 
