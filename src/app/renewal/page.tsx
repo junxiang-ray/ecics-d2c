@@ -17,10 +17,14 @@ export default function RenewalPage() {
     state: '',
     code: '',
   });
-  const [clientReady, setClientReady] = useState(false);
+
+  const [personalInfo, setPersonalInfo] = useState<any>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const RenewalUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
+      setPersonalInfo(RenewalUserInfo ? JSON.parse(RenewalUserInfo) : null);
+
       const query = new URLSearchParams(window.location.search);
       const code = query.get('code') || '';
       const state = query.get('state') || '';
@@ -28,7 +32,6 @@ export default function RenewalPage() {
       const nonce = sessionStorage.getItem('nonce') || '';
 
       setPayload({ code_verifier, nonce, state, code });
-      setClientReady(true);
     }
   }, []);
 
@@ -36,19 +39,14 @@ export default function RenewalPage() {
     payload,
     productType: PRODUCT_NAME.RENEWAL,
   });
-  const RenewalUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
-  const personalInfo = RenewalUserInfo ? JSON.parse(RenewalUserInfo) : null;
-
-  console.log(personalInfo?.name?.value, 'chinh123');
 
   return (
-    <main className=''>
-      <div className=' border-b border-gray-200'>
+    <main>
+      <div className='border-b border-gray-200'>
         <RenewalHeader />
       </div>
       <div className='px-14 py-8'>
         <h1 className='mb-2 text-3xl font-bold'>
-          {' '}
           Welcome back, {personalInfo?.name?.value}
         </h1>
         <p className='mb-6 text-gray-500'>
