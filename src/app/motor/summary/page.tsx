@@ -59,7 +59,7 @@ export default function Summary() {
     return (
       <div className='flex flex-col items-center gap-5'>
         {isMobile ? (
-          <CheckCircle size={48} />
+          <CheckCircle className='text-green-500' size={48} />
         ) : (
           <PromoTickIcon size={48} className='text-green-promo' />
         )}
