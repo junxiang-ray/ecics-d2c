@@ -72,7 +72,7 @@ const AccountSetupForm = ({
           }}
           onFinish={methods.handleSubmit(handleSubmit)}
           // disabled={isLoading}
-          className='w-full max-w-lg rounded-lg border border-gray-300 bg-white p-6'
+          className='w-full max-w-md rounded-lg border border-gray-300 bg-white p-6'
           {...props}
         >
           <div className='mb-6 flex justify-center'>
@@ -84,7 +84,7 @@ const AccountSetupForm = ({
             Update Contact Information
             {/*Secure Your Account*/}
           </h2>
-          <p className='mb-6 space-y-2 text-justify text-sm text-gray-600'>
+          <div className='mb-6 space-y-2 text-justify text-sm text-gray-600'>
             <div>
               To comply with the Monetary Authority of Singapore (MAS)
               regulations, we require all customer to provide accurate and
@@ -93,7 +93,7 @@ const AccountSetupForm = ({
             <div>Please ensure the following information is correct:</div>
             {/*Please confirm your contact details and create a secure password to complete your policy*/}
             {/*renewal.*/}
-          </p>
+          </div>
 
           <InputFieldWithIcon
             name='email_address'
