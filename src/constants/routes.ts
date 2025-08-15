@@ -23,7 +23,10 @@ export const ROUTES = {
   },
   RENEWAL: {
     RENEWAL_DASHBOARD: '/renewal',
-    LOGIN: '/renewal/login',
+    // LOGIN: '/renewal/login',
+    LOGIN: '/renewal',
+    PROFILE: '/renewal/profile',
+    SETTINGS: '/renewal/settings',
     RENEWAL_NOTICE: '/renewal/notice',
     RENEWAL_DETAIL: '/renewal/detail',
     RENEWAL_REVIEW: '/renewal/review',
