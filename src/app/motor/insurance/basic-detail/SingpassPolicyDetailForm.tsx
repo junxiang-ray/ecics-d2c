@@ -35,7 +35,10 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
-import { usePostCheckVehicle } from '@/hook/insurance/common';
+import {
+  useCheckAIMakeModel,
+  usePostCheckVehicle,
+} from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
@@ -240,6 +243,7 @@ const SingpassPolicyDetailForm = ({
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
 
   const [vehicleNumber, setVehicleNumber] = useState<string>('');
+  const [vehicleMake, setVehicleMake] = useState<string>('');
   const [missingFields, setMissingFields] = useState<{
     engine_number?: boolean;
     chassis_number?: boolean;
@@ -248,9 +252,7 @@ const SingpassPolicyDetailForm = ({
 
   const schema = useMemo(() => createSchema(missingFields), [missingFields]);
 
-  const { mutate: postCheckVehicle } = usePostCheckVehicle(() => {
-    setShowUnMatchModal(true);
-  });
+  const { mutateAsync: checkAIMakeModel } = useCheckAIMakeModel();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -569,8 +571,10 @@ const SingpassPolicyDetailForm = ({
                 vehicleNumber,
                 make,
                 model,
+                capacity,
               ) => {
                 setVehicleNumber(vehicleNumber);
+                setVehicleMake(make);
                 // Check vehicle age first
                 if (vehicleAge != null && vehicleAge > 15) {
                   setIsMoreThan15YearsModal(true);
@@ -585,10 +589,26 @@ const SingpassPolicyDetailForm = ({
                   setShowUnMatchModal(false);
                 }
                 // Check Vehicle (make,model)
-                postCheckVehicle({
+                checkAIMakeModel({
                   vehicle_make: make,
                   vehicle_model: model,
-                });
+                  vehicle_capacity: capacity,
+                  vehicle_type: 'motor',
+                })
+                  .then((res) => {
+                    if (res.similarity < 0.85) {
+                      setShowUnMatchModal(true);
+                    } else {
+                      setShowCSModal({
+                        visible: true,
+                        description:
+                          "We're sorry, but we’re unable to provide an online quote for your vehicle’s make and model at this time.",
+                      });
+                    }
+                  })
+                  .catch((err) => {
+                    console.error('AI check failed', err);
+                  });
               }}
             />
 
@@ -758,6 +778,7 @@ const SingpassPolicyDetailForm = ({
         }}
       />
       <UnMatchVehicleModal
+        vehicleMake={vehicleMake}
         vehicleNumber={vehicleNumber}
         onClose={() => setShowUnMatchModal(false)}
         visible={showUnMatchModal}

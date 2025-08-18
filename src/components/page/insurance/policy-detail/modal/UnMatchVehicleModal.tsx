@@ -21,12 +21,14 @@ interface UnMatchVehicleModalProps {
   onClose: () => void;
   visible: boolean;
   vehicleNumber: string;
+  vehicleMake?: string;
 }
 
 const UnMatchVehicleModal = ({
   onClose,
   visible,
   vehicleNumber,
+  vehicleMake,
 }: UnMatchVehicleModalProps) => {
   const methods = useForm();
 
@@ -39,14 +41,39 @@ const UnMatchVehicleModal = ({
   const carUserInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
   const userInfoCarSingPass = carUserInfo.data_from_singpass;
 
+  const { data } = useGetVehicleMakes();
+  const makeOptions: DropdownOption[] = useMemo(() => {
+    if (!data) return [];
+    return data?.map((item: any) => ({
+      value: item.id,
+      text: item.name,
+    }));
+  }, [data]);
+
+  const { data: modelOptionsData, isLoading: isLoadingModelOptions } =
+    useGetVehicleModels(selectedMakeId || '');
+  const modelOptions: DropdownOption[] = useMemo(() => {
+    if (!modelOptionsData) return [];
+    return modelOptionsData?.map((item: any) => ({
+      value: item.id,
+      text: item.name,
+    }));
+  }, [modelOptionsData]);
+
   useEffect(() => {
     if (visible && vehicleNumber) {
+      const defaultMakeValue = vehicleMake
+        ? (makeOptions.find(
+            (m) => m.text.toLowerCase() === vehicleMake.toLowerCase(),
+          )?.value ?? null)
+        : null;
+
       methods.reset({
-        vehicle_make: null,
+        vehicle_make: defaultMakeValue,
         vehicle_model: null,
       });
     }
-  }, [visible, vehicleNumber]);
+  }, [visible, vehicleNumber, vehicleMake, makeOptions]);
 
   const handleSubmit = methods.handleSubmit((data) => {
     const { vehicle_make, vehicle_model } = data;
@@ -89,25 +116,6 @@ const UnMatchVehicleModal = ({
     }
   });
 
-  const { data } = useGetVehicleMakes();
-  const makeOptions: DropdownOption[] = useMemo(() => {
-    if (!data) return [];
-    return data?.map((item: any) => ({
-      value: item.id,
-      text: item.name,
-    }));
-  }, [data]);
-
-  const { data: modelOptionsData, isLoading: isLoadingModelOptions } =
-    useGetVehicleModels(selectedMakeId || '');
-  const modelOptions: DropdownOption[] = useMemo(() => {
-    if (!modelOptionsData) return [];
-    return modelOptionsData?.map((item: any) => ({
-      value: item.id,
-      text: item.name,
-    }));
-  }, [modelOptionsData]);
-
   const content = (
     <>
       <div className='flex flex-col gap-2'>
@@ -128,6 +136,7 @@ const UnMatchVehicleModal = ({
               className='h-[40px]'
               name='vehicle_make'
               placeholder='Enter vehicle make'
+              disabled={!!vehicleMake}
               options={makeOptions}
               onChange={() => {
                 // Reset model when make changes

@@ -1,6 +1,8 @@
+import { CheckVehicleParams } from '@/libs/types/auth';
 import { PromoCode } from '@/libs/types/quote';
 
 import {
+  API_CHECK_AI_MAKE_MODEL,
   API_GET_LIST_NATIONAL,
   API_GET_LIST_VEHICLE_MAKES,
   API_GET_LIST_VEHICLE_MODELS,
@@ -8,10 +10,12 @@ import {
 } from '@/constants/api.constant';
 
 import baseClient from './api.config';
+
 interface VerifyPromoCodeData {
   promo_code: string;
   product_type: string;
 }
+
 export interface PromoCodeResponse {
   message: string;
   data: PromoCode;
@@ -25,6 +29,7 @@ export interface VehicleMakeResponse {
     group_name: string;
   }[];
 }
+
 export interface VehicleModelResponse {
   message: string;
   data: {
@@ -71,5 +76,9 @@ export default {
     return baseClient.get<NationalResponse>(`${API_GET_LIST_NATIONAL}`, {
       params: { group_name },
     });
+  },
+
+  getCheckAIMakeModel(params: CheckVehicleParams) {
+    return baseClient.get(`${API_CHECK_AI_MAKE_MODEL}`, { params });
   },
 };

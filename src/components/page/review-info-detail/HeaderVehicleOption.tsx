@@ -39,6 +39,7 @@ interface Props {
     vehicleNumber: string,
     make: string,
     model: string,
+    capacity: number,
   ) => void;
 }
 
@@ -107,6 +108,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
     const vehicleNumber = vehicle.vehicleno?.value;
     const make = vehicle.make?.value;
     const model = vehicle.model?.value;
+    const capacity = vehicle.enginecapacity?.value;
 
     const updatedUserInfoCar = {
       ...carUserInfo,
@@ -114,7 +116,14 @@ const HeaderVehicleOption: React.FC<Props> = ({
     };
     dispatch(setUserInfoCar(updatedUserInfoCar));
 
-    onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
+    onVehicleSelect?.(
+      missing,
+      vehicleAge,
+      vehicleNumber,
+      make,
+      model,
+      capacity,
+    );
   };
 
   const handleExit = () => {

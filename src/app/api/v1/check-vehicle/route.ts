@@ -1,9 +1,10 @@
 import { NextRequest } from 'next/server';
+import { z } from 'zod';
+
 import { checkVehicleDTOSchema } from './check-vechicle.dto';
 import { checkVehicleMakeAndModel } from './vehicle.service';
 import { ErrBadRequest, ErrNotFound } from '../../core/error.response';
 import logger from '../../libs/logger';
-import { z } from 'zod';
 
 export const GET = async (
   req: NextRequest,
