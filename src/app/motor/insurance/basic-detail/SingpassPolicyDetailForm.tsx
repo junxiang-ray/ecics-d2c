@@ -597,13 +597,17 @@ const SingpassPolicyDetailForm = ({
                 })
                   .then((res) => {
                     if (res.similarity < 0.85) {
-                      setShowUnMatchModal(true);
+                      if (res.vehicle_make_id) {
+                        setShowUnMatchModal(true);
+                      } else {
+                        setShowCSModal({
+                          visible: true,
+                          description:
+                            "We're sorry, but we’re unable to provide an online quote for your vehicle’s make and model at this time.",
+                        });
+                      }
                     } else {
-                      setShowCSModal({
-                        visible: true,
-                        description:
-                          "We're sorry, but we’re unable to provide an online quote for your vehicle’s make and model at this time.",
-                      });
+                      setShowUnMatchModal(false);
                     }
                   })
                   .catch((err) => {

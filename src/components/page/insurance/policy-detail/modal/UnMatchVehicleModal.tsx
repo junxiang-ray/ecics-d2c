@@ -136,7 +136,7 @@ const UnMatchVehicleModal = ({
               className='h-[40px]'
               name='vehicle_make'
               placeholder='Enter vehicle make'
-              disabled={!!vehicleMake}
+              disabled
               options={makeOptions}
               onChange={() => {
                 // Reset model when make changes
