@@ -14,6 +14,7 @@ import { useAppDispatch } from '@/redux/store';
 // import { ProductType } from './basic-detail/options';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
+// set steps here for home content
 const homeSteps = {
   [StepProcessBar.FIRST]: ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL,
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL,

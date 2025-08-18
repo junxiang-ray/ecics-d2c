@@ -26,6 +26,7 @@ interface InsuranceLayoutProps {
   children:
     | ReactNode
     | ((props: { onSave: (fn: () => any) => void }) => ReactNode);
+  // add a partial so that all steps are not required
   stepToRoute: Record<StepProcessBar, string>;
   headerTitle: string;
   redirectToLoginPath?: string;
