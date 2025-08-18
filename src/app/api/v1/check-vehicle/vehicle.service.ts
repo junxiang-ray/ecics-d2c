@@ -55,7 +55,7 @@ export async function checkVehicleMakeAndModel({
       data: {
         ...dataFromAIAgent.body,
         vehicle_make_id: vehicle_make_info?.id || null,
-        vehicle_model_info: vehicle_model_info?.id || null,
+        vehicle_model_id: vehicle_model_info?.id || null,
       },
       message: 'Check vehicle make and model successfully',
     });
