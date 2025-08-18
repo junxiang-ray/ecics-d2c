@@ -22,7 +22,9 @@ const LoginPage = () => {
     ? ProductType.MAID
     : pathname.startsWith('/motorcycle')
       ? ProductType.MOTORCYCLE
-      : ProductType.CAR;
+      : pathname.startsWith('/home-contents')
+        ? ProductType.HOMECONTENTS
+        : ProductType.CAR;
 
   const partnerCode = searchParams.get('partner_code') || '';
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
