@@ -39,6 +39,7 @@ interface Props {
     vehicleNumber: string,
     make: string,
     model: string,
+    capacity: number,
   ) => void;
 }
 
@@ -108,13 +109,23 @@ const HeaderVehicleOption: React.FC<Props> = ({
     const make = vehicle.make?.value;
     const model = vehicle.model?.value;
 
+    // get engineCapacity, if null then use powerRate (EV car)
+    const capacity = vehicle.enginecapacity?.value ?? vehicle.powerrate?.value;
+
     const updatedUserInfoCar = {
       ...carUserInfo,
       vehicle_selected: vehicle,
     };
     dispatch(setUserInfoCar(updatedUserInfoCar));
 
-    onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
+    onVehicleSelect?.(
+      missing,
+      vehicleAge,
+      vehicleNumber,
+      make,
+      model,
+      capacity,
+    );
   };
 
   const handleExit = () => {

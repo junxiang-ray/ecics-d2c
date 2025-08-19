@@ -1,7 +1,8 @@
 import logger from '@/app/api/libs/logger';
-import apiCheckVehicle from '../../configs/api-check-vehicle.config';
-import { checkVehicleDTO } from './check-vechicle.dto';
 import { prisma } from '@/app/api/libs/prisma';
+
+import { checkVehicleDTO } from './check-vechicle.dto';
+import apiCheckVehicle from '../../configs/api-check-vehicle.config';
 import { successRes } from '../../core/success.response';
 
 export async function checkVehicleMakeAndModel({
