@@ -25,7 +25,7 @@ const RenewalDetail = () => {
 
   return (
     <>
-      <div className='relative flex min-h-screen w-full flex-col bg-gray-50'>
+      <div className='relative mb-[80px] flex min-h-screen w-full flex-col bg-gray-50'>
         <div className='flex items-center border-b border-gray-300 bg-white px-4 py-3'>
           <Button
             type='text'

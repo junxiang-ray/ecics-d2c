@@ -8,8 +8,8 @@ import {
   PolicyDetailsIcon,
   PolicyHolderIcon,
   PremiumSummaryIcon,
+  PrivateMotorCarIcon,
   RenewalPeriodIcon,
-  VehicleDetailsIcon,
 } from '@/components/icons/renewal-icons';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 
@@ -470,7 +470,7 @@ const RenewalNoticeForm = () => {
       </InfoCard>
 
       <InfoCard
-        icon={<VehicleDetailsIcon className='text-sky-500' size={20} />}
+        icon={<PrivateMotorCarIcon className='text-sky-500' size={20} />}
         title='Vehicle Details'
         subtitle='Information about your insured vehicle'
       >
