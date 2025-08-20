@@ -110,7 +110,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
     const model = vehicle.model?.value;
 
     // get engineCapacity, if null then use powerRate (EV car)
-    const capacity = vehicle.enginecapacity?.value ?? vehicle.powerrate?.value;
+    const capacity = vehicle.enginecapacity?.value || vehicle.powerrate?.value;
 
     const updatedUserInfoCar = {
       ...carUserInfo,
