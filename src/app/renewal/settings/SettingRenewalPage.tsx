@@ -13,7 +13,7 @@ export default function SettingRenewalPage() {
         <div
           className='absolute left-4 cursor-pointer md:left-14'
           onClick={() => {
-            router.push(ROUTES.RENEWAL.LOGIN);
+            router.push(ROUTES.RENEWAL.RENEWAL);
           }}
         >
           <ArrowLeftOutlined />
