@@ -8,6 +8,7 @@ import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
 export const removeFromLocalStorage = (keys: string[]) => {
   keys.forEach((key) => {
     localStorage.removeItem(key);
@@ -192,3 +193,21 @@ export const getPlanGroupPrefix = (
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
+
+const ALLOWED_EXTERNAL_ORIGINS =
+  process.env.NEXT_PUBLIC_ALLOWED_REDIRECT_HOSTS?.split(',').map((h) =>
+    h.trim(),
+  ) ?? [];
+
+export function isSafePaymentUrl(savedUrl: string | null): boolean {
+  if (!savedUrl) return false;
+
+  try {
+    const url = new URL(savedUrl);
+    // Check origin (protocol + hostname + optional port)
+    return ALLOWED_EXTERNAL_ORIGINS.includes(url.origin);
+  } catch (err) {
+    console.warn('Invalid redirect URL:', savedUrl, err);
+    return false;
+  }
+}
