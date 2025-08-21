@@ -241,6 +241,7 @@ const SingpassPolicyDetailForm = ({
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+  const [isShowUnMatchMake, setIsShowUnMatchMake] = useState(false);
 
   const [vehicleNumber, setVehicleNumber] = useState<string>('');
   const [vehicleMake, setVehicleMake] = useState<string>('');
@@ -600,11 +601,7 @@ const SingpassPolicyDetailForm = ({
                       if (res.vehicle_make_id) {
                         setShowUnMatchModal(true);
                       } else {
-                        setShowCSModal({
-                          visible: true,
-                          description:
-                            "We're sorry, but we’re unable to provide an online quote for your vehicle’s make and model at this time.",
-                        });
+                        setIsShowUnMatchMake(true);
                       }
                     } else {
                       setShowUnMatchModal(false);
@@ -773,6 +770,12 @@ const SingpassPolicyDetailForm = ({
         visible={isMoreThan15YearsModal}
         description='The vehicle is more than 15 years old based on its registration year.'
         isShowOnlyCloseButton={isShowOnlyCloseButton(vehicles)}
+      />
+      <QuoteModal
+        onClick={() => setIsShowUnMatchMake(false)}
+        visible={isShowUnMatchMake}
+        description="We're sorry, but we’re unable to provide an online quote for your vehicle’s make and model at this time."
+        isUnMatchMake={true}
       />
       <ModalImportant
         isShowPopupImportant={isQuoteModalVisible}
