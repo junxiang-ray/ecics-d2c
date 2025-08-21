@@ -13,6 +13,7 @@ interface QuoteModalProps {
   onClick: () => void;
   description: string;
   isShowOnlyCloseButton?: boolean;
+  isUnMatchMake?: boolean;
 }
 
 export const QuoteModal = ({
@@ -20,6 +21,7 @@ export const QuoteModal = ({
   onClick,
   visible,
   description,
+  isUnMatchMake,
 }: QuoteModalProps) => {
   const { isMobile } = useDeviceDetection();
 
@@ -31,10 +33,12 @@ export const QuoteModal = ({
           Need Help with Your Quote?
         </p>
         <div className='flex flex-col items-center gap-6 text-center text-[#00000073]'>
-          <p className='text-sm font-normal'>
-            We're currently unable to generate an online quote for you due to
-            the following reasons:
-          </p>
+          {!isUnMatchMake && (
+            <p className='text-sm font-normal'>
+              We're currently unable to generate an online quote for you due to
+              the following reasons:
+            </p>
+          )}
           <ul className='list-inside list-disc'>
             {description.split('\n').map((line, idx) => (
               <li key={idx} className='font-bold underline'>
@@ -42,15 +46,37 @@ export const QuoteModal = ({
               </li>
             ))}
           </ul>
-          <p>
-            However, you may still be eligible for coverage. We encourage you to
-            contact our support team for further assistance. Our team will be
-            happy to provide a personalized quote tailored to your needs.
-          </p>
-          <p>
-            Thank you for your patience and understanding — we look forward to
-            helping you.
-          </p>
+          {isUnMatchMake ? (
+            <>
+              <p>
+                If you’d like to receive a quote, please contact us directly at{' '}
+                <span>6206 5588</span> or email us at{' '}
+                <a
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href='mailto:customerservice@ecics.com.sg'
+                  className='text-gray-400 underline'
+                >
+                  customerservice@ecics.com.sg
+                </a>
+                .
+              </p>
+              <p>We’ll be happy to assist you!</p>
+            </>
+          ) : (
+            <>
+              <p>
+                However, you may still be eligible for coverage. We encourage
+                you to contact our support team for further assistance. Our team
+                will be happy to provide a personalized quote tailored to your
+                needs.
+              </p>
+              <p>
+                Thank you for your patience and understanding — we look forward
+                to helping you.
+              </p>
+            </>
+          )}
         </div>
         {isShowOnlyCloseButton ? (
           <PrimaryButton
@@ -98,6 +124,7 @@ export const QuoteModal = ({
         closable={false}
         height='auto'
         className='rounded-t-xl'
+        maskClosable={false}
       >
         <div>{content}</div>
       </Drawer>
@@ -114,6 +141,7 @@ export const QuoteModal = ({
       footer={null}
       centered
       width={400}
+      maskClosable={false}
     >
       <div>{content}</div>
     </Modal>
