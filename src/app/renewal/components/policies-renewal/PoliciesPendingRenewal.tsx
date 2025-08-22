@@ -58,7 +58,7 @@ const PoliciesPendingRenewal: FC = () => {
   };
 
   return (
-    <div className='mx-auto max-w-[1200px]'>
+    <div className='mx-auto max-w-[1200px] px-4 md:px-0'>
       <h2 className='mb-4 text-lg font-semibold'>Policies Pending Renewal</h2>
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         {policies.map((policy) => (

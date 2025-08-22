@@ -29,3 +29,4 @@ export const API_GET_HIRE_PURCHASE_LIST = '/companies/';
 export const API_POST_PAYMENT = '/payment';
 
 export const API_LOGIN_RENEWAL = '/singpass/login/renewal';
+export const API_RETRIEVE_POLICY = '/renewal/motor/retrieve-policy';
