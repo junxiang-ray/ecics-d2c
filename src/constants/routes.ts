@@ -22,9 +22,9 @@ export const ROUTES = {
     REVIEW_INFO_DETAIL: '/maid/review-info-detail',
   },
   RENEWAL: {
+    LOGIN: '/renewal/login',
+    RENEWAL: '/renewal',
     RENEWAL_DASHBOARD: '/renewal',
-    // LOGIN: '/renewal/login',
-    LOGIN: '/renewal',
     PROFILE: '/renewal/profile',
     SETTINGS: '/renewal/settings',
     RENEWAL_NOTICE: '/renewal/notice',

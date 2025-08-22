@@ -1,16 +1,147 @@
 'use client';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { CarIcon } from '@/components/icons/add-on-icons';
+import { PricingSummary } from '@/components/page/FeeBar';
+import { PrimaryButton } from '@/components/ui/buttons';
+import { InputField } from '@/components/ui/form/inputfield';
+import { useRequestLoginRenewal } from '@/hook/auth/login-renewal';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import {
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  LockOutlined,
+} from '@ant-design/icons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, Form } from 'antd';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().email('Invalid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+type FormData = z.infer<typeof schema>;
 
 const LoginRenewalPage = () => {
   const { isMobile } = useDeviceDetection();
+  const [form] = Form.useForm();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
 
-  if (isMobile) {
-    return <div className='relative min-h-[100svh]'></div>;
-  }
+  const { mutate: requestLoginMaid } = useRequestLoginRenewal(
+    PRODUCT_NAME.RENEWAL,
+    {
+      onError: () => {
+        setIsShowSingpassDownModal(true);
+      },
+    },
+  );
+
+  const methods = useForm<FormData>({
+    resolver: zodResolver(schema),
+    mode: 'onTouched',
+  });
+  const {
+    reset,
+    formState: { errors },
+  } = methods;
 
   return (
-    <div className='relative flex h-screen w-full flex-row bg-white'></div>
+    <div
+      className='flex h-screen w-full flex-row items-center justify-center bg-white px-4'
+      style={{
+        backgroundImage: "url('/img-error.png')",
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'bottom right',
+        backgroundSize: 'contain',
+      }}
+    >
+      <div className='flex flex-col items-center justify-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-lg md:max-w-[480px]'>
+        <img src='/ecics.svg' alt='ecics' />
+        <p className='text-2xl font-bold text-[#0A0A0A]'>View Renewal Notice</p>
+        <p className='text-lg text-[#717182]'>Securely with Singpass</p>
+        <Button
+          onClick={() => {
+            requestLoginMaid();
+          }}
+          className='shadow- w-full rounded-lg bg-[#F4333D] py-5 text-center font-semibold text-white'
+        >
+          Log in with Singpass
+        </Button>
+        <div className='flex w-full flex-row items-center justify-center gap-6'>
+          <div className='h-[2px] min-w-[75px] bg-gray-200 md:min-w-[120px]'></div>
+          <p className='text-[#717182]'>or continue with</p>
+          <div className='h-[2px] min-w-[75px] bg-gray-200 md:min-w-[120px]'></div>
+        </div>
+        <FormProvider {...methods}>
+          <Form
+            form={form}
+            layout='vertical'
+            className='flex w-full flex-col gap-4'
+          >
+            <Form.Item
+              name='email'
+              validateStatus={errors['email'] ? 'error' : ''}
+            >
+              <InputField
+                name='email'
+                label='Vehicle Registration No. *'
+                placeholder='Enter your email address'
+                // isRequired={true}
+                prefix={<CarIcon size={16} className='mr-2 text-gray-400' />}
+              />
+              <p className='mt-2 text-sm text-gray-400'>
+                Enter your vehicle registration number as shown on your policy
+              </p>
+            </Form.Item>
+            <Form.Item
+              name='password'
+              validateStatus={errors['password'] ? 'error' : ''}
+            >
+              <InputField
+                type={showPassword ? 'text' : 'password'}
+                name='password'
+                label='Password *'
+                placeholder='Enter your password'
+                prefix={
+                  <LockOutlined size={18} className='mr-2 text-gray-400' />
+                }
+                suffix={
+                  showPassword ? (
+                    <EyeInvisibleOutlined
+                      size={18}
+                      className='mr-2 cursor-pointer text-gray-400'
+                      onClick={() => setShowPassword(false)}
+                    />
+                  ) : (
+                    <EyeOutlined
+                      size={18}
+                      className='mr-2 cursor-pointer text-gray-400'
+                      onClick={() => setShowPassword(true)}
+                    />
+                  )
+                }
+              />
+              <p className='mt-2 text-sm text-gray-400'>
+                *Please enter your password with a combination of{' '}
+                <span className='font-semibold'>
+                  your date of birth and last 5 characters of NRIC.
+                </span>
+              </p>
+              <p className='mt-2 text-sm text-gray-400'>
+                {' '}
+                E.g <span className='font-semibold'>300619701234J</span>
+              </p>
+            </Form.Item>
+            <PrimaryButton className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'>
+              Sign in
+            </PrimaryButton>
+          </Form>
+        </FormProvider>
+      </div>
+    </div>
   );
 };
 
