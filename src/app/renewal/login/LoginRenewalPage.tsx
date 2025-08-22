@@ -2,7 +2,6 @@
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { CarIcon } from '@/components/icons/add-on-icons';
-import { PricingSummary } from '@/components/page/FeeBar';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { ROUTES } from '@/constants/routes';
@@ -12,6 +11,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import {
   EyeInvisibleOutlined,
   EyeOutlined,
+  InfoCircleOutlined,
   LockOutlined,
 } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,8 +22,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const schema = z.object({
-  veh_reg_no: z.string(),
-  passphrase: z.string(),
+  veh_reg_no: z.string().min(1, 'Vehicle Registration No is required'),
+  passphrase: z.string().min(1, 'Password is required'),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -33,16 +33,9 @@ const LoginRenewalPage = () => {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
-
-  const { mutate: requestLoginMaid } = useRequestLoginRenewal(
-    PRODUCT_NAME.RENEWAL,
-    {
-      onError: () => {
-        setIsShowSingpassDownModal(true);
-      },
-    },
-  );
+  const [messageError, setMessageError] = useState('');
+  const { mutate: requestLoginMaid, error: errorLoginRenewal } =
+    useRequestLoginRenewal(PRODUCT_NAME.RENEWAL);
   const { mutate: checkPolicy, isPending, error } = useCheckPolicy();
 
   const methods = useForm<FormData>({
@@ -61,6 +54,10 @@ const LoginRenewalPage = () => {
       {
         onSuccess: () => {
           router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+        },
+
+        onError: (err: any) => {
+          setMessageError(err?.response?.data?.message);
         },
       },
     );
@@ -88,6 +85,15 @@ const LoginRenewalPage = () => {
         >
           Log in with Singpass
         </Button>
+        {errorLoginRenewal && (
+          <div className='mt-2 flex w-full flex-row items-start gap-2 rounded-lg border border-[#FFC9C9] bg-[#FEF2F2] p-2 font-normal text-[#E7000B]'>
+            <InfoCircleOutlined className='mt-1' />
+            <p>
+              SingPass is currently under maintenance. Please try again later or
+              use your Vehicle Registration Number and Password to login.
+            </p>
+          </div>
+        )}
         <div className='flex w-full flex-row items-center justify-center gap-6'>
           <div className='h-[2px] min-w-[75px] bg-gray-200 md:min-w-[120px]'></div>
           <p className='text-[#717182]'>or continue with</p>
@@ -154,6 +160,12 @@ const LoginRenewalPage = () => {
                 E.g <span className='font-semibold'>300619701234J</span>
               </p>
             </Form.Item>
+            {error && (
+              <div className='mt-2 flex w-full flex-row items-start gap-2 rounded-lg border border-[#FFC9C9] bg-[#FEF2F2] p-2 font-normal text-[#E7000B]'>
+                <InfoCircleOutlined className='mt-1' />
+                <p>{messageError}</p>
+              </div>
+            )}
             <PrimaryButton
               htmlType='submit'
               loading={isPending}
