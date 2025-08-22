@@ -201,6 +201,7 @@ const SingpassPolicyDetailForm = ({
 
   const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
   const [isMoreThan15YearsModal, setIsMoreThan15YearsModal] = useState(false);
+  const [isVehicleInvalid, setIsVehicleInvalid] = useState(false);
 
   const { data: quoteInfo } = useGetQuote(key);
 
@@ -603,8 +604,11 @@ const SingpassPolicyDetailForm = ({
                       } else {
                         setIsShowUnMatchMake(true);
                       }
+                      setIsVehicleInvalid(true);
                     } else {
                       setShowUnMatchModal(false);
+                      setIsShowUnMatchMake(false);
+                      setIsVehicleInvalid(false);
                     }
                   })
                   .catch((err) => {
@@ -758,6 +762,7 @@ const SingpassPolicyDetailForm = ({
             form.submit();
           }}
           productType={ProductType.CAR}
+          disabledButtonMain={isVehicleInvalid}
         />
       </div>
       <QuoteModal

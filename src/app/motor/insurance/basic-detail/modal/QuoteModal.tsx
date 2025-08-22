@@ -124,7 +124,6 @@ export const QuoteModal = ({
         closable={false}
         height='auto'
         className='rounded-t-xl'
-        maskClosable={false}
       >
         <div>{content}</div>
       </Drawer>
@@ -141,7 +140,6 @@ export const QuoteModal = ({
       footer={null}
       centered
       width={400}
-      maskClosable={false}
     >
       <div>{content}</div>
     </Modal>
