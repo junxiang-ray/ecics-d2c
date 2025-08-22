@@ -3,7 +3,7 @@
 import { useAppSelector } from '@/redux/store';
 
 import CompletePurchaseDetail from './CompletePurchaseDetail';
-import MaidInsuranceLayout from '../MaidInsuranceLayout';
+import MaidInsuranceLayout from '../HomeContentInsuranceLayout';
 
 interface PolicyDetailPageProps {}
 
