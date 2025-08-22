@@ -45,6 +45,7 @@ export default function RenewalPage() {
     payload,
     productType: PRODUCT_NAME.RENEWAL,
   });
+
   const { data: vehData, isLoading: isVehLoading } = useVerifyRetrieveRenewal(
     personalInfo?.uinfin?.value,
   );
@@ -55,7 +56,7 @@ export default function RenewalPage() {
     }
   }, [vehData, router]);
 
-  if (isVehLoading) {
+  if (isVehLoading || isLoading) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
         <Spin size='large' />

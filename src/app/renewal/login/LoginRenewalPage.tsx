@@ -5,7 +5,9 @@ import { CarIcon } from '@/components/icons/add-on-icons';
 import { PricingSummary } from '@/components/page/FeeBar';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
+import { ROUTES } from '@/constants/routes';
 import { useRequestLoginRenewal } from '@/hook/auth/login-renewal';
+import { useCheckPolicy } from '@/hook/insurance/renewal';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import {
   EyeInvisibleOutlined,
@@ -14,19 +16,22 @@ import {
 } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Form } from 'antd';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const schema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  veh_reg_no: z.string(),
+  passphrase: z.string(),
 });
 type FormData = z.infer<typeof schema>;
 
 const LoginRenewalPage = () => {
   const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
 
@@ -38,15 +43,28 @@ const LoginRenewalPage = () => {
       },
     },
   );
+  const { mutate: checkPolicy, isPending, error } = useCheckPolicy();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
   });
+
   const {
-    reset,
+    handleSubmit,
     formState: { errors },
   } = methods;
+
+  const onSubmit = (values: FormData) => {
+    checkPolicy(
+      { veh_reg_no: values.veh_reg_no, passphrase: values.passphrase },
+      {
+        onSuccess: () => {
+          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+        },
+      },
+    );
+  };
 
   return (
     <div
@@ -80,16 +98,17 @@ const LoginRenewalPage = () => {
             form={form}
             layout='vertical'
             className='flex w-full flex-col gap-4'
+            onFinish={handleSubmit(onSubmit)}
           >
             <Form.Item
-              name='email'
-              validateStatus={errors['email'] ? 'error' : ''}
+              name='onSubmit'
+              validateStatus={errors['veh_reg_no'] ? 'error' : ''}
             >
               <InputField
-                name='email'
-                label='Vehicle Registration No. *'
-                placeholder='Enter your email address'
-                // isRequired={true}
+                name='veh_reg_no'
+                label='Vehicle Registration No'
+                placeholder='Example: SBA123A'
+                isRequired
                 prefix={<CarIcon size={16} className='mr-2 text-gray-400' />}
               />
               <p className='mt-2 text-sm text-gray-400'>
@@ -97,12 +116,12 @@ const LoginRenewalPage = () => {
               </p>
             </Form.Item>
             <Form.Item
-              name='password'
-              validateStatus={errors['password'] ? 'error' : ''}
+              name='passphrase'
+              validateStatus={errors['passphrase'] ? 'error' : ''}
             >
               <InputField
                 type={showPassword ? 'text' : 'password'}
-                name='password'
+                name='passphrase'
                 label='Password *'
                 placeholder='Enter your password'
                 prefix={
@@ -135,7 +154,12 @@ const LoginRenewalPage = () => {
                 E.g <span className='font-semibold'>300619701234J</span>
               </p>
             </Form.Item>
-            <PrimaryButton className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'>
+            <PrimaryButton
+              htmlType='submit'
+              loading={isPending}
+              disabled={isPending}
+              className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'
+            >
               Sign in
             </PrimaryButton>
           </Form>
