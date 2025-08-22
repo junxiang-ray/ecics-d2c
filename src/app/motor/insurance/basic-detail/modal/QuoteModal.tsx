@@ -14,6 +14,7 @@ interface QuoteModalProps {
   description: string;
   isShowOnlyCloseButton?: boolean;
   isUnMatchMake?: boolean;
+  isMaskClosable?: boolean;
 }
 
 export const QuoteModal = ({
@@ -22,6 +23,7 @@ export const QuoteModal = ({
   visible,
   description,
   isUnMatchMake,
+  isMaskClosable = true,
 }: QuoteModalProps) => {
   const { isMobile } = useDeviceDetection();
 
@@ -124,7 +126,7 @@ export const QuoteModal = ({
         closable={false}
         height='auto'
         className='rounded-t-xl'
-        maskClosable={false}
+        maskClosable={isMaskClosable}
       >
         <div>{content}</div>
       </Drawer>
@@ -141,7 +143,7 @@ export const QuoteModal = ({
       footer={null}
       centered
       width={400}
-      maskClosable={false}
+      maskClosable={isMaskClosable}
     >
       <div>{content}</div>
     </Modal>

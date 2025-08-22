@@ -201,6 +201,7 @@ const SingpassPolicyDetailForm = ({
 
   const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
   const [isMoreThan15YearsModal, setIsMoreThan15YearsModal] = useState(false);
+  const [isMaskClosable, setIsMaskClosable] = useState(false);
 
   const { data: quoteInfo } = useGetQuote(key);
 
@@ -597,20 +598,16 @@ const SingpassPolicyDetailForm = ({
                   vehicle_type: 'motor',
                 })
                   .then((res) => {
-                    if (res.similarity < 0.85) {
-                      if (res.vehicle_make_id) {
-                        setShowUnMatchModal(true);
-                      } else {
-                        setIsShowUnMatchMake(true);
-                      }
-                    } else {
-                      setShowUnMatchModal(false);
-                    }
+                    const shouldShowUnMatch =
+                      res.similarity < 0.85 && !!res.vehicle_make_id;
+                    setShowUnMatchModal(shouldShowUnMatch);
                   })
                   .catch((err) => {
                     console.error('AI check failed', err);
                   });
               }}
+              setIsShowUnMatchMake={setIsShowUnMatchMake}
+              setIsMaskClosable={setIsMaskClosable}
             />
 
             {['engine_number', 'chassis_number', 'reg_yyyy'].some(
@@ -776,6 +773,7 @@ const SingpassPolicyDetailForm = ({
         visible={isShowUnMatchMake}
         description="We're sorry, but we’re unable to provide an online quote for your vehicle’s make and model at this time."
         isUnMatchMake={true}
+        isMaskClosable={isMaskClosable}
       />
       <ModalImportant
         isShowPopupImportant={isQuoteModalVisible}
