@@ -12,6 +12,7 @@ import {
   formatCurrency,
   formatCurrencyString,
   getPlanGroupPrefix,
+  isSafePaymentUrl,
   saveToLocalStorage,
 } from '@/libs/utils/utils';
 import { finValidator } from '@/libs/utils/validation-utils';
@@ -498,7 +499,9 @@ export default function CompletePurchaseDetail({
   const onPay = async () => {
     if (isFinalized) {
       const savedUrl = localStorage.getItem(MAID_PAYMENT_URL);
-      if (savedUrl) {
+      const isSafe = isSafePaymentUrl(savedUrl);
+
+      if (savedUrl && isSafe) {
         window.location.href = savedUrl;
       }
       return;
