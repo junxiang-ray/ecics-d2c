@@ -5,8 +5,8 @@ import { CarIcon } from '@/components/icons/add-on-icons';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { ROUTES } from '@/constants/routes';
-import { useRequestLoginRenewal } from '@/hook/auth/login-renewal';
-import { useCheckPolicy } from '@/hook/insurance/renewal';
+import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
+import { useSignInRenewal } from '@/hook/insurance/renewal';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import {
   EyeInvisibleOutlined,
@@ -34,9 +34,9 @@ const LoginRenewalPage = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');
-  const { mutate: requestLoginMaid, error: errorLoginRenewal } =
-    useRequestLoginRenewal(PRODUCT_NAME.RENEWAL);
-  const { mutate: checkPolicy, isPending, error } = useCheckPolicy();
+  const { mutate: requestSignInSingpass, error: errorLoginRenewal } =
+    useRequestSignInSingpass(PRODUCT_NAME.RENEWAL);
+  const { mutate: signInRenewal, isPending, error } = useSignInRenewal();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -48,8 +48,8 @@ const LoginRenewalPage = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit = (values: FormData) => {
-    checkPolicy(
+  const onSubmitSigninRenewal = (values: FormData) => {
+    signInRenewal(
       { veh_reg_no: values.veh_reg_no, passphrase: values.passphrase },
       {
         onSuccess: () => {
@@ -79,7 +79,7 @@ const LoginRenewalPage = () => {
         <p className='text-lg text-[#717182]'>Securely with Singpass</p>
         <Button
           onClick={() => {
-            requestLoginMaid();
+            requestSignInSingpass();
           }}
           className='shadow- w-full rounded-lg bg-[#F4333D] py-5 text-center font-semibold text-white'
         >
@@ -104,7 +104,7 @@ const LoginRenewalPage = () => {
             form={form}
             layout='vertical'
             className='flex w-full flex-col gap-4'
-            onFinish={handleSubmit(onSubmit)}
+            onFinish={handleSubmit(onSubmitSigninRenewal)}
           >
             <Form.Item
               name='onSubmit'

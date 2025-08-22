@@ -13,7 +13,7 @@ export default {
   verifyRetrieveRenewal(nric: string) {
     return baseClient.post<any>(API_RETRIEVE_POLICY, { nric });
   },
-  checkPolicy(veh_reg_no: string, passphrase: string) {
+  signInRenewal(veh_reg_no: string, passphrase: string) {
     return baseClient.post<any>(API_CHECK_POLICY, { veh_reg_no, passphrase });
   },
 };

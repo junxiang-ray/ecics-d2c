@@ -14,17 +14,17 @@ export const useVerifyRetrieveRenewal = (nric: string) => {
   });
 };
 
-export const useCheckPolicy = () => {
-  const checkPolicy = async (data: {
+export const useSignInRenewal = () => {
+  const signInRenewal = async (data: {
     veh_reg_no: string;
     passphrase: string;
   }) => {
-    const res = await renewal.checkPolicy(data.veh_reg_no, data.passphrase);
+    const res = await renewal.signInRenewal(data.veh_reg_no, data.passphrase);
     return res.data.data;
   };
 
   return useMutation({
-    mutationFn: checkPolicy,
+    mutationFn: signInRenewal,
     mutationKey: ['check-policy'],
   });
 };
