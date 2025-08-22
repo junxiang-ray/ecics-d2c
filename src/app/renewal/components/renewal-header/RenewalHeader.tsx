@@ -46,7 +46,7 @@ const RenewalHeader = () => {
   return (
     <div className='flex h-[56px] flex-row items-center justify-between px-6 md:px-14'>
       <img src='/ecics.svg' alt='ecics' />
-      <Dropdown
+      {/* <Dropdown
         menu={{ items: menuItems, onClick: handleMenuClick }}
         placement='bottomRight'
         trigger={['click']}
@@ -61,7 +61,13 @@ const RenewalHeader = () => {
           </span>
           <MenuOutlined style={{ color: 'black', fontSize: '12px' }} />
         </div>
-      </Dropdown>
+      </Dropdown> */}
+      <p
+        className='cursor-pointer text-sm text-[#E7000B]'
+        onClick={() => router.push(ROUTES.RENEWAL.LOGIN)}
+      >
+        Log out
+      </p>
     </div>
   );
 };
