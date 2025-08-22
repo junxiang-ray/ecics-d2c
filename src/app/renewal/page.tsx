@@ -1,9 +1,9 @@
 'use client';
 
 import Announcements from '@/app/renewal/components/announcements/Announcements';
+import PoliciesPendingRenewal from '@/app/renewal/components/policies-renewal/PoliciesPendingRenewal';
 import Promotions from '@/app/renewal/components/promotions/Promotions';
 import QuickActions from '@/app/renewal/components/quick-action/QuickActions';
-import PoliciesPendingRenewal from '@/app/renewal/components/policies-renewal/PoliciesPendingRenewal';
 import RenewalHeader from '@/app/renewal/components/renewal-header/RenewalHeader';
 import { usePostUserInfoRenewal } from '@/hook/auth/login-renewal';
 import { useEffect, useState } from 'react';

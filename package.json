@@ -32,6 +32,7 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "ecics-portal-website": "file:",
+    "framer-motion": "^12.23.12",
     "geoip-lite": "^1.4.10",
     "i18n-iso-countries": "^7.14.0",
     "next": "14.2.28",
