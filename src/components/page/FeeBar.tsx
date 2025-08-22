@@ -26,7 +26,6 @@ export function PricingSummary({
   productType,
   loading,
   isPlan,
-  disabledButtonMain,
 }: {
   isBasicDetailScreen?: boolean;
   planFee?: number;
@@ -41,7 +40,6 @@ export function PricingSummary({
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
   isPlan?: boolean;
   titlePlan?: string;
-  disabledButtonMain?: boolean;
 }) {
   const discountFee = planFee + addonFee;
   const notDiscountFee = planFee / (1 - discount / 100) + addonFee;
@@ -190,7 +188,6 @@ export function PricingSummary({
                 }}
                 className={`bg-[#2ECC71] px-1 leading-4 text-white md:w-40 ${isBasicDetailScreen ? 'md:mb-2.5 md:mt-2.5' : 'md:mt-5'}`}
                 loading={loading}
-                disabled={disabledButtonMain}
               >
                 {textButton || 'Continue'}
               </PrimaryButton>
