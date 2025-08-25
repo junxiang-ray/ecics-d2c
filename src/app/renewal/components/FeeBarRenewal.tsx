@@ -108,7 +108,7 @@ export function PricingSummaryRenewal({
               </div>
             </div>
           ) : (
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between md:my-3'>
               <SecondaryButton
                 onClick={(e) => {
                   e.stopPropagation();
@@ -118,7 +118,7 @@ export function PricingSummaryRenewal({
               >
                 {textButtonLeft || (
                   <div className='flex items-center'>
-                    <EditRenewalIcon size={20} /> Edit Renewal
+                    <EditRenewalIcon size={20} className='mr-1' /> Edit Renewal
                   </div>
                 )}
               </SecondaryButton>
@@ -142,7 +142,7 @@ export function PricingSummaryRenewal({
                   e.stopPropagation();
                   onClick && onClick();
                 }}
-                className='bg-[#2ECC71] px-1 leading-4 text-white md:mt-5 md:w-40'
+                className='bg-[#2ECC71] px-1 leading-4 text-white md:w-40'
                 loading={loading}
               >
                 {textButton || 'Make Payment'}

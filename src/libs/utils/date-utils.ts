@@ -263,3 +263,45 @@ export const calculateDrivingExperienceFromLicences = (
 
   return years > 0 ? years : 1;
 };
+
+/**
+ * Parse a custom date string that may be in formats:
+ * - DD-MM-YYYY
+ * - DD/MM/YYYY
+ * - YYYY-MM-DD
+ * Returns Date | null if invalid
+ */
+export const parseFlexibleDate = (dateStr: string): Date | null => {
+  if (!dateStr) return null;
+
+  // DD-MM-YYYY
+  const ddMmYyyyDash = /^\d{1,2}-\d{1,2}-\d{4}$/;
+  if (ddMmYyyyDash.test(dateStr)) {
+    const [dayStr, monthStr, yearStr] = dateStr.split('-');
+    const day = parseInt(dayStr, 10);
+    const month = parseInt(monthStr, 10) - 1;
+    const year = parseInt(yearStr, 10);
+    const date = new Date(year, month, day);
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  // DD/MM/YYYY or DD/MM/YY
+  const ddMmYyyySlash = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
+  if (ddMmYyyySlash.test(dateStr)) {
+    const [dayStr, monthStr, yearStr] = dateStr.split('/');
+    const day = parseInt(dayStr, 10);
+    const month = parseInt(monthStr, 10) - 1;
+    let year = parseInt(yearStr, 10);
+
+    if (yearStr.length === 2) {
+      year += year < 50 ? 2000 : 1900;
+    }
+
+    const date = new Date(year, month, day);
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  // YYYY-MM-DD (ISO-ish)
+  const isoDate = new Date(dateStr);
+  return isNaN(isoDate.getTime()) ? null : isoDate;
+};

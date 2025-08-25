@@ -1,6 +1,9 @@
 'use client';
 
+import dayjs from 'dayjs';
 import React from 'react';
+
+import { parseFlexibleDate } from '@/libs/utils/date-utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import {
@@ -24,15 +27,76 @@ interface Driver {
   }[];
 }
 
+const renewalQuote = {
+  renewal_info: {
+    policy_details: {
+      current_policy_no: 'MPC24A00093700',
+      current_policy_expiry_date: '22-10-2025',
+      agency: 'SGDRXXXXXXXXXXX',
+      coverage: 'COMPREHENSIVE',
+      vehicle_details: {
+        'reg. no.': 'SKW2704M',
+        make: 'HONDA',
+        model: 'Honda Vezel 1.5',
+        'first reg on': '2015',
+      },
+      named_drivers: [
+        {
+          id: 1,
+          name: 'The XXXXXX',
+          icno: 'F1234567N',
+          dob: '1988-11-17',
+          martial_status: 'M',
+          driv_exp: '17',
+        },
+        {
+          id: 2,
+          name: 'CARSXXXXXX',
+          icno: 'G1234567X',
+          dob: '1988-12-19',
+          martial_status: 'M',
+          driv_exp: '8',
+        },
+      ],
+      no_of_claims: '0',
+    },
+    renewal_start_date: '23-10-2025',
+    renewal_end_date: '22-10-2026',
+    insured_info: {
+      name: 'WAN XXXXXXXXXXXXX',
+      address: {
+        address_line1: '87 PXXXXXXXXXXXXX',
+        address_line2: '#15-XXXXXXXXXXXXX',
+        address_line3: 'SINGXXXXXXXXXXXXXXXXXXXXXXXXXX 512985',
+      },
+    },
+    date_extracted: '19-8-2025',
+    ncd_entitlement: '50%',
+    scheme: 'SGDRIVERS PROTECTOR PLAN',
+    renewal_excess: [
+      {
+        title: 'Standard Excess Amount',
+        value: '$500.00',
+      },
+    ],
+    renewalpremb4gst: '641.04',
+    renewalgst: '57.69',
+    renewalpremwgst: '698.74',
+  },
+};
+
+const policy = renewalQuote.renewal_info.policy_details;
+const renewal = renewalQuote.renewal_info;
+
 const PolicyDetailsContent = () => {
   const fields = [
-    { label: 'Existing Policy No.', value: 'MPC24B0087900' },
-    { label: 'Plan Type', value: 'Comprehensive - Family NCD Builder' },
-    { label: 'Current Expiry Date', value: '22/05/2025' },
-    { label: 'Renewal Notice Dated on', value: '20/06/2025' },
+    { label: 'Existing Policy No.', value: policy.current_policy_no },
+    { label: 'Plan Type', value: policy.coverage },
+    { label: 'Current Expiry Date', value: policy.current_policy_expiry_date },
+    { label: 'Renewal Notice Dated on', value: renewal.date_extracted },
     { label: 'Sum Insured', value: 'Market Value at the time of loss' },
-    { label: 'Scheme', value: 'Authorized Workshop' },
-    { label: 'Intermediary Name', value: 'AIG Insurance Singapore Pte Ltd' },
+    { label: 'Scheme', value: renewal.scheme },
+    { label: 'Intermediary Name', value: policy.agency },
   ];
 
   return (
@@ -57,10 +121,29 @@ const PolicyDetailsContent = () => {
 };
 
 const RenewalPeriodContent = () => {
+  // Format date from "DD-MM-YYYY" to "DD/MM/YYYY"
+  const formatDate = (date: string) => {
+    const parsed = parseFlexibleDate(date);
+    if (!parsed) return '-';
+    return parsed.toLocaleDateString('en-GB');
+  };
+
+  const startDate = formatDate(renewal.renewal_start_date);
+  const endDate = formatDate(renewal.renewal_end_date);
+
+  // Calculate duration
+  const durationInYears = dayjs(renewal.renewal_end_date, 'DD-MM-YYYY').diff(
+    dayjs(renewal.renewal_start_date, 'DD-MM-YYYY'),
+    'year',
+  );
+
   const fields = [
-    { label: 'Renewal Start Date', value: '23/05/2025' },
-    { label: 'Renewal Expiry Date', value: '22/05/2026' },
-    { label: 'Coverage Duration', value: '1 year' },
+    { label: 'Renewal Start Date', value: startDate },
+    { label: 'Renewal Expiry Date', value: endDate },
+    {
+      label: 'Coverage Duration',
+      value: durationInYears > 1 ? `${durationInYears} years` : '3 year',
+    },
   ];
 
   return (
@@ -93,18 +176,19 @@ const RenewalPeriodContent = () => {
 };
 
 const ExcessContent = () => {
-  const policyExcess = [
-    { label: 'Windscreen', value: 'Refer to schedule' },
-    { label: 'Insured/Named Driver', value: 'SGD 600' },
-  ];
+  const renewal = renewalQuote.renewal_info;
 
-  const additionalExcess = [
-    { label: 'Unnamed Drivers', value: 'SGD 500' },
-    {
-      label: 'Age < 26 Years old or driving experience < 2 years',
-      value: 'SGD 3,000',
-    },
-  ];
+  const policyExcess =
+    renewal.renewal_excess?.map((item) => ({
+      label: item.title,
+      value: item.value,
+    })) ?? [];
+
+  const additionalExcess =
+    (renewal as any).renewal_additional_excess?.map((item: any) => ({
+      label: item.title,
+      value: item.value,
+    })) ?? [];
 
   const renderFields = (fields: { label: string; value: string }[]) =>
     fields.map((field, idx) => (
@@ -123,18 +207,25 @@ const ExcessContent = () => {
 
   return (
     <div className='space-y-6'>
-      <div>
-        <div className='mb-3 text-[14px] font-semibold'>Policy Excess</div>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-          {renderFields(policyExcess)}
+      {policyExcess.length > 0 && (
+        <div>
+          <div className='mb-3 text-[14px] font-semibold'>Policy Excess</div>
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+            {renderFields(policyExcess)}
+          </div>
         </div>
-      </div>
-      <div>
-        <div className='mb-3 text-[14px] font-semibold'>Additional Excess</div>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-          {renderFields(additionalExcess)}
+      )}
+
+      {additionalExcess.length > 0 && (
+        <div>
+          <div className='mb-3 text-[14px] font-semibold'>
+            Additional Excess
+          </div>
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+            {renderFields(additionalExcess)}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
