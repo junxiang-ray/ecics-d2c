@@ -6,7 +6,7 @@ import singpassRenewalService from './api.config';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  requestLoginRenewal(productType: ProductTypeWeb) {
+  requestSignInSingpass(productType: ProductTypeWeb) {
     return singpassRenewalService.get<LoginResponse>(
       `${API_LOGIN}/${productType}`,
     );

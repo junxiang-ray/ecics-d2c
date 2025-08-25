@@ -9,8 +9,14 @@ import { usePostUserInfoRenewal } from '@/hook/auth/login-renewal';
 import { useEffect, useState } from 'react';
 import { PRODUCT_NAME } from '../api/constants/product';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { useVerifyRetrieveRenewal } from '@/hook/insurance/renewal';
+import { useRouter } from 'next/navigation';
+import { Spin } from 'antd';
+import { ROUTES } from '@/constants/routes';
 
 export default function RenewalPage() {
+  const router = useRouter();
+
   const [payload, setPayload] = useState({
     code_verifier: '',
     nonce: '',
@@ -40,13 +46,31 @@ export default function RenewalPage() {
     productType: PRODUCT_NAME.RENEWAL,
   });
 
+  const { data: vehData, isLoading: isVehLoading } = useVerifyRetrieveRenewal(
+    personalInfo?.uinfin?.value,
+  );
+
+  useEffect(() => {
+    if (vehData && vehData.length < 2) {
+      router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+    }
+  }, [vehData, router]);
+
+  if (isVehLoading || isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
+
   return (
     <main>
-      <div className='border-b border-gray-200'>
+      <div className='border-b border-gray-200 '>
         <RenewalHeader />
       </div>
-      <div className='px-14 py-8'>
-        <h1 className='mb-2 text-3xl font-bold'>
+      <div className='mx-auto max-w-[1200px] px-4 py-4 md:px-0 md:py-8'>
+        <h1 className='mb-2 text-2xl font-bold md:text-3xl'>
           Welcome back, {personalInfo?.name?.value}
         </h1>
         <p className='mb-6 text-gray-500'>

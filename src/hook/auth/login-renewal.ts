@@ -14,17 +14,17 @@ import {
   ECICS_USER_INFO,
 } from '@/constants/general.constant';
 
-export const useRequestLoginRenewal = (
+export const useRequestSignInSingpass = (
   productType: ProductTypeWeb,
   options?: UseMutationOptions<any, unknown, void, unknown>,
 ) => {
-  const requestLoginRenewal = async () => {
-    const res = await auth.requestLoginRenewal(productType);
+  const requestSignInSingpass = async () => {
+    const res = await auth.requestSignInSingpass(productType);
     return res.data;
   };
 
   return useMutation({
-    mutationFn: requestLoginRenewal,
+    mutationFn: requestSignInSingpass,
     mutationKey: ['login', productType],
     onSuccess: (data) => {
       const { url, state, nonce, code_verifier } = data.data;
