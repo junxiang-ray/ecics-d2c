@@ -40,6 +40,7 @@ export async function updatePoliciesFromISP(data: updatePolicyDTO) {
 
     return ErrFromISPRes(
       updatePolicyRes?.text || 'Failed to update policy renewal',
+      updatePolicyRes?.status,
     );
   } catch (error) {
     logger.error(`Failed to update policy renewal from ISP: ${error}`);

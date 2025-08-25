@@ -1,4 +1,4 @@
-import { MOTOR_INSURANCE } from '@/app/api/constants/motor.renewal';
+import { MOTOR_RENEWAL } from '@/app/api/constants/motor.renewal';
 import { retrievePolicyDTO } from './retrieve-policy.dto';
 import { handleApiCallToISP } from '@/app/api/configs/api.config';
 import logger from '@/app/api/libs/logger';
@@ -12,7 +12,7 @@ export async function retrievePoliciesFromISP(data: retrievePolicyDTO) {
     };
 
     const retrievePoliciesRes = await handleApiCallToISP(
-      `${MOTOR_INSURANCE.PREFIX_ENDPOINT}/retrieve_renewal`,
+      `${MOTOR_RENEWAL.PREFIX_ENDPOINT}/retrieve_renewal`,
       payloadData,
     );
 

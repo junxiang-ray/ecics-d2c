@@ -1,4 +1,4 @@
-import { MOTOR_INSURANCE } from '@/app/api/constants/motor.renewal';
+import { MOTOR_RENEWAL } from '@/app/api/constants/motor.renewal';
 import { handleApiCallToISP } from '@/app/api/configs/api.config';
 import logger from '@/app/api/libs/logger';
 import { ErrFromISPRes } from '@/app/api/core/error.response';
@@ -17,7 +17,7 @@ export async function checkPolicyFromISP(data: checkPolicyDTO) {
     logger.info(`Checking policy with payload: ${JSON.stringify(payloadData)}`);
 
     const renewalPolicyRes = await handleApiCallToISP(
-      `${MOTOR_INSURANCE.PREFIX_ENDPOINT}/check_renewal`,
+      `${MOTOR_RENEWAL.PREFIX_ENDPOINT}/check_renewal`,
       payloadData,
     );
 
