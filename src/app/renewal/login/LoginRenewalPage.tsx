@@ -8,6 +8,7 @@ import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useSignInRenewal } from '@/hook/insurance/renewal';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 import {
   EyeInvisibleOutlined,
   EyeOutlined,
@@ -22,8 +23,16 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const schema = z.object({
-  veh_reg_no: z.string().min(1, 'Vehicle Registration No is required'),
-  passphrase: z.string().min(1, 'Password is required'),
+  veh_reg_no: z
+    .string({
+      required_error: 'Vehicle number is required',
+      invalid_type_error: 'Vehicle number is required',
+    })
+    .min(1, 'Vehicle number is required')
+    .refine((val) => sgCarRegNoValidator(val), {
+      message: 'Please enter a valid vehicle registration no. (e.g. SBA123A).',
+    }),
+  passphrase: z.string().min(6, 'Password is required'),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -116,6 +125,7 @@ const LoginRenewalPage = () => {
                 placeholder='Example: SBA123A'
                 isRequired
                 prefix={<CarIcon size={16} className='mr-2 text-gray-400' />}
+                autoFocus
               />
               <p className='mt-2 text-sm text-gray-400'>
                 Enter your vehicle registration number as shown on your policy
