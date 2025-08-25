@@ -296,9 +296,10 @@ export default function Summary() {
   };
 
   const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
+  const selectedPlanCode = quote?.data?.selected_plan_code || 'N/A';
   const plans = quote?.data?.plans || [];
   const matchedPlan = plans.find(
-    (plan) => plan.title && plan.title.includes(selectedPlanTitle),
+    (plan) => plan.code && plan.code.includes(selectedPlanCode),
   );
   const addonsTitles =
     matchedPlan?.benefits
