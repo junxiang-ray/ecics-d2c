@@ -44,7 +44,7 @@ const RenewalHeader = () => {
   ];
 
   return (
-    <div className='flex h-[56px] flex-row items-center justify-between px-6 md:px-14'>
+    <div className='mx-auto flex h-[56px] max-w-[1200px] flex-row items-center justify-between px-6 md:px-0'>
       <img src='/ecics.svg' alt='ecics' />
       {/* <Dropdown
         menu={{ items: menuItems, onClick: handleMenuClick }}

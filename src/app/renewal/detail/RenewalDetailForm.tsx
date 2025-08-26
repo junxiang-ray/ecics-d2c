@@ -1,6 +1,8 @@
 'use client';
 
+import { Form } from 'antd';
 import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import {
   ExcessIcon,
@@ -11,8 +13,17 @@ import {
   ReloadIcon,
   RenewalPeriodIcon,
 } from '@/components/icons/renewal-icons';
+import { DatePickerField } from '@/components/ui/form/datepicker';
 
 import InfoCard from '@/app/renewal/components/InfoCard';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { MAID_QUOTE } from '@/constants';
+import { finValidator } from '@/libs/utils/validation-utils';
+import { passportRegex } from '@/constants/validation.constant';
+import { HasHelperValue } from '@/app/motor/insurance/basic-detail/options';
+import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
+import { InputField } from '@/components/ui/form/inputfield';
 
 interface Driver {
   name: string;
@@ -55,51 +66,62 @@ const PolicyDetailsContent = () => {
   );
 };
 
-const RenewalPeriodContent = () => {
-  const fields = [
-    { label: 'Renewal Start Date', value: '23/05/2025' },
-    { label: 'Renewal Expiry Date', value: '22/05/2026' },
-    { label: 'Coverage Duration', value: '1 year' },
-  ];
-
+const RenewalPeriodContent = ({
+  errors,
+  handleChangeRenewalStartDate,
+}: {
+  errors: any;
+  handleChangeRenewalStartDate: (value: any) => void;
+}) => {
   return (
     <div className='space-y-4'>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        {fields.map((field, idx) => (
-          <div
-            key={idx}
-            className={`flex flex-col ${field.label === 'Coverage Duration' ? 'col-span-full' : ''}`}
-          >
-            <div className='mb-2 flex items-center justify-between'>
-              <label className='mb-1 text-xs font-medium text-gray-700'>
-                {field.label}
-              </label>
-              {field.label === 'Coverage Duration' && (
-                <div className='ml-2 flex w-[130px] cursor-pointer items-center rounded-lg border border-[#02ADEF] bg-[#EFF6FF] px-2 py-2 text-xs font-normal text-[#02ADEF]'>
-                  <ReloadIcon size={14} className='mr-1' /> Reset to 1 Year
-                </div>
-              )}
+        <Form.Item
+          name='renewal_start_date'
+          validateStatus={errors?.renewal_start_date ? 'error' : ''}
+          help={errors?.renewal_start_date?.message}
+        >
+          <DatePickerField
+            name='renewal_start_date'
+            label='Renewal Start Date'
+            disabled
+            onChange={handleChangeRenewalStartDate}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name='renewal_expiry_date'
+          validateStatus={errors?.renewal_expiry_date ? 'error' : ''}
+          help={errors?.renewal_expiry_date?.message}
+        >
+          <DatePickerField
+            name='renewal_expiry_date'
+            label='Renewal Expiry Date'
+            isRequired
+          />
+        </Form.Item>
+
+        {/* Coverage Duration (readonly) */}
+        <div className='col-span-full flex flex-col'>
+          <div className='mb-2 flex items-center justify-between'>
+            <label className='mb-1 text-xs font-medium text-gray-700'>
+              Coverage Duration
+            </label>
+            <div className='ml-2 flex cursor-pointer items-center rounded-lg border border-[#02ADEF] bg-[#EFF6FF] px-2 py-2 text-xs font-normal text-[#02ADEF]'>
+              <ReloadIcon size={14} className='mr-1' /> Reset to 1 Year
             </div>
-            <input
-              type='text'
-              value={field.value}
-              disabled
-              className={`cursor-not-allowed rounded-md border px-3 py-2 text-sm font-semibold text-gray-700 
-                                ${
-                                  field.label === 'Coverage Duration'
-                                    ? 'border-[#BEDBFF] bg-[#EFF6FF]'
-                                    : 'border-gray-300 bg-gray-100'
-                                }`}
-            />
-            {field.label === 'Coverage Duration' && (
-              <div className='text-[10px] font-normal'>
-                Duration is calculated from renewal start date to expiry date.
-                Use the reset button to quickly set coverage to exactly one
-                year.
-              </div>
-            )}
           </div>
-        ))}
+          <input
+            type='text'
+            value='1 year'
+            disabled
+            className='cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
+          />
+          <div className='text-[10px] font-normal'>
+            Duration is calculated from renewal start date to expiry date. Use
+            the reset button to quickly set coverage to exactly one year.
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -406,72 +428,105 @@ const AddOnsContent = () => {
   );
 };
 
+const schema = z.object({
+  name: z
+    .string({
+      required_error: 'Name is required',
+      invalid_type_error: 'Name is required',
+    })
+    .min(3, 'Name must be at least 3 characters')
+    .max(60, 'Name must be at most 60 characters')
+    .nonempty('Name is required'),
+});
+
+type FormData = z.infer<typeof schema>;
+
 const RenewalDetailForm = () => {
+  const methods = useForm<FormData>({
+    resolver: zodResolver(schema),
+    mode: 'onChange',
+    // values: initFormDate,
+  });
+  const {
+    formState: { errors },
+  } = methods;
+
+  const handleChangeRenewalStartDate = (value: any) => {
+    console.log('renewal start date changed:', value);
+  };
+
   return (
-    <div className='mx-auto mt-[12px]'>
-      <InfoCard
-        icon={<PolicyDetailsIcon className='text-sky-500' size={20} />}
-        title='Policy Details'
-        subtitle='Your current policy information'
-        isPolicyRenewalScreen={true}
-      >
-        <PolicyDetailsContent />
-      </InfoCard>
+    <FormProvider {...methods}>
+      <Form>
+        <div className='mx-auto mt-[12px]'>
+          <InfoCard
+            icon={<PolicyDetailsIcon className='text-sky-500' size={20} />}
+            title='Policy Details'
+            subtitle='Your current policy information'
+            isPolicyRenewalScreen={true}
+          >
+            <PolicyDetailsContent />
+          </InfoCard>
 
-      <InfoCard
-        icon={<RenewalPeriodIcon className='text-sky-500' size={20} />}
-        title='Renewal Period'
-        subtitle='12-month renewal period (Standard)'
-        isPolicyRenewalScreen={true}
-      >
-        <RenewalPeriodContent />
-      </InfoCard>
+          <InfoCard
+            icon={<RenewalPeriodIcon className='text-sky-500' size={20} />}
+            title='Renewal Period'
+            subtitle='12-month renewal period (Standard)'
+            isPolicyRenewalScreen={true}
+          >
+            <RenewalPeriodContent
+              errors={errors}
+              handleChangeRenewalStartDate={handleChangeRenewalStartDate}
+            />
+          </InfoCard>
 
-      <InfoCard
-        icon={<ExcessIcon className='text-sky-500' size={20} />}
-        title='Excess'
-        subtitle='Excess amounts applicable to your policy'
-        isPolicyRenewalScreen={true}
-      >
-        <ExcessContent />
-      </InfoCard>
+          <InfoCard
+            icon={<ExcessIcon className='text-sky-500' size={20} />}
+            title='Excess'
+            subtitle='Excess amounts applicable to your policy'
+            isPolicyRenewalScreen={true}
+          >
+            <ExcessContent />
+          </InfoCard>
 
-      <InfoCard
-        icon={<PrivateMotorCarIcon className='text-sky-500' size={20} />}
-        title='Vehicle Details'
-        subtitle='Information about your insured vehicle'
-        isPolicyRenewalScreen={true}
-      >
-        <VehicleDetailsContent />
-      </InfoCard>
+          <InfoCard
+            icon={<PrivateMotorCarIcon className='text-sky-500' size={20} />}
+            title='Vehicle Details'
+            subtitle='Information about your insured vehicle'
+            isPolicyRenewalScreen={true}
+          >
+            <VehicleDetailsContent />
+          </InfoCard>
 
-      <InfoCard
-        icon={<PolicyHolderIcon className='text-sky-500' size={20} />}
-        title='Policyholder'
-        subtitle='Personal information and contact details'
-        isPolicyRenewalScreen={true}
-      >
-        <PolicyHolderContent />
-      </InfoCard>
+          <InfoCard
+            icon={<PolicyHolderIcon className='text-sky-500' size={20} />}
+            title='Policyholder'
+            subtitle='Personal information and contact details'
+            isPolicyRenewalScreen={true}
+          >
+            <PolicyHolderContent />
+          </InfoCard>
 
-      <InfoCard
-        icon={<PolicyHolderIcon className='text-sky-500' size={20} />}
-        title='Additional Named Drivers'
-        subtitle='2 additional drivers added'
-        isPolicyRenewalScreen={true}
-      >
-        <AdditionalNamedDriversContent />
-      </InfoCard>
+          <InfoCard
+            icon={<PolicyHolderIcon className='text-sky-500' size={20} />}
+            title='Additional Named Drivers'
+            subtitle='2 additional drivers added'
+            isPolicyRenewalScreen={true}
+          >
+            <AdditionalNamedDriversContent />
+          </InfoCard>
 
-      <InfoCard
-        icon={<PlusSmallIcon className='text-sky-500' size={20} />}
-        title='Add-ons'
-        subtitle='4/9 add-ons selected'
-        isPolicyRenewalScreen={true}
-      >
-        <AddOnsContent />
-      </InfoCard>
-    </div>
+          <InfoCard
+            icon={<PlusSmallIcon className='text-sky-500' size={20} />}
+            title='Add-ons'
+            subtitle='4/9 add-ons selected'
+            isPolicyRenewalScreen={true}
+          >
+            <AddOnsContent />
+          </InfoCard>
+        </div>
+      </Form>
+    </FormProvider>
   );
 };
 
