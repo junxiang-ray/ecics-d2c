@@ -16,7 +16,9 @@ import AdditionalDriverDetailsIcon from '@/components/icons/AdditionalDriverDeta
 import AddOnsSelectedIcon from '@/components/icons/AddOnsSelectedIcon';
 import PolicyPlanIcon from '@/components/icons/PolicyPlanIcon';
 import { PricingSummary } from '@/components/page/FeeBar';
+import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
 import ReviewSection from '@/components/page/insurance/complete-purchase/ReviewSection';
+import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
@@ -29,8 +31,6 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { ProductType } from '../basic-detail/options';
-import WarningPaymentModal from '@/components/page/insurance/complete-purchase/WarningPaymentModal';
-import PaymentGatewayModal from '@/components/page/insurance/complete-purchase/PaymentGatewayModal';
 
 enum ErrorModalType {
   NONE = 0,
@@ -219,10 +219,9 @@ export default function CompletePurchaseDetail({
   };
 
   const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
+  const selectedPlanCode = quote?.data?.selected_plan_code;
   const plans = quote?.data?.plans || [];
-  const matchedPlan = plans.find(
-    (plan) => plan.title && plan.title.includes(selectedPlanTitle),
-  );
+  const matchedPlan = plans.find((plan) => plan.code === selectedPlanCode);
   const addonsTitles =
     matchedPlan?.benefits
       ?.filter((benefit) => benefit.is_active)
