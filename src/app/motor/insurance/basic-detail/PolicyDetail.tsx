@@ -79,6 +79,9 @@ export const PolicyDetail = ({
     [MOTOR_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
     [MOTOR_QUOTE.other_hire_purchase]:
       quoteInfo?.company_name_other ?? undefined,
+
+    [MOTOR_QUOTE.engine_number]: selectedVehicle?.engine_number ?? undefined,
+    [MOTOR_QUOTE.chassis_number]: selectedVehicle?.chasis_number ?? undefined,
   };
 
   // Options for Dropdown
