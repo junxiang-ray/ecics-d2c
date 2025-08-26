@@ -319,13 +319,3 @@ model Condition {
 
   @@map("addon_condition")
 }
-
-model SingpassData {
-  id         Int      @id @default(autoincrement())
-  uinfin String
-  value Json
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
-
-  @@map("singpass_data")
-}
