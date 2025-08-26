@@ -189,11 +189,9 @@ export default function Summary() {
   };
 
   const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
-  const selectedPlanCode = quote?.data?.selected_plan_code || 'N/A';
+  const selectedPlanCode = quote?.data?.selected_plan_code;
   const plans = quote?.data?.plans || [];
-  const matchedPlan = plans.find(
-    (plan) => plan.code && plan.code.includes(selectedPlanCode),
-  );
+  const matchedPlan = plans.find((plan) => plan.code === selectedPlanCode);
   const addonsTitles = matchedPlan?.benefits || [];
 
   return (
