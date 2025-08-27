@@ -163,10 +163,10 @@ export const ReviewInfoDetailMaid = () => {
       label: 'Name as per NRIC',
       value: personalInfo?.name?.value,
     },
-    {
-      label: 'Gender',
-      value: personalInfo?.sex?.desc,
-    },
+    // {
+    //   label: 'Gender',
+    //   value: personalInfo?.sex?.desc,
+    // },
     {
       label: 'Date of Birth',
       value: dayjs(personalInfo?.dob?.value).format('DD/MM/YYYY'),
@@ -175,10 +175,10 @@ export const ReviewInfoDetailMaid = () => {
       label: 'NRIC / FIN',
       value: personalInfo?.uinfin?.value,
     },
-    {
-      label: 'Marital Status',
-      value: personalInfo?.marital?.desc,
-    },
+    // {
+    //   label: 'Marital Status',
+    //   value: personalInfo?.marital?.desc,
+    // },
     {
       label: 'Address Line 1',
       value:
