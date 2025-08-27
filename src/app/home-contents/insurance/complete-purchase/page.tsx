@@ -3,7 +3,7 @@
 import { useAppSelector } from '@/redux/store';
 
 import CompletePurchaseDetail from './CompletePurchaseDetail';
-import MaidInsuranceLayout from '../HomeContentInsuranceLayout';
+import HomeContentInsuranceLayout from '../HomeContentInsuranceLayout';
 
 interface PolicyDetailPageProps {}
 
@@ -13,13 +13,13 @@ export default function PolicyDetailPage({}: PolicyDetailPageProps) {
   );
 
   return (
-    <MaidInsuranceLayout>
+    <HomeContentInsuranceLayout>
       {({ onSave }) => (
         <CompletePurchaseDetail
           onSaveRegister={onSave}
           isSingPassFlow={isSingPassFlow}
         />
       )}
-    </MaidInsuranceLayout>
+    </HomeContentInsuranceLayout>
   );
 }

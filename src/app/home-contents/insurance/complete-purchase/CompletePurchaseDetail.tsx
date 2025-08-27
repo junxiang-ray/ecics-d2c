@@ -283,16 +283,16 @@ export default function CompletePurchaseDetail({
   };
   const routerBySectionKey = (key: string) => {
     if (['helper_basic_information', 'policy', 'personal'].includes(key)) {
-      return ROUTES.INSURANCE_MAID.BASIC_DETAIL;
+      return ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL;
     }
     if (['helper_details', 'owner'].includes(key)) {
-      return ROUTES.INSURANCE_MAID.HELPER_DETAIL;
+      return ROUTES.INSURANCE_HOMECONTENTS.HELPER_DETAIL;
     }
     if (key === 'policy_plan') {
-      return ROUTES.INSURANCE_MAID.PLAN;
+      return ROUTES.INSURANCE_HOMECONTENTS.PLAN;
     }
     if (['addons'].includes(key)) {
-      return ROUTES.INSURANCE_MAID.ADD_ON;
+      return ROUTES.INSURANCE_HOMECONTENTS.ADD_ON;
     }
     return undefined;
   };
@@ -661,7 +661,7 @@ export default function CompletePurchaseDetail({
   );
 
   const handleBackToStepThree = () => {
-    router.push(ROUTES.INSURANCE_MAID.ADD_ON);
+    router.push(ROUTES.INSURANCE_HOMECONTENTS.ADD_ON);
   };
 
   return (

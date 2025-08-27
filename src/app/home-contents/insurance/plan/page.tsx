@@ -1,12 +1,14 @@
 'use client';
 
-import AddOnDetail from './AddonDetail';
+import PlanDetail from './PlanDetail';
 import HomeContentInsuranceLayout from '../HomeContentInsuranceLayout';
 
-export default function AddonPage() {
+function PlanPage({}) {
   return (
     <HomeContentInsuranceLayout>
-      {({ onSave }) => <AddOnDetail onSaveRegister={onSave} />}
+      {({ onSave }) => <PlanDetail onSaveRegister={onSave} />}
     </HomeContentInsuranceLayout>
   );
 }
+
+export default PlanPage;

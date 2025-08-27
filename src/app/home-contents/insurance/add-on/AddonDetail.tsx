@@ -258,9 +258,9 @@ function AddOnDetail({
       dispatch(updateMaidQuote(res as Partial<MaidQuote>));
       setIsShowPopupPremium(false);
       if (isManual) {
-        router.push(ROUTES.INSURANCE_MAID.HELPER_DETAIL);
+        router.push(ROUTES.INSURANCE_HOMECONTENTS.HELPER_DETAIL);
       } else {
-        router.push(ROUTES.INSURANCE_MAID.COMPLETE_PURCHASE);
+        router.push(ROUTES.INSURANCE_HOMECONTENTS.COMPLETE_PURCHASE);
       }
     });
   };

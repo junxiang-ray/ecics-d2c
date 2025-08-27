@@ -30,6 +30,7 @@ const MyInfoLoginSection = ({
   const [isUserActive, setIsUserActive] = useState(false);
   const isMaid = productType === ProductType.MAID;
   const isMotorcycle = productType === ProductType.MOTORCYCLE;
+  const isHomeContents = productType === ProductType.HOMECONTENTS;
   const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
 
   const { mutate: requestLogin } = useRequestLogin(PRODUCT_NAME.CAR, {
@@ -45,7 +46,11 @@ const MyInfoLoginSection = ({
   });
 
   const { mutate: requestLog } = useRequestLog(
-    isMaid ? PRODUCT_NAME.MAID : PRODUCT_NAME.CAR,
+    isMaid
+      ? PRODUCT_NAME.MAID
+      : isHomeContents
+        ? PRODUCT_NAME.MAID
+        : PRODUCT_NAME.CAR,
   );
 
   const handleLogin = () => {
@@ -61,10 +66,12 @@ const MyInfoLoginSection = ({
     requestLog();
 
     const basePath = isMaid
-      ? ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL
+      ? ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL // CHANGE THIS BACK TO  ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL
       : isMotorcycle
         ? ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL_MANUAL
-        : ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
+        : isHomeContents
+          ? ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL_MANUAL
+          : ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
 
     const queryParams = new URLSearchParams();
     if (promoCode) queryParams.append('promo_code', promoCode);

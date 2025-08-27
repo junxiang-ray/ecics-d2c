@@ -46,13 +46,15 @@ export default function HomeContentInsuranceLayout({
   }, [manual, dispatch]);
 
   return (
-    <InsuranceLayout
-      stepToRoute={homeSteps}
-      headerTitle='Home Content Insurance Quotation'
-      redirectToLoginPath={ROUTES.HOMECONTENT.LOGIN}
-      productType={ProductType.HOMECONTENTS}
-    >
-      {children}
-    </InsuranceLayout>
+    <>
+      <InsuranceLayout
+        stepToRoute={homeSteps}
+        headerTitle='Home Content Insurance Quotation'
+        redirectToLoginPath={ROUTES.HOMECONTENT.LOGIN}
+        productType={ProductType.HOMECONTENTS}
+      >
+        {children}
+      </InsuranceLayout>
+    </>
   );
 }

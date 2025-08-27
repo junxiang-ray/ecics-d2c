@@ -40,6 +40,7 @@ function InsuranceLayout({
   productType,
   redirectToLoginPath,
 }: InsuranceLayoutProps) {
+  console.log(typeof children === 'function');
   const router = useRouterWithQuery();
   const pathName = usePathname();
   const params = useSearchParams();
@@ -51,12 +52,14 @@ function InsuranceLayout({
   const { mutateAsync: saveQuote } = useSaveQuote();
   const [isShowPopupImportant, setIsShowPopupImportant] = useState(false);
   const [isShowPopupSingPass, setIsShowPopupSingPass] = useState(false);
-
+  const isHomeContents = productType === ProductType.HOMECONTENTS;
   const isMaid = productType === ProductType.MAID;
   const isFinalized = useAppSelector((state) =>
     isMaid
       ? state.maidQuote?.maidQuote?.is_finalized
-      : state.quote.quote?.is_finalized,
+      : isHomeContents
+        ? state.maidQuote?.maidQuote?.is_finalized // Change this to homeContentsQuote
+        : state.quote.quote?.is_finalized,
   );
   const isSingPassFlow = useAppSelector(
     (state) => state.general.isSingpassFlow,
@@ -80,7 +83,9 @@ function InsuranceLayout({
       title:
         productType === ProductType.MAID
           ? 'Helper’s Information'
-          : 'Policy Details',
+          : productType === ProductType.HOMECONTENTS ///Change here
+            ? 'Helper’s Information'
+            : 'Policy Details',
     },
     { step: StepProcessBar.SELECT_PLAN, title: 'Select Plan' },
     { step: StepProcessBar.SELECT_ADD_ON, title: 'Add-ons' },
@@ -265,7 +270,9 @@ function InsuranceLayout({
                 const targetUrl =
                   productType === ProductType.MAID
                     ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
-                    : `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`;
+                    : productType === ProductType.HOMECONTENTS ///Change Here
+                      ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
+                      : `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`;
 
                 router.push(targetUrl, { preserveQuery: false });
                 setIsShowPopupSingPass(false);
@@ -273,7 +280,9 @@ function InsuranceLayout({
                 const targetUrl =
                   productType === ProductType.MAID
                     ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
-                    : ROUTES.INSURANCE.BASIC_DETAIL;
+                    : isHomeContents
+                      ? ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL
+                      : ROUTES.INSURANCE.BASIC_DETAIL;
 
                 router.push(targetUrl);
                 setIsShowPopupImportant(false);
