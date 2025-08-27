@@ -146,8 +146,8 @@ export const ReviewInfoDetailMaid = () => {
         post_code: personalInfo?.regadd?.postal?.value ?? '',
         email: values[MAID_QUOTE.email],
         phone: values[MAID_QUOTE.mobile],
-        gender: personalInfo?.sex?.desc,
-        marital_status: values[MAID_QUOTE.marital_status],
+        // gender: personalInfo?.sex?.desc,
+        // marital_status: values[MAID_QUOTE.marital_status],
       },
       data_from_singpass: personalInfo,
     };
