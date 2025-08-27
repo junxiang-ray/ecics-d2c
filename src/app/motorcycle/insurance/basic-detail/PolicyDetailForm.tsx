@@ -34,7 +34,7 @@ import {
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 // import { QuoteModal } from './modal/QuoteModal'; // old
-import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal';
+import { QuoteModal } from '@/app/motorcycle/insurance/basic-detail/modal/QuoteModal';
 
 import {
   NCD_OPTIONS_MOTORCYCLE,
@@ -43,9 +43,9 @@ import {
   NumberDriverExperience,
   ProductType,
   REG_YEAR_OPTIONS,
-} from '@/app/motor/insurance/basic-detail/options';
+} from '@/app/motorcycle/insurance/basic-detail/options';
 // import { PromoCodeField } from '../components/PromoCode'; // old
-import { PromoCodeField } from '@/app/motor/insurance/components/PromoCode';
+import { PromoCodeField } from '@/app/motorcycle/insurance/components/PromoCode';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -280,16 +280,18 @@ const PolicyDetailForm = ({
   const drvExp = watch(MOTOR_QUOTE.owner_drv_exp) as number;
   const vehicle_make = watch(MOTOR_QUOTE.vehicle_make) as string;
 
-  const { data: makeOptions } = useGetVehicleMakes('motorcycle');
+  // const { data: makeOptions } = useGetVehicleMakes('motorcycle'); // undo this change after testing
+  const { data: makeOptions } = useGetVehicleMakes();
   const vehicleMakeId = makeOptions?.find(
     (item: any) => item.name === vehicle_make,
   )?.id;
 
   const { data: modelOptions, isLoading: isLoadingModelOptions } =
-    useGetVehicleModels(vehicleMakeId as string, 'motorcycle');
+    // useGetVehicleModels(vehicleMakeId as string, 'motorcycle'); //undo this change after testing
+    useGetVehicleModels(vehicleMakeId as string);
 
   const handleBackLogin = () => {
-    router.push(ROUTES.MOTOR.LOGIN);
+    router.push(ROUTES.MOTORCYCLE.LOGIN);
   };
 
   const makeOptionsFormatted: DropdownOption[] = useMemo(() => {

@@ -128,7 +128,7 @@ export const PolicyDetail = ({
       .then((res) => {
         if (res) {
           dispatch(updateQuote(res));
-          router.push(ROUTES.INSURANCE.PLAN);
+          router.push(ROUTES.INSURANCE_MOTORCYCLE.PLAN);
         }
       })
       .catch((err) => {
