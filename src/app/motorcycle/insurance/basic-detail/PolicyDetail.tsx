@@ -94,7 +94,7 @@ export const PolicyDetail = ({
     const keyQuote = generateKeyAndAttachToUrl(initKey);
     setKey(keyQuote);
   }, []);
-
+  //Form Submit here to call API
   const onSubmit: SubmitHandler<FormData> = async (data: any) => {
     dispatch(setPromoCodeError(null));
     let payload: any;
