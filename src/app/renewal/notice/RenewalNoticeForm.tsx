@@ -3,7 +3,8 @@
 import dayjs from 'dayjs';
 import React from 'react';
 
-import { parseFlexibleDate } from '@/libs/utils/date-utils';
+import { formatToDDMMYYYY, parseCompactDate } from '@/libs/utils/date-utils';
+import { capitalizeWords } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import {
@@ -16,72 +17,100 @@ import {
 } from '@/components/icons/renewal-icons';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 
+import {
+  MARITAL_STATUS_MAP,
+  MARITAL_STATUS_OPTIONS,
+} from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
-
-interface Driver {
-  name: string;
-  badge: string;
-  details: {
-    label: string;
-    value: string;
-  }[];
-}
 
 const renewalQuote = {
   renewal_info: {
     policy_details: {
-      current_policy_no: 'MPC24A00093700',
-      current_policy_expiry_date: '22-10-2025',
-      agency: 'SGDRXXXXXXXXXXX',
+      current_policy_no: 'MPC24A00355101',
+      current_policy_expiry_date: '27-10-2025',
+      agency: 'FAKEAGENCY',
       coverage: 'COMPREHENSIVE',
+      sum_insured: 'Market Value',
       vehicle_details: {
-        'reg. no.': 'SKW2704M',
-        make: 'HONDA',
-        model: 'Honda Vezel 1.5',
-        'first reg on': '2015',
+        'reg. no.': 'FAKE1234',
+        'make/model': 'TOYOTA COROLLA ALTIS',
+        make: 'TOYOTA',
+        model: 'COROLLA ALTIS',
+        'first reg on': '2020',
+        hire_purchase: 'FAKE BANK LTD',
+        'model type': 'SEDAN',
+      },
+      claim_ncd_details: {
+        no_of_claims: '1',
+        claim_incurred: 'Minor Damage',
+        current_ncd: '40%',
+        renewal_ncd: '50%',
       },
       named_drivers: [
         {
-          id: 1,
-          name: 'The XXXXXX',
-          icno: 'F1234567N',
-          dob: '1988-11-17',
+          name: 'GIANXXXXXX',
+          icno: 'G1234567X',
+          dob: '1964-10-03',
           martial_status: 'M',
-          driv_exp: '17',
+          driv_exp: '32',
+          gender: 'F',
         },
         {
-          id: 2,
-          name: 'CARSXXXXXX',
-          icno: 'G1234567X',
-          dob: '1988-12-19',
-          martial_status: 'M',
-          driv_exp: '8',
+          name: 'DGSNXXXXXX',
+          icno: 'G1234122A',
+          dob: '2000-10-03',
+          martial_status: 'S',
+          driv_exp: '22',
+          gender: 'M',
         },
       ],
-      no_of_claims: '0',
     },
-    renewal_start_date: '23-10-2025',
-    renewal_end_date: '22-10-2026',
+    renewal_start_date: '28-10-2025',
+    renewal_end_date: '27-10-2026',
     insured_info: {
-      name: 'WAN XXXXXXXXXXXXX',
+      name: 'JOHN DOE',
+      nric: 'S9876543Z',
+      dob: '01011985',
+      gender: 'M',
+      marital_status: 'S',
       address: {
-        address_line1: '87 PXXXXXXXXXXXXX',
-        address_line2: '#15-XXXXXXXXXXXXX',
-        address_line3: 'SINGXXXXXXXXXXXXXXXXXXXXXXXXXX 512985',
+        address_line1: '123 FAKE STREET',
+        address_line2: '#01-01',
+        address_line3: 'SINGAPORE',
+        postal: '123456',
       },
+      email: 'johndoe@email.com',
+      contact_no: '91234567',
     },
-    date_extracted: '19-8-2025',
-    ncd_entitlement: '50%',
-    scheme: 'SGDRIVERS PROTECTOR PLAN',
-    renewal_excess: [
+    date_extracted: '20-8-2025',
+    scheme: 'SCHEME FAKE',
+    renewal_excess: {
+      policy_excess: [
+        {
+          title: 'Windscreen',
+          value: 'SGD 150.00',
+        },
+        { title: 'Section I - Standard Excess', value: 'SGD 600.00' },
+      ],
+      additional_excess: [
+        {
+          title: 'Unnamed Drivers',
+          value: 'SGD 500.00',
+        },
+        { title: 'Young or Inexperienced Drivers', value: 'SGD 2,500.00' },
+      ],
+    },
+    optional_benefits: [
+      { id: 1, name: 'Loss of Use', prem: '50.00' },
       {
-        title: 'Standard Excess Amount',
-        value: '$500.00',
+        id: 2,
+        name: 'Medical Expenses',
+        prem: '30.00',
       },
     ],
-    renewalpremb4gst: '641.04',
-    renewalgst: '57.69',
-    renewalpremwgst: '698.74',
+    renewalpremb4gst: '700',
+    renewalgst: '63.00',
+    renewalpremwgst: '763.00',
   },
 };
 
@@ -92,9 +121,15 @@ const PolicyDetailsContent = () => {
   const fields = [
     { label: 'Existing Policy No.', value: policy.current_policy_no },
     { label: 'Plan Type', value: policy.coverage },
-    { label: 'Current Expiry Date', value: policy.current_policy_expiry_date },
-    { label: 'Renewal Notice Dated on', value: renewal.date_extracted },
-    { label: 'Sum Insured', value: 'Market Value at the time of loss' },
+    {
+      label: 'Current Expiry Date',
+      value: formatToDDMMYYYY(policy.current_policy_expiry_date),
+    },
+    {
+      label: 'Renewal Notice Dated on',
+      value: formatToDDMMYYYY(renewal.date_extracted),
+    },
+    { label: 'Sum Insured', value: policy.sum_insured },
     { label: 'Scheme', value: renewal.scheme },
     { label: 'Intermediary Name', value: policy.agency },
   ];
@@ -121,15 +156,8 @@ const PolicyDetailsContent = () => {
 };
 
 const RenewalPeriodContent = () => {
-  // Format date from "DD-MM-YYYY" to "DD/MM/YYYY"
-  const formatDate = (date: string) => {
-    const parsed = parseFlexibleDate(date);
-    if (!parsed) return '-';
-    return parsed.toLocaleDateString('en-GB');
-  };
-
-  const startDate = formatDate(renewal.renewal_start_date);
-  const endDate = formatDate(renewal.renewal_end_date);
+  const startDate = formatToDDMMYYYY(renewal.renewal_start_date);
+  const endDate = formatToDDMMYYYY(renewal.renewal_end_date);
 
   // Calculate duration
   const durationInYears = dayjs(renewal.renewal_end_date, 'DD-MM-YYYY').diff(
@@ -176,16 +204,14 @@ const RenewalPeriodContent = () => {
 };
 
 const ExcessContent = () => {
-  const renewal = renewalQuote.renewal_info;
-
   const policyExcess =
-    renewal.renewal_excess?.map((item) => ({
+    renewal.renewal_excess?.policy_excess?.map((item) => ({
       label: item.title,
       value: item.value,
     })) ?? [];
 
   const additionalExcess =
-    (renewal as any).renewal_additional_excess?.map((item: any) => ({
+    renewal.renewal_excess?.additional_excess?.map((item) => ({
       label: item.title,
       value: item.value,
     })) ?? [];
@@ -235,20 +261,36 @@ const VehicleDetailsContent = () => {
     {
       title: 'Vehicle Information',
       fields: [
-        { label: 'Vehicle Registration No.', value: 'SJK1234A' },
-        { label: 'Vehicle Make', value: 'Toyota' },
-        { label: 'Vehicle Model', value: 'Camry' },
-        { label: 'First Registered Year', value: '2020' },
-        { label: 'Hire Purchase Company', value: 'OCBC Bank' },
+        {
+          label: 'Vehicle Registration No.',
+          value: policy.vehicle_details['reg. no.'],
+        },
+        { label: 'Vehicle Make', value: policy.vehicle_details.make },
+        { label: 'Vehicle Model', value: policy.vehicle_details.model },
+        { label: 'Model Type', value: policy.vehicle_details['model type'] },
+        {
+          label: 'First Registered Year',
+          value: policy.vehicle_details['first reg on'],
+        },
+        {
+          label: 'Hire Purchase Company',
+          value: policy.vehicle_details.hire_purchase,
+        },
       ],
     },
     {
       title: 'Claims and NCD',
       fields: [
-        { label: 'No. of Claims', value: '0' },
-        { label: 'Claim Amount', value: 'Not Applicable' },
-        { label: 'Current NCD', value: '50%' },
-        { label: 'Renewal NCD', value: '50%' },
+        {
+          label: 'No. of Claims',
+          value: policy.claim_ncd_details.no_of_claims,
+        },
+        {
+          label: 'Claim Amount',
+          value: policy.claim_ncd_details.claim_incurred,
+        },
+        { label: 'Current NCD', value: policy.claim_ncd_details.current_ncd },
+        { label: 'Renewal NCD', value: policy.claim_ncd_details.renewal_ncd },
       ],
     },
   ];
@@ -266,7 +308,7 @@ const VehicleDetailsContent = () => {
                 </label>
                 <input
                   type='text'
-                  value={value}
+                  value={value || '-'}
                   disabled
                   className='cursor-not-allowed rounded-md border bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700'
                 />
@@ -280,37 +322,49 @@ const VehicleDetailsContent = () => {
 };
 
 const PolicyHolderContent = () => {
+  const insured = renewal.insured_info;
+
   const sections = [
     {
       title: 'Personal Information',
       fields: [
-        { label: 'Full Name', value: 'John Doe' },
-        { label: 'NRIC', value: 'S1234567A' },
-        { label: 'Date of Birth', value: '01/01/1985' },
-        { label: 'Gender', value: 'Male' },
-        { label: 'Marital Status', value: 'Married' },
-        { label: 'Driving Experience', value: '15 years' },
+        { label: 'Full Name', value: insured.name },
+        { label: 'NRIC', value: insured.nric },
+        { label: 'Date of Birth', value: parseCompactDate(insured.dob) },
+        { label: 'Gender', value: insured.gender === 'M' ? 'Male' : 'Female' },
+        {
+          label: 'Marital Status',
+          value: MARITAL_STATUS_MAP[insured.marital_status]
+            ? MARITAL_STATUS_OPTIONS.find(
+                (opt) =>
+                  opt.value === MARITAL_STATUS_MAP[insured.marital_status],
+              )?.text
+            : 'N/A',
+        },
+        // { label: 'Driving Experience', value: '15 years' },
       ],
     },
     {
       title: 'Full Address',
       fields: [
-        { label: 'Address Line 1', value: '123 Marina Bay Road' },
-        { label: 'Address Line 2', value: '#15-08 Oceania Tower' },
-        { label: 'Address Line 3', value: 'Marina Bay Financial Centre' },
-        { label: 'Postal Code', value: '018983' },
+        { label: 'Address Line 1', value: insured.address.address_line1 },
+        { label: 'Address Line 2', value: insured.address.address_line2 },
+        { label: 'Address Line 3', value: insured.address.address_line3 },
+        { label: 'Postal Code', value: insured.address.postal },
       ],
     },
     {
       title: 'Contact Details',
       fields: [
-        { label: 'Email', value: 'john.doe@email.com' },
-        { label: 'Phone Number', value: '+65 9123 4567' },
+        { label: 'Email', value: insured.email },
+        { label: 'Phone Number', value: insured.contact_no },
       ],
     },
   ];
 
-  const renderFields = (fields: { label: string; value: string }[]) =>
+  const renderFields = (
+    fields: { label: string; value: string | undefined }[],
+  ) =>
     fields.map(({ label, value }, idx) => (
       <div key={idx} className='flex flex-col'>
         <label className='mb-1 text-xs font-medium text-gray-700'>
@@ -318,7 +372,7 @@ const PolicyHolderContent = () => {
         </label>
         <input
           type='text'
-          value={value}
+          value={value ?? '-'}
           disabled
           className='cursor-not-allowed rounded-md border bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700'
         />
@@ -340,30 +394,17 @@ const PolicyHolderContent = () => {
 };
 
 const AdditionalNamedDriversContent = () => {
-  const drivers: Driver[] = [
-    {
-      name: 'John Smith',
-      badge: 'Included',
-      details: [
-        { label: 'NRIC', value: 'S1234567A' },
-        { label: 'Date of Birth', value: '1990-01-01' },
-        { label: 'Gender', value: 'Male' },
-        { label: 'Marital Status', value: 'Single' },
-        { label: 'Driving Experience', value: '10 years' },
-      ],
-    },
-    {
-      name: 'Sarah Johnson',
-      badge: 'SGD 60.00',
-      details: [
-        { label: 'NRIC', value: 'S9876543B' },
-        { label: 'Date of Birth', value: '1985-03-15' },
-        { label: 'Gender', value: 'Female' },
-        { label: 'Marital Status', value: 'Married' },
-        { label: 'Driving Experience', value: '15 years' },
-      ],
-    },
-  ];
+  const drivers = policy.named_drivers.map((d, idx) => ({
+    name: d.name,
+    badge: idx === 0 ? 'Included' : 'SGD 65.40',
+    details: [
+      { label: 'NRIC', value: d.icno || '-' },
+      { label: 'Date of Birth', value: d.dob || '-' },
+      { label: 'Gender', value: d.gender === 'M' ? 'Male' : 'Female' },
+      { label: 'Marital Status', value: d.martial_status || '-' },
+      { label: 'Driving Experience', value: d.driv_exp || '-' },
+    ],
+  }));
 
   return (
     <div className='space-y-4'>
@@ -377,7 +418,6 @@ const AdditionalNamedDriversContent = () => {
           key={idx}
           className='space-y-3 rounded-lg border-[2px] border-gray-200 p-4'
         >
-          {/* Header */}
           <div className='flex items-center justify-between font-bold'>
             {driver.name}
             <span
@@ -394,7 +434,7 @@ const AdditionalNamedDriversContent = () => {
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             {driver.details.map((detail, i) => (
               <div key={i}>
-                <label className='block text-sm font-medium text-gray-700'>
+                <label className='block text-xs font-medium text-gray-700'>
                   {detail.label}
                 </label>
                 <input
@@ -418,7 +458,7 @@ const PremiumSummaryContent = () => {
       {/* Plan */}
       <div className='text-base font-semibold'>Plan</div>
       <div className='flex items-center justify-between text-sm font-normal'>
-        <span>Comprehensive - Family NCD Builder</span>
+        <span>{capitalizeWords(policy.coverage)}</span>
         <span>SGD 876.51</span>
       </div>
 

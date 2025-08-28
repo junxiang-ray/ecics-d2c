@@ -305,3 +305,25 @@ export const parseFlexibleDate = (dateStr: string): Date | null => {
   const isoDate = new Date(dateStr);
   return isNaN(isoDate.getTime()) ? null : isoDate;
 };
+
+export const formatToDDMMYYYY = (dateStr: string): string => {
+  // Format date from "DD-MM-YYYY" to "DD/MM/YYYY"
+  const date = parseFlexibleDate(dateStr);
+  if (!date) return '';
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+export const parseCompactDate = (dateStr: string): string => {
+  //Format date from "ddMMYYYYY" to "DD/MM/YYYY"
+  const compactRegex = /^\d{8}$/;
+  if (!compactRegex.test(dateStr)) return '';
+
+  const day = dateStr.substring(0, 2);
+  const month = dateStr.substring(2, 4);
+  const year = dateStr.substring(4, 8);
+
+  return `${day}/${month}/${year}`;
+};
