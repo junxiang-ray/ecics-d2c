@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
-import logger from '../../libs/logger';
 import { schedule } from 'node-cron';
+
 import { handleQuoteReminder } from './quote-reminder.service';
 import { successRes } from '../../core/success.response';
+import logger from '../../libs/logger';
 
 export const POST = async (req: NextRequest) => {
   schedule(process.env.QUOTE_REMINDER_CRON || '', async () => {

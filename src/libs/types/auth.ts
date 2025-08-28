@@ -1,16 +1,22 @@
 import { DataFromSingpass } from '@/libs/types/quote';
 
-export interface LoginResponse {
+export interface LoginData {
   state: string;
   nonce: string;
   code_verifier: string;
   url: string;
 }
 
+export interface LoginResponse {
+  message: string;
+  data: LoginData;
+}
+
 export interface UserInfoPayload {
   nonce: string;
   code_verifier: string;
   state: string;
+  code?: string;
 }
 
 export interface SavePersonalInfoPayload {
@@ -18,6 +24,7 @@ export interface SavePersonalInfoPayload {
   is_sending_email?: boolean;
   promo_code?: string;
   partner_code?: string;
+  product_type?: string;
   personal_info: {
     name: string;
     gender: string;
@@ -26,12 +33,11 @@ export interface SavePersonalInfoPayload {
     address: string[];
     post_code?: string;
     date_of_birth: string;
-    year_of_registration: string;
     driving_experience: string;
     phone: string;
     email: string;
   };
-  vehicle_info_selected: {
+  vehicle_info_selected?: {
     vehicle_number: string;
     first_registered_year: string;
     vehicle_make: string;
@@ -48,14 +54,15 @@ export interface SavePersonalInfoPayload {
 }
 
 export interface Vehicle {
-  chasis_number: string;
+  chassis_number: string;
   vehicle_make: string;
   vehicle_model: string;
   first_registered_year: string;
-  vehicle_number: string;
+  vehicle_number?: string;
 }
 
 export interface VehicleSingPassResponse {
+  status?: { desc?: string };
   chassisno: { value: string };
   engineno: { value: string };
   firstregistrationdate: { value: string };

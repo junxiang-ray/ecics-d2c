@@ -1,21 +1,23 @@
 'use client';
 
+import { useAppSelector } from '@/redux/store';
+
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import MotorInsuranceLayout from '../MotorInsuranceLayout';
 
-interface CompletePurchasePageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default function CompletePurchasePage({
-  searchParams,
-}: CompletePurchasePageProps) {
-  const params = searchParams;
-  const isManual = params?.manual === 'true' ? true : false;
+export default function CompletePurchasePage() {
+  const isSingPassFlow = useAppSelector(
+    (state) => state.general.isSingpassFlow,
+  );
 
   return (
     <MotorInsuranceLayout>
-      {({ onSave }) => <CompletePurchaseDetail onSaveRegister={onSave} />}
+      {({ onSave }) => (
+        <CompletePurchaseDetail
+          onSaveRegister={onSave}
+          isSingPassFlow={isSingPassFlow}
+        />
+      )}
     </MotorInsuranceLayout>
   );
 }

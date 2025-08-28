@@ -410,7 +410,7 @@ function AddOnDetail({
   };
 
   return (
-    <div className='flex w-full flex-col items-center'>
+    <div className='flex w-full flex-col items-center gap-8'>
       <div className='flex w-full max-w-[1280px] flex-col items-center justify-center md:mb-24'>
         <div className='mt-2 flex w-full flex-col gap-4 px-4'>
           {/* Edit bar - hide for now */}
@@ -494,7 +494,7 @@ function AddOnDetail({
       </div>
 
       {!isShowBonusDetail && (
-        <div className='mt-20 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-2'>
+        <div className='mt-32 w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-10'>
           <PricingSummary
             planFee={premiumWithGst}
             addonFee={totalAddonFee}

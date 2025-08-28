@@ -1,6 +1,8 @@
-import maid from '@/api/base-service/maid';
-import { MaidQuoteCreationPayload } from '@/libs/types/maidQuote';
 import { useMutation, useQuery } from '@tanstack/react-query';
+
+import { MaidQuoteCreationPayload } from '@/libs/types/maidQuote';
+
+import maid from '@/api/base-service/maid';
 
 export const useGetMaidQuote = (key: string) => {
   const fetchQuote = async () => {

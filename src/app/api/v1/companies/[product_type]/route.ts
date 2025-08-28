@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
+
 import { getAllCompanies } from './company.service';
-import logger from '../../../libs/logger';
-import { successRes } from '../../../core/success.response';
 import { ErrBadRequest } from '../../../core/error.response';
+import { successRes } from '../../../core/success.response';
+import logger from '../../../libs/logger';
 
 export const GET = async (
   req: NextRequest,

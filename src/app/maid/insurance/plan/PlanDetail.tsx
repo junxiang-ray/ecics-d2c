@@ -103,7 +103,7 @@ function PlanDetail({
   };
 
   return (
-    <div className='flex w-full flex-col justify-center md:mb-16'>
+    <div className='flex w-full flex-col justify-center gap-6 md:mb-16'>
       <div className='flex flex-col items-center justify-center'>
         <div className='w-full max-w-[1280px]'>
           <div className='mx-4 pb-4 text-[16px] font-bold underline'>

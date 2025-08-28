@@ -1,6 +1,7 @@
-import { prisma } from '@/app/api/libs/prisma';
-import { getCustomerInfoDTO } from './customer-info.dto';
 import logger from '@/app/api/libs/logger';
+import { prisma } from '@/app/api/libs/prisma';
+
+import { getCustomerInfoDTO } from './customer-info.dto';
 
 export async function getCustomerInfo(data: getCustomerInfoDTO) {
   const { vehicle_registration_number } = data;

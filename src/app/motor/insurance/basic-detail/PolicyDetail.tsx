@@ -10,6 +10,7 @@ import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import SingpassPolicyDetailForm from '@/app/motor/insurance/basic-detail/SingpassPolicyDetailForm';
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -78,6 +79,9 @@ export const PolicyDetail = ({
     [MOTOR_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
     [MOTOR_QUOTE.other_hire_purchase]:
       quoteInfo?.company_name_other ?? undefined,
+
+    [MOTOR_QUOTE.engine_number]: selectedVehicle?.engine_number ?? undefined,
+    [MOTOR_QUOTE.chassis_number]: selectedVehicle?.chasis_number ?? undefined,
   };
 
   // Options for Dropdown
@@ -121,9 +125,9 @@ export const PolicyDetail = ({
       payload = {
         ...payload,
         personal_info: personal_info,
-        vehicle_info_selected: selectedVehicle,
       };
     }
+
     generateQuote(payload)
       .then((res) => {
         if (res) {
@@ -140,36 +144,19 @@ export const PolicyDetail = ({
       });
   };
 
+  const FormComponent = isSingPassFlow
+    ? SingpassPolicyDetailForm
+    : PolicyDetailForm;
+
   return (
-    <>
-      <div className='mt-4 w-full md:px-0'>
-        {/* turn on Day 1.5 */}
-        {/* {isSingPassFlow && (
-          <>
-            <div className='mb-8 hidden items-center justify-between md:flex md:flex-col md:gap-4'>
-              <HeaderVehicleInfo
-                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-                insuranceAdditionalInfo={
-                  quoteInfo?.data.insurance_additional_info
-                }
-              />
-            </div>
-            <div className='py-4 md:hidden'>
-              <HeaderVehicleInfoMobile
-                vehicleInfo={quoteInfo?.data.vehicle_info_selected}
-              />
-            </div>
-          </>
-        )} */}
-        <PolicyDetailForm
-          onSubmit={onSubmit}
-          hirePurchaseOptions={hirePurchaseListFormatted}
-          isSingpassFlow={isSingPassFlow}
-          isLoading={isPending}
-          initialValues={initialValues}
-          onSaveRegister={onSaveRegister}
-        />
-      </div>
-    </>
+    <div className='mt-4 w-full md:px-0'>
+      <FormComponent
+        onSubmit={onSubmit}
+        hirePurchaseOptions={hirePurchaseListFormatted}
+        isLoading={isPending}
+        initialValues={initialValues}
+        onSaveRegister={onSaveRegister}
+      />
+    </div>
   );
 };

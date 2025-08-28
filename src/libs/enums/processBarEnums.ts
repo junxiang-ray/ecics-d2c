@@ -1,4 +1,5 @@
 export enum StepProcessBar {
+  FIRST = -1,
   POLICY_DETAILS = 0,
   SELECT_PLAN = 1,
   SELECT_ADD_ON = 2,

@@ -16,6 +16,8 @@ export const MOTOR_QUOTE = {
   promo_code: 'quick_proposal_promo_code',
   hire_purchase: 'quick_proposal_hire_purchase',
   other_hire_purchase: 'quick_proposal_other_hire_purchase',
+  engine_number: 'engine_number',
+  chassis_number: 'chassis_number',
 };
 
 export const MAID_QUOTE = {
@@ -46,4 +48,5 @@ export const MAID_QUOTE = {
   company_name: 'company_name',
   company_name_other: 'company_name_other',
   has_helper_worked_12_months: 'has_helper_worked_12_months',
+  marital_status: 'marital_status',
 };

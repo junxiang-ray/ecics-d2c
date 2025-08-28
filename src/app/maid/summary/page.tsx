@@ -195,7 +195,7 @@ export default function Summary() {
   const addonsTitles = matchedPlan?.benefits || [];
 
   return (
-    <div className='flex w-full justify-center '>
+    <div className='flex h-screen w-full justify-center overflow-y-auto'>
       <div className='w-full max-w-[1280px]'>
         <div className='flex w-full flex-col items-center justify-center gap-6 px-6 py-4'>
           {_renderCongratulation()}

@@ -247,7 +247,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
 
   return (
     <FormProvider {...methods}>
-      <div className='flex w-full justify-center'>
+      <div className='mb-10 flex w-full justify-center md:mb-0'>
         <Form
           form={form}
           scrollToFirstError={{
@@ -453,7 +453,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           }
         />
       </div>
-      <div className='md:mt-18 mt-20 w-full bg-[#FFFEFF]'>
+      <div className='mt-32 w-full bg-[#FFFEFF] md:mt-36'>
         <PricingSummary
           planFee={planFreeTotal}
           addonFee={quoteInfo?.data?.review_info_premium?.total_addon_free}

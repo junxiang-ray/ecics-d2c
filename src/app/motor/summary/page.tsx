@@ -299,6 +299,7 @@ export default function Summary() {
   const selectedPlanCode = quote?.data?.selected_plan_code;
   const plans = quote?.data?.plans || [];
   const matchedPlan = plans.find((plan) => plan.code === selectedPlanCode);
+
   const addonsTitles =
     matchedPlan?.benefits
       ?.filter((benefit) => benefit.is_active)

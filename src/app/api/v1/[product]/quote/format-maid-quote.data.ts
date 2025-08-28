@@ -1,7 +1,8 @@
+import { v4 as uuid } from 'uuid';
+
 import { MAID_INSURANCE } from '@/app/api/constants/maid.insurance';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { prisma } from '@/app/api/libs/prisma';
-import { v4 as uuid } from 'uuid';
 
 interface MaidPlan {
   title: string;

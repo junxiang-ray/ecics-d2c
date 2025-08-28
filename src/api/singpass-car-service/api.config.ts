@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const singpassService = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_SINGPASS_SERVICE_URL || '',
+const singpassCarService = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -9,7 +9,7 @@ const singpassService = axios.create({
   },
 });
 
-singpassService.interceptors.request.use(
+singpassCarService.interceptors.request.use(
   (config) => {
     return config;
   },
@@ -18,7 +18,7 @@ singpassService.interceptors.request.use(
   },
 );
 
-singpassService.interceptors.response.use(
+singpassCarService.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -32,4 +32,4 @@ singpassService.interceptors.response.use(
   },
 );
 
-export default singpassService;
+export default singpassCarService;

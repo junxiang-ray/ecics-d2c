@@ -1,11 +1,13 @@
 import { v4 as uuid } from 'uuid';
 
-import { AddonOption } from '@/libs/types/quote';
-
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
+import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
+import type { ClassValue } from 'clsx';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export const removeFromLocalStorage = (keys: string[]) => {
   keys.forEach((key) => {
@@ -58,7 +60,9 @@ export const generateYearOptions = (): DropdownOption[] => {
 /**
  * Capitalize first letter of each word
  */
-export const capitalizeWords = (str: string): string => {
+export const capitalizeWords = (str: string | undefined | null): string => {
+  if (!str) return '';
+
   return str
     .toLowerCase()
     .split(' ')
@@ -161,3 +165,49 @@ export const getPaymentType = (
   }
   return undefined;
 };
+
+export const getPlanGroupPrefix = (
+  planName: string,
+  planType: PlanGroupType,
+): string => {
+  const mapping = {
+    [PRODUCT_NAME.CAR]: [
+      { keyword: 'Family NCD Builder', prefix: 'FNCD' },
+      { keyword: 'Comprehensive', prefix: 'COM' },
+      { keyword: 'Third Party, Fire & Theft', prefix: 'TPFT' },
+      { keyword: 'Third Party Only', prefix: 'TPO' },
+    ],
+    [PRODUCT_NAME.MAID]: [
+      { keyword: 'Classic', prefix: 'CLASS' },
+      { keyword: 'Exclusive', prefix: 'EXCLU' },
+      { keyword: 'Deluxe', prefix: 'DELU' },
+    ],
+  };
+
+  const matched = mapping[planType]?.find((item) =>
+    planName.includes(item.keyword),
+  );
+  return matched ? matched.prefix : '';
+};
+
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
+};
+
+const ALLOWED_EXTERNAL_ORIGINS =
+  process.env.NEXT_PUBLIC_ALLOWED_REDIRECT_HOSTS?.split(',').map((h) =>
+    h.trim(),
+  ) ?? [];
+
+export function isSafePaymentUrl(savedUrl: string | null): boolean {
+  if (!savedUrl) return false;
+
+  try {
+    const url = new URL(savedUrl);
+    // Check origin (protocol + hostname + optional port)
+    return ALLOWED_EXTERNAL_ORIGINS.includes(url.origin);
+  } catch (err) {
+    console.warn('Invalid redirect URL:', savedUrl, err);
+    return false;
+  }
+}

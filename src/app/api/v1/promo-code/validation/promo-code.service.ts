@@ -1,7 +1,8 @@
-import { geInfoPromocodeDTO } from './promo-code.dto';
-import { prisma } from '@/app/api/libs/prisma';
-import { PROMO_CODE_MESSAGES } from './promo-code.constants';
 import logger from '@/app/api/libs/logger';
+import { prisma } from '@/app/api/libs/prisma';
+
+import { PROMO_CODE_MESSAGES } from './promo-code.constants';
+import { geInfoPromocodeDTO } from './promo-code.dto';
 
 export async function getInfoPromocode(data: geInfoPromocodeDTO) {
   const { promo_code, product_type } = data;

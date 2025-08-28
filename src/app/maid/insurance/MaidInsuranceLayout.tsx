@@ -13,6 +13,7 @@ import { setIsSingpassFlow } from '@/redux/slices/general.slice';
 import { useAppDispatch } from '@/redux/store';
 
 const maidSteps = {
+  [StepProcessBar.FIRST]: ROUTES.MAID.REVIEW_INFO_DETAIL,
   [StepProcessBar.POLICY_DETAILS]: ROUTES.INSURANCE_MAID.BASIC_DETAIL,
   [StepProcessBar.SELECT_PLAN]: ROUTES.INSURANCE_MAID.PLAN,
   [StepProcessBar.SELECT_ADD_ON]: ROUTES.INSURANCE_MAID.ADD_ON,
