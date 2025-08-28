@@ -1,8 +1,13 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
+import dayjs from 'dayjs';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { formatToDDMMYYYY } from '@/libs/utils/date-utils';
 
 import {
   ExcessIcon,
@@ -10,423 +15,141 @@ import {
   PolicyDetailsIcon,
   PolicyHolderIcon,
   PrivateMotorCarIcon,
-  ReloadIcon,
   RenewalPeriodIcon,
 } from '@/components/icons/renewal-icons';
-import { DatePickerField } from '@/components/ui/form/datepicker';
 
+import {
+  MARITAL_STATUS_MAP,
+  MARITAL_STATUS_OPTIONS,
+} from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { MAID_QUOTE } from '@/constants';
-import { finValidator } from '@/libs/utils/validation-utils';
-import { passportRegex } from '@/constants/validation.constant';
-import { HasHelperValue } from '@/app/motor/insurance/basic-detail/options';
-import { VALUE_OPTION_COMPANY } from '@/constants/general.constant';
-import { InputField } from '@/components/ui/form/inputfield';
+import AddOnsContent from '@/app/renewal/detail/card/AddOnsContent';
+import ExcessContent from '@/app/renewal/detail/card/ExcessContent';
+import PolicyDetailsContent from '@/app/renewal/detail/card/PolicyDetailsContent';
+import PolicyHolderContent from '@/app/renewal/detail/card/PolicyHolderContent';
+import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent';
+import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
 
-interface Driver {
-  name: string;
-  badge: string;
-  details: {
-    label: string;
-    value: string;
-  }[];
-}
+import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
 
-const PolicyDetailsContent = () => {
-  const fields = [
-    { label: 'Existing Policy No.', value: 'MPC24B0087900' },
-    { label: 'Plan Type', value: 'Comprehensive - Family NCD Builder' },
-    { label: 'Current Expiry Date', value: '22/05/2025' },
-    { label: 'Renewal Notice Dated on', value: '20/06/2025' },
-    { label: 'Sum Insured', value: 'Market Value at the time of loss' },
-    { label: 'Scheme', value: 'Authorized Workshop' },
-    { label: 'Intermediary Name', value: 'AIG Insurance Singapore Pte Ltd' },
-  ];
-
-  return (
-    <div className='space-y-4'>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        {fields.map((field, idx) => (
-          <div key={idx} className='flex flex-col'>
-            <label className='mb-1 text-xs font-medium text-gray-700'>
-              {field.label}
-            </label>
-            <input
-              type='text'
-              value={field.value}
-              disabled
-              className='cursor-not-allowed rounded-md border bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700'
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const RenewalPeriodContent = ({
-  errors,
-  handleChangeRenewalStartDate,
-}: {
-  errors: any;
-  handleChangeRenewalStartDate: (value: any) => void;
-}) => {
-  return (
-    <div className='space-y-4'>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        <Form.Item
-          name='renewal_start_date'
-          validateStatus={errors?.renewal_start_date ? 'error' : ''}
-          help={errors?.renewal_start_date?.message}
-        >
-          <DatePickerField
-            name='renewal_start_date'
-            label='Renewal Start Date'
-            disabled
-            onChange={handleChangeRenewalStartDate}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name='renewal_expiry_date'
-          validateStatus={errors?.renewal_expiry_date ? 'error' : ''}
-          help={errors?.renewal_expiry_date?.message}
-        >
-          <DatePickerField
-            name='renewal_expiry_date'
-            label='Renewal Expiry Date'
-            isRequired
-          />
-        </Form.Item>
-
-        {/* Coverage Duration (readonly) */}
-        <div className='col-span-full flex flex-col'>
-          <div className='mb-2 flex items-center justify-between'>
-            <label className='mb-1 text-xs font-medium text-gray-700'>
-              Coverage Duration
-            </label>
-            <div className='ml-2 flex cursor-pointer items-center rounded-lg border border-[#02ADEF] bg-[#EFF6FF] px-2 py-2 text-xs font-normal text-[#02ADEF]'>
-              <ReloadIcon size={14} className='mr-1' /> Reset to 1 Year
-            </div>
-          </div>
-          <input
-            type='text'
-            value='1 year'
-            disabled
-            className='cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
-          />
-          <div className='text-[10px] font-normal'>
-            Duration is calculated from renewal start date to expiry date. Use
-            the reset button to quickly set coverage to exactly one year.
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ExcessContent = () => {
-  const policyExcess = [
-    { label: 'Windscreen', value: 'Refer to schedule' },
-    { label: 'Insured/Named Driver', value: 'SGD 600' },
-  ];
-
-  const additionalExcess = [
-    { label: 'Unnamed Drivers', value: 'SGD 500' },
-    {
-      label: 'Age < 26 Years old or driving experience < 2 years',
-      value: 'SGD 3,000',
+const renewalQuote = {
+  policy_id: 'P000000039828',
+  quote_id: 'Q000000039790',
+  proposal_id: 'PR000000035292',
+  edit_renewal: true,
+  renewal_info: {
+    policy_details: {
+      current_policy_no: 'MPC24A00356201',
+      current_policy_expiry_date: '2-10-2025',
+      agency: 'INSUXXXXXXXXXXX',
+      coverage: 'COMPREHENSIVE',
+      sum_insured: 'Market Value at the time of loss',
+      vehicle_details: {
+        'reg. no.': 'SBU6818J',
+        'make/model': 'HONDA FIT 1.3G SKYROOF A',
+        make: 'HONDA',
+        model: 'Honda Fit 1.3G A',
+        'first reg on': '2008',
+        hire_purchase: 'NIL',
+        'model type': '',
+      },
+      claim_ncd_details: {
+        no_of_claims: '0',
+        claim_incurred: 'Not Applicable',
+        current_ncd: '50%',
+        renewal_ncd: '50%',
+      },
+      named_drivers: [
+        {
+          name: 'GIANXXXXXX',
+          icno: 'G1234567X',
+          dob: '1964-10-03',
+          martial_status: 'M',
+          driv_exp: '32',
+          gender: 'F',
+        },
+      ],
     },
-  ];
-
-  const renderFields = (fields: { label: string; value: string }[]) =>
-    fields.map((field, idx) => (
-      <div key={idx} className='flex flex-col'>
-        <label className='mb-1 text-xs font-medium text-gray-700'>
-          {field.label}
-        </label>
-        <input
-          type='text'
-          value={field.value}
-          disabled
-          className='cursor-not-allowed rounded-md border bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700'
-        />
-      </div>
-    ));
-
-  return (
-    <div className='space-y-6'>
-      <div>
-        <div className='mb-3 text-[14px] font-semibold'>Policy Excess</div>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-          {renderFields(policyExcess)}
-        </div>
-      </div>
-      <div>
-        <div className='mb-3 text-[14px] font-semibold'>Additional Excess</div>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-          {renderFields(additionalExcess)}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const VehicleDetailsContent = () => {
-  const sections = [
+    renewal_start_date: '28-07-2025',
+    renewal_end_date: '27-10-2026',
+    // renewal_start_date: "3-10-2025",
+    // renewal_end_date: "2-10-2026", #######bug with d-m-yyyy
+    insured_info: {
+      name: 'A L XXXXXXXXXXXXX',
+      nric: 'S7790718A',
+      dob: '29031983',
+      gender: 'M',
+      marital_status: 'M',
+      driv_exp: '43',
+      address: {
+        address_line1: '129 XXXXXXXXXXXXX',
+        address_line2: 'SINGXXXXXXXXXXXXX',
+        address_line3: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
+        postal: '357866',
+      },
+      email: 'may_lim@ecics.com.sg',
+      contact_no: 'XXXXXX',
+    },
+    date_extracted: '20-8-2025',
+    scheme: 'AUTHORISED WORKSHOPS',
+    renewal_excess: {
+      policy_excess: [
+        { title: 'Windscreen', value: 'SGD 100.00' },
+        { title: 'Section I - Standard Excess', value: 'SGD 1,000.00' },
+      ],
+      additional_excess: [
+        { title: 'Section I - Unnamed Drivers', value: 'SGD 500.00' },
+        {
+          title: 'Section I – Young or Inexperienced Drivers Excess',
+          value: 'SGD 3,000.00',
+        },
+      ],
+    },
+    optional_benefits: [
+      {
+        id: 1,
+        name: 'Loss of Use',
+        code: 'OB0010',
+        sub_option: 'Transport Allowance',
+      },
+    ],
+    renewalpremb4gst: '700',
+    renewalgst: '63',
+    renewalpremwgst: '763',
+  },
+  add_on_optional_benefits: [
     {
-      title: 'Vehicle Information',
-      fields: [
-        { label: 'Vehicle Registration No.', value: 'SJK1234A' },
-        { label: 'Vehicle Make', value: 'Toyota' },
-        { label: 'Vehicle Model', value: 'Camry' },
-        { label: 'First Registered Year', value: '2020' },
-        { label: 'Hire Purchase Company', value: 'OCBC Bank' },
+      id: 1,
+      name: 'Medical Expenses',
+      sub_options: [
+        { id: 1, name: '[+$200]', prem: '27.25' },
+        { id: 2, name: '[+$700]', prem: '54.50' },
+        { id: 3, name: '[+$1,700]', prem: '109.00' },
       ],
     },
     {
-      title: 'Claims and NCD',
-      fields: [
-        { label: 'No. of Claims', value: '0' },
-        { label: 'Claim Amount', value: 'Not Applicable' },
-        { label: 'Current NCD', value: '50%' },
-        { label: 'Renewal NCD', value: '50%' },
+      id: 2,
+      name: 'Key Replacement Cover',
+      sub_options: [
+        { id: 1, name: '[$300]', prem: '27.25' },
+        { id: 2, name: '[$500]', prem: '43.60' },
       ],
     },
-  ];
-
-  return (
-    <div className='space-y-6'>
-      {sections.map(({ title, fields }, idx) => (
-        <div key={idx}>
-          <div className='mb-3 text-[14px] font-semibold'>{title}</div>
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            {fields.map(({ label, value }, idx) => (
-              <div key={idx} className='flex flex-col'>
-                <label className='mb-1 text-xs font-medium text-gray-700'>
-                  {label}
-                </label>
-                <input
-                  type='text'
-                  value={value}
-                  disabled
-                  className='cursor-not-allowed rounded-md border bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700'
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+    {
+      id: 3,
+      name: 'Personal Accident+',
+      sub_options: [
+        { id: 1, name: '[+$30,000]', prem: '32.70' },
+        { id: 2, name: '[+$60,000]', prem: '65.40' },
+        { id: 3, name: '[+$100,000]', prem: '109.00' },
+      ],
+    },
+    { id: 4, name: '24x7 Roadside Assistance', prem: '43.60' },
+  ],
 };
 
-const PolicyHolderContent = () => {
-  const sections = [
-    {
-      title: 'Personal Information',
-      fields: [
-        { label: 'Full Name', value: 'John Doe' },
-        { label: 'NRIC', value: 'S1234567A' },
-        { label: 'Date of Birth', value: '01/01/1985' },
-        { label: 'Gender', value: 'Male' },
-        { label: 'Marital Status', value: 'Married' },
-        { label: 'Driving Experience', value: '15 years' },
-      ],
-    },
-    {
-      title: 'Full Address',
-      fields: [
-        { label: 'Address Line 1', value: '123 Marina Bay Road' },
-        { label: 'Address Line 2', value: '#15-08 Oceania Tower' },
-        { label: 'Address Line 3', value: 'Marina Bay Financial Centre' },
-        { label: 'Postal Code', value: '018983' },
-      ],
-    },
-    {
-      title: 'Contact Details',
-      fields: [
-        { label: 'Email', value: 'john.doe@email.com' },
-        { label: 'Phone Number', value: '+65 9123 4567' },
-      ],
-    },
-  ];
-
-  const renderFields = (fields: { label: string; value: string }[]) =>
-    fields.map(({ label, value }, idx) => (
-      <div key={idx} className='flex flex-col'>
-        <label className='mb-1 text-xs font-medium text-gray-700'>
-          {label}
-        </label>
-        <input
-          type='text'
-          value={value}
-          disabled
-          className='cursor-not-allowed rounded-md border bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700'
-        />
-      </div>
-    ));
-
-  return (
-    <div className='space-y-6'>
-      {sections.map(({ title, fields }, idx) => (
-        <div key={idx}>
-          <div className='mb-3 text-[14px] font-semibold'>{title}</div>
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            {renderFields(fields)}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const AdditionalNamedDriversContent = () => {
-  const drivers: Driver[] = [
-    {
-      name: 'John Smith',
-      badge: 'Included',
-      details: [
-        { label: 'NRIC', value: 'S1234567A' },
-        { label: 'Date of Birth', value: '1990-01-01' },
-        { label: 'Gender', value: 'Male' },
-        { label: 'Marital Status', value: 'Single' },
-        { label: 'Driving Experience', value: '10 years' },
-      ],
-    },
-    {
-      name: 'Sarah Johnson',
-      badge: 'SGD 60.00',
-      details: [
-        { label: 'NRIC', value: 'S9876543B' },
-        { label: 'Date of Birth', value: '1985-03-15' },
-        { label: 'Gender', value: 'Female' },
-        { label: 'Marital Status', value: 'Married' },
-        { label: 'Driving Experience', value: '15 years' },
-      ],
-    },
-  ];
-
-  return (
-    <div className='space-y-4'>
-      <div className='rounded-lg border border-[#FFF085] bg-[#E8F0FE] p-4 text-sm'>
-        First Driver is included within the plan at no additional cost,
-        additional drivers cost SGD 65.40 each
-      </div>
-
-      {drivers.map((driver, idx) => (
-        <div
-          key={idx}
-          className='space-y-3 rounded-lg border-[2px] border-gray-200 p-4'
-        >
-          {/* Header */}
-          <div className='flex items-center justify-between font-bold'>
-            {driver.name}
-            <span
-              className={`rounded-xl px-2 py-1 text-xs ${
-                driver.badge === 'Included'
-                  ? 'bg-green-100 text-green-700'
-                  : 'text-[16px] font-normal'
-              }`}
-            >
-              {driver.badge}
-            </span>
-          </div>
-
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            {driver.details.map((detail, i) => (
-              <div key={i}>
-                <label className='block text-sm font-medium text-gray-700'>
-                  {detail.label}
-                </label>
-                <input
-                  type='text'
-                  value={detail.value}
-                  disabled
-                  className='mt-1 block w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm'
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const AddOnsContent = () => {
-  return (
-    <div className='space-y-4'>
-      {/* Plan */}
-      <div className='text-base font-semibold'>Plan</div>
-      <div className='flex items-center justify-between text-sm font-normal'>
-        <span>Comprehensive - Family NCD Builder</span>
-        <span>SGD 876.51</span>
-      </div>
-
-      {/* Add-ons */}
-      <div>
-        <p className='mb-2 text-base font-semibold'>Add-ons</p>
-        {[
-          'Loss of Use',
-          '24/7 Roadside Assistance',
-          'Key Replacement Cover',
-          'Child Seat Cover',
-        ].map((item) => (
-          <div key={item} className='mb-1 flex justify-between space-y-2'>
-            <span className='text-sm'>
-              {item}{' '}
-              <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
-                Included
-              </span>
-            </span>
-            <span className='text-sm'>SGD 0.00</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Named Drivers */}
-      <div>
-        <p className='mb-2 text-base font-semibold'>Named Drivers</p>
-        {[
-          { name: 'John Smith', price: 'SGD 0.00' },
-          { name: 'Sarah Johnson', price: 'SGD 60.00' },
-        ].map((driver) => (
-          <div
-            key={driver.name}
-            className='mb-1 flex justify-between space-y-2'
-          >
-            <span className='text-sm'>
-              {driver.name}{' '}
-              <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
-                Included
-              </span>
-            </span>
-            <span className='text-sm'>{driver.price}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Total */}
-      <div className='space-y-1 border-t pt-3'>
-        <div className='flex justify-between'>
-          <span className='text-base font-semibold'>Subtotal</span>
-          <span className='font-bold'>SGD 936.51</span>
-        </div>
-        <div className='flex justify-between pb-3 text-sm'>
-          <span>GST (9%)</span>
-          <span className='font-medium'>SGD 84.29</span>
-        </div>
-        <div className='flex justify-between border-t pt-3 text-lg font-bold'>
-          <span>Net Premium (Total)</span>
-          <span className='text-blue-600'>SGD 1020.80</span>
-        </div>
-      </div>
-    </div>
-  );
-};
+const policy = renewalQuote.renewal_info.policy_details;
+const renewal = renewalQuote.renewal_info;
 
 const schema = z.object({
   name: z
@@ -438,22 +161,90 @@ const schema = z.object({
     .max(60, 'Name must be at most 60 characters')
     .nonempty('Name is required'),
 });
-
+console.log('renewal.renewal_end_date', renewal.renewal_end_date);
 type FormData = z.infer<typeof schema>;
 
 const RenewalDetailForm = () => {
+  const initForm = {
+    // Policy details
+    current_policy_no: policy.current_policy_no,
+    coverage: policy.coverage,
+    current_policy_expiry_date: formatToDDMMYYYY(
+      policy.current_policy_expiry_date,
+    ),
+    sum_insured: policy.sum_insured,
+    agency: policy.agency,
+
+    // Renewal
+    date_extracted: formatToDDMMYYYY(renewal.date_extracted),
+    scheme: renewal.scheme,
+    renewal_start_date: renewal.renewal_start_date
+      ? dayjs(renewal.renewal_start_date, 'DD-MM-YYYY')
+      : null,
+    renewal_expiry_date: renewal.renewal_end_date
+      ? dayjs(renewal.renewal_end_date, 'DD-MM-YYYY')
+      : null,
+
+    // Renewal excess
+    policy_excess_0: renewal.renewal_excess.policy_excess[0]?.value || '',
+    policy_excess_1: renewal.renewal_excess.policy_excess[1]?.value || '',
+    additional_excess_0:
+      renewal.renewal_excess.additional_excess[0]?.value || '',
+    additional_excess_1:
+      renewal.renewal_excess.additional_excess[1]?.value || '',
+
+    // Vehicle details
+    reg_no: policy.vehicle_details['reg. no.'],
+    make: policy.vehicle_details.make,
+    model: policy.vehicle_details.model,
+    first_reg_on: policy.vehicle_details['first reg on'],
+    hire_purchase: policy.vehicle_details.hire_purchase,
+    model_type: policy.vehicle_details['model type'],
+
+    // Claims / NCD
+    no_of_claims: policy.claim_ncd_details.no_of_claims,
+    claim_incurred: policy.claim_ncd_details.claim_incurred,
+    current_ncd: policy.claim_ncd_details.current_ncd,
+    renewal_ncd: policy.claim_ncd_details.renewal_ncd,
+
+    // Insured info
+    name: renewal.insured_info.name,
+    nric: renewal.insured_info.nric,
+    dob: renewal.insured_info.dob,
+    gender: renewal.insured_info.gender === 'M' ? 'Male' : 'Female',
+    marital_status: renewal.insured_info.marital_status
+      ? MARITAL_STATUS_OPTIONS.find(
+          (opt) =>
+            opt.value ===
+            MARITAL_STATUS_MAP[renewal.insured_info.marital_status],
+        )?.text || 'N/A'
+      : 'N/A',
+    address_line1: renewal.insured_info.address.address_line1,
+    address_line2: renewal.insured_info.address.address_line2,
+    address_line3: renewal.insured_info.address.address_line3,
+    postal: renewal.insured_info.address.postal,
+    email: renewal.insured_info.email,
+    contact_no: renewal.insured_info.contact_no,
+
+    // Named drivers
+    named_drivers: policy.named_drivers.map((driver) => ({
+      name: driver.name || '',
+      nric: driver.icno || '',
+      dob: driver.dob ? dayjs(driver.dob).format('YYYY-MM-DD') : '',
+      marital_status: driver.martial_status === 'M' ? 'Married' : 'Single',
+      driv_exp: driver.driv_exp || '',
+      gender: driver.gender === 'M' ? 'Male' : 'Female',
+    })),
+  };
+
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
-    // values: initFormDate,
+    values: initForm,
   });
   const {
     formState: { errors },
   } = methods;
-
-  const handleChangeRenewalStartDate = (value: any) => {
-    console.log('renewal start date changed:', value);
-  };
 
   return (
     <FormProvider {...methods}>
@@ -465,7 +256,7 @@ const RenewalDetailForm = () => {
             subtitle='Your current policy information'
             isPolicyRenewalScreen={true}
           >
-            <PolicyDetailsContent />
+            <PolicyDetailsContent errors={errors} />
           </InfoCard>
 
           <InfoCard
@@ -476,7 +267,7 @@ const RenewalDetailForm = () => {
           >
             <RenewalPeriodContent
               errors={errors}
-              handleChangeRenewalStartDate={handleChangeRenewalStartDate}
+              renewalStartDate={initForm.renewal_start_date}
             />
           </InfoCard>
 
@@ -486,7 +277,7 @@ const RenewalDetailForm = () => {
             subtitle='Excess amounts applicable to your policy'
             isPolicyRenewalScreen={true}
           >
-            <ExcessContent />
+            <ExcessContent renewal={renewal} />
           </InfoCard>
 
           <InfoCard
@@ -510,7 +301,7 @@ const RenewalDetailForm = () => {
           <InfoCard
             icon={<PolicyHolderIcon className='text-sky-500' size={20} />}
             title='Additional Named Drivers'
-            subtitle='2 additional drivers added'
+            subtitle={`${policy.named_drivers.length} additional driver${policy.named_drivers.length > 1 ? 's' : ''} added`}
             isPolicyRenewalScreen={true}
           >
             <AdditionalNamedDriversContent />
@@ -522,7 +313,7 @@ const RenewalDetailForm = () => {
             subtitle='4/9 add-ons selected'
             isPolicyRenewalScreen={true}
           >
-            <AddOnsContent />
+            <AddOnsContent renewalQuote={renewalQuote} />
           </InfoCard>
         </div>
       </Form>
