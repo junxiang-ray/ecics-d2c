@@ -36,7 +36,6 @@ export default function RenewalPage() {
       const state = query.get('state') || '';
       const code_verifier = sessionStorage.getItem('code_verifier') || '';
       const nonce = sessionStorage.getItem('nonce') || '';
-
       setPayload({ code_verifier, nonce, state, code });
     }
   }, []);
@@ -78,7 +77,7 @@ export default function RenewalPage() {
         </p>
       </div>
       <section className='mb-8'>
-        <PoliciesPendingRenewal />
+        <PoliciesPendingRenewal policies={vehData || []} />
       </section>
 
       <div className='mb-8 grid gap-6 md:grid-cols-2'>
