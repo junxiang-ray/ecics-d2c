@@ -72,7 +72,7 @@ const HeaderVehicleInfo = ({
         <SecondaryButton
           className='flex items-center rounded-[52px] bg-[#00ADEF] px-5 py-2 font-bold text-white'
           icon={<EditIcon size={18} className='mt-1' />}
-          onClick={() => router.push(ROUTES.INSURANCE.PLAN)}
+          onClick={() => router.push(ROUTES.INSURANCE_MOTORCYCLE.PLAN)}
         >
           Edit
         </SecondaryButton>
@@ -91,7 +91,9 @@ const HeaderVehicleInfo = ({
           <SecondaryButton
             className='flex items-center rounded-[52px] bg-[#00ADEF] px-5 py-2 font-bold text-white'
             icon={<EditIcon size={18} className='mt-1' />}
-            onClick={() => router.push(ROUTES.INSURANCE.BASIC_DETAIL)}
+            onClick={() =>
+              router.push(ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL)
+            }
           >
             Edit
           </SecondaryButton>

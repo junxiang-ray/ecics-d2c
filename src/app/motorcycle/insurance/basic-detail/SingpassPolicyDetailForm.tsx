@@ -275,7 +275,7 @@ const SingpassPolicyDetailForm = ({
     const code = sessionStorage.getItem('code') || '';
     const state = sessionStorage.getItem('state') || '';
     const query = new URLSearchParams({ code, state }).toString();
-    router.push(`${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`);
+    router.push(`${ROUTES.MOTORCYCLE.REVIEW_INFO_DETAIL}?${query}`);
   };
 
   useEffect(() => {

@@ -22,7 +22,7 @@ const HeaderVehicleInfoMobile = (props: Props) => {
         </span>
         <div
           onClick={() => {
-            router.push(ROUTES.INSURANCE.BASIC_DETAIL);
+            router.push(ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL);
           }}
           className='flex flex-row items-center gap-1 rounded-lg border border-[#00ADEF] bg-[#00ADEF] px-2 py-1 text-xs font-semibold text-white'
         >

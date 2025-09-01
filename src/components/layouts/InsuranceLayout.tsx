@@ -272,7 +272,9 @@ function InsuranceLayout({
                 const targetUrl =
                   productType === ProductType.MAID
                     ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
-                    : ROUTES.INSURANCE.BASIC_DETAIL;
+                    : productType === ProductType.MOTORCYCLE
+                      ? ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL
+                      : ROUTES.INSURANCE.BASIC_DETAIL;
 
                 router.push(targetUrl);
                 setIsShowPopupImportant(false);
