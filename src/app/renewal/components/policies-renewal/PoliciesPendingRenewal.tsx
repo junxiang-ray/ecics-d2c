@@ -9,49 +9,18 @@ import { ROUTES } from '@/constants/routes';
 
 interface Policy {
   id: string;
-  type: string;
-  coverage: string;
-  policyNumber: string;
-  expiryDate: string;
-  extraLabel: string;
-  extraValue: string;
-  icon: JSX.Element;
+  product: string;
+  plan: string;
+  policy_no: string;
+  expiry_date: string;
+  veh_reg_no: string;
+  status: string;
+}
+interface Props {
+  policies: Policy[];
 }
 
-const policies: Policy[] = [
-  {
-    id: '1',
-    type: 'Private Motor Car',
-    coverage: 'Comprehensive Plus',
-    policyNumber: 'MC2024001',
-    expiryDate: '21 May 2025',
-    extraLabel: 'Vehicle Registration',
-    extraValue: 'SJK1234A',
-    icon: <PrivateMotorCarIcon className='text-2xl text-sky-500' />,
-  },
-  {
-    id: '2',
-    type: 'Maid Insurance',
-    coverage: 'Standard Coverage',
-    policyNumber: 'MI2024001',
-    expiryDate: '15 Jun 2025',
-    extraLabel: "Helper's Name",
-    extraValue: 'Maria Santos',
-    icon: <PrivateMotorCarIcon className='text-2xl text-sky-500' />,
-  },
-  {
-    id: '3',
-    type: 'Private Motor Car',
-    coverage: 'Comprehensive Plus',
-    policyNumber: 'MC2024003',
-    expiryDate: '30 Aug 2025',
-    extraLabel: 'Vehicle Registration',
-    extraValue: 'SLA8888B',
-    icon: <PrivateMotorCarIcon className='text-2xl text-sky-500' />,
-  },
-];
-
-const PoliciesPendingRenewal: FC = () => {
+const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
   const router = useRouter();
   const handleRenew = (policy: Policy) => {
     router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
@@ -76,15 +45,15 @@ const PoliciesPendingRenewal: FC = () => {
           >
             <div className='flex items-center gap-3'>
               <div className='flex items-center justify-center rounded-[10px] bg-sky-100 p-2'>
-                {policy.icon}
+                <PrivateMotorCarIcon className='text-2xl text-sky-500' />
               </div>
 
               <div className='flex-1'>
-                <p className='font-semibold'>{policy.type}</p>
-                <p className='text-xs text-gray-500'>{policy.coverage}</p>
+                <p className='font-semibold'>{policy.product}</p>
+                <p className='text-xs text-gray-500'>{policy.plan}</p>
               </div>
               <span className='flex-shrink-0 whitespace-nowrap rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-700'>
-                Pending Renewal
+                {policy.status}
               </span>
             </div>
             <hr className='-mx-4 mt-4 border-t border-gray-100' />
@@ -99,20 +68,20 @@ const PoliciesPendingRenewal: FC = () => {
               </div>
               <div className='grid grid-cols-2 gap-4'>
                 <div className='text-[12px] font-semibold text-gray-900'>
-                  {policy.policyNumber}
+                  {policy.policy_no}
                 </div>
                 <div className='text-right text-[12px] font-semibold text-gray-900'>
-                  {policy.expiryDate}
+                  {policy.expiry_date}
                 </div>
               </div>
               <hr className='my-3 border-t border-gray-100' />
               <div className='flex items-center justify-between'>
                 <div>
                   <div className='text-xs font-semibold text-gray-500'>
-                    {policy.extraLabel?.toUpperCase() ?? ''}
+                    VEHICLE REGISTRATION
                   </div>
                   <div className='text-[12px] font-semibold text-gray-900'>
-                    {policy.extraValue}
+                    {policy.veh_reg_no}
                   </div>
                 </div>
                 <span className='mr-2 text-[12px] font-semibold text-sky-500'>
