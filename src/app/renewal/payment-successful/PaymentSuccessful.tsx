@@ -16,9 +16,11 @@ import {
   StarIcon,
   TickIcon,
 } from '@/components/icons/renewal-icons';
-import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
+import { useGetRenewalPaymentSuccess } from '@/hook/insurance/renewal';
+import { formatCurrency } from '@/libs/utils/utils';
+import { Spin } from 'antd';
 
 const StepItem = ({
   number,
@@ -37,10 +39,48 @@ const StepItem = ({
 
 const PaymentSuccessful = () => {
   const router = useRouter();
+  const key = '5a250f5d-4054-4353-a0db-96b33fc465d1';
+  const { data, isLoading } = useGetRenewalPaymentSuccess(key);
 
   const handleBackToHome = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
   };
+
+  const _renderDoc = (title: string, url: string, index: number) => {
+    return (
+      <div
+        key={index}
+        className='flex cursor-pointer items-center justify-between rounded-lg border border-[#BEDBFF] bg-[#EFF6FF] p-3'
+      >
+        <div className='flex items-center gap-2'>
+          <PolicyDetailsIcon
+            className='h-8 w-8 rounded-lg bg-[#D1FAE5] text-[#155DFC]'
+            size={18}
+          />
+          <div>
+            <div className='text-sm font-medium'>{title}</div>
+            <div className='text-xs font-normal'>
+              Download your official policy document
+            </div>
+          </div>
+        </div>
+        <DownloadIcon
+          className='h-4 w-4 text-gray-500'
+          onClick={() => {
+            window.open(url, '_blank');
+          }}
+        />
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className='flex h-96 w-full items-center justify-center'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <div className='relative flex min-h-screen w-full flex-col bg-gray-50'>
@@ -77,13 +117,17 @@ const PaymentSuccessful = () => {
               <ShieldIcon className='text-[#00A63E]' size={20} />
               <div className='text-xs font-normal'>Coverage</div>
               <div className='text-sm font-semibold'>
-                Comprehensive Family NCD Plan
+                {data?.renewal_data?.renewal_summary?.coverage || 'N/A'}
               </div>
             </div>
             <div className='rounded-lg bg-white p-4 shadow-sm'>
               <GiftIcon className='text-[#00A63E]' size={20} />
               <div className='text-xs font-normal'>Total Paid</div>
-              <div className='text-sm font-semibold'>SGD 1200.00</div>
+              <div className='text-sm font-semibold'>
+                {formatCurrency(
+                  data?.renewal_data?.renewal_summary?.total_paid,
+                ) || 'N/A'}
+              </div>
             </div>
           </div>
 
@@ -100,7 +144,7 @@ const PaymentSuccessful = () => {
               <StepItem number={2}>
                 Keep your policy number handy:{' '}
                 <span className='font-medium text-[#008236]'>
-                  MPC24B0087900
+                  {data?.renewal_data?.renewal_summary?.poily_no || 'N/A'}
                 </span>
               </StepItem>
               <StepItem number={3}>
@@ -126,20 +170,29 @@ const PaymentSuccessful = () => {
               <div className='grid grid-cols-2 gap-x-4 gap-y-2 text-sm font-normal text-gray-600 md:grid-cols-4'>
                 <span className='text-left'>Policy Type</span>
                 <span className='text-right text-gray-800'>
-                  Motor Insurance
+                  {data?.renewal_data?.policy_summary?.policy_type || 'N/A'}
                 </span>
 
                 <span className='text-left'>Vehicle</span>
-                <span className='text-right text-gray-800'>SJK1234A</span>
+                <span className='text-right text-gray-800'>
+                  {data?.renewal_data?.policy_summary?.veh_reg_no || 'N/A'}
+                </span>
 
                 <span className='text-left'>Start Date</span>
-                <span className='text-right text-gray-800'>23/05/2025</span>
+                <span className='text-right text-gray-800'>
+                  {data?.renewal_data?.policy_summary?.policy_start_date ||
+                    'N/A'}
+                </span>
 
                 <span className='text-left'>Policy Number</span>
-                <span className='text-right text-gray-800'>MPC24B0087900</span>
+                <span className='text-right text-gray-800'>
+                  {data?.renewal_data?.renewal_summary?.poily_no || 'N/A'}
+                </span>
 
                 <span className='text-left'>End Date</span>
-                <span className='text-right text-gray-800'>22/05/2026</span>
+                <span className='text-right text-gray-800'>
+                  {data?.renewal_data?.policy_summary?.policy_end_date || 'N/A'}
+                </span>
               </div>
             </div>
 
@@ -148,20 +201,17 @@ const PaymentSuccessful = () => {
                 Your Coverage Includes
               </div>
               <div className='grid grid-cols-2 gap-2'>
-                {[
-                  'Loss of Use Coverage',
-                  '24/7 Roadside Assistance',
-                  'Key Replacement Cover',
-                  'Medical Expenses',
-                ].map((item, i) => (
-                  <p
-                    key={i}
-                    className='flex items-center gap-1 text-xs text-gray-700'
-                  >
-                    <TickIcon className='text-[#00A63E]' size={16} />
-                    {item}
-                  </p>
-                ))}
+                {data?.renewal_data?.coverage_includes.map(
+                  (item: any, i: string) => (
+                    <p
+                      key={i}
+                      className='flex items-center gap-1 text-xs text-gray-700'
+                    >
+                      <TickIcon className='text-[#00A63E]' size={16} />
+                      {item}
+                    </p>
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -178,41 +228,9 @@ const PaymentSuccessful = () => {
               <h2 className='text-base font-semibold'>Important Documents</h2>
             </div>
             <div className='space-y-2'>
-              <div className='flex cursor-pointer items-center justify-between rounded-lg border border-[#BEDBFF] bg-[#EFF6FF] p-3'>
-                <div className='flex items-center gap-2'>
-                  <PolicyDetailsIcon
-                    className='h-8 w-8 rounded-lg bg-[#D1FAE5] text-[#155DFC]'
-                    size={18}
-                  />
-                  <div>
-                    <div className='text-sm font-medium'>
-                      Policy Certificate
-                    </div>
-                    <div className='text-xs font-normal'>
-                      Download your official policy document
-                    </div>
-                  </div>
-                </div>
-                <DownloadIcon className='h-4 w-4 text-gray-500' />
-              </div>
-
-              <div className='flex cursor-pointer items-center justify-between rounded-lg border border-[#B9F8CF] bg-[#EFF6FF] p-3'>
-                <div className='flex items-center gap-2'>
-                  <ShieldIcon
-                    className='h-8 w-8 rounded-lg bg-[#D1FAE5] text-[#00A63E]'
-                    size={18}
-                  />
-                  <div>
-                    <div className='text-sm font-medium'>
-                      Workshop Directory
-                    </div>
-                    <div className='text-xs font-normal'>
-                      Find authorized repair workshops
-                    </div>
-                  </div>
-                </div>
-                <DownloadIcon className='h-4 w-4 text-gray-500' />
-              </div>
+              {data?.renewal_data?.documents.map((doc: any, index: number) =>
+                _renderDoc(doc.name, doc.url, index),
+              )}
             </div>
           </div>
         </div>
@@ -227,7 +245,10 @@ const PaymentSuccessful = () => {
               We're here to help with any questions
             </p>
             <div className='grid gap-4 text-sm sm:grid-cols-3'>
-              <div className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#BEDBFF] bg-blue-50 p-4'>
+              <a
+                href='tel:+62065588'
+                className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#BEDBFF] bg-blue-50 p-4'
+              >
                 <PhoneIcon
                   className='mb-2 h-10 w-10 rounded-full bg-[#DCFCE7] text-[#155DFC]'
                   size={18}
@@ -237,8 +258,11 @@ const PaymentSuccessful = () => {
                 <span className='text-xs text-gray-500'>
                   Mon-Fri 8:30–18:00
                 </span>
-              </div>
-              <div className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#B9F8CF] bg-green-50 p-4'>
+              </a>
+              <a
+                href='mailto:claims@ecics.com.sg'
+                className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#B9F8CF] bg-green-50 p-4'
+              >
                 <MailIcon
                   className='mb-2 h-10 w-10 rounded-full bg-[#DCFCE7] text-[#00A63E]'
                   size={18}
@@ -246,7 +270,7 @@ const PaymentSuccessful = () => {
                 <span className='font-medium'>Email</span>
                 <span className='text-[#00A63E]'>claims@ecics.com.sg</span>
                 <span className='text-xs text-gray-500'>2–5 business days</span>
-              </div>
+              </a>
               <div className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#E9D4FF] bg-purple-50 p-4'>
                 <MapPinIcon
                   className='mb-2 h-10 w-10 rounded-full bg-[#F3E8FF] text-[#9810FA]'

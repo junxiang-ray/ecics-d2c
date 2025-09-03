@@ -28,3 +28,15 @@ export const useSignInRenewal = () => {
     mutationKey: ['check-policy'],
   });
 };
+
+export const useGetRenewalPaymentSuccess = (key: string) => {
+  const fetchPaymentSuccess = async () => {
+    const res = await renewal.getRenewalPaymentSuccess(key);
+    return res.data.data;
+  };
+  return useQuery({
+    queryFn: fetchPaymentSuccess,
+    queryKey: ['payment-success', key],
+    enabled: !!key,
+  });
+};
