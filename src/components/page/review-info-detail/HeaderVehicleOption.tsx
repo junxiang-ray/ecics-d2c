@@ -15,6 +15,7 @@ import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 interface MissingFields {
   engine_number?: boolean;
@@ -101,7 +102,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
             vehicle_model: vehicle.model?.value,
             vehicle_capacity:
               vehicle.enginecapacity?.value || vehicle.powerrate?.value,
-            vehicle_type: 'motor',
+            vehicle_type: ProductType.CAR,
           }),
         ),
       );

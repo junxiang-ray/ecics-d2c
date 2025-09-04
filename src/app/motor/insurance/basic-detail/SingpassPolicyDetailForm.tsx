@@ -595,7 +595,7 @@ const SingpassPolicyDetailForm = ({
                   vehicle_make: make,
                   vehicle_model: model,
                   vehicle_capacity: capacity,
-                  vehicle_type: 'motor',
+                  vehicle_type: ProductType.CAR,
                 })
                   .then((res) => {
                     const shouldShowUnMatch =
