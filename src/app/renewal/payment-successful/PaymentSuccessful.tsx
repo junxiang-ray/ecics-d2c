@@ -21,6 +21,7 @@ import { ROUTES } from '@/constants/routes';
 import { useGetRenewalPaymentSuccess } from '@/hook/insurance/renewal';
 import { formatCurrency } from '@/libs/utils/utils';
 import { Spin } from 'antd';
+import ImportantDoc from './ImportantDoc';
 
 const StepItem = ({
   number,
@@ -44,34 +45,6 @@ const PaymentSuccessful = () => {
 
   const handleBackToHome = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
-  };
-
-  const _renderDoc = (title: string, url: string, index: number) => {
-    return (
-      <div
-        key={index}
-        className='flex cursor-pointer items-center justify-between rounded-lg border border-[#BEDBFF] bg-[#EFF6FF] p-3'
-      >
-        <div className='flex items-center gap-2'>
-          <PolicyDetailsIcon
-            className='h-8 w-8 rounded-lg bg-[#D1FAE5] text-[#155DFC]'
-            size={18}
-          />
-          <div>
-            <div className='text-sm font-medium'>{title}</div>
-            <div className='text-xs font-normal'>
-              Download your official policy document
-            </div>
-          </div>
-        </div>
-        <DownloadIcon
-          className='h-4 w-4 text-gray-500'
-          onClick={() => {
-            window.open(url, '_blank');
-          }}
-        />
-      </div>
-    );
   };
 
   if (isLoading) {
@@ -228,9 +201,9 @@ const PaymentSuccessful = () => {
               <h2 className='text-base font-semibold'>Important Documents</h2>
             </div>
             <div className='space-y-2'>
-              {data?.renewal_data?.documents.map((doc: any, index: number) =>
-                _renderDoc(doc.name, doc.url, index),
-              )}
+              {data?.renewal_data?.documents.map((doc: any, index: number) => (
+                <ImportantDoc key={index} title={doc.name} url={doc.url} />
+              ))}
             </div>
           </div>
         </div>
@@ -261,6 +234,8 @@ const PaymentSuccessful = () => {
               </a>
               <a
                 href='mailto:claims@ecics.com.sg'
+                target='_blank'
+                rel='noopener noreferrer'
                 className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#B9F8CF] bg-green-50 p-4'
               >
                 <MailIcon
@@ -271,7 +246,12 @@ const PaymentSuccessful = () => {
                 <span className='text-[#00A63E]'>claims@ecics.com.sg</span>
                 <span className='text-xs text-gray-500'>2–5 business days</span>
               </a>
-              <div className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#E9D4FF] bg-purple-50 p-4'>
+              <a
+                href='https://maps.app.goo.gl/QS9qB59DjHfd3B3d8'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#E9D4FF] bg-purple-50 p-4'
+              >
                 <MapPinIcon
                   className='mb-2 h-10 w-10 rounded-full bg-[#F3E8FF] text-[#9810FA]'
                   size={18}
@@ -279,7 +259,7 @@ const PaymentSuccessful = () => {
                 <span className='font-medium'>Visit</span>
                 <span className='text-[#9810FA]'>Eunos Office</span>
                 <span className='text-xs text-gray-500'>Get directions</span>
-              </div>
+              </a>
             </div>
           </div>
         </div>
