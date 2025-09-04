@@ -31,3 +31,4 @@ export const API_POST_PAYMENT = '/payment';
 export const API_LOGIN_RENEWAL = '/singpass/login/renewal';
 export const API_RETRIEVE_POLICY = '/renewal/motor/retrieve-policy';
 export const API_CHECK_POLICY = '/renewal/motor/check-policy';
+export const API_RENEWAL_PAYMENT = '/renewal/motor/get-policy';

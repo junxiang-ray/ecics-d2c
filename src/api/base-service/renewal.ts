@@ -1,6 +1,7 @@
 import {
   API_CHECK_POLICY,
   API_LOGIN_RENEWAL,
+  API_RENEWAL_PAYMENT,
   API_RETRIEVE_POLICY,
 } from '@/constants/api.constant';
 import baseClient from './api.config';
@@ -15,5 +16,8 @@ export default {
   },
   signInRenewal(veh_reg_no: string, passphrase: string) {
     return baseClient.post<any>(API_CHECK_POLICY, { veh_reg_no, passphrase });
+  },
+  getRenewalPaymentSuccess(key: string) {
+    return baseClient.get<any>(API_RENEWAL_PAYMENT, { params: { key } });
   },
 };
