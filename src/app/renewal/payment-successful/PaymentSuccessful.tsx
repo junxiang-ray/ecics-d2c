@@ -153,7 +153,7 @@ const PaymentSuccessful = () => {
 
                 <span className='text-left'>Start Date</span>
                 <span className='text-right text-gray-800'>
-                  {data?.renewal_data?.policy_summary?.policy_start_date ||
+                  {data?.renewal_data?.policy_summary?.policy_start_date ??
                     'N/A'}
                 </span>
 
@@ -219,7 +219,7 @@ const PaymentSuccessful = () => {
             </p>
             <div className='grid gap-4 text-sm sm:grid-cols-3'>
               <a
-                href='tel:+62065588'
+                href={`tel:${process.env.NEXT_PUBLIC_SUPPORT_PHONE}`}
                 className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#BEDBFF] bg-blue-50 p-4'
               >
                 <PhoneIcon
@@ -233,7 +233,7 @@ const PaymentSuccessful = () => {
                 </span>
               </a>
               <a
-                href='mailto:claims@ecics.com.sg'
+                href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}`}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#B9F8CF] bg-green-50 p-4'
@@ -247,7 +247,7 @@ const PaymentSuccessful = () => {
                 <span className='text-xs text-gray-500'>2–5 business days</span>
               </a>
               <a
-                href='https://maps.app.goo.gl/QS9qB59DjHfd3B3d8'
+                href={process.env.NEXT_PUBLIC_SUPPORT_ADDRESS}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#E9D4FF] bg-purple-50 p-4'
