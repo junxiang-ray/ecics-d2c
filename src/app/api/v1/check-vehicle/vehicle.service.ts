@@ -14,11 +14,12 @@ export async function checkVehicleMakeAndModel({
   try {
     const [{ data: dataFromAIAgent }, vehicle_make_info, vehicle_model_info] =
       await Promise.all([
-        apiCheckVehicle.get(`/${vehicle_type}`, {
+        apiCheckVehicle.get(`/motor`, {
           params: {
             make: vehicle_make,
             model: vehicle_model,
             capacity: vehicle_capacity,
+            type: vehicle_type,
           },
         }),
         prisma.vehicleMake.findFirst({
