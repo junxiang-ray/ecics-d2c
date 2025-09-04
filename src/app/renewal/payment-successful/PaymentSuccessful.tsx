@@ -90,7 +90,7 @@ const PaymentSuccessful = () => {
               <ShieldIcon className='text-[#00A63E]' size={20} />
               <div className='text-xs font-normal'>Coverage</div>
               <div className='text-sm font-semibold'>
-                {data?.renewal_data?.renewal_summary?.coverage || 'N/A'}
+                {data?.renewal_data?.renewal_summary?.coverage ?? 'N/A'}
               </div>
             </div>
             <div className='rounded-lg bg-white p-4 shadow-sm'>
@@ -99,7 +99,7 @@ const PaymentSuccessful = () => {
               <div className='text-sm font-semibold'>
                 {formatCurrency(
                   data?.renewal_data?.renewal_summary?.total_paid,
-                ) || 'N/A'}
+                ) ?? 'N/A'}
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@ const PaymentSuccessful = () => {
               <StepItem number={2}>
                 Keep your policy number handy:{' '}
                 <span className='font-medium text-[#008236]'>
-                  {data?.renewal_data?.renewal_summary?.poily_no || 'N/A'}
+                  {data?.renewal_data?.renewal_summary?.poily_no ?? 'N/A'}
                 </span>
               </StepItem>
               <StepItem number={3}>
@@ -143,12 +143,12 @@ const PaymentSuccessful = () => {
               <div className='grid grid-cols-2 gap-x-4 gap-y-2 text-sm font-normal text-gray-600 md:grid-cols-4'>
                 <span className='text-left'>Policy Type</span>
                 <span className='text-right text-gray-800'>
-                  {data?.renewal_data?.policy_summary?.policy_type || 'N/A'}
+                  {data?.renewal_data?.policy_summary?.policy_type ?? 'N/A'}
                 </span>
 
                 <span className='text-left'>Vehicle</span>
                 <span className='text-right text-gray-800'>
-                  {data?.renewal_data?.policy_summary?.veh_reg_no || 'N/A'}
+                  {data?.renewal_data?.policy_summary?.veh_reg_no ?? 'N/A'}
                 </span>
 
                 <span className='text-left'>Start Date</span>
@@ -159,12 +159,12 @@ const PaymentSuccessful = () => {
 
                 <span className='text-left'>Policy Number</span>
                 <span className='text-right text-gray-800'>
-                  {data?.renewal_data?.renewal_summary?.poily_no || 'N/A'}
+                  {data?.renewal_data?.renewal_summary?.poily_no ?? 'N/A'}
                 </span>
 
                 <span className='text-left'>End Date</span>
                 <span className='text-right text-gray-800'>
-                  {data?.renewal_data?.policy_summary?.policy_end_date || 'N/A'}
+                  {data?.renewal_data?.policy_summary?.policy_end_date ?? 'N/A'}
                 </span>
               </div>
             </div>
