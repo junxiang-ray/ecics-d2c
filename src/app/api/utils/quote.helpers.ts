@@ -6,6 +6,7 @@ export function mappedPlanPremiums(quoteData: any): Record<string, number> {
     TPFT: quoteData?.tpft_plan?.plan_premium_with_gst ?? 0,
     TPO: quoteData?.tpo_plan?.plan_premium_with_gst ?? 0,
     FNCD: quoteData?.comp_fncd_plan?.plan_premium_with_gst ?? 0,
+    // COMP: quoteData?.comp_plan?.plan_premium_with_gst ?? 0,
   };
 }
 
@@ -364,3 +365,179 @@ export const mappingAddonForMaid = {
   MAID_EXCLU_OME: 'quote_opt_op',
   MAID_EXCLU_WOCP: 'quote_opt_co_payment',
 };
+
+/// MOTORCYCLE TRANSLATIONS
+
+///CONVERTERS/ HELPERS
+function findMotorcyclePlanData(quoteData: any, id: string): any {
+  return quoteData?.plan.find((plan: any) => plan.id === id) || null;
+}
+
+function findMotorcyclePlanPremium(quoteData: any, id: string): number {
+  const planData = findMotorcyclePlanData(quoteData, id);
+  return planData?.premium ?? 0;
+}
+
+///
+
+export function mappedMotorcyclePlanPremiums(
+  quoteData: any,
+): Record<string, number> {
+  return {
+    // COM: quoteData?.comp_plan?.plan_premium_with_gst ?? 0,
+    COM: findMotorcyclePlanPremium(quoteData, 'COMP'),
+    TPFT: findMotorcyclePlanPremium(quoteData, 'TPFT'),
+    TPO: findMotorcyclePlanPremium(quoteData, 'TPO'),
+    FNCD: findMotorcyclePlanPremium(quoteData, 'FNCD'),
+  };
+}
+
+export function mappedMotorcycleAddonPremiums(
+  quoteData: any,
+): Record<string, number> {
+  return {
+    workshop_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_any_workshop
+        ?.any_workshop_if_selected ?? 0,
+    buy_up_ncd_if_any_workshop_not_selected:
+      quoteData?.comp_plan?.add_ons?.buy_up_ncd?.addl_prem_for_buy_up_ncd
+        ?.addl_prem_for_buy_up_ncd_if_any_workshop_not_selected ?? 0,
+    buy_up_ncd_if_any_workshop_selected:
+      quoteData?.comp_plan?.add_ons?.buy_up_ncd?.addl_prem_for_buy_up_ncd
+        ?.addl_prem_for_buy_up_ncd_if_any_workshop_selected ?? 0,
+    transport_allowance_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_loss_of_use
+        ?.transport_allowance_if_selected ?? 0,
+    courtesy_car_up_to_1600cc_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_loss_of_use
+        ?.courtesy_car_up_to_1600cc_if_selected ?? 0,
+    courtesy_car_up_to_2000cc_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_loss_of_use
+        ?.courtesy_car_up_to_2000cc_if_selected ?? 0,
+    personal_accident_plus_30K_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_personal_accident_plus?.[
+        '(+ $30K)_if_selected'
+      ] ?? 0,
+    personal_accident_plus_60K_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_personal_accident_plus?.[
+        '(+ $60K)_if_selected'
+      ] ?? 0,
+    personal_accident_plus_100K_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_personal_accident_plus?.[
+        '(+ $100K)_if_selected'
+      ] ?? 0,
+    medical_expenses_200_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $200)_if_selected'
+      ] ?? 0,
+    medical_expenses_700_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $700)_if_selected'
+      ] ?? 0,
+    medical_expenses_1700_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $1700)_if_selected'
+      ] ?? 0,
+    roadside_assistance_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_roadside_assistance
+        ?.if_selected ?? 0,
+    key_replacement_cover_300_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_key_replacement_cover?.[
+        '($300)_if_selected'
+      ] ?? 0,
+    key_replacement_cover_500_if_selected:
+      quoteData?.comp_plan?.add_ons?.addl_prem_for_key_replacement_cover?.[
+        '($500)_if_selected'
+      ] ?? 0,
+    new_for_old_replacement_if_selected:
+      quoteData?.comp_plan?.add_ons?.nfr?.addl_prem_for_new_for_old_replacement
+        ?.if_selected ?? 0,
+    tpft_drivers_age_from_27_to_70_if_selected:
+      quoteData?.tpft_plan?.addl_named_drivers_premium ?? 0,
+    tpft_all_drivers_if_selected:
+      quoteData?.tpft_plan?.add_ons?.addl_named_drivers_premium
+        ?.all_drivers_if_selected ?? 0,
+    tpft_buy_up_ncd_if_selected:
+      quoteData?.tpft_plan?.add_ons?.buy_up_ncd?.addl_prem_for_buy_up_ncd
+        ?.buy_up_ncd_if_selected ?? 0,
+    tpo_drivers_age_from_27_to_70_if_selected:
+      quoteData?.tpo_plan?.addl_named_drivers_premium ?? 0,
+    tpo_all_drivers_if_selected:
+      quoteData?.tpo_plan?.add_ons?.addl_named_drivers_premium
+        ?.all_drivers_if_selected ?? 0,
+    tpo_buy_up_ncd_if_selected:
+      quoteData?.tpo_plan?.add_ons?.buy_up_ncd?.addl_prem_for_buy_up_ncd
+        ?.buy_up_ncd_if_selected ?? 0,
+    com_adjustable_excess_selected: quoteData?.comp_plan?.standard_excess ?? 0,
+    com_additional_name_driver_if_selected:
+      quoteData?.comp_plan?.addl_named_drivers_premium ?? 0,
+    fncd_workshop_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_any_workshop
+        ?.any_workshop_if_selected ?? 0,
+    fncd_adjustable_excess_selected:
+      quoteData?.comp_fncd_plan?.standard_excess ?? 0,
+    fncd_additional_name_driver_if_selected:
+      quoteData?.comp_fncd_plan?.addl_named_drivers_premium ?? 0,
+    fncd_buy_up_ncd_if_any_workshop_not_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.buy_up_ncd?.addl_prem_for_buy_up_ncd
+        ?.addl_prem_for_buy_up_ncd_if_any_workshop_not_selected ?? 0,
+    fncd_buy_up_ncd_if_any_workshop_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.buy_up_ncd?.addl_prem_for_buy_up_ncd
+        ?.addl_prem_for_buy_up_ncd_if_any_workshop_selected ?? 0,
+    fncd_transport_allowance_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_loss_of_use
+        ?.transport_allowance_if_selected ?? 0,
+    fncd_courtesy_car_up_to_1600cc_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_loss_of_use
+        ?.courtesy_car_up_to_1600cc_if_selected ?? 0,
+    fncd_courtesy_car_up_to_2000cc_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_loss_of_use
+        ?.courtesy_car_up_to_2000cc_if_selected ?? 0,
+    fncd_personal_accident_plus_30K_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons
+        ?.addl_prem_for_personal_accident_plus?.['(+ $30K)_if_selected'] ?? 0,
+    fncd_personal_accident_plus_60K_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons
+        ?.addl_prem_for_personal_accident_plus?.['(+ $60K)_if_selected'] ?? 0,
+    fncd_personal_accident_plus_100K_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons
+        ?.addl_prem_for_personal_accident_plus?.['(+ $100K)_if_selected'] ?? 0,
+    fncd_roadside_assistance_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_roadside_assistance
+        ?.if_selected ?? 0,
+    fncd_key_replacement_cover_300_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_key_replacement_cover?.[
+        '($300)_if_selected'
+      ] ?? 0,
+    fncd_key_replacement_cover_500_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_key_replacement_cover?.[
+        '($500)_if_selected'
+      ] ?? 0,
+    fncd_new_for_old_replacement_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.nfr
+        ?.addl_prem_for_new_for_old_replacement?.if_selected ?? 0,
+    fncd_medical_expenses_1700_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $1700)_if_selected'
+      ] ?? 0,
+    fncd_medical_expenses_700_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $700)_if_selected'
+      ] ?? 0,
+    fncd_medical_expenses_200_if_selected:
+      quoteData?.comp_fncd_plan?.add_ons?.addl_prem_for_medical_expenses?.[
+        '(+ $200)_if_selected'
+      ] ?? 0,
+  };
+}
+
+export function mappedMotocycleAddOnIncludePlan(
+  quoteData: any,
+): Record<string, any> {
+  return {
+    COM: quoteData?.comp_plan?.add_ons_included_in_this_plan ?? [],
+    TPFT: quoteData?.tpft_plan?.add_ons_included_in_this_plan ?? [],
+    TPO: quoteData?.tpo_plan?.add_ons_included_in_this_plan ?? [],
+    FNCD: quoteData?.comp_fncd_plan?.add_ons_included_in_this_plan ?? [],
+  };
+}

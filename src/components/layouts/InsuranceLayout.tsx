@@ -264,7 +264,9 @@ function InsuranceLayout({
                 const targetUrl =
                   productType === ProductType.MAID
                     ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
-                    : `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`;
+                    : productType === ProductType.CAR
+                      ? `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`
+                      : `${ROUTES.MOTORCYCLE.REVIEW_INFO_DETAIL}?${query}`;
 
                 router.push(targetUrl, { preserveQuery: false });
                 setIsShowPopupSingPass(false);

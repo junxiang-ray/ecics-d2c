@@ -1,18 +1,18 @@
 /// change to motorcycle insurance constants when available
-export const CAR_INSURANCE = {
-  PREFIX_ENDPOINT: 'b2c_privatecar',
-  TYPE: 'car',
+export const MOTORCYCLE_INSURANCE = {
+  PREFIX_ENDPOINT: 'b2c_motorcycle2',
+  TYPE: 'motorcycle',
   PLAN_CODE: {
-    COM: 'COM',
+    COMP: 'COMP',
     TPFT: 'TPFT',
     TPO: 'TPO',
-    FNCD: 'FNCD',
+    // FNCD: 'FNCD',
   },
   PLAN_NAME: {
-    COM: 'Comprehensive',
-    TPFT: 'Third Party, Fire & Theft',
+    COMP: 'Comprehensive',
+    TPFT: 'Third Party, Fire and Theft',
     TPO: 'Third Party Only',
-    FNCD: 'Comprehensive - Family NCD Builder',
+    // FNCD: 'Comprehensive - Family NCD Builder',
   },
 
   ADD_ONS: {
@@ -39,19 +39,19 @@ export const CAR_INSURANCE = {
 };
 
 export const PLAN_ADDON_CONFIG = {
-  [CAR_INSURANCE.PLAN_NAME.COM]: {
+  [MOTORCYCLE_INSURANCE.PLAN_NAME.COMP]: {
     andKey: 'CAR_COM_AND',
     louKey: 'CAR_COM_LOU',
     applyLouAndCc: true,
     setDefaults: false,
   },
-  [CAR_INSURANCE.PLAN_NAME.TPFT]: {
+  [MOTORCYCLE_INSURANCE.PLAN_NAME.TPFT]: {
     andKey: 'CAR_TPFT_AND',
     louKey: 'CAR_TPFT_LOU',
     applyLouAndCc: true,
     setDefaults: true,
   },
-  [CAR_INSURANCE.PLAN_NAME.TPO]: {
+  [MOTORCYCLE_INSURANCE.PLAN_NAME.TPO]: {
     andKey: 'CAR_TPO_AND',
     louKey: 'CAR_TPO_LOU',
     applyLouAndCc: true,

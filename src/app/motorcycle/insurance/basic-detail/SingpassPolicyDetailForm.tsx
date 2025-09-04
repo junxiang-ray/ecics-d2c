@@ -33,7 +33,7 @@ import {
 import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import { MOTOR_QUOTE } from '@/constants';
+import { MOTOR_QUOTE, MOTORCYCLE_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
@@ -64,12 +64,12 @@ type MissingFields = {
 };
 
 const singpassFlowFields = (missing: MissingFields = {}) => ({
-  [MOTOR_QUOTE.hire_purchase]: z.number({
+  [MOTORCYCLE_QUOTE.hire_purchase]: z.number({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.other_hire_purchase]: z.string().optional(),
-  [MOTOR_QUOTE.start_date]: z
+  [MOTORCYCLE_QUOTE.other_hire_purchase]: z.string().optional(),
+  [MOTORCYCLE_QUOTE.start_date]: z
     .date({
       required_error: 'This field is required',
       invalid_type_error: 'This field is required',
@@ -81,28 +81,28 @@ const singpassFlowFields = (missing: MissingFields = {}) => ({
       (date) => dayjs(date).isSameOrBefore(dayjs().add(90, 'days'), 'day'),
       { message: 'Start date cannot be later than 90 days from today' },
     ),
-  [MOTOR_QUOTE.end_date]: z.date({
+  [MOTORCYCLE_QUOTE.end_date]: z.date({
     required_error: 'This field is required',
     invalid_type_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.owner_ncd]: z.number({
+  [MOTORCYCLE_QUOTE.owner_ncd]: z.number({
     required_error: 'This field is required',
   }),
-  [MOTOR_QUOTE.owner_no_of_claims]: z
+  [MOTORCYCLE_QUOTE.owner_no_of_claims]: z
     .string({
       required_error: 'This field is required',
     })
     .refine((val) => val !== NumberClaim.TWO_MANY_CLAIMS, {
       message: sryMsg,
     }),
-  [MOTOR_QUOTE.engine_number]: z.string().optional(),
-  [MOTOR_QUOTE.chassis_number]: missing?.chassis_number
+  [MOTORCYCLE_QUOTE.engine_number]: z.string().optional(),
+  [MOTORCYCLE_QUOTE.chassis_number]: missing?.chassis_number
     ? z.string({ required_error: 'This field is required' })
     : z.string().optional(),
-  [MOTOR_QUOTE.reg_yyyy]: missing?.reg_yyyy
+  [MOTORCYCLE_QUOTE.reg_yyyy]: missing?.reg_yyyy
     ? z.string({ required_error: 'This field is required' })
     : z.string().optional(),
-  [MOTOR_QUOTE.promo_code]: z.string().optional(),
+  [MOTORCYCLE_QUOTE.promo_code]: z.string().optional(),
 });
 
 const ID_OPTION_OTHER = 2; //-- Others (Not Available in this list) --
@@ -113,8 +113,8 @@ const createSchema = (missing: MissingFields = {}) => {
   return baseSchema
     .refine(
       (data) => {
-        const startDate = data[MOTOR_QUOTE.start_date];
-        const endDate = data[MOTOR_QUOTE.end_date];
+        const startDate = data[MOTORCYCLE_QUOTE.start_date];
+        const endDate = data[MOTORCYCLE_QUOTE.end_date];
         if (!startDate || !endDate) {
           return false;
         }
@@ -129,13 +129,13 @@ const createSchema = (missing: MissingFields = {}) => {
       {
         message:
           'Policy end date must be at least 10 months after the start date',
-        path: [MOTOR_QUOTE.end_date],
+        path: [MOTORCYCLE_QUOTE.end_date],
       },
     )
     .refine(
       (data) => {
-        const startDate = data[MOTOR_QUOTE.start_date];
-        const endDate = data[MOTOR_QUOTE.end_date];
+        const startDate = data[MOTORCYCLE_QUOTE.start_date];
+        const endDate = data[MOTORCYCLE_QUOTE.end_date];
         if (!startDate || !endDate) {
           return false;
         }
@@ -150,18 +150,18 @@ const createSchema = (missing: MissingFields = {}) => {
       {
         message:
           'Policy end date cannot be more than 18 months after the start date',
-        path: [MOTOR_QUOTE.end_date],
+        path: [MOTORCYCLE_QUOTE.end_date],
       },
     )
     .superRefine((data, ctx) => {
-      if (data[MOTOR_QUOTE.hire_purchase] === ID_OPTION_OTHER) {
-        const value = data[MOTOR_QUOTE.other_hire_purchase];
+      if (data[MOTORCYCLE_QUOTE.hire_purchase] === ID_OPTION_OTHER) {
+        const value = data[MOTORCYCLE_QUOTE.other_hire_purchase];
 
         if (typeof value !== 'string' || !value.trim()) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: 'This field is required',
-            path: [MOTOR_QUOTE.other_hire_purchase],
+            path: [MOTORCYCLE_QUOTE.other_hire_purchase],
           });
         }
       }
@@ -227,7 +227,8 @@ const SingpassPolicyDetailForm = ({
   const userInfoCarSingPass = userInfo.data_from_singpass;
   const vehicles = userInfoCarSingPass?.vehicles ?? [];
 
-  const initPromoCode = initialValues?.[MOTOR_QUOTE.promo_code] ?? promoDefault;
+  const initPromoCode =
+    initialValues?.[MOTORCYCLE_QUOTE.promo_code] ?? promoDefault;
 
   const [showCSModal, setShowCSModal] = useState<{
     visible: boolean;
@@ -266,10 +267,10 @@ const SingpassPolicyDetailForm = ({
   } = methods;
 
   // input field change
-  const start_date = watch(MOTOR_QUOTE.start_date) as Date;
-  const date_of_birth = watch(MOTOR_QUOTE.owner_dob) as Date;
-  const hire_purchase = watch(MOTOR_QUOTE.hire_purchase);
-  const no_claim = watch(MOTOR_QUOTE.owner_no_of_claims) as string;
+  const start_date = watch(MOTORCYCLE_QUOTE.start_date) as Date;
+  const date_of_birth = watch(MOTORCYCLE_QUOTE.owner_dob) as Date;
+  const hire_purchase = watch(MOTORCYCLE_QUOTE.hire_purchase);
+  const no_claim = watch(MOTORCYCLE_QUOTE.owner_no_of_claims) as string;
 
   const handleBackReviewSingpass = () => {
     const code = sessionStorage.getItem('code') || '';
@@ -284,7 +285,7 @@ const SingpassPolicyDetailForm = ({
 
   useEffect(() => {
     if (hire_purchase !== ID_OPTION_OTHER) {
-      methods.setValue(MOTOR_QUOTE.other_hire_purchase, '');
+      methods.setValue(MOTORCYCLE_QUOTE.other_hire_purchase, '');
     }
   }, [hire_purchase]);
 
@@ -307,7 +308,7 @@ const SingpassPolicyDetailForm = ({
         vehicle_make: userInfo?.vehicle_selected?.make.value,
         vehicle_model: userInfo?.vehicle_selected?.model.value,
         first_registered_year: missingFields.reg_yyyy
-          ? (value[MOTOR_QUOTE.reg_yyyy] as string)
+          ? (value[MOTORCYCLE_QUOTE.reg_yyyy] as string)
           : extractYear(
               userInfo?.vehicle_selected?.firstregistrationdate.value,
             ),
@@ -333,20 +334,20 @@ const SingpassPolicyDetailForm = ({
         key: key,
         partner_code: partnerCode,
         promo_code: applyPromoCode,
-        company_id: value[MOTOR_QUOTE.hire_purchase],
-        company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
+        company_id: value[MOTORCYCLE_QUOTE.hire_purchase],
+        company_name_other: value[MOTORCYCLE_QUOTE.other_hire_purchase] || '',
         personal_info: personal_info,
         vehicle_info_selected: vehicle_info_selected,
         insurance_additional_info: {
-          no_claim_discount: value[MOTOR_QUOTE.owner_ncd],
-          no_of_claim: value[MOTOR_QUOTE.owner_no_of_claims],
-          start_date: dayjs(value[MOTOR_QUOTE.start_date] as Date).format(
+          no_claim_discount: value[MOTORCYCLE_QUOTE.owner_ncd],
+          no_of_claim: value[MOTORCYCLE_QUOTE.owner_no_of_claims],
+          start_date: dayjs(value[MOTORCYCLE_QUOTE.start_date] as Date).format(
             'DD/MM/YYYY',
           ),
-          end_date: dayjs(value[MOTOR_QUOTE.end_date] as Date).format(
+          end_date: dayjs(value[MOTORCYCLE_QUOTE.end_date] as Date).format(
             'DD/MM/YYYY',
           ),
-          last_claim_amount: value[MOTOR_QUOTE.owner_claim_amount],
+          last_claim_amount: value[MOTORCYCLE_QUOTE.owner_claim_amount],
         },
       };
       return payload;
@@ -357,22 +358,22 @@ const SingpassPolicyDetailForm = ({
     const startDate = dateToDayjs(date?.toDate());
     const defaultEndDate = adjustDateInDayjs(startDate, 1, 0, -1);
     if (!defaultEndDate) {
-      methods.setValue(MOTOR_QUOTE.end_date, null as any);
+      methods.setValue(MOTORCYCLE_QUOTE.end_date, null as any);
       return;
     }
-    methods.setValue(MOTOR_QUOTE.end_date, defaultEndDate.toDate());
-    methods.trigger([MOTOR_QUOTE.end_date], { shouldFocus: false });
+    methods.setValue(MOTORCYCLE_QUOTE.end_date, defaultEndDate.toDate());
+    methods.trigger([MOTORCYCLE_QUOTE.end_date], { shouldFocus: false });
   };
 
   const hire_purchase_section = (
     <>
       <Form.Item
-        name={MOTOR_QUOTE.hire_purchase}
-        validateStatus={errors[MOTOR_QUOTE.hire_purchase] ? 'error' : ''}
+        name={MOTORCYCLE_QUOTE.hire_purchase}
+        validateStatus={errors[MOTORCYCLE_QUOTE.hire_purchase] ? 'error' : ''}
         className='mb-1'
       >
         <LongOptionDropdownField
-          name={MOTOR_QUOTE.hire_purchase}
+          name={MOTORCYCLE_QUOTE.hire_purchase}
           label='Vehicle Financed By'
           isRequired
           placeholder='Select name of finance company'
@@ -383,14 +384,14 @@ const SingpassPolicyDetailForm = ({
 
       {hire_purchase === ID_OPTION_OTHER && (
         <Form.Item
-          name={MOTOR_QUOTE.other_hire_purchase}
+          name={MOTORCYCLE_QUOTE.other_hire_purchase}
           validateStatus={
-            errors[MOTOR_QUOTE.other_hire_purchase] ? 'error' : ''
+            errors[MOTORCYCLE_QUOTE.other_hire_purchase] ? 'error' : ''
           }
           className='mb-1'
         >
           <InputField
-            name={MOTOR_QUOTE.other_hire_purchase}
+            name={MOTORCYCLE_QUOTE.other_hire_purchase}
             label='Your Hire Purchase Company'
             isRequired
             placeholder='Please enter your hire purchase company'
@@ -406,7 +407,7 @@ const SingpassPolicyDetailForm = ({
       vehicle_make: userInfo?.vehicle_selected?.make.value,
       vehicle_model: userInfo?.vehicle_selected?.model.value,
       first_registered_year: missingFields.reg_yyyy
-        ? (value[MOTOR_QUOTE.reg_yyyy] as string)
+        ? (value[MOTORCYCLE_QUOTE.reg_yyyy] as string)
         : extractYear(userInfo?.vehicle_selected?.firstregistrationdate.value),
       year_of_manufacture: userInfo?.vehicle_selected?.yearofmanufacture.value,
       engine_number: userInfo?.vehicle_selected?.engineno.value,
@@ -425,24 +426,24 @@ const SingpassPolicyDetailForm = ({
       email: personalInfo?.email || '',
     };
 
-    const noOfClaim = value[MOTOR_QUOTE.owner_no_of_claims];
+    const noOfClaim = value[MOTORCYCLE_QUOTE.owner_no_of_claims];
     const promoCode =
       noOfClaim === NumberClaim.NEVER ? formatPromoCode(applyPromoCode) : '';
     const payload = {
       key: key,
       partner_code: partnerCode,
       promo_code: promoCode,
-      company_id: value[MOTOR_QUOTE.hire_purchase],
-      company_name_other: value[MOTOR_QUOTE.other_hire_purchase] || '',
+      company_id: value[MOTORCYCLE_QUOTE.hire_purchase],
+      company_name_other: value[MOTORCYCLE_QUOTE.other_hire_purchase] || '',
       personal_info: personal_info,
       vehicle_info_selected: vehicle_info_selected,
       insurance_additional_info: {
-        no_claim_discount: value[MOTOR_QUOTE.owner_ncd],
-        no_of_claim: value[MOTOR_QUOTE.owner_no_of_claims],
-        start_date: dayjs(value[MOTOR_QUOTE.start_date] as Date).format(
+        no_claim_discount: value[MOTORCYCLE_QUOTE.owner_ncd],
+        no_of_claim: value[MOTORCYCLE_QUOTE.owner_no_of_claims],
+        start_date: dayjs(value[MOTORCYCLE_QUOTE.start_date] as Date).format(
           'DD/MM/YYYY',
         ),
-        end_date: dayjs(value[MOTOR_QUOTE.end_date] as Date).format(
+        end_date: dayjs(value[MOTORCYCLE_QUOTE.end_date] as Date).format(
           'DD/MM/YYYY',
         ),
       },
@@ -482,7 +483,7 @@ const SingpassPolicyDetailForm = ({
             ? 'The driver is below 26 years of age.'
             : 'The driver is above 70 years of age.',
       });
-      methods.setValue(MOTOR_QUOTE.owner_dob, undefined, {
+      methods.setValue(MOTORCYCLE_QUOTE.owner_dob, undefined, {
         shouldValidate: true,
       });
     }
@@ -602,13 +603,13 @@ const SingpassPolicyDetailForm = ({
                 <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
                   {missingFields.engine_number && (
                     <Form.Item
-                      name={MOTOR_QUOTE.engine_number}
+                      name={MOTORCYCLE_QUOTE.engine_number}
                       validateStatus={
-                        errors[MOTOR_QUOTE.engine_number] ? 'error' : ''
+                        errors[MOTORCYCLE_QUOTE.engine_number] ? 'error' : ''
                       }
                     >
                       <InputField
-                        name={MOTOR_QUOTE.engine_number}
+                        name={MOTORCYCLE_QUOTE.engine_number}
                         label='Engine Number'
                         placeholder='Enter your engine number'
                       />
@@ -617,13 +618,13 @@ const SingpassPolicyDetailForm = ({
 
                   {missingFields.chassis_number && (
                     <Form.Item
-                      name={MOTOR_QUOTE.chassis_number}
+                      name={MOTORCYCLE_QUOTE.chassis_number}
                       validateStatus={
-                        errors[MOTOR_QUOTE.chassis_number] ? 'error' : ''
+                        errors[MOTORCYCLE_QUOTE.chassis_number] ? 'error' : ''
                       }
                     >
                       <InputField
-                        name={MOTOR_QUOTE.chassis_number}
+                        name={MOTORCYCLE_QUOTE.chassis_number}
                         label='Chassis Number'
                         isRequired
                         placeholder='Enter your chassis number'
@@ -632,9 +633,9 @@ const SingpassPolicyDetailForm = ({
                   )}
 
                   {missingFields.reg_yyyy && (
-                    <Form.Item name={MOTOR_QUOTE.reg_yyyy}>
+                    <Form.Item name={MOTORCYCLE_QUOTE.reg_yyyy}>
                       <DropdownField
-                        name={MOTOR_QUOTE.reg_yyyy}
+                        name={MOTORCYCLE_QUOTE.reg_yyyy}
                         label="Vehicle's Year of Registration"
                         isRequired
                         placeholder='Select registration year'
@@ -652,11 +653,13 @@ const SingpassPolicyDetailForm = ({
               </div>
               <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
                 <Form.Item
-                  name={MOTOR_QUOTE.start_date}
-                  validateStatus={errors[MOTOR_QUOTE.start_date] ? 'error' : ''}
+                  name={MOTORCYCLE_QUOTE.start_date}
+                  validateStatus={
+                    errors[MOTORCYCLE_QUOTE.start_date] ? 'error' : ''
+                  }
                 >
                   <DatePickerComponent
-                    name={MOTOR_QUOTE.start_date}
+                    name={MOTORCYCLE_QUOTE.start_date}
                     label='Policy Start Date'
                     isRequired
                     minDate={minPolicyStartDate}
@@ -666,12 +669,14 @@ const SingpassPolicyDetailForm = ({
                 </Form.Item>
 
                 <Form.Item
-                  name={MOTOR_QUOTE.end_date}
-                  validateStatus={errors[MOTOR_QUOTE.end_date] ? 'error' : ''}
+                  name={MOTORCYCLE_QUOTE.end_date}
+                  validateStatus={
+                    errors[MOTORCYCLE_QUOTE.end_date] ? 'error' : ''
+                  }
                 >
                   <DatePickerComponent
                     label='Policy End Date'
-                    name={MOTOR_QUOTE.end_date}
+                    name={MOTORCYCLE_QUOTE.end_date}
                     isRequired
                     minDate={minPolicyEndDate}
                     maxDate={maxPolicyEndDate}
@@ -679,9 +684,9 @@ const SingpassPolicyDetailForm = ({
                   />
                 </Form.Item>
 
-                <Form.Item name={MOTOR_QUOTE.owner_ncd}>
+                <Form.Item name={MOTORCYCLE_QUOTE.owner_ncd}>
                   <DropdownField
-                    name={MOTOR_QUOTE.owner_ncd}
+                    name={MOTORCYCLE_QUOTE.owner_ncd}
                     label='No Claim Discount'
                     isRequired
                     placeholder='Select your current NCD'
@@ -690,13 +695,13 @@ const SingpassPolicyDetailForm = ({
                 </Form.Item>
 
                 <Form.Item
-                  name={MOTOR_QUOTE.owner_no_of_claims}
+                  name={MOTORCYCLE_QUOTE.owner_no_of_claims}
                   validateStatus={
-                    errors[MOTOR_QUOTE.owner_no_of_claims] ? 'error' : ''
+                    errors[MOTORCYCLE_QUOTE.owner_no_of_claims] ? 'error' : ''
                   }
                 >
                   <DropdownField
-                    name={MOTOR_QUOTE.owner_no_of_claims}
+                    name={MOTORCYCLE_QUOTE.owner_no_of_claims}
                     label='Number of claims in the past 3 years'
                     isRequired
                     placeholder='Select number of claims'
@@ -714,7 +719,7 @@ const SingpassPolicyDetailForm = ({
                   applyPromoCode={applyPromoCode}
                   setApplyPromoCode={setApplyPromoCode}
                   isDisablePromoCode={!isEnablePromoCode}
-                  product_type={ProductType.CAR}
+                  product_type={ProductType.MOTORCYCLE}
                   isFormSubmitting={isLoading}
                 />
               </div>
@@ -736,7 +741,7 @@ const SingpassPolicyDetailForm = ({
           onClick={() => {
             form.submit();
           }}
-          productType={ProductType.CAR}
+          productType={ProductType.MOTORCYCLE}
         />
       </div>
       <QuoteModal

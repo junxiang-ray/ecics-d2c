@@ -45,10 +45,16 @@ const MyInfoLoginSection = ({
   });
 
   const { mutate: requestLog } = useRequestLog(
-    isMaid ? PRODUCT_NAME.MAID : PRODUCT_NAME.CAR,
+    isMaid
+      ? PRODUCT_NAME.MAID
+      : isMotorcycle
+        ? PRODUCT_NAME.MOTORCYCLE
+        : PRODUCT_NAME.CAR,
   );
 
   const handleLogin = () => {
+    console.log('continue with myinfo login');
+
     setIsUserActive(true);
     {
       isMaid ? requestLoginMaid() : requestLogin();
@@ -57,6 +63,7 @@ const MyInfoLoginSection = ({
   };
 
   const handleContinueWithoutMyinfo = () => {
+    console.log('continue without myinfo login');
     setIsUserActive(true);
     requestLog();
 

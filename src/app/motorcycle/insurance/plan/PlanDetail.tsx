@@ -148,7 +148,7 @@ function PlanDetail({
         textButton='Next'
         onClick={() => setShowConfirmDeclaration(true)}
         handleBack={handleBack}
-        productType={ProductType.CAR}
+        productType={ProductType.MOTORCYCLE}
         loading={isSaving}
         titlePlan={selectedPlan?.title}
         isPlan
@@ -158,7 +158,7 @@ function PlanDetail({
         visible={showConfirmDeclaration}
         onOk={() => choicePlan(selectedPlan)}
         onCancel={() => setShowConfirmDeclaration(false)}
-        product_type={ProductType.CAR}
+        product_type={ProductType.MOTORCYCLE}
       />
     </div>
   );

@@ -660,7 +660,10 @@ export default function CompletePurchaseDetail({
   const onPay = async () => {
     // Check mismatch
     if (selectedAddons && selectedPlan) {
-      const expectedPrefix = getPlanGroupPrefix(selectedPlan, PRODUCT_NAME.CAR);
+      const expectedPrefix = getPlanGroupPrefix(
+        selectedPlan,
+        PRODUCT_NAME.MOTORCYCLE,
+      );
       const addonKeys = Object.keys(selectedAddons);
       const hasUnmatchedAddon = addonKeys.some((key) => {
         const parts = key.split('_');
@@ -682,7 +685,7 @@ export default function CompletePurchaseDetail({
 
     const res = await saveProposal({
       data,
-      productType: PRODUCT_NAME.CAR,
+      productType: PRODUCT_NAME.MOTORCYCLE,
     });
 
     if (!res?.final_premium) return;
@@ -851,7 +854,7 @@ export default function CompletePurchaseDetail({
           handleBack={handleBack}
           onClick={onPay}
           setIsShowPopupPremium={setIsShowPopupPremium}
-          productType={ProductType.CAR}
+          productType={ProductType.MOTORCYCLE}
         />
         {isMobile ? (
           <Drawer

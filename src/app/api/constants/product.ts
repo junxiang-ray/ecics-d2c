@@ -2,7 +2,7 @@ export const PRODUCT_NAME = {
   CAR: 'car',
   MAID: 'maid',
   MOTOR: 'motor',
-  MOTORCYCLE: 'motorcycle',
+  MOTORCYCLE: 'b2c_motorcycle2',
 } as const;
 
 export type ProductTypeWeb = (typeof PRODUCT_NAME)[keyof typeof PRODUCT_NAME];

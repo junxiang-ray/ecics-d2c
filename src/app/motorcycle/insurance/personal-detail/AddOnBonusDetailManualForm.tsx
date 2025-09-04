@@ -464,7 +464,7 @@ const AddOnBonusDetailManualForm = (props: Props) => {
           onClick={methods.handleSubmit(handleSubmit)}
           setIsShowPopupPremium={setIsShowPopupPremium}
           loading={isPending}
-          productType={ProductType.CAR}
+          productType={ProductType.MOTORCYCLE}
         />
       </div>
       {showCSModal && (

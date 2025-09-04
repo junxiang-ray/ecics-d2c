@@ -8,7 +8,7 @@ import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
 
 import { PromoCodeResponse } from '@/api/base-service/verify';
-import { MOTOR_QUOTE } from '@/constants';
+import { MOTORCYCLE_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -76,7 +76,7 @@ export const PromoCodeField = ({
 
   const handleSubmitPromoCode = () => {
     dispatch(setPromoCodeError(null));
-    const promoCode = getValues(MOTOR_QUOTE.promo_code);
+    const promoCode = getValues(MOTORCYCLE_QUOTE.promo_code);
     if (promoCode) {
       handleVerifyPromoCode(promoCode);
     }
@@ -84,7 +84,7 @@ export const PromoCodeField = ({
 
   const removePromoCode = () => {
     setPromoInfoSelected(null);
-    setValue(MOTOR_QUOTE.promo_code, '');
+    setValue(MOTORCYCLE_QUOTE.promo_code, '');
     setApplyPromoCode('');
   };
 
@@ -146,7 +146,7 @@ export const PromoCodeField = ({
       )}
       {!isDisablePromoCode && !isValidPromoCode && (
         <Form.Item
-          name={MOTOR_QUOTE.promo_code}
+          name={MOTORCYCLE_QUOTE.promo_code}
           required={false}
           validateStatus={errorMessage ? 'error' : ''}
           className='border p-3 font-semibold md:ms-2'
@@ -154,7 +154,7 @@ export const PromoCodeField = ({
           <div className='w-full'>Enter Promo Code</div>
           <Flex gap='small' className='w-full justify-between'>
             <Controller
-              name={MOTOR_QUOTE.promo_code}
+              name={MOTORCYCLE_QUOTE.promo_code}
               control={control}
               defaultValue={applyPromoCode}
               render={({ field }) => (
