@@ -42,3 +42,6 @@ export const API_EDIT_RENEWAL = (productType: ProductTypeWeb) =>
   `/renewal/${productType}/edit-policy`;
 
 export const API_GET_RENEWAL_CONTENT = '/renewal-content';
+
+export const API_RENEWAL_PROCESS_PAYMENT = (productType: ProductTypeWeb) =>
+  `/renewal/${productType}/payment`;

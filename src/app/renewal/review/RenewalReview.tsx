@@ -5,21 +5,43 @@ import { useRouter } from 'next/navigation';
 
 import { BackIcon } from '@/components/icons/renewal-icons';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalReviewForm from '@/app/renewal/review/RenewalReviewForm';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
+import { usePostRenewalProcessPayment } from '@/hook/renewal/renewalQuote';
 
 const RenewalReview = () => {
   const router = useRouter();
   const { data: renewalContent } = useGetRenewalContent();
+  const { mutate: postPayment } = usePostRenewalProcessPayment();
 
   const handleBackPolicyRenewal = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DETAIL);
   };
 
   const handleMakePayment = () => {
-    router.push(ROUTES.RENEWAL.RENEWAL_ACCOUNT_SETUP);
+    // router.push(ROUTES.RENEWAL.RENEWAL_ACCOUNT_SETUP);
+    const payload = {
+      email_address: 'David_lee@ecics.com.sg',
+      contact_no: '88886666',
+      proposal_id: 'PR000000035072',
+    };
+    const productType = PRODUCT_NAME.MOTOR;
+
+    postPayment(
+      { productType, payload },
+      {
+        onSuccess: (data) => {
+          console.log('data', data);
+          // router.push(ROUTES.RENEWAL.RENEWAL_ACCOUNT_SETUP);
+        },
+        onError: (error) => {
+          console.error('Payment failed:', error);
+        },
+      },
+    );
   };
 
   return (
