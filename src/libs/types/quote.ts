@@ -65,6 +65,7 @@ export interface QuoteData {
   vehicle_info_selected?: Vehicle;
   insurance_additional_info?: InsuranceAdditionalInfo;
   selected_plan?: string;
+  selected_plan_code?: string;
   selected_addons?: Record<string, string>;
   add_named_driver_info?: AddNamedDriverInfo[];
   review_info_premium?: ReviewInfo;

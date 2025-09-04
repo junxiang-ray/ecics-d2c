@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { VehicleCheckResponse } from '@/libs/types/auth';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 import verify from '@/api/base-service/verify';
-import { formatPromoCode } from '@/libs/utils/utils';
 
 interface CheckVehiclePayload {
   vehicle_make: string;
