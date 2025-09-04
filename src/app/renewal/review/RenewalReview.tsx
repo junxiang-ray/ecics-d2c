@@ -6,11 +6,13 @@ import { useRouter } from 'next/navigation';
 import { BackIcon } from '@/components/icons/renewal-icons';
 
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
-import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
+import RenewalReviewForm from '@/app/renewal/review/RenewalReviewForm';
 import { ROUTES } from '@/constants/routes';
+import { useGetRenewalContent } from '@/hook/cms/verify';
 
 const RenewalReview = () => {
   const router = useRouter();
+  const { data: renewalContent } = useGetRenewalContent();
 
   const handleBackPolicyRenewal = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DETAIL);
@@ -39,7 +41,9 @@ const RenewalReview = () => {
         </div>
 
         <div className='p-6'>
-          <RenewalNoticeForm />
+          <RenewalReviewForm
+            renewalContent={renewalContent?.data?.attributes}
+          />
         </div>
       </div>
       <div className='w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-10'>

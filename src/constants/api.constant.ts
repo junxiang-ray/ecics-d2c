@@ -1,3 +1,5 @@
+import { ProductTypeWeb } from '@/app/api/constants/product';
+
 export const API_LOGIN = '/singpass/login';
 
 export const API_GET_USER_INFO = '/singpass/user-info';
@@ -27,8 +29,16 @@ export const API_GET_REQUEST_LOG = '/request-log/';
 export const API_GET_HIRE_PURCHASE_LIST = '/companies/';
 
 export const API_POST_PAYMENT = '/payment';
-
+// renewal
 export const API_LOGIN_RENEWAL = '/singpass/login/renewal';
+
 export const API_RETRIEVE_POLICY = '/renewal/motor/retrieve-policy';
+
 export const API_CHECK_POLICY = '/renewal/motor/check-policy';
+
 export const API_RENEWAL_PAYMENT = '/renewal/motor/get-policy';
+
+export const API_EDIT_RENEWAL = (productType: ProductTypeWeb) =>
+  `/renewal/${productType}/edit-policy`;
+
+export const API_GET_RENEWAL_CONTENT = '/renewal-content';

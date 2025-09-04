@@ -48,7 +48,6 @@ const ModalPremiumRenewal = (props: Props) => {
 
         <PremiumBreakdownRenewalContent
           {...rest}
-          productType={currentProductType}
           onClose={() => setIsShowPopupPremium(false)}
         />
       </motion.div>

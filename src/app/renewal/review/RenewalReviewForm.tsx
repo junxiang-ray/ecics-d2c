@@ -24,7 +24,7 @@ import {
 import InfoCard from '@/app/renewal/components/InfoCard';
 import { useAppSelector } from '@/redux/store';
 
-interface RenewalNoticeFormProps {
+interface RenewalReviewFormProps {
   renewalContent?: {
     renewal_notice?: string;
     declaration_acknowledgement?: string;
@@ -33,7 +33,7 @@ interface RenewalNoticeFormProps {
   };
 }
 
-const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
+const RenewalReviewForm = ({ renewalContent }: RenewalReviewFormProps) => {
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
@@ -273,7 +273,7 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
                 )?.text
               : 'N/A',
           },
-          // { label: 'Driving Experience', value: '15 years' },
+          { label: 'Driving Experience', value: insured?.driv_exp },
         ],
       },
       {
@@ -462,7 +462,7 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
     );
   };
 
-  const DeclarationContent = ({ renewalContent }: RenewalNoticeFormProps) => {
+  const DeclarationContent = ({ renewalContent }: RenewalReviewFormProps) => {
     const parseList = (html: string, type: 'ul' | 'ol') => {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
@@ -582,4 +582,4 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
   );
 };
 
-export default RenewalNoticeForm;
+export default RenewalReviewForm;

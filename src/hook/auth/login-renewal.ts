@@ -4,11 +4,11 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 
+import { UserInfoPayload } from '@/libs/types/auth';
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
-import { ProductTypeWeb } from '@/app/api/constants/product';
 import auth from '@/api/singpass-renewal-service/auth';
-import { UserInfoPayload } from '@/libs/types/auth';
+import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
   DATA_FROM_SINGPASS,
   ECICS_USER_INFO,

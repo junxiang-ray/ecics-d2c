@@ -1,7 +1,10 @@
 'use client';
 
+import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+
+import { formatCurrency } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import MailIcon from '@/components/icons/MailIcon';
@@ -19,8 +22,7 @@ import {
 
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalPaymentSuccess } from '@/hook/insurance/renewal';
-import { formatCurrency } from '@/libs/utils/utils';
-import { Spin } from 'antd';
+
 import ImportantDoc from './ImportantDoc';
 
 const StepItem = ({

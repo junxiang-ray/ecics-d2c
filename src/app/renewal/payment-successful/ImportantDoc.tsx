@@ -1,7 +1,8 @@
 import React from 'react';
+
 import {
-  PolicyDetailsIcon,
   DownloadIcon,
+  PolicyDetailsIcon,
 } from '@/components/icons/renewal-icons';
 
 interface ImportantDocProps {

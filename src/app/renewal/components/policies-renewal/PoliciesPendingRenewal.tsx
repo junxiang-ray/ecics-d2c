@@ -3,9 +3,15 @@
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
+import { createPassphrase, saveToSessionStorage } from '@/libs/utils/utils';
+
 import { PrivateMotorCarIcon } from '@/components/icons/renewal-icons';
 
+import { ECICS_USER_INFO, EDIT_RENEWAL } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
+import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
+import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch } from '@/redux/store';
 
 interface Policy {
   id: string;
@@ -15,15 +21,41 @@ interface Policy {
   expiry_date: string;
   veh_reg_no: string;
   status: string;
+  dob: string;
 }
+
 interface Props {
   policies: Policy[];
 }
 
 const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const { mutateAsync: checkPolicyRenewal } = useCheckPolicyRenewal();
+
   const handleRenew = (policy: Policy) => {
-    router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+    const renewalUserInfoStr = sessionStorage.getItem(ECICS_USER_INFO);
+    if (!renewalUserInfoStr) {
+      console.error('User info not found in sessionStorage');
+      return;
+    }
+    const renewalUserInfo = JSON.parse(renewalUserInfoStr);
+    const nric = renewalUserInfo?.uinfin?.value || '';
+    const passphrase = createPassphrase(policy.dob, nric);
+
+    checkPolicyRenewal({
+      veh_reg_no: policy.veh_reg_no,
+      passphrase,
+    }).then((res) => {
+      if (res) {
+        if (res.edit_renewal) {
+          saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
+        }
+        dispatch(updateRenewalQuote(res));
+      }
+      router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+    });
   };
 
   return (

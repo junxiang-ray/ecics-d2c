@@ -1,14 +1,5 @@
 'use client';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { CarIcon } from '@/components/icons/add-on-icons';
-import { PrimaryButton } from '@/components/ui/buttons';
-import { InputField } from '@/components/ui/form/inputfield';
-import { ROUTES } from '@/constants/routes';
-import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
-import { useSignInRenewal } from '@/hook/insurance/renewal';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 import {
   EyeInvisibleOutlined,
   EyeOutlined,
@@ -21,6 +12,21 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
+
+import { CarIcon } from '@/components/icons/add-on-icons';
+import { PrimaryButton } from '@/components/ui/buttons';
+import { InputField } from '@/components/ui/form/inputfield';
+
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ROUTES } from '@/constants/routes';
+import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
+import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
+import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch } from '@/redux/store';
+import { EDIT_RENEWAL } from '@/constants/general.constant';
+import { saveToSessionStorage } from '@/libs/utils/utils';
 
 const schema = z.object({
   veh_reg_no: z
@@ -37,15 +43,19 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const LoginRenewalPage = () => {
-  const { isMobile } = useDeviceDetection();
   const [form] = Form.useForm();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');
   const { mutate: requestSignInSingpass, error: errorLoginRenewal } =
     useRequestSignInSingpass(PRODUCT_NAME.RENEWAL);
-  const { mutate: signInRenewal, isPending, error } = useSignInRenewal();
+  const {
+    mutateAsync: checkPolicyRenewal,
+    isPending,
+    error,
+  } = useCheckPolicyRenewal();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -58,18 +68,22 @@ const LoginRenewalPage = () => {
   } = methods;
 
   const onSubmitSigninRenewal = (values: FormData) => {
-    signInRenewal(
-      { veh_reg_no: values.veh_reg_no, passphrase: values.passphrase },
-      {
-        onSuccess: () => {
-          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-        },
-
-        onError: (err: any) => {
-          setMessageError(err?.response?.data?.message);
-        },
-      },
-    );
+    checkPolicyRenewal({
+      veh_reg_no: values.veh_reg_no,
+      passphrase: values.passphrase,
+    })
+      .then((res) => {
+        if (res) {
+          if (res.edit_renewal) {
+            saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
+          }
+          dispatch(updateRenewalQuote(res));
+        }
+        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+      })
+      .catch((err: any) => {
+        setMessageError(err?.response?.data?.message ?? 'Something went wrong');
+      });
   };
 
   return (
