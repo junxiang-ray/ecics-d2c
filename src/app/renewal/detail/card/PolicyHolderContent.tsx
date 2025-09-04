@@ -31,7 +31,7 @@ const PolicyHolderContent = () => {
         { label: 'Marital Status', name: 'marital_status', isDropdown: true },
         {
           label: 'Driving Experience',
-          name: 'driving_experience',
+          name: 'driv_exp',
           disabled: true,
         },
       ],

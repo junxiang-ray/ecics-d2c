@@ -8,9 +8,11 @@ import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
 import { ROUTES } from '@/constants/routes';
+import { useGetRenewalContent } from '@/hook/cms/verify';
 
 const RenewalNotice = () => {
   const router = useRouter();
+  const { data: renewalContent } = useGetRenewalContent();
 
   const handleBackDashboard = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
@@ -46,37 +48,18 @@ const RenewalNotice = () => {
           <div className='rounded-lg border border-orange-200 bg-[#FFF7ED] p-5'>
             <div className='flex items-start gap-2'>
               <WarningNoticeIcon className='mt-1 text-[#F54900]' size={22} />
-              <div>
-                <h2 className='mb-2 text-[16px] font-semibold text-[#9F2D00]'>
-                  Important Notice - Private Motor Insurance
-                </h2>
-                <p className='mb-3 text-sm text-[#CA3500]'>
-                  Please note that your motor insurance policy includes specific
-                  terms regarding the use of your vehicle. To ensure continuous
-                  coverage and avoid any potential issues with your policy:
-                </p>
-                <ul className='list-disc space-y-1 pl-5 text-sm text-[#CA3500]'>
-                  <li>
-                    Ensure that all drivers listed on the policy have valid
-                    driving licences
-                  </li>
-                  <li>
-                    Declare any modifications to your vehicle to avoid voiding
-                    your coverage
-                  </li>
-                  <li>
-                    Report any changes in vehicle usage (e.g., commercial use,
-                    ride-sharing)
-                  </li>
-                  <li>
-                    Update your contact information to receive important policy
-                    communications
-                  </li>
-                </ul>
-              </div>
+              <div
+                className='prose prose-sm text-[#CA3500]'
+                dangerouslySetInnerHTML={{
+                  __html:
+                    renewalContent?.data?.attributes?.renewal_notice || '',
+                }}
+              />
             </div>
           </div>
-          <RenewalNoticeForm />
+          <RenewalNoticeForm
+            renewalContent={renewalContent?.data?.attributes}
+          />
         </div>
       </div>
       <div className='w-full border border-[#F7F7F9] bg-[#FFFEFF] md:mt-10'>

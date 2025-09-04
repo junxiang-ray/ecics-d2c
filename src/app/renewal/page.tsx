@@ -1,22 +1,23 @@
 'use client';
 
+import { Spin } from 'antd';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import Announcements from '@/app/renewal/components/announcements/Announcements';
 import PoliciesPendingRenewal from '@/app/renewal/components/policies-renewal/PoliciesPendingRenewal';
 import Promotions from '@/app/renewal/components/promotions/Promotions';
 import QuickActions from '@/app/renewal/components/quick-action/QuickActions';
 import RenewalHeader from '@/app/renewal/components/renewal-header/RenewalHeader';
-import { usePostUserInfoRenewal } from '@/hook/auth/login-renewal';
-import { useEffect, useState } from 'react';
-import { PRODUCT_NAME } from '../api/constants/product';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
-import { useVerifyRetrieveRenewal } from '@/hook/insurance/renewal';
-import { useRouter } from 'next/navigation';
-import { Spin } from 'antd';
 import { ROUTES } from '@/constants/routes';
+import { usePostUserInfoRenewal } from '@/hook/auth/login-renewal';
+import { useVerifyRetrieveRenewal } from '@/hook/insurance/renewal';
+
+import { PRODUCT_NAME } from '../api/constants/product';
 
 export default function RenewalPage() {
   const router = useRouter();
-
   const [payload, setPayload] = useState({
     code_verifier: '',
     nonce: '',
@@ -50,8 +51,11 @@ export default function RenewalPage() {
   );
 
   useEffect(() => {
-    if (vehData && vehData.length < 2) {
+    if (!vehData) return;
+    if (vehData.length < 2) {
       router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+    } else if (vehData.length >= 2) {
+      router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
     }
   }, [vehData, router]);
 

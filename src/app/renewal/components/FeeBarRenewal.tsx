@@ -1,15 +1,14 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { EditRenewalIcon } from '@/components/icons/renewal-icons';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { EDIT_RENEWAL } from '@/constants/general.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { setIsLoadingStep } from '@/redux/slices/general.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store';
 
 export function PricingSummaryRenewal({
   onClick,
@@ -19,13 +18,6 @@ export function PricingSummaryRenewal({
   loading,
   isPolicyRenewalScreen,
   setIsShowPopupPremium,
-
-  planFee = 0,
-  addonFee = 0,
-  discount = 0, // 10% = 10, 0% = 0
-  title,
-  productType,
-  isPlan,
 }: {
   onClick?: () => void;
   onClickButtonLeft?: () => void;
@@ -34,22 +26,15 @@ export function PricingSummaryRenewal({
   loading?: boolean;
   isPolicyRenewalScreen?: boolean;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
-
-  planFee?: number;
-  addonFee?: number;
-  discount?: number;
-  title?: string;
-  productType?: ProductType;
-  isPlan?: boolean;
-  titlePlan?: string;
 }) {
-  const router = useRouter();
-  const discountFee = planFee + addonFee;
-  const notDiscountFee = planFee / (1 - discount / 100) + addonFee;
   const { isMobile } = useDeviceDetection();
   const dispatch = useAppDispatch();
 
+  const [editRenewal, setEditRenewal] = useState<string | null>(null);
+
   useEffect(() => {
+    setEditRenewal(sessionStorage.getItem(EDIT_RENEWAL));
+
     if (!loading) {
       dispatch(setIsLoadingStep(false));
     }
@@ -66,20 +51,22 @@ export function PricingSummaryRenewal({
           {isMobile ? (
             <div className='flex w-full flex-col items-center gap-3'>
               <div className='flex w-full items-center justify-between gap-2'>
-                <SecondaryButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClickButtonLeft && onClickButtonLeft();
-                  }}
-                  className='border-gray-300 text-[14px] font-normal text-gray-950 hover:bg-gray-100 '
-                  disabled={loading}
-                >
-                  {textButtonLeft || (
-                    <div className='flex items-center gap-1'>
-                      <EditRenewalIcon size={18} /> Edit
-                    </div>
-                  )}
-                </SecondaryButton>
+                {editRenewal === 'true' && (
+                  <SecondaryButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClickButtonLeft && onClickButtonLeft();
+                    }}
+                    className='border-gray-300 text-[14px] font-normal text-gray-950 hover:bg-gray-100 '
+                    disabled={loading}
+                  >
+                    {textButtonLeft || (
+                      <div className='flex items-center gap-1'>
+                        <EditRenewalIcon size={18} /> Edit
+                      </div>
+                    )}
+                  </SecondaryButton>
+                )}
                 {isPolicyRenewalScreen && (
                   <div
                     className=' w-full'
@@ -109,19 +96,22 @@ export function PricingSummaryRenewal({
             </div>
           ) : (
             <div className='flex items-center justify-between md:my-3'>
-              <SecondaryButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClickButtonLeft && onClickButtonLeft();
-                }}
-                className='w-[150px] border-gray-300 text-[14px] font-normal text-gray-950 hover:bg-gray-100'
-              >
-                {textButtonLeft || (
-                  <div className='flex items-center'>
-                    <EditRenewalIcon size={20} className='mr-1' /> Edit Renewal
-                  </div>
-                )}
-              </SecondaryButton>
+              {editRenewal === 'true' && (
+                <SecondaryButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClickButtonLeft && onClickButtonLeft();
+                  }}
+                  className='w-[150px] border-gray-300 text-[14px] font-normal text-gray-950 hover:bg-gray-100'
+                >
+                  {textButtonLeft || (
+                    <div className='flex items-center'>
+                      <EditRenewalIcon size={20} className='mr-1' /> Edit
+                      Renewal
+                    </div>
+                  )}
+                </SecondaryButton>
+              )}
               {isPolicyRenewalScreen && (
                 <div
                   className=' w-full'

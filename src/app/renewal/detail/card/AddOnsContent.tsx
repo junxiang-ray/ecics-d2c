@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import { RenewalQuote } from '@/libs/types/renewalQuote';
+
 import PromoTickIcon from '@/components/icons/PromoTickIcon';
 
 interface Props {
@@ -13,7 +15,7 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
 
   useEffect(() => {
     const defaultOptions: { [key: number]: number } = {};
-    renewalQuote.add_on_optional_benefits.forEach((addon) => {
+    renewalQuote.add_on_optional_benefits?.forEach((addon) => {
       if (addon.sub_options && addon.sub_options.length > 0) {
         defaultOptions[addon.id] = addon.sub_options[0].id;
       }
@@ -28,7 +30,7 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
   return (
     <div className='space-y-4'>
       {/* Optional benefits already included */}
-      {renewalQuote.renewal_info.optional_benefits.map((benefit) => (
+      {renewalQuote.renewal_info?.optional_benefits.map((benefit) => (
         <div
           key={benefit.id}
           className='flex items-center justify-between rounded-lg border-2 border-green-300 bg-white p-4'
@@ -47,7 +49,7 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
           </div>
         </div>
       ))}
-      {renewalQuote.add_on_optional_benefits.map((addon) => {
+      {renewalQuote.add_on_optional_benefits?.map((addon) => {
         const isAddonSelected = !!selectedOptions[addon.id];
 
         const handleClickAddon = () => {
@@ -61,7 +63,7 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
             if (addon.sub_options && addon.sub_options.length > 0) {
               handleSelectOption(addon.id, addon.sub_options[0].id);
             } else {
-              handleSelectOption(addon.id, 0);
+              setSelectedOptions((prev) => ({ ...prev, [addon.id]: -1 }));
             }
           }
         };
@@ -69,29 +71,34 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
         return (
           <div
             key={addon.id}
-            className={`cursor-pointer rounded-lg border-2 p-3 ${
-              isAddonSelected ? 'border-blue-500' : 'border-blue-300'
+            className={`cursor-pointer rounded-lg border-2 p-4 ${
+              isAddonSelected ? 'border-blue-500' : 'border-gray-200'
             }`}
             onClick={handleClickAddon}
           >
-            <div className='flex items-center justify-between font-medium'>
+            <div className='flex justify-between font-medium'>
               <div>{addon.name}</div>
-              <div className='flex items-center space-x-2'>
-                <div className='text-[#02ADEF]'>
-                  SGD{' '}
-                  {addon.sub_options
-                    ? isAddonSelected
-                      ? addon.sub_options.find(
+              <div className='flex space-x-2'>
+                <div className='justify-end'>
+                  <div className='mb-2'>
+                    SGD{' '}
+                    {addon.sub_options
+                      ? (addon.sub_options.find(
                           (sub) => sub.id === selectedOptions[addon.id],
-                        )?.prem
-                      : 0
-                    : addon.prem || 0}
+                        )?.prem ?? addon.sub_options[0].prem)
+                      : addon.prem || 0}
+                  </div>
+                  {isAddonSelected && (
+                    <div className='rounded-full bg-green-100 px-3'>
+                      <span className='font-medium text-green-600'>Added</span>
+                    </div>
+                  )}
                 </div>
                 <div className='flex h-7 w-7 items-center justify-center'>
                   {isAddonSelected ? (
                     <PromoTickIcon className='text-[#02ADEF]' size={28} />
                   ) : (
-                    <div className='h-7 w-7 rounded-full border-2 border-blue-600' />
+                    <div className='h-7 w-7 rounded-full border-2 border-gray-200' />
                   )}
                 </div>
               </div>
@@ -106,7 +113,7 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
                     className='flex cursor-pointer items-center justify-between'
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <label className='flex cursor-pointer items-center space-x-3'>
+                    <label className='flex cursor-pointer items-center space-x-1'>
                       <input
                         type='radio'
                         name={`addon-${addon.id}`}
@@ -115,7 +122,11 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
                         checked={selectedOptions[addon.id] === sub.id}
                         onChange={() => handleSelectOption(addon.id, sub.id)}
                       />
-                      <span>{sub.name}</span>
+                      <span>
+                        + SGD {sub.name.replace(/\[\+?\$([\d,]+)\]/, '$1')}
+                      </span>
+                      <span>-</span>
+                      <span className='text-[#02ADEF]'>SGD {sub.prem}</span>
                     </label>
                   </div>
                 ))}

@@ -3,12 +3,27 @@
 import { Form } from 'antd';
 import React from 'react';
 
-import { LongOptionDropdownField } from '@/components/ui/form/dropdownfield';
+import {
+  DropdownOption,
+  LongOptionDropdownField,
+} from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import { HELPER_TYPE_OPTIONS } from '@/app/motor/insurance/basic-detail/options';
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { useGetHirePurchaseList } from '@/hook/insurance/quote';
 
 const VehicleDetailsContent = () => {
+  const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
+  // Options for Dropdown
+  const hirePurchaseListFormatted: DropdownOption[] = [
+    ...(Array.isArray(hirePurchaseList)
+      ? hirePurchaseList.map((item: any) => ({
+          value: item.id,
+          text: item.name,
+        }))
+      : []),
+  ];
+
   const sections = [
     {
       title: 'Vehicle Information',
@@ -45,18 +60,18 @@ const VehicleDetailsContent = () => {
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             {fields.map(({ label, name }, idx) => (
               <Form.Item key={idx} name={name}>
-                {name === 'hire_purchase' ? (
-                  <LongOptionDropdownField
-                    name='hire_purchase'
-                    label={label}
-                    isRequired
-                    placeholder='Select hire purchase company'
-                    options={HELPER_TYPE_OPTIONS}
-                    showSearch
-                  />
-                ) : (
-                  <InputField name={name} disabled label={label} />
-                )}
+                {/*{name === 'hire_purchase' ? (*/}
+                {/*    <LongOptionDropdownField*/}
+                {/*        name='hire_purchase'*/}
+                {/*        label={label}*/}
+                {/*        isRequired*/}
+                {/*        placeholder='Select hire purchase company'*/}
+                {/*        options={hirePurchaseListFormatted}*/}
+                {/*        showSearch*/}
+                {/*    />*/}
+                {/*) : (*/}
+                <InputField name={name} disabled label={label} />
+                {/*)}*/}
               </Form.Item>
             ))}
           </div>

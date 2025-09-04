@@ -35,3 +35,15 @@ export const useGetPaymentSummaryData = (product_type: string) => {
     enabled: !!product_type,
   });
 };
+
+export const useGetRenewalContent = () => {
+  const fetchRenewalContent = async () => {
+    const res = await verify.getRenewalContent();
+    return res.data;
+  };
+
+  return useQuery({
+    queryFn: fetchRenewalContent,
+    queryKey: ['renewal-content'],
+  });
+};

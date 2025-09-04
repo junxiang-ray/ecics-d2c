@@ -16,7 +16,7 @@ export default {
   verifyRetrieveRenewal(nric: string) {
     return baseClient.post<any>(API_RETRIEVE_POLICY, { nric });
   },
-  signInRenewal(veh_reg_no: string, passphrase: string) {
+  checkPolicyRenewal(veh_reg_no: string, passphrase: string) {
     return baseClient.post<any>(API_CHECK_POLICY, { veh_reg_no, passphrase });
   },
   postEditRenewal(productType: ProductTypeWeb, payload: any) {

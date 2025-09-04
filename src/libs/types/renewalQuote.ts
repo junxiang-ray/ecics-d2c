@@ -1,11 +1,11 @@
 interface VehicleDetails {
-  'reg. no.': string;
+  reg_no: string;
   'make/model': string;
   make: string;
   model: string;
-  'first reg on': string;
+  first_reg_on: string;
   hire_purchase: string;
-  'model type': string;
+  model_type: string;
 }
 
 interface ClaimNcdDetails {
@@ -98,7 +98,7 @@ interface RenewalInfo {
   renewalpremwgst: string;
 }
 
-interface RenewalQuote {
+export interface RenewalQuote {
   policy_id: string;
   quote_id: string;
   proposal_id: string;

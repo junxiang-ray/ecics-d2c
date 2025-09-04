@@ -1,5 +1,6 @@
 import {
   API_GET_PAYMENT_SUMMARY_DATA,
+  API_GET_RENEWAL_CONTENT,
   API_POST_VERIFY_RESTRICTED_USER,
 } from '@/constants/api.constant';
 
@@ -24,6 +25,15 @@ export default {
 
     return cmsService.get(`${API_GET_PAYMENT_SUMMARY_DATA}`, {
       params: { product_type },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+  getRenewalContent() {
+    const token = process.env.NEXT_PUBLIC_API_CMS_TOKEN;
+
+    return cmsService.get(`${API_GET_RENEWAL_CONTENT}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

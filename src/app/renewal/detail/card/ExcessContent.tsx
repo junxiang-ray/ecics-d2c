@@ -4,7 +4,8 @@ import React from 'react';
 import { InputField } from '@/components/ui/form/inputfield';
 
 const ExcessContent = ({ renewal }: { renewal: any }) => {
-  const { policy_excess, additional_excess } = renewal.renewal_excess;
+  const { policy_excess = [], additional_excess = [] } =
+    renewal?.renewal_excess || {};
 
   const renderFields = (
     fields: { title: string; value: string }[],

@@ -1,6 +1,7 @@
 import { Form } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 import { ReloadIcon } from '@/components/icons/renewal-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
@@ -12,6 +13,7 @@ const RenewalPeriodContent = ({
   errors: any;
   renewalStartDate: Dayjs | null;
 }) => {
+  const { setValue } = useFormContext();
   const startDate = useMemo(() => dayjs(renewalStartDate), [renewalStartDate]);
 
   const [expiryDate, setExpiryDate] = useState<Dayjs>(startDate.add(1, 'year'));
@@ -30,27 +32,34 @@ const RenewalPeriodContent = ({
       'day',
     );
 
-    if (years && !months && !days)
-      return `${years} year${years > 1 ? 's' : ''}`;
-    if (years || months || days) {
-      return [
-        years ? `${years}y` : '',
-        months ? `${months}m` : '',
-        days ? `${days}d` : '',
-      ]
-        .filter(Boolean)
-        .join(' ');
+    const parts: string[] = [];
+
+    if (years) {
+      parts.push(`${years} year${years > 1 ? 's' : ''}`);
     }
-    return '0 day';
+    if (months) {
+      parts.push(`${months} month${months > 1 ? 's' : ''}`);
+    }
+    if (days) {
+      parts.push(`${days} day${days > 1 ? 's' : ''}`);
+    }
+
+    if (parts.length === 0) return '0 day';
+    if (parts.length === 1) return parts[0];
+    if (parts.length === 2) return parts.join(' and ');
+    return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
   };
 
   const handleExpiryChange = (value: Dayjs | null) => {
     if (!value) return;
     setExpiryDate(value);
+    setValue('renewal_expiry_date', value.toDate());
   };
 
   const handleReset = () => {
-    setExpiryDate(startDate.add(1, 'year'));
+    const newDate = startDate.add(1, 'year');
+    setExpiryDate(newDate);
+    setValue('renewal_expiry_date', newDate);
   };
 
   return (

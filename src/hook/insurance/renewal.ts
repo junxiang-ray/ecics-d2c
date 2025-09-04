@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+
 import renewal from '@/api/base-service/renewal';
 
 export const useVerifyRetrieveRenewal = (nric: string) => {
@@ -14,17 +15,19 @@ export const useVerifyRetrieveRenewal = (nric: string) => {
   });
 };
 
-export const useSignInRenewal = () => {
-  const signInRenewal = async (data: {
+export const useCheckPolicyRenewal = () => {
+  const checkPolicyRenewal = async (data: {
     veh_reg_no: string;
     passphrase: string;
   }) => {
-    const res = await renewal.signInRenewal(data.veh_reg_no, data.passphrase);
+    const res = await renewal.checkPolicyRenewal(
+      data.veh_reg_no,
+      data.passphrase,
+    );
     return res.data.data;
   };
-
   return useMutation({
-    mutationFn: signInRenewal,
+    mutationFn: checkPolicyRenewal,
     mutationKey: ['check-policy'],
   });
 };
