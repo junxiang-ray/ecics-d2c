@@ -36,6 +36,8 @@ export const API_RETRIEVE_POLICY = '/renewal/motor/retrieve-policy';
 
 export const API_CHECK_POLICY = '/renewal/motor/check-policy';
 
+export const API_RENEWAL_PAYMENT = '/renewal/motor/get-policy';
+
 export const API_EDIT_RENEWAL = (productType: ProductTypeWeb) =>
   `/renewal/${productType}/edit-policy`;
 

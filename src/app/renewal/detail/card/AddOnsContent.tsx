@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { RenewalQuote } from '@/libs/types/renewalQuote';
 
@@ -11,26 +11,44 @@ interface Props {
 const AddOnsContent = ({ renewalQuote }: Props) => {
   const [selectedOptions, setSelectedOptions] = useState<{
     [key: number]: number;
-  }>({});
-
-  useEffect(() => {
+  }>(() => {
     const defaultOptions: { [key: number]: number } = {};
     renewalQuote.add_on_optional_benefits?.forEach((addon) => {
       if (addon.sub_options && addon.sub_options.length > 0) {
         defaultOptions[addon.id] = addon.sub_options[0].id;
       }
     });
-    setSelectedOptions(defaultOptions);
-  }, [renewalQuote]);
+    return defaultOptions;
+  });
 
   const handleSelectOption = (addonId: number, subOptionId: number) => {
     setSelectedOptions((prev) => ({ ...prev, [addonId]: subOptionId }));
   };
 
+  const handleClickAddon = (
+    addon: (typeof renewalQuote.add_on_optional_benefits)[0],
+  ) => {
+    const isAddonSelected = !!selectedOptions[addon.id];
+
+    if (isAddonSelected) {
+      setSelectedOptions((prev) => {
+        const newState = { ...prev };
+        delete newState[addon.id];
+        return newState;
+      });
+    } else {
+      if (addon.sub_options && addon.sub_options.length > 0) {
+        handleSelectOption(addon.id, addon.sub_options[0].id);
+      } else {
+        setSelectedOptions((prev) => ({ ...prev, [addon.id]: -1 }));
+      }
+    }
+  };
+
   return (
     <div className='space-y-4'>
       {/* Optional benefits already included */}
-      {renewalQuote.renewal_info?.optional_benefits.map((benefit) => (
+      {renewalQuote.renewal_info?.optional_benefits?.map((benefit) => (
         <div
           key={benefit.id}
           className='flex items-center justify-between rounded-lg border-2 border-green-300 bg-white p-4'
@@ -52,29 +70,13 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
       {renewalQuote.add_on_optional_benefits?.map((addon) => {
         const isAddonSelected = !!selectedOptions[addon.id];
 
-        const handleClickAddon = () => {
-          if (isAddonSelected) {
-            setSelectedOptions((prev) => {
-              const newState = { ...prev };
-              delete newState[addon.id];
-              return newState;
-            });
-          } else {
-            if (addon.sub_options && addon.sub_options.length > 0) {
-              handleSelectOption(addon.id, addon.sub_options[0].id);
-            } else {
-              setSelectedOptions((prev) => ({ ...prev, [addon.id]: -1 }));
-            }
-          }
-        };
-
         return (
           <div
             key={addon.id}
             className={`cursor-pointer rounded-lg border-2 p-4 ${
               isAddonSelected ? 'border-blue-500' : 'border-gray-200'
             }`}
-            onClick={handleClickAddon}
+            onClick={() => handleClickAddon(addon)}
           >
             <div className='flex justify-between font-medium'>
               <div>{addon.name}</div>

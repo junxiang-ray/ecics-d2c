@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 export const getAgeFromDOB = (dob: string) => {
   const today = new Date();
@@ -326,4 +326,35 @@ export const parseCompactDate = (dateStr: string): string => {
   const year = dateStr.substring(4, 8);
 
   return `${day}/${month}/${year}`;
+};
+
+/**
+ * Calculates the coverage duration between two dates and returns a human-readable string.
+ * Example outputs: "1 year, 2 months and 5 days", "3 months and 10 days", "0 day".
+ *
+ * @param startDate - The start date of the coverage (Dayjs object)
+ * @param expiryDate - The end date of the coverage (Dayjs object)
+ * @returns A string describing the duration in years, months, and days
+ */
+export const getCoverageDuration = (
+  startDate: Dayjs,
+  expiryDate: Dayjs,
+): string => {
+  const years = expiryDate.diff(startDate, 'year');
+  const months = expiryDate.diff(startDate.add(years, 'year'), 'month');
+  const days = expiryDate.diff(
+    startDate.add(years, 'year').add(months, 'month'),
+    'day',
+  );
+
+  const parts: string[] = [];
+
+  if (years) parts.push(`${years} year${years > 1 ? 's' : ''}`);
+  if (months) parts.push(`${months} month${months > 1 ? 's' : ''}`);
+  if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+
+  if (parts.length === 0) return '0 day';
+  if (parts.length === 1) return parts[0];
+  if (parts.length === 2) return parts.join(' and ');
+  return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
 };

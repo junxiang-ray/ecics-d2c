@@ -192,3 +192,9 @@ export const getPlanGroupPrefix = (
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
+
+export const createPassphrase = (dob: string, nric: string): string => {
+  if (!nric) return dob;
+  const last5 = nric.slice(-5);
+  return `${dob}${last5}`;
+};

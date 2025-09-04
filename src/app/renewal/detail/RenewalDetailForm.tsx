@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -24,6 +24,8 @@ import PolicyDetailsContent from '@/app/renewal/detail/card/PolicyDetailsContent
 import PolicyHolderContent from '@/app/renewal/detail/card/PolicyHolderContent';
 import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent';
 import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
+import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch } from '@/redux/store';
 
 import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
 
@@ -63,7 +65,7 @@ const RenewalDetailForm = ({
   ...props
 }: RenewalDetailProps) => {
   const [form] = Form.useForm();
-
+  const dispatch = useAppDispatch();
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
@@ -72,6 +74,17 @@ const RenewalDetailForm = ({
   const {
     formState: { errors },
   } = methods;
+
+  // const watchedValues = methods.watch();
+  //
+  // useEffect(() => {
+  //   const updatedValues = { ...renewalQuote.renewal_info, ...watchedValues };
+  //   const isEqual = JSON.stringify(updatedValues) === JSON.stringify(renewalQuote.renewal_info);
+  //   console.log("isEqual", isEqual)
+  //   if (!isEqual) {
+  //     dispatch(updateRenewalQuote({ renewal_info: updatedValues }));
+  //   }
+  // }, [watchedValues, dispatch, renewalQuote.renewal_info]);
 
   const handleSubmit = (value: FormData) => {
     const payload = {};

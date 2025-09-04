@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { ReloadIcon } from '@/components/icons/renewal-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
+import { getCoverageDuration } from '@/libs/utils/date-utils';
 
 const RenewalPeriodContent = ({
   errors,
@@ -22,33 +23,6 @@ const RenewalPeriodContent = ({
   useEffect(() => {
     setExpiryDate(startDate.add(1, 'year'));
   }, [startDate]);
-
-  // Coverage Duration
-  const getCoverageDuration = () => {
-    const years = expiryDate.diff(startDate, 'year');
-    const months = expiryDate.diff(startDate.add(years, 'year'), 'month');
-    const days = expiryDate.diff(
-      startDate.add(years, 'year').add(months, 'month'),
-      'day',
-    );
-
-    const parts: string[] = [];
-
-    if (years) {
-      parts.push(`${years} year${years > 1 ? 's' : ''}`);
-    }
-    if (months) {
-      parts.push(`${months} month${months > 1 ? 's' : ''}`);
-    }
-    if (days) {
-      parts.push(`${days} day${days > 1 ? 's' : ''}`);
-    }
-
-    if (parts.length === 0) return '0 day';
-    if (parts.length === 1) return parts[0];
-    if (parts.length === 2) return parts.join(' and ');
-    return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
-  };
 
   const handleExpiryChange = (value: Dayjs | null) => {
     if (!value) return;
@@ -106,7 +80,7 @@ const RenewalPeriodContent = ({
           </div>
           <input
             type='text'
-            value={getCoverageDuration()}
+            value={getCoverageDuration(startDate, expiryDate)}
             disabled
             className='cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
           />

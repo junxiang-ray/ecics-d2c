@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
+import { createPassphrase, saveToSessionStorage } from '@/libs/utils/utils';
+
 import { PrivateMotorCarIcon } from '@/components/icons/renewal-icons';
 
 import { ECICS_USER_INFO, EDIT_RENEWAL } from '@/constants/general.constant';
@@ -10,7 +12,6 @@ import { ROUTES } from '@/constants/routes';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch } from '@/redux/store';
-import { saveToSessionStorage } from '@/libs/utils/utils';
 
 interface Policy {
   id: string;
@@ -41,10 +42,7 @@ const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
     }
     const renewalUserInfo = JSON.parse(renewalUserInfoStr);
     const nric = renewalUserInfo?.uinfin?.value || '';
-    const last5 = nric.slice(-5);
-    const dob = policy.dob;
-
-    const passphrase = `${dob}${last5}`;
+    const passphrase = createPassphrase(policy.dob, nric);
 
     checkPolicyRenewal({
       veh_reg_no: policy.veh_reg_no,

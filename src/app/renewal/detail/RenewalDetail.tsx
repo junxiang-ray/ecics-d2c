@@ -123,6 +123,9 @@ const RenewalDetail = () => {
   const gst = parseFloat(String(renewal?.renewalgst ?? 0));
   const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
 
+  const planFee = Number(renewal?.renewalpremb4gst ?? 0);
+  const subtotalFeeInitial = Number(renewal?.renewalpremwgst ?? 0);
+
   return (
     <>
       <div className='relative mb-[85px] flex min-h-screen w-full flex-col bg-gray-50'>
@@ -171,6 +174,8 @@ const RenewalDetail = () => {
           onClick={handleNext}
           isPolicyRenewalScreen={true}
           setIsShowPopupPremium={setIsShowPopupPremium}
+          planFee={planFee}
+          addonFee={subtotalFeeInitial}
         />
       </div>
       <ModalPremiumRenewal

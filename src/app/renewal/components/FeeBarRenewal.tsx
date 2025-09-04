@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { formatCurrency } from '@/libs/utils/utils';
+
 import { EditRenewalIcon } from '@/components/icons/renewal-icons';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
@@ -18,6 +20,8 @@ export function PricingSummaryRenewal({
   loading,
   isPolicyRenewalScreen,
   setIsShowPopupPremium,
+  planFee = 0,
+  addonFee = 0,
 }: {
   onClick?: () => void;
   onClickButtonLeft?: () => void;
@@ -26,9 +30,12 @@ export function PricingSummaryRenewal({
   loading?: boolean;
   isPolicyRenewalScreen?: boolean;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
+  planFee?: number;
+  addonFee?: number;
 }) {
   const { isMobile } = useDeviceDetection();
   const dispatch = useAppDispatch();
+  const discountFee = planFee + addonFee;
 
   const [editRenewal, setEditRenewal] = useState<string | null>(null);
 
@@ -77,7 +84,9 @@ export function PricingSummaryRenewal({
                         Net Premium
                       </p>
                       <p className='text-[20px] font-bold leading-[26px] text-[#00ADEF] underline'>
-                        SGD 1020.80
+                        {discountFee
+                          ? formatCurrency(Number(discountFee.toFixed(2)))
+                          : ''}{' '}
                       </p>
                     </div>
                   </div>
@@ -122,7 +131,9 @@ export function PricingSummaryRenewal({
                       Net Premium
                     </p>
                     <p className='text-[20px] font-bold leading-[26px] text-[#00ADEF] underline'>
-                      SGD 1020.80
+                      {discountFee
+                        ? formatCurrency(Number(discountFee.toFixed(2)))
+                        : ''}{' '}
                     </p>
                   </div>
                 </div>

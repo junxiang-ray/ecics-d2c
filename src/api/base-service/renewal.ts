@@ -3,6 +3,7 @@ import {
   API_CHECK_POLICY,
   API_EDIT_RENEWAL,
   API_LOGIN_RENEWAL,
+  API_RENEWAL_PAYMENT,
   API_RETRIEVE_POLICY,
 } from '@/constants/api.constant';
 
@@ -18,6 +19,9 @@ export default {
   },
   checkPolicyRenewal(veh_reg_no: string, passphrase: string) {
     return baseClient.post<any>(API_CHECK_POLICY, { veh_reg_no, passphrase });
+  },
+  getRenewalPaymentSuccess(key: string) {
+    return baseClient.get<any>(API_RENEWAL_PAYMENT, { params: { key } });
   },
   postEditRenewal(productType: ProductTypeWeb, payload: any) {
     return baseClient.post<any>(API_EDIT_RENEWAL(productType), payload);

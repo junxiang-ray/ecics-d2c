@@ -1,8 +1,9 @@
 'use client';
 
-import { ROUTES } from '@/constants/routes';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
+
+import { ROUTES } from '@/constants/routes';
 
 export default function SettingRenewalPage() {
   const router = useRouter();
