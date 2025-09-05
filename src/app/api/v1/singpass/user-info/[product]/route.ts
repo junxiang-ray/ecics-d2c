@@ -11,7 +11,7 @@ export const POST = async (
   const { code, code_verifier, nonce, state } = await req.json();
 
   logger.info(
-    `Get user info with Singpass for product: ${product}, with data: ${JSON.stringify(req.json())}`,
+    `Get user info with Singpass for product: ${product}, with code: ${code}, code_verifier: ${code_verifier}, nonce: ${nonce}, state: ${state}`,
   );
 
   if (!product) {

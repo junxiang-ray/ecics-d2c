@@ -1,13 +1,14 @@
+import type { ClassValue } from 'clsx';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { v4 as uuid } from 'uuid';
 
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
+import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
-import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
-import type { ClassValue } from 'clsx';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+
 export const removeFromLocalStorage = (keys: string[]) => {
   keys.forEach((key) => {
     localStorage.removeItem(key);
@@ -198,3 +199,21 @@ export const createPassphrase = (dob: string, nric: string): string => {
   const last5 = nric.slice(-5);
   return `${dob}${last5}`;
 };
+
+const ALLOWED_EXTERNAL_ORIGINS =
+  process.env.NEXT_PUBLIC_ALLOWED_REDIRECT_HOSTS?.split(',').map((h) =>
+    h.trim(),
+  ) ?? [];
+
+export function isSafePaymentUrl(savedUrl: string | null): boolean {
+  if (!savedUrl) return false;
+
+  try {
+    const url = new URL(savedUrl);
+    // Check origin (protocol + hostname + optional port)
+    return ALLOWED_EXTERNAL_ORIGINS.includes(url.origin);
+  } catch (err) {
+    console.warn('Invalid redirect URL:', savedUrl, err);
+    return false;
+  }
+}

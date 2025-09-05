@@ -32,26 +32,10 @@ export async function GetUserInfoFromSingpassService(
       `User info retrieved for product ${product}: ${JSON.stringify(userInfo)}`,
     );
 
-    //customize create mock data for the user info
-    if (userInfo && userInfo.uinfin) {
-      const uinfinObj = userInfo.uinfin as { value: string };
-      const customUserInfo = await prisma.singpassData.findFirst({
-        where: { uinfin: uinfinObj.value },
-      });
-
-      logger.info(`The custom user info: ${JSON.stringify(customUserInfo)}`);
-      if (customUserInfo) {
-        return successRes({
-          data: customUserInfo.value,
-          message: 'User info retrieved successfully',
-        });
-      }
-
-      return successRes({
-        data: userInfo,
-        message: 'User info retrieved successfully',
-      });
-    }
+    return successRes({
+      data: userInfo,
+      message: 'User info retrieved successfully',
+    });
   } catch (err) {
     logger.error(`Error get user info Singpass for product ${product}: ${err}`);
     throw new Error('Error retrieving user info from Singpass');
