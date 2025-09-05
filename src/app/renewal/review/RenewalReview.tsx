@@ -3,6 +3,7 @@
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import { v4 as uuid } from 'uuid';
 
 import { BackIcon } from '@/components/icons/renewal-icons';
 
@@ -55,6 +56,7 @@ const RenewalReview = () => {
 
     const subtotalFeeAfter = subtotal + addonsTotal;
     const totalPaid = (subtotalFeeAfter + gst).toFixed(2);
+    const generatedKey = uuid();
 
     postPayment(
       { productType, payload },
@@ -63,7 +65,7 @@ const RenewalReview = () => {
           const savePolicyPayload = {
             proposal_id: paymentData.data.proposal_id,
             policy_id: paymentData.data.policy_id,
-            key: paymentData.data.payment_id,
+            key: generatedKey,
             renewal_data: {
               renewal_summary: {
                 coverage: renewal?.coverage,
@@ -90,6 +92,7 @@ const RenewalReview = () => {
                 ) ?? [],
             },
           };
+          localStorage.setItem('renewalKey', generatedKey);
 
           // Call api savePolicy
           savePolicy(

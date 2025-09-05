@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import React from 'react';
 
 import { RenewalQuote } from '@/libs/types/renewalQuote';
-import { capitalizeWords } from '@/libs/utils/utils';
+import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 export interface PremiumBreakdownRenewalContentProps {
   gst: number;
@@ -39,18 +39,18 @@ const PremiumBreakdownRenewalContent = ({
           <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
             <span>{capitalizeWords(policy?.coverage)}</span>
             <span className='font-semibold'>
-              SGD {renewal?.renewalpremb4gst}
+              {formatCurrency(Number(renewal?.renewalpremb4gst))}
             </span>
           </div>
         </div>
         {/* Add-ons */}
         <div>
           <p className='mb-2 text-base font-semibold'>Add-ons</p>
-          {(renewal?.optional_benefits ?? []).length > 0 ||
-          (renewal?.selected_add_on_optional_benefits ?? []).length > 0 ? (
+          {renewal?.optional_benefits?.length ||
+          renewal?.selected_add_on_optional_benefits?.length ? (
             <>
               {/* Optional benefits */}
-              {(renewal?.optional_benefits ?? []).map((item) => (
+              {renewal?.optional_benefits?.map((item) => (
                 <div
                   key={`opt-${item.id}`}
                   className='mb-1 flex justify-between space-y-2'
@@ -113,7 +113,7 @@ const PremiumBreakdownRenewalContent = ({
           <hr className='border-t border-gray-200' />
           <div className='mt-2 flex flex-row justify-between text-sm font-bold text-gray-700'>
             <p className='text-sm text-gray-700'>Subtotal</p>
-            <p>SGD {subtotalFeeAfter}</p>
+            <p>{formatCurrency(subtotalFeeAfter)}</p>
           </div>
           <div className='flex flex-row justify-between text-sm font-normal text-gray-700'>
             <p>GST (9%)</p>
@@ -122,7 +122,9 @@ const PremiumBreakdownRenewalContent = ({
           <hr className='mt-4 border-t border-gray-200' />
           <div className='mt-2 flex flex-row justify-between text-base font-bold text-[#303030]'>
             <p>Net Premium (Total)</p>
-            <p className='text-base font-bold text-[#02ADEF]'>SGD {total}</p>
+            <p className='text-base font-bold text-[#02ADEF]'>
+              {formatCurrency(Number(total))}
+            </p>
           </div>
         </div>
       </div>
