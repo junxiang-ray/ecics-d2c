@@ -110,6 +110,13 @@ export interface RenewalQuote {
   edit_renewal: boolean;
   renewal_info: RenewalInfo;
   add_on_optional_benefits: AddOnOptionalBenefit[];
+  name: {
+    value: string;
+  };
+  uinfin: {
+    value: string;
+  };
+  token?: string;
 }
 
 export interface SelectedAddon {
