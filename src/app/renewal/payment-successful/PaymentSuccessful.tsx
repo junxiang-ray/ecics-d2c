@@ -2,7 +2,7 @@
 
 import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { formatCurrency } from '@/libs/utils/utils';
 
@@ -42,7 +42,13 @@ const StepItem = ({
 
 const PaymentSuccessful = () => {
   const router = useRouter();
-  const key = localStorage.getItem('renewalKey') ?? '';
+
+  const [key, setKey] = useState<string>('');
+  useEffect(() => {
+    const storedKey = localStorage.getItem('renewalKey') ?? '';
+    setKey(storedKey);
+  }, []);
+
   const { data, isLoading } = useGetRenewalPaymentSuccess(key);
 
   const handleBackToHome = () => {
