@@ -3,7 +3,9 @@ import {
   API_CHECK_POLICY,
   API_EDIT_RENEWAL,
   API_LOGIN_RENEWAL,
+  API_POST_SAVE_POLICY,
   API_RENEWAL_PAYMENT,
+  API_RENEWAL_PROCESS_PAYMENT,
   API_RETRIEVE_POLICY,
 } from '@/constants/api.constant';
 
@@ -25,5 +27,14 @@ export default {
   },
   postEditRenewal(productType: ProductTypeWeb, payload: any) {
     return baseClient.post<any>(API_EDIT_RENEWAL(productType), payload);
+  },
+  postRenewalProcessPayment(productType: ProductTypeWeb, payload: any) {
+    return baseClient.post<any>(
+      API_RENEWAL_PROCESS_PAYMENT(productType),
+      payload,
+    );
+  },
+  postSavePolicy(productType: ProductTypeWeb, payload: any) {
+    return baseClient.post<any>(API_POST_SAVE_POLICY(productType), payload);
   },
 };

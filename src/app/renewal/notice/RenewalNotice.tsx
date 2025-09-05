@@ -1,18 +1,33 @@
 'use client';
 
 import { Button } from 'antd';
+import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
+import {
+  usePostRenewalProcessPayment,
+  usePostSavePolicy,
+} from '@/hook/renewal/renewalQuote';
+import { useAppSelector } from '@/redux/store';
 
 const RenewalNotice = () => {
   const router = useRouter();
   const { data: renewalContent } = useGetRenewalContent();
+  const { mutate: postPayment } = usePostRenewalProcessPayment();
+  const { mutate: savePolicy } = usePostSavePolicy();
+
+  const renewalQuote = useAppSelector(
+    (state) => state.renewalQuote?.renewalQuote,
+  );
+  const policy = renewalQuote?.renewal_info?.policy_details;
+  const renewal = renewalQuote?.renewal_info;
 
   const handleBackDashboard = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
@@ -23,7 +38,73 @@ const RenewalNotice = () => {
   };
 
   const handleMakePayment = () => {
-    router.push(ROUTES.RENEWAL.RENEWAL_ACCOUNT_SETUP);
+    const payload = {
+      email_address: renewal?.insured_info?.email,
+      contact_no: renewal?.insured_info?.contact_no,
+      proposal_id: renewalQuote?.proposal_id,
+    };
+    const productType = PRODUCT_NAME.MOTOR;
+
+    postPayment(
+      { productType, payload },
+      {
+        onSuccess: (paymentData) => {
+          // payload savePolicy
+          const coverageIncludes =
+            renewal?.optional_benefits?.map((ob) => ob.name) ?? [];
+
+          const savePolicyPayload = {
+            proposal_id: paymentData.data.proposal_id,
+            policy_id: paymentData.data.policy_id,
+            key: paymentData.data.payment_id,
+            renewal_data: {
+              renewal_summary: {
+                coverage: renewal?.coverage,
+                total_paid:
+                  Number(renewal?.renewalpremwgst ?? 0) +
+                  Number(renewal?.renewalgst ?? 0),
+                poily_no: policy?.current_policy_no,
+              },
+              policy_summary: {
+                policy_type: paymentData.data.product,
+                policy_start_date: renewal?.renewal_start_date
+                  ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
+                  : undefined,
+                policy_end_date: renewal?.renewal_end_date
+                  ? dayjs(renewal.renewal_end_date).format('D-M-YYYY')
+                  : undefined,
+                veh_reg_no: policy?.vehicle_details?.reg_no,
+              },
+              coverage_includes: coverageIncludes,
+              documents:
+                paymentData.data.documents?.map(
+                  (doc: { name: string; url: string }) => ({
+                    name: doc.name,
+                    url: doc.url,
+                  }),
+                ) ?? [],
+            },
+          };
+
+          // Call api savePolicy
+          savePolicy(
+            { productType, payload: savePolicyPayload },
+            {
+              onSuccess: (data) => {
+                // redirect to payment_url
+                window.location.href = paymentData.data.payment_url;
+              },
+              onError: (error) => {
+                console.error('Save policy failed:', error);
+              },
+            },
+          );
+        },
+        onError: (error) => {
+          console.error('Payment failed:', error);
+        },
+      },
+    );
   };
 
   return (
@@ -59,6 +140,8 @@ const RenewalNotice = () => {
           </div>
           <RenewalNoticeForm
             renewalContent={renewalContent?.data?.attributes}
+            policy={policy}
+            renewal={renewal}
           />
         </div>
       </div>

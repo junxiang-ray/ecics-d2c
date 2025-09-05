@@ -22,3 +22,33 @@ export const usePostEditRenewal = () => {
     mutationKey: ['edit-renewal'],
   });
 };
+
+export const usePostRenewalProcessPayment = () => {
+  const postRenewalProcessPayment = async ({
+    productType,
+    payload,
+  }: EditRenewalParams) => {
+    const res = await renewal.postRenewalProcessPayment(productType, payload);
+    return res.data;
+  };
+
+  return useMutation({
+    mutationFn: postRenewalProcessPayment,
+    mutationKey: ['renewal-process-payment'],
+  });
+};
+
+export const usePostSavePolicy = () => {
+  const postSavePolicyPayment = async ({
+    productType,
+    payload,
+  }: EditRenewalParams) => {
+    const res = await renewal.postSavePolicy(productType, payload);
+    return res.data;
+  };
+
+  return useMutation({
+    mutationFn: postSavePolicyPayment,
+    mutationKey: ['save-policy'],
+  });
+};

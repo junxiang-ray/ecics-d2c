@@ -8,6 +8,8 @@ import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { SelectedAddon } from '@/libs/types/renewalQuote';
+
 import {
   ExcessIcon,
   PlusSmallIcon,
@@ -42,31 +44,42 @@ const schema = z.object({
   renewal_expiry_date: z.date({
     required_error: 'Renewal expiry date is required',
   }),
+  email: z.string().email('Invalid email'),
+  contact_no: z.string().min(8, 'Contact number too short'),
+  address_line1: z.string().min(1, 'Address is required'),
+  address_line2: z.string().optional(),
+  address_line3: z.string().optional(),
+  postal: z.string().min(4, 'Postal code required'),
 });
 
-type FormData = z.infer<typeof schema>;
+export type RenewalFormData = z.infer<typeof schema>;
 
 interface RenewalDetailProps extends FormProps {
-  onSubmit: (value: any) => void;
+  form: any;
+  onSubmit: (value: RenewalFormData) => void;
   isLoading?: boolean;
-  initialValues: FormData;
+  initialValues: RenewalFormData;
   renewalQuote: any;
   policy: any;
   renewal: any;
+  selectedAddons: SelectedAddon[];
+  setSelectedAddons: React.Dispatch<React.SetStateAction<SelectedAddon[]>>;
 }
 
 const RenewalDetailForm = ({
   onSubmit,
+  form,
   initialValues,
+  selectedAddons,
+  setSelectedAddons,
   renewalQuote,
   policy,
   renewal,
   isLoading = false,
   ...props
 }: RenewalDetailProps) => {
-  const [form] = Form.useForm();
   const dispatch = useAppDispatch();
-  const methods = useForm<FormData>({
+  const methods = useForm<RenewalFormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     values: initialValues,
@@ -75,21 +88,22 @@ const RenewalDetailForm = ({
     formState: { errors },
   } = methods;
 
-  // const watchedValues = methods.watch();
-  //
-  // useEffect(() => {
-  //   const updatedValues = { ...renewalQuote.renewal_info, ...watchedValues };
-  //   const isEqual = JSON.stringify(updatedValues) === JSON.stringify(renewalQuote.renewal_info);
-  //   console.log("isEqual", isEqual)
-  //   if (!isEqual) {
-  //     dispatch(updateRenewalQuote({ renewal_info: updatedValues }));
-  //   }
-  // }, [watchedValues, dispatch, renewalQuote.renewal_info]);
+  const watchedValues = methods.watch();
+  useEffect(() => {
+    const updatedValues = { ...renewalQuote.renewal_info, ...watchedValues };
+    const payload = {
+      ...updatedValues,
+      selected_add_on_optional_benefits: selectedAddons,
+    };
 
-  const handleSubmit = (value: FormData) => {
-    const payload = {};
-    onSubmit(payload);
-  };
+    const isEqual =
+      JSON.stringify(payload) === JSON.stringify(renewalQuote.renewal_info);
+    // console.log("isEqual", isEqual);
+
+    if (!isEqual) {
+      dispatch(updateRenewalQuote({ renewal_info: payload }));
+    }
+  }, [watchedValues, selectedAddons, dispatch, renewalQuote.renewal_info]);
 
   return (
     <FormProvider {...methods}>
@@ -100,7 +114,7 @@ const RenewalDetailForm = ({
           block: 'center',
         }}
         disabled={isLoading}
-        onFinish={methods.handleSubmit(handleSubmit)}
+        onFinish={methods.handleSubmit(onSubmit)}
         className='mb-2 flex w-full flex-col px-4 sm:px-4 md:mb-16 md:px-6 lg:px-0'
         {...props}
       >
@@ -174,7 +188,10 @@ const RenewalDetailForm = ({
             subtitle='4/9 add-ons selected'
             isPolicyRenewalScreen={true}
           >
-            <AddOnsContent renewalQuote={renewalQuote} />
+            <AddOnsContent
+              renewalQuote={renewalQuote}
+              onChangeSelectedAddons={setSelectedAddons}
+            />
           </InfoCard>
         </div>
       </Form>

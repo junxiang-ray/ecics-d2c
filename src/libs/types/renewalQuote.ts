@@ -24,7 +24,7 @@ interface NamedDriver {
   gender: string;
 }
 
-interface PolicyDetails {
+export interface PolicyDetails {
   current_policy_no: string;
   current_policy_expiry_date: string;
   agency: string;
@@ -33,6 +33,7 @@ interface PolicyDetails {
   vehicle_details: VehicleDetails;
   claim_ncd_details: ClaimNcdDetails;
   named_drivers: NamedDriver[];
+  dob: string;
 }
 
 interface Address {
@@ -67,6 +68,7 @@ interface RenewalExcess {
 interface OptionalBenefit {
   id: number;
   name: string;
+  description?: string;
   code?: string;
   sub_option?: string;
 }
@@ -81,10 +83,11 @@ interface AddOnOptionalBenefit {
   id: number;
   name: string;
   prem?: string;
+  description?: string;
   sub_options?: SubOption[];
 }
 
-interface RenewalInfo {
+export interface RenewalInfo {
   policy_details: PolicyDetails;
   renewal_start_date: string;
   renewal_end_date: string;
@@ -96,6 +99,8 @@ interface RenewalInfo {
   renewalpremb4gst: string;
   renewalgst: string;
   renewalpremwgst: string;
+  selected_add_on_optional_benefits?: SelectedAddon[];
+  coverage?: string;
 }
 
 export interface RenewalQuote {
@@ -105,4 +110,15 @@ export interface RenewalQuote {
   edit_renewal: boolean;
   renewal_info: RenewalInfo;
   add_on_optional_benefits: AddOnOptionalBenefit[];
+}
+
+export interface SelectedAddon {
+  id: number;
+  name: string;
+  prem?: number;
+  subOption?: {
+    id: number;
+    name: string;
+    prem: number;
+  };
 }

@@ -20,8 +20,8 @@ export function PricingSummaryRenewal({
   loading,
   isPolicyRenewalScreen,
   setIsShowPopupPremium,
-  planFee = 0,
-  addonFee = 0,
+  subtotalFeeAfter = 0,
+  gst = 0,
 }: {
   onClick?: () => void;
   onClickButtonLeft?: () => void;
@@ -30,12 +30,12 @@ export function PricingSummaryRenewal({
   loading?: boolean;
   isPolicyRenewalScreen?: boolean;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
-  planFee?: number;
-  addonFee?: number;
+  subtotalFeeAfter?: number;
+  gst?: number;
 }) {
   const { isMobile } = useDeviceDetection();
   const dispatch = useAppDispatch();
-  const discountFee = planFee + addonFee;
+  const discountFee = gst + subtotalFeeAfter;
 
   const [editRenewal, setEditRenewal] = useState<string | null>(null);
 

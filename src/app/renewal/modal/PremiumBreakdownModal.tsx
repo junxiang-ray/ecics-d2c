@@ -6,21 +6,21 @@ import { capitalizeWords } from '@/libs/utils/utils';
 
 export interface PremiumBreakdownRenewalContentProps {
   gst: number;
-  subtotal: number;
+  subtotalFeeAfter: number;
   renewalQuote?: RenewalQuote;
   onClose?: () => void;
 }
 
 const PremiumBreakdownRenewalContent = ({
   gst,
-  subtotal,
+  subtotalFeeAfter,
   renewalQuote,
   onClose,
 }: PremiumBreakdownRenewalContentProps) => {
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
 
-  const total = (subtotal + gst).toFixed(2);
+  const total = (subtotalFeeAfter + gst).toFixed(2);
 
   return (
     <div className='flex flex-col gap-4'>
@@ -46,25 +46,46 @@ const PremiumBreakdownRenewalContent = ({
         {/* Add-ons */}
         <div>
           <p className='mb-2 text-base font-semibold'>Add-ons</p>
-          {(renewal?.optional_benefits ?? []).length > 0 ? (
-            (renewal?.optional_benefits ?? []).map((item) => (
-              <div
-                key={item.id}
-                className='mb-1 flex justify-between space-y-2'
-              >
-                <span className='text-sm'>
-                  {item.name}{' '}
-                  <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
-                    Included
+          {(renewal?.optional_benefits ?? []).length > 0 ||
+          (renewal?.selected_add_on_optional_benefits ?? []).length > 0 ? (
+            <>
+              {/* Optional benefits */}
+              {(renewal?.optional_benefits ?? []).map((item) => (
+                <div
+                  key={`opt-${item.id}`}
+                  className='mb-1 flex justify-between space-y-2'
+                >
+                  <span className='text-sm'>
+                    {item.name}{' '}
+                    <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
+                      Included
+                    </span>
                   </span>
-                </span>
-                <span className='text-sm'>SGD 0.00</span>
-              </div>
-            ))
+                  <span className='text-sm'>SGD 0.00</span>
+                </div>
+              ))}
+
+              {/* Selected add-ons */}
+              {(renewal?.selected_add_on_optional_benefits ?? []).map(
+                (item) => {
+                  const price = item.subOption?.prem ?? item.prem ?? 0;
+                  return (
+                    <div
+                      key={`sel-${item.id}`}
+                      className='mb-1 flex items-center justify-between space-y-2'
+                    >
+                      <span className='text-sm'>{item.name} </span>
+                      <span className='text-sm'>SGD {price.toFixed(2)}</span>
+                    </div>
+                  );
+                },
+              )}
+            </>
           ) : (
             <p className='text-sm text-gray-500'>No add-ons selected</p>
           )}
         </div>
+
         {/* Named Drivers */}
         {policy?.named_drivers?.length ? (
           <div>
@@ -92,7 +113,7 @@ const PremiumBreakdownRenewalContent = ({
           <hr className='border-t border-gray-200' />
           <div className='mt-2 flex flex-row justify-between text-sm font-bold text-gray-700'>
             <p className='text-sm text-gray-700'>Subtotal</p>
-            <p>SGD {renewal?.renewalpremwgst}</p>
+            <p>SGD {subtotalFeeAfter}</p>
           </div>
           <div className='flex flex-row justify-between text-sm font-normal text-gray-700'>
             <p>GST (9%)</p>
