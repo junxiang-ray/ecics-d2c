@@ -42,7 +42,7 @@ const StepItem = ({
 
 const PaymentSuccessful = () => {
   const router = useRouter();
-  const key = '5a250f5d-4054-4353-a0db-96b33fc465d1';
+  const key = localStorage.getItem('renewalKey') ?? '';
   const { data, isLoading } = useGetRenewalPaymentSuccess(key);
 
   const handleBackToHome = () => {

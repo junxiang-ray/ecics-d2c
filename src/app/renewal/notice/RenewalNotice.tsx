@@ -16,6 +16,7 @@ import {
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
 import { useAppSelector } from '@/redux/store';
+import { v4 as uuid } from 'uuid';
 
 const RenewalNotice = () => {
   const router = useRouter();
@@ -44,6 +45,7 @@ const RenewalNotice = () => {
       proposal_id: renewalQuote?.proposal_id,
     };
     const productType = PRODUCT_NAME.MOTOR;
+    const generatedKey = uuid();
 
     postPayment(
       { productType, payload },
@@ -56,7 +58,7 @@ const RenewalNotice = () => {
           const savePolicyPayload = {
             proposal_id: paymentData.data.proposal_id,
             policy_id: paymentData.data.policy_id,
-            key: paymentData.data.payment_id,
+            key: generatedKey,
             renewal_data: {
               renewal_summary: {
                 coverage: renewal?.coverage,
@@ -85,6 +87,7 @@ const RenewalNotice = () => {
                 ) ?? [],
             },
           };
+          localStorage.setItem('renewalKey', generatedKey);
 
           // Call api savePolicy
           savePolicy(
