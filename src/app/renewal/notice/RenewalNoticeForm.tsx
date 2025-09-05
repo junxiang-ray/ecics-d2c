@@ -3,6 +3,7 @@
 import dayjs from 'dayjs';
 import React from 'react';
 
+import { PolicyDetails, RenewalInfo } from '@/libs/types/renewalQuote';
 import { formatToDDMMYYYY, parseCompactDate } from '@/libs/utils/date-utils';
 import { capitalizeWords } from '@/libs/utils/utils';
 
@@ -22,7 +23,6 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
-import { useAppSelector } from '@/redux/store';
 
 interface RenewalNoticeFormProps {
   renewalContent?: {
@@ -31,26 +31,30 @@ interface RenewalNoticeFormProps {
     declaration_declarations?: string;
     declarations_important_notice?: string;
   };
+  policy?: PolicyDetails;
+  renewal?: RenewalInfo;
 }
 
-const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
-  const renewalQuote = useAppSelector(
-    (state) => state.renewalQuote?.renewalQuote,
-  );
-  const policy = renewalQuote?.renewal_info?.policy_details;
-  const renewal = renewalQuote?.renewal_info;
-
+const RenewalNoticeForm = ({
+  renewalContent,
+  policy,
+  renewal,
+}: RenewalNoticeFormProps) => {
   const PolicyDetailsContent = () => {
     const fields = [
       { label: 'Existing Policy No.', value: policy?.current_policy_no },
       { label: 'Plan Type', value: policy?.coverage },
       {
         label: 'Current Expiry Date',
-        value: formatToDDMMYYYY(policy?.current_policy_expiry_date),
+        value: policy?.current_policy_expiry_date
+          ? formatToDDMMYYYY(policy.current_policy_expiry_date)
+          : '-',
       },
       {
         label: 'Renewal Notice Dated on',
-        value: formatToDDMMYYYY(renewal?.date_extracted),
+        value: renewal?.date_extracted
+          ? formatToDDMMYYYY(renewal.date_extracted)
+          : '-',
       },
       { label: 'Sum Insured', value: policy?.sum_insured },
       { label: 'Scheme', value: renewal?.scheme },
@@ -79,8 +83,13 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
   };
 
   const RenewalPeriodContent = () => {
-    const startDate = formatToDDMMYYYY(renewal?.renewal_start_date);
-    const endDate = formatToDDMMYYYY(renewal?.renewal_end_date);
+    const startDate = renewal?.renewal_start_date
+      ? formatToDDMMYYYY(renewal.renewal_start_date)
+      : 'N/A';
+
+    const endDate = renewal?.renewal_end_date
+      ? formatToDDMMYYYY(renewal.renewal_end_date)
+      : 'N/A';
 
     // Calculate duration
     const durationInYears = dayjs(renewal?.renewal_end_date, 'DD-MM-YYYY').diff(
@@ -259,21 +268,29 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
         fields: [
           { label: 'Full Name', value: insured?.name },
           { label: 'NRIC', value: insured?.nric },
-          { label: 'Date of Birth', value: parseCompactDate(insured?.dob) },
+          {
+            label: 'Date of Birth',
+            value: insured?.dob ? parseCompactDate(insured.dob) : '-',
+          },
           {
             label: 'Gender',
             value: insured?.gender === 'M' ? 'Male' : 'Female',
           },
           {
             label: 'Marital Status',
-            value: MARITAL_STATUS_MAP[insured?.marital_status]
-              ? MARITAL_STATUS_OPTIONS.find(
+            value: MARITAL_STATUS_MAP[
+              insured?.marital_status as keyof typeof MARITAL_STATUS_MAP
+            ]
+              ? (MARITAL_STATUS_OPTIONS.find(
                   (opt) =>
-                    opt.value === MARITAL_STATUS_MAP[insured?.marital_status],
-                )?.text
+                    opt.value ===
+                    MARITAL_STATUS_MAP[
+                      insured?.marital_status as keyof typeof MARITAL_STATUS_MAP
+                    ],
+                )?.text ?? 'N/A')
               : 'N/A',
           },
-          // { label: 'Driving Experience', value: '15 years' },
+          { label: 'Driving Experience', value: insured?.driv_exp },
         ],
       },
       {
@@ -401,11 +418,11 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
         {/* Add-ons */}
         <div>
           <p className='mb-2 text-base font-semibold'>Add-ons</p>
-          {renewal?.optional_benefits?.length > 0 ? (
+          {renewal?.optional_benefits?.length ? (
             renewal.optional_benefits.map((item) => (
               <div
                 key={item.id}
-                className='mb-1 flex justify-between space-y-2'
+                className='mb-1 flex items-center justify-between space-y-2'
               >
                 <span className='text-sm'>
                   {item.name}{' '}
@@ -422,7 +439,7 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
         </div>
 
         {/* Named Drivers */}
-        {policy?.named_drivers?.length > 0 && (
+        {policy?.named_drivers?.length ? (
           <div>
             <p className='mb-2 text-base font-semibold'>Named Drivers</p>
             {policy.named_drivers.map((driver, index) => (
@@ -441,6 +458,8 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
               </div>
             ))}
           </div>
+        ) : (
+          <p className='italic text-gray-400'>No named drivers</p>
         )}
 
         {/* Total */}
@@ -508,6 +527,7 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
       </div>
     );
   };
+  const namedDrivers = policy?.named_drivers ?? [];
 
   return (
     <div className='mx-auto mt-[12px]'>
@@ -551,12 +571,12 @@ const RenewalNoticeForm = ({ renewalContent }: RenewalNoticeFormProps) => {
         <PolicyHolderContent />
       </InfoCard>
 
-      {policy?.named_drivers.length > 0 && (
+      {namedDrivers.length > 0 && (
         <InfoCard
           icon={<PolicyHolderIcon className='text-sky-500' size={20} />}
           title='Additional Named Drivers'
-          subtitle={`${policy.named_drivers.length} additional driver${
-            policy.named_drivers.length > 1 ? 's' : ''
+          subtitle={`${namedDrivers.length} additional driver${
+            namedDrivers.length > 1 ? 's' : ''
           } added`}
         >
           <AdditionalNamedDriversContent />

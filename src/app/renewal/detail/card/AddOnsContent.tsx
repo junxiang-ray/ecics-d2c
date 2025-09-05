@@ -1,25 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { RenewalQuote } from '@/libs/types/renewalQuote';
+import { RenewalQuote, SelectedAddon } from '@/libs/types/renewalQuote';
 
 import PromoTickIcon from '@/components/icons/PromoTickIcon';
 
 interface Props {
   renewalQuote: RenewalQuote;
+  onChangeSelectedAddons: (selected: SelectedAddon[]) => void; // callback to parent
 }
 
-const AddOnsContent = ({ renewalQuote }: Props) => {
+const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
   const [selectedOptions, setSelectedOptions] = useState<{
     [key: number]: number;
-  }>(() => {
-    const defaultOptions: { [key: number]: number } = {};
-    renewalQuote.add_on_optional_benefits?.forEach((addon) => {
-      if (addon.sub_options && addon.sub_options.length > 0) {
-        defaultOptions[addon.id] = addon.sub_options[0].id;
-      }
-    });
-    return defaultOptions;
-  });
+  }>({});
+
+  useEffect(() => {
+    const selected: SelectedAddon[] = Object.entries(selectedOptions).map(
+      ([addonId, subOptionId]) => {
+        const addon = renewalQuote.add_on_optional_benefits.find(
+          (a) => a.id === Number(addonId),
+        )!;
+        const subOption = addon.sub_options?.find((s) => s.id === subOptionId);
+
+        return {
+          id: addon.id,
+          name: addon.name,
+          prem: subOption
+            ? Number(subOption.prem)
+            : addon.prem !== undefined
+              ? Number(addon.prem)
+              : undefined,
+          subOption: subOption
+            ? {
+                id: subOption.id,
+                name: subOption.name,
+                prem: Number(subOption.prem),
+              }
+            : undefined,
+        };
+      },
+    );
+
+    onChangeSelectedAddons(selected);
+  }, [
+    selectedOptions,
+    renewalQuote.add_on_optional_benefits,
+    onChangeSelectedAddons,
+  ]);
 
   const handleSelectOption = (addonId: number, subOptionId: number) => {
     setSelectedOptions((prev) => ({ ...prev, [addonId]: subOptionId }));
@@ -55,8 +82,8 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
         >
           <div>
             <div className='font-semibold text-gray-900'>{benefit.name}</div>
-            <div className='mt-1 text-sm text-gray-600'>
-              {benefit.sub_option}
+            <div className='mt-1 text-xs font-normal text-gray-400'>
+              {benefit.description}
             </div>
           </div>
           <div className='flex items-center space-x-2'>
@@ -67,19 +94,24 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
           </div>
         </div>
       ))}
+
+      {/* Add-ons */}
       {renewalQuote.add_on_optional_benefits?.map((addon) => {
         const isAddonSelected = !!selectedOptions[addon.id];
 
         return (
           <div
             key={addon.id}
-            className={`cursor-pointer rounded-lg border-2 p-4 ${
-              isAddonSelected ? 'border-blue-500' : 'border-gray-200'
-            }`}
+            className={`cursor-pointer rounded-lg border-2 p-4 ${isAddonSelected ? 'border-blue-500' : 'border-gray-200'}`}
             onClick={() => handleClickAddon(addon)}
           >
             <div className='flex justify-between font-medium'>
-              <div>{addon.name}</div>
+              <div>
+                <div>{addon.name}</div>
+                <div className='text-xs font-normal text-gray-400'>
+                  {addon.description}
+                </div>
+              </div>
               <div className='flex space-x-2'>
                 <div className='justify-end'>
                   <div className='mb-2'>
@@ -106,6 +138,7 @@ const AddOnsContent = ({ renewalQuote }: Props) => {
               </div>
             </div>
 
+            {/* Sub-options */}
             {addon.sub_options && isAddonSelected && (
               <div className='mt-2 space-y-2'>
                 <div className='mb-1 font-medium'>Select Coverage Amount:</div>

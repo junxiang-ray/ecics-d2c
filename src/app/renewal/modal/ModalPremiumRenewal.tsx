@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import PremiumBreakdownRenewalContent, {
   PremiumBreakdownRenewalContentProps,
 } from '@/app/renewal/modal/PremiumBreakdownModal';
@@ -12,20 +11,15 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 interface Props extends PremiumBreakdownRenewalContentProps {
   isShowPopupPremium: boolean;
   setIsShowPopupPremium: (isShowPopupPremium: boolean) => void;
-  productType?: ProductType;
 }
 
 const ModalPremiumRenewal = (props: Props) => {
-  const { isShowPopupPremium, setIsShowPopupPremium, productType, ...rest } =
-    props;
+  const { isShowPopupPremium, setIsShowPopupPremium, ...rest } = props;
   const isMobile = useDeviceDetection();
 
   const { controls, sheetProps } = useBottomSheet(isShowPopupPremium, () =>
     setIsShowPopupPremium(false),
   );
-
-  const isMaid = productType === ProductType.MAID;
-  const currentProductType = isMaid ? ProductType.MAID : ProductType.CAR;
 
   if (!isShowPopupPremium) return null;
 

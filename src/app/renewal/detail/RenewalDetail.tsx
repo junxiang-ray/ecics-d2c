@@ -1,37 +1,48 @@
 'use client';
 
 import { Button } from 'antd';
+import { Form } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { SubmitHandler } from 'react-hook-form';
 
+import { SelectedAddon } from '@/libs/types/renewalQuote';
 import { formatToDDMMYYYY } from '@/libs/utils/date-utils';
+import { createPassphrase } from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 import {
   MARITAL_STATUS_MAP,
   MARITAL_STATUS_OPTIONS,
 } from '@/app/motor/insurance/basic-detail/options';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
-import RenewalDetailForm from '@/app/renewal/detail/RenewalDetailForm';
+import RenewalDetailForm, {
+  RenewalFormData,
+} from '@/app/renewal/detail/RenewalDetailForm';
 import ModalPremiumRenewal from '@/app/renewal/modal/ModalPremiumRenewal';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
+import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
 import { useAppSelector } from '@/redux/store';
 
 const RenewalDetail = () => {
   const router = useRouter();
+  const [form] = Form.useForm();
+
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
+  const dob = renewal?.insured_info?.dob;
 
   const { data: renewalContent } = useGetRenewalContent();
+  const { mutate: postEditRenewal } = usePostEditRenewal();
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
+  const [selectedAddons, setSelectedAddons] = useState<SelectedAddon[]>([]);
 
   const initialValues: any = {
     // Policy details
@@ -112,19 +123,55 @@ const RenewalDetail = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
   };
 
-  const handleNext = () => {
-    router.push(ROUTES.RENEWAL.RENEWAL_REVIEW);
-  };
+  const handleNext = (value: RenewalFormData) => {
+    const policyId = renewalQuote?.policy_id ?? '';
+    const proposalId = renewalQuote?.proposal_id ?? '';
+    const vehRegNo =
+      renewalQuote?.renewal_info?.policy_details?.vehicle_details?.reg_no ?? '';
+    const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+    const passphrase = createPassphrase(dob, nric);
 
-  const onSubmit: SubmitHandler<FormData> = async (data: any) => {
-    return;
+    const renewalEndDate = value.renewal_expiry_date
+      ? dayjs(value.renewal_expiry_date).format('DD-MM-YYYY')
+      : '';
+    const email = value.email;
+    const contactNo = value.contact_no;
+
+    const payload = {
+      policy_id: policyId,
+      proposal_id: proposalId,
+      veh_reg_no: vehRegNo,
+      passphrase: passphrase,
+      renewal_end_date: renewalEndDate,
+      email_address: email,
+      contact_no: contactNo,
+      selected_add_on_optional_benefits: selectedAddons,
+      finalize_renewal: false,
+    };
+    const productType = PRODUCT_NAME.MOTOR;
+
+    postEditRenewal(
+      { productType, payload },
+      {
+        onSuccess: () => {
+          router.push(ROUTES.RENEWAL.RENEWAL_REVIEW);
+        },
+        onError: (err) => {
+          console.error('Failed to update renewal', err);
+        },
+      },
+    );
   };
 
   const gst = parseFloat(String(renewal?.renewalgst ?? 0));
   const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
+  const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
 
-  const planFee = Number(renewal?.renewalpremb4gst ?? 0);
-  const subtotalFeeInitial = Number(renewal?.renewalpremwgst ?? 0);
+  const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
+    return sum + Number(addon.prem ?? 0);
+  }, 0);
+
+  const subtotalFeeAfter = subtotal + addonsTotal;
 
   return (
     <>
@@ -158,11 +205,14 @@ const RenewalDetail = () => {
             </div>
           </div>
           <RenewalDetailForm
+            form={form}
+            selectedAddons={selectedAddons}
+            setSelectedAddons={setSelectedAddons}
             initialValues={initialValues}
             renewalQuote={renewalQuote}
             policy={policy}
             renewal={renewal}
-            onSubmit={onSubmit}
+            onSubmit={handleNext}
           />
         </div>
       </div>
@@ -171,18 +221,20 @@ const RenewalDetail = () => {
           textButton='Next'
           textButtonLeft='Back'
           onClickButtonLeft={handleBackRenewalNotice}
-          onClick={handleNext}
+          onClick={() => {
+            form.submit();
+          }}
           isPolicyRenewalScreen={true}
           setIsShowPopupPremium={setIsShowPopupPremium}
-          planFee={planFee}
-          addonFee={subtotalFeeInitial}
+          subtotalFeeAfter={subtotalFeeAfter}
+          gst={gst}
         />
       </div>
       <ModalPremiumRenewal
         isShowPopupPremium={isShowPopupPremium}
         setIsShowPopupPremium={setIsShowPopupPremium}
         gst={gst}
-        subtotal={subtotal}
+        subtotalFeeAfter={subtotalFeeAfter}
         renewalQuote={renewalQuote}
       />
     </>
