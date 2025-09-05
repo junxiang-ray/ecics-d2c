@@ -4,6 +4,7 @@ import { STATUS_CODE } from './status.code';
 
 type BaseResponse = {
   message: string;
+  status?: number | string;
 };
 
 export class HttpError extends Error {
@@ -46,9 +47,10 @@ export class ConflictError extends HttpError {
   }
 }
 
-export function ErrFromISPRes(message: string) {
+export function ErrFromISPRes(message: string, status?: number | string) {
   const res: BaseResponse = {
     message,
+    status: status,
   };
   return NextResponse.json(res, { status: STATUS_CODE.ERROR_FROM_ISP });
 }

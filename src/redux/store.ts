@@ -5,14 +5,16 @@ import appReducer from './slices/app.slice';
 import generalReducer from './slices/general.slice';
 import maidQuoteReducer from './slices/maidQuote.slice';
 import quoteReducer from './slices/quote.slice';
+import renewalQuoteReducer from './slices/renewalQuote.slice';
 import userInfoCarReducer from './slices/userInfoCar.slice';
 
 const store = configureStore({
   reducer: {
     app: appReducer,
-    quote: quoteReducer,
-    maidQuote: maidQuoteReducer,
     general: generalReducer,
+    maidQuote: maidQuoteReducer,
+    quote: quoteReducer,
+    renewalQuote: renewalQuoteReducer,
     userInfoCar: userInfoCarReducer,
   },
 });

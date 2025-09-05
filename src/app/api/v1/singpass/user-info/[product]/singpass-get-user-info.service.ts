@@ -1,7 +1,6 @@
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
 import createSingpassClient from '@/app/api/libs/singpass/singpassClient';
-import { prisma } from '@/app/api/libs/prisma';
 
 export async function GetUserInfoFromSingpassService(
   product: string,
