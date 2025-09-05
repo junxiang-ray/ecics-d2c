@@ -1,10 +1,9 @@
 'use client';
 
 import { Button } from 'antd';
-import { Form } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { SelectedAddon } from '@/libs/types/renewalQuote';
 import { formatToDDMMYYYY } from '@/libs/utils/date-utils';
@@ -29,7 +28,7 @@ import { useAppSelector } from '@/redux/store';
 
 const RenewalDetail = () => {
   const router = useRouter();
-  const [form] = Form.useForm();
+  const formRef = useRef<{ submit: () => void }>(null);
 
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
@@ -60,10 +59,10 @@ const RenewalDetail = () => {
       : '',
     scheme: renewal?.scheme ?? '',
     renewal_start_date: renewal?.renewal_start_date
-      ? dayjs(renewal.renewal_start_date, ['D-M-YYYY', 'DD-MM-YYYY'])
+      ? new Date(renewal.renewal_start_date)
       : null,
     renewal_expiry_date: renewal?.renewal_end_date
-      ? dayjs(renewal.renewal_end_date, ['D-M-YYYY', 'DD-MM-YYYY'])
+      ? dayjs(renewal.renewal_end_date, 'DD-MM-YYYY').toDate()
       : null,
 
     // Renewal excess
@@ -205,7 +204,6 @@ const RenewalDetail = () => {
             </div>
           </div>
           <RenewalDetailForm
-            form={form}
             selectedAddons={selectedAddons}
             setSelectedAddons={setSelectedAddons}
             initialValues={initialValues}
@@ -213,6 +211,7 @@ const RenewalDetail = () => {
             policy={policy}
             renewal={renewal}
             onSubmit={handleNext}
+            ref={formRef}
           />
         </div>
       </div>
@@ -221,9 +220,7 @@ const RenewalDetail = () => {
           textButton='Next'
           textButtonLeft='Back'
           onClickButtonLeft={handleBackRenewalNotice}
-          onClick={() => {
-            form.submit();
-          }}
+          onClick={() => formRef.current?.submit()}
           isPolicyRenewalScreen={true}
           setIsShowPopupPremium={setIsShowPopupPremium}
           subtotalFeeAfter={subtotalFeeAfter}
