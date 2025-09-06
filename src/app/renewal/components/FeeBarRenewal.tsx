@@ -21,7 +21,6 @@ export function PricingSummaryRenewal({
   isPolicyRenewalScreen,
   setIsShowPopupPremium,
   subtotalFeeAfter = 0,
-  gst = 0,
 }: {
   onClick?: () => void;
   onClickButtonLeft?: () => void;
@@ -31,11 +30,11 @@ export function PricingSummaryRenewal({
   isPolicyRenewalScreen?: boolean;
   setIsShowPopupPremium?: (isShowPopupPremium: boolean) => void;
   subtotalFeeAfter?: number;
-  gst?: number;
 }) {
   const { isMobile } = useDeviceDetection();
   const dispatch = useAppDispatch();
-  const discountFee = gst + subtotalFeeAfter;
+  const gstAmount = subtotalFeeAfter * 0.09;
+  const totalFee = subtotalFeeAfter + gstAmount;
 
   const [editRenewal, setEditRenewal] = useState<string | null>(null);
 
@@ -84,8 +83,8 @@ export function PricingSummaryRenewal({
                         Net Premium
                       </p>
                       <p className='text-[20px] font-bold leading-[26px] text-[#00ADEF] underline'>
-                        {discountFee
-                          ? formatCurrency(Number(discountFee.toFixed(2)))
+                        {totalFee
+                          ? formatCurrency(Number(totalFee.toFixed(2)))
                           : ''}{' '}
                       </p>
                     </div>
@@ -131,8 +130,8 @@ export function PricingSummaryRenewal({
                       Net Premium
                     </p>
                     <p className='text-[20px] font-bold leading-[26px] text-[#00ADEF] underline'>
-                      {discountFee
-                        ? formatCurrency(Number(discountFee.toFixed(2)))
+                      {totalFee
+                        ? formatCurrency(Number(totalFee.toFixed(2)))
                         : ''}{' '}
                     </p>
                   </div>

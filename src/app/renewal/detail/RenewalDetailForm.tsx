@@ -39,7 +39,9 @@ const schema = z.object({
     .max(60, 'Name must be at most 60 characters')
     .nonempty('Name is required'),
   renewal_start_date: z.date().nullable().optional(),
-  renewal_expiry_date: z.date().nullable(),
+  renewal_expiry_date: z.date({
+    required_error: 'Renewal expiry date is required',
+  }),
   email: z.string().email('Invalid email'),
   contact_no: z.string().min(8, 'Contact number too short'),
   address_line1: z.string().min(1, 'Address is required'),

@@ -59,10 +59,10 @@ const RenewalDetail = () => {
       : '',
     scheme: renewal?.scheme ?? '',
     renewal_start_date: renewal?.renewal_start_date
-      ? new Date(renewal.renewal_start_date)
+      ? dayjs(renewal.renewal_start_date).toDate()
       : null,
     renewal_expiry_date: renewal?.renewal_end_date
-      ? dayjs(renewal.renewal_end_date, 'DD-MM-YYYY').toDate()
+      ? dayjs(renewal.renewal_end_date, ['D-M-YYYY', 'DD-MM-YYYY']).toDate()
       : null,
 
     // Renewal excess
@@ -162,15 +162,15 @@ const RenewalDetail = () => {
     );
   };
 
-  const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-  const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
+  const planFee = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
   const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-
+  const tax = 1.09;
   const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
     return sum + Number(addon.prem ?? 0);
   }, 0);
 
-  const subtotalFeeAfter = subtotal + addonsTotal;
+  const addonsTotalAfterTax = addonsTotal / tax;
+  const subtotalFeeAfter = planFee + addonsTotalAfterTax;
 
   return (
     <>
@@ -224,15 +224,14 @@ const RenewalDetail = () => {
           isPolicyRenewalScreen={true}
           setIsShowPopupPremium={setIsShowPopupPremium}
           subtotalFeeAfter={subtotalFeeAfter}
-          gst={gst}
         />
       </div>
       <ModalPremiumRenewal
         isShowPopupPremium={isShowPopupPremium}
         setIsShowPopupPremium={setIsShowPopupPremium}
-        gst={gst}
         subtotalFeeAfter={subtotalFeeAfter}
         renewalQuote={renewalQuote}
+        tax={tax}
       />
     </>
   );
