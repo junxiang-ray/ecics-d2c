@@ -3,6 +3,7 @@
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import { v4 as uuid } from 'uuid';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -15,11 +16,12 @@ import {
   usePostRenewalProcessPayment,
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
-import { useAppSelector } from '@/redux/store';
-import { v4 as uuid } from 'uuid';
+import { setRenewalKey } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 const RenewalNotice = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
   const { mutate: savePolicy } = usePostSavePolicy();
@@ -87,7 +89,7 @@ const RenewalNotice = () => {
                 ) ?? [],
             },
           };
-          localStorage.setItem('renewalKey', generatedKey);
+          dispatch(setRenewalKey(generatedKey));
 
           // Call api savePolicy
           savePolicy(

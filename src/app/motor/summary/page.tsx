@@ -27,7 +27,7 @@ import {
 import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
 import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useAppSelector } from '@/redux/store';
+import { useAppSelector } from '@/redux/store/configureStore';
 
 export default function Summary() {
   const searchParams = useSearchParams();

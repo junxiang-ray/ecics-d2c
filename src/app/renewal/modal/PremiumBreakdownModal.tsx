@@ -7,7 +7,7 @@ import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 export interface PremiumBreakdownRenewalContentProps {
   tax: number;
   subtotalFeeAfter: number;
-  renewalQuote?: RenewalQuote;
+  renewalQuote?: RenewalQuote | null;
   onClose?: () => void;
 }
 

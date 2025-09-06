@@ -11,7 +11,7 @@ import { PromoCodeResponse } from '@/api/base-service/verify';
 import { MOTOR_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { setPromoCodeError } from '@/redux/slices/general.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;

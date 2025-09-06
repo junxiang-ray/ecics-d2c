@@ -2,7 +2,7 @@
 
 import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { formatCurrency } from '@/libs/utils/utils';
 
@@ -22,6 +22,7 @@ import {
 
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalPaymentSuccess } from '@/hook/insurance/renewal';
+import { useAppSelector } from '@/redux/store/configureStore';
 
 import ImportantDoc from './ImportantDoc';
 
@@ -42,14 +43,9 @@ const StepItem = ({
 
 const PaymentSuccessful = () => {
   const router = useRouter();
+  const renewalKey = useAppSelector((state) => state.renewalQuote.renewalKey);
 
-  const [key, setKey] = useState<string>('');
-  useEffect(() => {
-    const storedKey = localStorage.getItem('renewalKey') ?? '';
-    setKey(storedKey);
-  }, []);
-
-  const { data, isLoading } = useGetRenewalPaymentSuccess(key);
+  const { data, isLoading } = useGetRenewalPaymentSuccess(renewalKey);
 
   const handleBackToHome = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);

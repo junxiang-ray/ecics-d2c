@@ -16,10 +16,12 @@ import {
   usePostRenewalProcessPayment,
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
-import { useAppSelector } from '@/redux/store';
+import { setRenewalKey } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 const RenewalReview = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
   const { mutate: savePolicy } = usePostSavePolicy();
@@ -92,7 +94,7 @@ const RenewalReview = () => {
                 ) ?? [],
             },
           };
-          localStorage.setItem('renewalKey', generatedKey);
+          dispatch(setRenewalKey(generatedKey));
 
           // Call api savePolicy
           savePolicy(

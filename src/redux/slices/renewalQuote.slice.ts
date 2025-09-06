@@ -2,24 +2,37 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { RenewalQuote } from '@/libs/types/renewalQuote';
 
-interface AppState {
-  renewalQuote: RenewalQuote;
+interface RenewalQuoteState {
+  renewalQuote: RenewalQuote | null;
+  renewalKey: string | null;
 }
 
-const initialState: AppState = {
-  renewalQuote: {} as RenewalQuote,
+const initialState: RenewalQuoteState = {
+  renewalQuote: null,
+  renewalKey: null,
 };
 
-const appSlice = createSlice({
+const renewalQuoteSlice = createSlice({
   name: 'renewalQuote',
   initialState,
   reducers: {
     updateRenewalQuote(state, action: PayloadAction<Partial<RenewalQuote>>) {
-      state.renewalQuote = { ...state.renewalQuote, ...action.payload };
+      state.renewalQuote = {
+        ...(state.renewalQuote ?? {}),
+        ...action.payload,
+      } as RenewalQuote;
+    },
+    setRenewalKey(state, action: PayloadAction<string>) {
+      state.renewalKey = action.payload;
+    },
+    resetRenewalQuote(state) {
+      state.renewalQuote = null;
+      state.renewalKey = null;
     },
   },
 });
 
-export const { updateRenewalQuote } = appSlice.actions;
+export const { updateRenewalQuote, setRenewalKey, resetRenewalQuote } =
+  renewalQuoteSlice.actions;
 
-export default appSlice.reducer;
+export default renewalQuoteSlice.reducer;

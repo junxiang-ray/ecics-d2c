@@ -15,7 +15,7 @@ import {
 } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 interface UnMatchVehicleModalProps {
   onClose: () => void;

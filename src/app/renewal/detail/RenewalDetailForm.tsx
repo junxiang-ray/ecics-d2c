@@ -25,7 +25,7 @@ import PolicyHolderContent from '@/app/renewal/detail/card/PolicyHolderContent';
 import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent';
 import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store/configureStore';
 
 import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
 

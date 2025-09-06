@@ -17,7 +17,7 @@ import { ROUTES } from '@/constants/routes';
 import { useSaveQuote } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 import PlanCardMobile from './components/PlanCardMobile';
 import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModal';

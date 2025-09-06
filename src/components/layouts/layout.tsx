@@ -6,7 +6,7 @@ import React, { ReactNode, useEffect } from 'react';
 
 import { useGetQuote } from '@/hook/insurance/quote';
 import { updateQuote } from '@/redux/slices/quote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store/configureStore';
 
 interface InsuranceLayoutProps {
   children: ReactNode;

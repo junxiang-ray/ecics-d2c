@@ -195,7 +195,6 @@ export const cn = (...inputs: ClassValue[]) => {
 };
 
 export const createPassphrase = (dob: string, nric: string): string => {
-  if (!nric) return dob;
   const last5 = nric.slice(-5);
   return `${dob}${last5}`;
 };

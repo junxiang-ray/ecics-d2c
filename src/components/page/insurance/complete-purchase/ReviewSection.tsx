@@ -11,7 +11,7 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useAppSelector } from '@/redux/store';
+import { useAppSelector } from '@/redux/store/configureStore';
 
 interface ReviewSectionProps {
   title: string;

@@ -7,7 +7,7 @@ import { date } from 'zod';
 
 import { useGetMaidQuote } from '@/hook/insurance/maidQuote';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store/configureStore';
 
 interface InsuranceLayoutProps {
   children: ReactNode;

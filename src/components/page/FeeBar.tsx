@@ -11,7 +11,7 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { setIsLoadingStep } from '@/redux/slices/general.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 export function PricingSummary({
   isBasicDetailScreen,

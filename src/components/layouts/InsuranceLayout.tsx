@@ -18,7 +18,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import NavigationConfirmModal from '@/providers/modal/NavigationConfirmModal';
 import { updateQuote } from '@/redux/slices/quote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 export type ProcessBarType = StepProcessBar | undefined;
 

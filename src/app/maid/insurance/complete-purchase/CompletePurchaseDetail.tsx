@@ -55,7 +55,7 @@ import {
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 enum ErrorModalType {
   NONE = 0,

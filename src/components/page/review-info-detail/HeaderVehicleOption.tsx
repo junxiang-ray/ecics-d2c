@@ -13,7 +13,7 @@ import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 interface MissingFields {
   engine_number?: boolean;

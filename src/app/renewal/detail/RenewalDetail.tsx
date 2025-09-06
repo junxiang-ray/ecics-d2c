@@ -24,7 +24,7 @@ import ModalPremiumRenewal from '@/app/renewal/modal/ModalPremiumRenewal';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
-import { useAppSelector } from '@/redux/store';
+import { useAppSelector } from '@/redux/store/configureStore';
 
 const RenewalDetail = () => {
   const router = useRouter();
@@ -128,6 +128,10 @@ const RenewalDetail = () => {
     const vehRegNo =
       renewalQuote?.renewal_info?.policy_details?.vehicle_details?.reg_no ?? '';
     const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+
+    if (!dob || !nric) {
+      throw new Error('Missing dob or nric');
+    }
     const passphrase = createPassphrase(dob, nric);
 
     const renewalEndDate = value.renewal_expiry_date

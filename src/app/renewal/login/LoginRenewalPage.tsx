@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { saveToSessionStorage } from '@/libs/utils/utils';
 import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 
 import { CarIcon } from '@/components/icons/add-on-icons';
@@ -20,13 +21,12 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { EDIT_RENEWAL } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store';
-import { EDIT_RENEWAL } from '@/constants/general.constant';
-import { saveToSessionStorage } from '@/libs/utils/utils';
+import { useAppDispatch } from '@/redux/store/configureStore';
 
 const schema = z.object({
   veh_reg_no: z

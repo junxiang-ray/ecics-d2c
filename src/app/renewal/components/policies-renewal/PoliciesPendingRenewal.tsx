@@ -11,7 +11,7 @@ import { ECICS_USER_INFO, EDIT_RENEWAL } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store/configureStore';
 
 interface Policy {
   id: string;

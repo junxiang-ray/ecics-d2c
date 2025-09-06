@@ -15,7 +15,7 @@ import { useSaveMaidQuote } from '@/hook/insurance/maidQuote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
 
 import PlanMaid from './PlanMaid';
 

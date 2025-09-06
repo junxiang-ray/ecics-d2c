@@ -6,7 +6,7 @@ import { PrimaryButton } from '@/components/ui/buttons';
 
 import { ROUTES } from '@/constants/routes';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { useAppSelector } from '@/redux/store';
+import { useAppSelector } from '@/redux/store/configureStore';
 
 interface Props {
   title: string;

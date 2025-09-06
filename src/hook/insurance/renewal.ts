@@ -32,8 +32,9 @@ export const useCheckPolicyRenewal = () => {
   });
 };
 
-export const useGetRenewalPaymentSuccess = (key: string) => {
+export const useGetRenewalPaymentSuccess = (key: string | null) => {
   const fetchPaymentSuccess = async () => {
+    if (!key) throw new Error('Missing renewal key');
     const res = await renewal.getRenewalPaymentSuccess(key);
     return res.data.data;
   };

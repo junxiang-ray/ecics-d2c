@@ -6,11 +6,13 @@ import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
+import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import {
@@ -24,10 +26,9 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfoMaid } from '@/hook/auth/login-maid';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store/configureStore';
+
 import { ModalAge } from './ModalAge';
-import { v4 as uuid } from 'uuid';
-import { DropdownField } from '@/components/ui/form/dropdownfield';
 
 const schema = z.object({
   [MAID_QUOTE.email]: z
