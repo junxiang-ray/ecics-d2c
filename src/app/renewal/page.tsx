@@ -11,10 +11,14 @@ import QuickActions from '@/app/renewal/components/quick-action/QuickActions';
 import RenewalHeader from '@/app/renewal/components/renewal-header/RenewalHeader';
 import { ROUTES } from '@/constants/routes';
 import { usePostUserInfoRenewal } from '@/hook/auth/login-renewal';
-import { useVerifyRetrieveRenewal } from '@/hook/insurance/renewal';
+import {
+  useCheckPolicyRenewal,
+  useVerifyRetrieveRenewal,
+} from '@/hook/insurance/renewal';
 import { PRODUCT_NAME } from '../api/constants/product';
 import { useAppSelector, RootState } from '@/redux/store';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { createPassphrase } from '@/libs/utils/utils';
 
 export default function RenewalPage() {
   const router = useRouter();
@@ -38,6 +42,8 @@ export default function RenewalPage() {
     data: vehData,
     isPending: isVehLoading,
   } = useVerifyRetrieveRenewal();
+  const { mutateAsync: checkPolicyRenewal, isPending: isLoadingCheckPolicy } =
+    useCheckPolicyRenewal();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -83,15 +89,27 @@ export default function RenewalPage() {
   }, [vehData]);
 
   useEffect(() => {
-    if (!vehData) return;
+    if (!vehData || !Array.isArray(vehData)) return;
     if (vehData?.length < 2) {
-      router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-    } else if (vehData?.length >= 2) {
-      router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
+      const policy = vehData[0];
+      const veh_reg_no = policy?.veh_reg_no;
+      const passphrase = createPassphrase(
+        policy.dob,
+        renewalQuote?.uinfin?.value,
+      );
+      checkPolicyRenewal({
+        veh_reg_no: veh_reg_no,
+        passphrase,
+      }).then((res) => {
+        if (res) {
+          dispatch(updateRenewalQuote(res));
+        }
+        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+      });
     }
   }, [vehData, router]);
 
-  if (isPending || isVehLoading) {
+  if (isPending || isVehLoading || isLoadingCheckPolicy) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
         <Spin size='large' />
