@@ -3,7 +3,6 @@
 import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import Announcements from '@/app/renewal/components/announcements/Announcements';
 import PoliciesPendingRenewal from '@/app/renewal/components/policies-renewal/PoliciesPendingRenewal';
 import Promotions from '@/app/renewal/components/promotions/Promotions';
@@ -16,13 +15,13 @@ import {
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
 import { PRODUCT_NAME } from '../api/constants/product';
-import { useAppSelector, RootState } from '@/redux/store';
+import { useAppSelector, RootState, useAppDispatch } from '@/redux/store';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
 import { createPassphrase } from '@/libs/utils/utils';
 
 export default function RenewalPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const renewalQuote = useAppSelector(
     (state: RootState) => state.renewalQuote?.renewalQuote,

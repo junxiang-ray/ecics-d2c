@@ -2,19 +2,19 @@
 
 import { ROUTES } from '@/constants/routes';
 import { resetRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch } from '@/redux/store';
 import {
   ArrowRightOutlined,
-  MenuOutlined,
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
 
 const RenewalHeader = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === 'profile') {
       router.push(ROUTES.RENEWAL.PROFILE);
