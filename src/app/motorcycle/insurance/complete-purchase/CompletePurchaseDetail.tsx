@@ -23,7 +23,7 @@ import WarningPaymentModal from '@/components/page/insurance/complete-purchase/W
 import PremiumBreakdownContent from '@/components/PremiumBreakdownContent';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { ADDON_CARS } from '@/app/motorcycle/insurance/add-on/AddonAdditionalDriver';
+import { ADDON_MOTORCYCLE } from '@/app/motorcycle/insurance/add-on/AddonAdditionalDriver';
 import { UnMatchAddonModal } from '@/app/motorcycle/insurance/complete-purchase/review-your-detail/modal/UnmatchAddonModal';
 import { ROUTES } from '@/constants/routes';
 import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
@@ -157,7 +157,7 @@ export default function CompletePurchaseDetail({
 
   // Addon Additional Driver
   const addonAdditionalDriver = useMemo(() => {
-    return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
+    return plan?.addons.find((addon) => ADDON_MOTORCYCLE.includes(addon.code));
   }, [plan]);
   const baseFeeAdditionalDriver =
     addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;

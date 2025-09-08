@@ -31,11 +31,35 @@ import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import AddonAdditionalDriver, { ADDON_CARS } from './AddonAdditionalDriver';
+import AddonAdditionalDriver, {
+  ADDON_CARS,
+  ADDON_MOTORCYCLE,
+} from './AddonAdditionalDriver';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
 import { ProductType } from '../basic-detail/options';
+import logger from '@/app/api/libs/logger';
 
 export const mapIconToTypeAddOn = [
+  {
+    code: 'MOTORCYCLE_COMP_LOU',
+    icon: <AddIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'MOTORCYCLE_COMP_RSA',
+    icon: <RoadSideIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'MOTORCYCLE_COMP_KRC',
+    icon: <KeyIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'MOTORCYCLE_COMP_PA',
+    icon: <MedicalKitIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'MOTORCYCLE_COMP_ME',
+    icon: <MedicalKitIcon className='text-brand-blue' />,
+  },
   {
     code: 'CAR_COM_AND',
     icon: <PersonIcon className='text-brand-blue' />,
@@ -171,6 +195,7 @@ function AddOnDetail({
   const { mutateAsync: saveQuote, isPending } = useSaveQuote();
 
   const plan = useMemo(() => {
+    console.log('quoteInfo in AddonDetail', JSON.stringify(quoteInfo));
     return quoteInfo?.data?.plans?.find(
       (plan) => quoteInfo.data?.selected_plan === plan.title,
     );
@@ -181,8 +206,11 @@ function AddOnDetail({
   }, [plan]);
 
   const normalAddons = useMemo(() => {
+    console.log('plan in normalAddons', JSON.stringify(plan));
+
     return (
-      plan?.addons.filter((addon) => !ADDON_CARS.includes(addon.code)) ?? []
+      plan?.addons.filter((addon) => ADDON_MOTORCYCLE.includes(addon.code)) ??
+      []
     );
   }, [plan]);
 
@@ -230,19 +258,28 @@ function AddOnDetail({
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
   const addonsFormatted: AddOnFormat[] = normalAddons.map((addon) => {
+    console.log('addon', JSON.stringify(addon));
     // map the icon to the addon
     const iconMatched = mapIconToTypeAddOn.find(
       (item) => item.code === addon.code,
     );
 
     // For feeAdded use the "addonsAdded" defaults
+    console.log('addonsAdded', JSON.stringify(addonsAdded));
+    console.log('addon.code', addon.code);
+
+    /** checks if value has been added or not */
     const initValueForAdded = addonsAdded?.[addon.code] ?? null;
+    console.log('initValueForAdded', JSON.stringify(initValueForAdded));
+
     const selectedOptionForAdded = addon.options.find(
       (option) => option.value === initValueForAdded,
     );
     const feeAdded = selectedOptionForAdded
       ? calculateFee(selectedOptionForAdded, addonsAdded)
       : 0;
+    ///CHANGING HERE
+    // const feeAdded = initValueForAdded === 'YES' ? 0 : 0;
 
     // For feeSelected use the "addonsSelected" defaults
     const initValueForSelected = addonsSelected?.[addon.code] ?? null;
@@ -252,6 +289,10 @@ function AddOnDetail({
     const feeSelected = activeOption
       ? calculateFee(activeOption, addonsAdded)
       : 0;
+    // const feeSelected =
+    //   initValueForAdded === 'YES' ? (addon.premium_with_gst ?? 0) : 0;
+
+    console.log(`fee added = ${feeAdded} and feeSelected = ${feeSelected}`);
 
     return {
       ...addon,
@@ -311,6 +352,8 @@ function AddOnDetail({
 
   const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
     const fee = addon.feeAdded ?? 0;
+    console.log('Calculating totalAddonNormalFee', JSON.stringify(addon));
+    console.log('acc = ', acc, 'fee = ', fee);
     return acc + fee;
   }, 0);
   const baseFeeAdditionalDriver =
@@ -342,14 +385,6 @@ function AddOnDetail({
 
   const handleOkay = () => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    //For plan codes COM the default value of CAR_COM_AJE is 'SGD 750.00'.
-    if (plan?.code === 'COM') {
-      addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
-    }
-    //For plan codes FNCD the default value of CAR_FNCD_AJE is 'SGD 750.00'.
-    if (plan?.code === 'FNCD') {
-      addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
-    }
 
     if (addonAdditionalDriver?.code) {
       const isExistDriver =

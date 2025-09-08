@@ -15,7 +15,10 @@ export async function formatMotorCycleQuoteInfo(
   data: any,
 ): Promise<any[]> {
   const mappedPlanValues = mappedMotorcyclePlanPremiums(quoteInfo);
+  console.log(`MAPPED PLAN VALUES ${JSON.stringify(mappedPlanValues)}`);
   const mappedAddonValues = mappedMotorcycleAddonPremiums(quoteInfo);
+  console.log(`MAPPED ADDON VALUES ${JSON.stringify(mappedAddonValues)}`);
+
   const mappedAddonEligibilityValues = mappedAddonEligibility(quoteInfo);
   const mappedAddOnIncludePlanValues =
     mappedMotocycleAddOnIncludePlan(quoteInfo);
@@ -106,8 +109,13 @@ export async function formatMotorCycleQuoteInfo(
     }
 
     for (const addon of plan.addons) {
+      console.log(`addon before processing: ${JSON.stringify(addon)}`);
+      console.log(
+        `Processing addon ${addon.code} with key map ${addon.key_map}`,
+      );
       addon.is_display = mappedAddonEligibilityValues[addon.code as string];
       if (addon.key_map && addon.options.length === 0) {
+        console.log(`mappedAddonValues[${addon.key_map}]`);
         addon.premium_with_gst = mappedAddonValues[addon.key_map];
       } else {
         for (const option of addon.options) {

@@ -273,7 +273,7 @@ export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
           ...(quoteFound?.data && typeof quoteFound.data === 'object'
             ? quoteFound.data
             : {}),
-          plan: planData,
+          plans: planData,
           personal_info: {
             ...(typeof quoteFound?.data === 'object' &&
             quoteFound?.data !== null &&

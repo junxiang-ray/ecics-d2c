@@ -22,6 +22,7 @@ function PlanCardMobile({
   setSelectedPlan: (plan: FormatPlan | null) => void;
   isSaving: boolean;
 }) {
+  console.log('plan build here ', JSON.stringify(plans));
   const { isMobile } = useDeviceDetection();
 
   return (
@@ -98,7 +99,7 @@ function PlanCardMobile({
                   </div>
                 </>
               ) : (
-                <div className='flex h-12 items-center ps-6'>
+                <div className=' flex h-12 items-center ps-6'>
                   {formatCurrency(plan.premium_with_gst)}
                 </div>
               )}

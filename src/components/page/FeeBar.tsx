@@ -142,6 +142,7 @@ export function PricingSummary({
                   handleBack?.();
                 }}
               />
+              {/* add on page */}
               {!isBasicDetailScreen && (
                 <>
                   <div

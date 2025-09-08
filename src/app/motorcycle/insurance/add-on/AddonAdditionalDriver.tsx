@@ -21,6 +21,15 @@ export const ADDON_CARS = [
   'CAR_FNCD_AND',
 ];
 
+export const ADDON_MOTORCYCLE = [
+  'MOTORCYCLE_COMP_LOU',
+  'MOTORCYCLE_COMP_RSA',
+  'MOTORCYCLE_COMP_KRC',
+  'MOTORCYCLE_COMP_PA',
+  'MOTORCYCLE_COMP_ME',
+  'MOTORCYCLE_COMP_AND',
+];
+
 function AddonAdditionalDriver({
   addon,
   drivers,
