@@ -296,6 +296,20 @@ const ReviewInfoDetail = () => {
           'The vehicle is more than 15 years old based on its registration year.',
         );
       }
+
+      // Check brand new car Lexus or Suzuki
+      const currentYear = dayjs().year();
+      const manufactureYear = Number(vehicle?.yearofmanufacture?.value);
+      const make = vehicle?.make?.value?.toLowerCase();
+
+      if (
+        (make === 'lexus' || make === 'suzuki') &&
+        manufactureYear === currentYear
+      ) {
+        descriptions.push(
+          'We are unable to provide a quotation for this brand new car.',
+        );
+      }
     }
 
     // Check vehicle age (allVehiclesOver15Years)
