@@ -42,6 +42,15 @@ const schema = z.object({
   renewal_expiry_date: z.date({
     required_error: 'Renewal expiry date is required',
   }),
+  gender: z.string({
+    required_error: 'Gender is required',
+    invalid_type_error: 'Gender is required',
+  }),
+  marital_status: z
+    .string({
+      required_error: 'Marital status is required',
+    })
+    .nonempty('This field is required'),
   email: z.string().email('Invalid email'),
   contact_no: z.string().min(8, 'Contact number too short'),
   address_line1: z.string().min(1, 'Address is required'),
@@ -54,7 +63,6 @@ export type RenewalFormData = z.infer<typeof schema>;
 
 interface RenewalDetailProps {
   onSubmit: (value: RenewalFormData) => void;
-  isLoading?: boolean;
   initialValues: RenewalFormData;
   renewalQuote: any;
   policy: any;
@@ -77,7 +85,6 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       renewalQuote,
       policy,
       renewal,
-      isLoading = false,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -99,18 +106,52 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
 
     // Sync form changes to redux
     useEffect(() => {
-      const updatedValues = { ...renewalQuote.renewal_info, ...watchedValues };
+      if (!renewalQuote?.renewal_info) return;
+
       const payload = {
-        ...updatedValues,
+        ...renewalQuote.renewal_info,
+        renewal_expiry_date:
+          watchedValues.renewal_expiry_date ??
+          renewalQuote.renewal_info.renewal_expiry_date,
+        insured_info: {
+          ...renewalQuote.renewal_info.insured_info,
+          gender:
+            watchedValues.gender ??
+            renewalQuote.renewal_info.insured_info.gender,
+          marital_status:
+            watchedValues.marital_status ??
+            renewalQuote.renewal_info.insured_info.marital_status,
+          email:
+            watchedValues.email ?? renewalQuote.renewal_info.insured_info.email,
+          contact_no:
+            watchedValues.contact_no ??
+            renewalQuote.renewal_info.insured_info.contact_no,
+          address: {
+            ...renewalQuote.renewal_info.insured_info.address,
+            address_line1:
+              watchedValues.address_line1 ??
+              renewalQuote.renewal_info.insured_info.address.address_line1,
+            address_line2:
+              watchedValues.address_line2 ??
+              renewalQuote.renewal_info.insured_info.address.address_line2,
+            address_line3:
+              watchedValues.address_line3 ??
+              renewalQuote.renewal_info.insured_info.address.address_line3,
+            postal:
+              watchedValues.postal ??
+              renewalQuote.renewal_info.insured_info.address.postal,
+          },
+        },
         selected_add_on_optional_benefits: selectedAddons,
       };
 
       const isEqual =
         JSON.stringify(payload) === JSON.stringify(renewalQuote.renewal_info);
+
       if (!isEqual) {
         dispatch(updateRenewalQuote({ renewal_info: payload }));
       }
-    }, [watchedValues, selectedAddons, dispatch, renewalQuote.renewal_info]);
+    }, [watchedValues, selectedAddons, dispatch, renewalQuote?.renewal_info]);
 
     // Expose submit to parent via ref
     useImperativeHandle(ref, () => ({

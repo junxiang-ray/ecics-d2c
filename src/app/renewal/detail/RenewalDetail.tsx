@@ -21,6 +21,7 @@ import RenewalDetailForm, {
   RenewalFormData,
 } from '@/app/renewal/detail/RenewalDetailForm';
 import ModalPremiumRenewal from '@/app/renewal/modal/ModalPremiumRenewal';
+import { GST_RATE, TAX } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
@@ -38,7 +39,7 @@ const RenewalDetail = () => {
   const dob = renewal?.insured_info?.dob;
 
   const { data: renewalContent } = useGetRenewalContent();
-  const { mutate: postEditRenewal } = usePostEditRenewal();
+  const { mutate: postEditRenewal, isPending } = usePostEditRenewal();
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [selectedAddons, setSelectedAddons] = useState<SelectedAddon[]>([]);
@@ -161,16 +162,20 @@ const RenewalDetail = () => {
       },
     );
   };
-
+  const gst = parseFloat(String(renewal?.renewalgst ?? 0));
+  const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
   const planFee = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
   const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-  const tax = 1.09;
   const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
     return sum + Number(addon.prem ?? 0);
   }, 0);
 
-  const addonsTotalAfterTax = addonsTotal / tax;
+  const addonsTotalAfterTax = addonsTotal / TAX;
   const subtotalFeeAfter = planFee + addonsTotalAfterTax;
+
+  const hasAddonsPlus = addonsTotalAfterTax > 0;
+  const gstAmount = subtotalFeeAfter * GST_RATE;
+  const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
 
   return (
     <>
@@ -223,7 +228,8 @@ const RenewalDetail = () => {
           onClick={() => formRef.current?.submit()}
           isPolicyRenewalScreen={true}
           setIsShowPopupPremium={setIsShowPopupPremium}
-          subtotalFeeAfter={subtotalFeeAfter}
+          total={total}
+          loading={isPending}
         />
       </div>
       <ModalPremiumRenewal
@@ -231,7 +237,11 @@ const RenewalDetail = () => {
         setIsShowPopupPremium={setIsShowPopupPremium}
         subtotalFeeAfter={subtotalFeeAfter}
         renewalQuote={renewalQuote}
-        tax={tax}
+        tax={TAX}
+        gst={gst}
+        subtotal={subtotal}
+        total={total}
+        hasAddonsPlus={hasAddonsPlus}
       />
     </>
   );
