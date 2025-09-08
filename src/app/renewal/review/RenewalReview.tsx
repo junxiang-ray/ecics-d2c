@@ -17,6 +17,7 @@ import {
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
 import { useAppSelector } from '@/redux/store';
+import { PRODUCT_TYPE } from '@/constants/general.constant';
 
 const RenewalReview = () => {
   const router = useRouter();
@@ -73,7 +74,7 @@ const RenewalReview = () => {
                 poily_no: policy?.current_policy_no,
               },
               policy_summary: {
-                policy_type: paymentData.data.product,
+                policy_type: sessionStorage.getItem(PRODUCT_TYPE),
                 policy_start_date: renewal?.renewal_start_date
                   ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
                   : undefined,

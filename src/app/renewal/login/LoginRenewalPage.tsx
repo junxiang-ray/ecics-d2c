@@ -25,7 +25,7 @@ import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch } from '@/redux/store';
-import { EDIT_RENEWAL } from '@/constants/general.constant';
+import { EDIT_RENEWAL, PRODUCT_TYPE } from '@/constants/general.constant';
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
 const schema = z.object({
@@ -76,6 +76,7 @@ const LoginRenewalPage = () => {
         if (res) {
           if (res.edit_renewal) {
             saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
+            saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
           }
           dispatch(updateRenewalQuote(res));
         }

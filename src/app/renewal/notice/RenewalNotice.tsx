@@ -17,6 +17,7 @@ import {
 } from '@/hook/renewal/renewalQuote';
 import { useAppSelector } from '@/redux/store';
 import { v4 as uuid } from 'uuid';
+import { EDIT_RENEWAL, PRODUCT_TYPE } from '@/constants/general.constant';
 
 const RenewalNotice = () => {
   const router = useRouter();
@@ -68,7 +69,7 @@ const RenewalNotice = () => {
                 poily_no: policy?.current_policy_no,
               },
               policy_summary: {
-                policy_type: paymentData.data.product,
+                policy_type: sessionStorage.getItem(PRODUCT_TYPE),
                 policy_start_date: renewal?.renewal_start_date
                   ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
                   : undefined,
