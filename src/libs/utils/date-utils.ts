@@ -340,6 +340,33 @@ export const getCoverageDuration = (
   startDate: Dayjs,
   expiryDate: Dayjs,
 ): string => {
+  const totalDays = expiryDate.diff(startDate, 'day');
+
+  // Insurance logic: 364 days or more is considered as ≥ 1 year.
+  if (totalDays >= 364) {
+    const years = expiryDate.diff(startDate, 'year');
+    const months = expiryDate.diff(startDate.add(years, 'year'), 'month');
+    const days = expiryDate.diff(
+      startDate.add(years, 'year').add(months, 'month'),
+      'day',
+    );
+
+    // If the duration is less than 1 year (Dayjs returns 0 years), it is treated as 1 year.
+    const adjYears = years === 0 ? 1 : years;
+
+    const parts: string[] = [];
+    if (adjYears) parts.push(`${adjYears} year${adjYears > 1 ? 's' : ''}`);
+    if (months) parts.push(`${months} month${months > 1 ? 's' : ''}`);
+    if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+
+    return parts.length === 1
+      ? parts[0]
+      : parts.length === 2
+        ? parts.join(' and ')
+        : parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
+  }
+
+  // < 364 days, calculate normally.
   const years = expiryDate.diff(startDate, 'year');
   const months = expiryDate.diff(startDate.add(years, 'year'), 'month');
   const days = expiryDate.diff(
@@ -348,7 +375,6 @@ export const getCoverageDuration = (
   );
 
   const parts: string[] = [];
-
   if (years) parts.push(`${years} year${years > 1 ? 's' : ''}`);
   if (months) parts.push(`${months} month${months > 1 ? 's' : ''}`);
   if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);

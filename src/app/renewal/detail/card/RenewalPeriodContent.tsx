@@ -1,11 +1,12 @@
 import { Form } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
+
+import { getCoverageDuration } from '@/libs/utils/date-utils';
 
 import { ReloadIcon } from '@/components/icons/renewal-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
-import { getCoverageDuration } from '@/libs/utils/date-utils';
 
 const RenewalPeriodContent = ({
   errors,
@@ -14,26 +15,26 @@ const RenewalPeriodContent = ({
   errors: any;
   renewalStartDate: Dayjs | null;
 }) => {
-  const { setValue } = useFormContext();
-  const startDate = useMemo(() => dayjs(renewalStartDate), [renewalStartDate]);
+  const { setValue, watch } = useFormContext();
+  const startDate = useMemo(
+    () =>
+      renewalStartDate && renewalStartDate.isValid() ? renewalStartDate : null,
+    [renewalStartDate],
+  );
 
-  const [expiryDate, setExpiryDate] = useState<Dayjs>(startDate.add(1, 'year'));
-
-  // When start date changes -> reset expiry date = +1 year
-  useEffect(() => {
-    setExpiryDate(startDate.add(1, 'year'));
-  }, [startDate]);
+  const expiryDate = watch('renewal_expiry_date')
+    ? dayjs(watch('renewal_expiry_date'))
+    : null;
 
   const handleExpiryChange = (value: Dayjs | null) => {
     if (!value) return;
-    setExpiryDate(value);
     setValue('renewal_expiry_date', value.toDate());
   };
 
   const handleReset = () => {
+    if (!startDate) return;
     const newDate = startDate.add(1, 'year');
-    setExpiryDate(newDate);
-    setValue('renewal_expiry_date', newDate);
+    setValue('renewal_expiry_date', newDate.toDate());
   };
 
   return (
@@ -58,10 +59,13 @@ const RenewalPeriodContent = ({
             label='Renewal Expiry Date'
             isRequired
             onChange={handleExpiryChange}
-            disabledDate={(current: Dayjs) =>
-              current < startDate.add(1, 'year') ||
-              current > startDate.add(2, 'year')
-            }
+            disabledDate={(current: Dayjs) => {
+              if (!startDate) return true;
+              return (
+                current < startDate.add(1, 'year') ||
+                current > startDate.add(2, 'year')
+              );
+            }}
           />
         </Form.Item>
 
@@ -80,7 +84,11 @@ const RenewalPeriodContent = ({
           </div>
           <input
             type='text'
-            value={getCoverageDuration(startDate, expiryDate)}
+            value={
+              startDate && expiryDate
+                ? getCoverageDuration(startDate, expiryDate)
+                : ''
+            }
             disabled
             className='cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
           />

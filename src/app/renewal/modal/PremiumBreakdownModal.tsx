@@ -5,22 +5,22 @@ import { RenewalQuote } from '@/libs/types/renewalQuote';
 import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 export interface PremiumBreakdownRenewalContentProps {
-  gst: number;
+  tax: number;
   subtotalFeeAfter: number;
   renewalQuote?: RenewalQuote;
   onClose?: () => void;
 }
 
 const PremiumBreakdownRenewalContent = ({
-  gst,
+  tax,
   subtotalFeeAfter,
   renewalQuote,
   onClose,
 }: PremiumBreakdownRenewalContentProps) => {
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
-
-  const total = (subtotalFeeAfter + gst).toFixed(2);
+  const gstAmount = subtotalFeeAfter * 0.09;
+  const total = subtotalFeeAfter + gstAmount;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -75,7 +75,9 @@ const PremiumBreakdownRenewalContent = ({
                       className='mb-1 flex items-center justify-between space-y-2'
                     >
                       <span className='text-sm'>{item.name} </span>
-                      <span className='text-sm'>SGD {price.toFixed(2)}</span>
+                      <span className='text-sm'>
+                        {formatCurrency(price / tax)}
+                      </span>
                     </div>
                   );
                 },
@@ -117,7 +119,10 @@ const PremiumBreakdownRenewalContent = ({
           </div>
           <div className='flex flex-row justify-between text-sm font-normal text-gray-700'>
             <p>GST (9%)</p>
-            <p className='font-semibold'>SGD {renewal?.renewalgst}</p>
+            <p className='font-semibold'>
+              {' '}
+              {formatCurrency(Number(gstAmount))}
+            </p>
           </div>
           <hr className='mt-4 border-t border-gray-200' />
           <div className='mt-2 flex flex-row justify-between text-base font-bold text-[#303030]'>
