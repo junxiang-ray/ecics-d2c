@@ -83,9 +83,7 @@ export function PricingSummaryRenewal({
                         Net Premium
                       </p>
                       <p className='text-[20px] font-bold leading-[26px] text-[#00ADEF] underline'>
-                        {totalFee
-                          ? formatCurrency(Number(totalFee.toFixed(2)))
-                          : ''}{' '}
+                        {totalFee ? formatCurrency(Number(totalFee)) : ''}{' '}
                       </p>
                     </div>
                   </div>
@@ -130,9 +128,7 @@ export function PricingSummaryRenewal({
                       Net Premium
                     </p>
                     <p className='text-[20px] font-bold leading-[26px] text-[#00ADEF] underline'>
-                      {totalFee
-                        ? formatCurrency(Number(totalFee.toFixed(2)))
-                        : ''}{' '}
+                      {totalFee ? formatCurrency(Number(totalFee)) : ''}{' '}
                     </p>
                   </div>
                 </div>

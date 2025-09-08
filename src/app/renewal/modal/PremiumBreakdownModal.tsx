@@ -20,7 +20,7 @@ const PremiumBreakdownRenewalContent = ({
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
   const gstAmount = subtotalFeeAfter * 0.09;
-  const total = (subtotalFeeAfter + gstAmount).toFixed(2);
+  const total = subtotalFeeAfter + gstAmount;
 
   return (
     <div className='flex flex-col gap-4'>
