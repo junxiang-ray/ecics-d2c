@@ -3,6 +3,9 @@
 import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+import { createPassphrase } from '@/libs/utils/utils';
+
 import Announcements from '@/app/renewal/components/announcements/Announcements';
 import PoliciesPendingRenewal from '@/app/renewal/components/policies-renewal/PoliciesPendingRenewal';
 import Promotions from '@/app/renewal/components/promotions/Promotions';
@@ -14,10 +17,10 @@ import {
   useCheckPolicyRenewal,
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
-import { PRODUCT_NAME } from '../api/constants/product';
-import { useAppSelector, RootState, useAppDispatch } from '@/redux/store';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { createPassphrase } from '@/libs/utils/utils';
+import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
+
+import { PRODUCT_NAME } from '../api/constants/product';
 
 export default function RenewalPage() {
   const router = useRouter();

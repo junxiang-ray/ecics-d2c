@@ -3,6 +3,7 @@
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import { v4 as uuid } from 'uuid';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -16,13 +17,12 @@ import {
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
 import { useAppSelector } from '@/redux/store';
-import { v4 as uuid } from 'uuid';
 
 const RenewalNotice = () => {
   const router = useRouter();
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
-  const { mutate: savePolicy } = usePostSavePolicy();
+  const { mutate: savePolicy, isPending } = usePostSavePolicy();
 
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
@@ -152,6 +152,7 @@ const RenewalNotice = () => {
         <PricingSummaryRenewal
           onClickButtonLeft={handleEditRenewal}
           onClick={handleMakePayment}
+          loading={isPending}
         />
       </div>
     </>
