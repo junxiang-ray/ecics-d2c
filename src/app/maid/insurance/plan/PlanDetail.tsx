@@ -91,6 +91,7 @@ function PlanDetail({
     const data = {
       ...maidQuoteInfo?.data,
       selected_plan: plan?.title,
+      selected_plan_code: plan?.code,
       key: key,
     };
     saveMaidQuote({ key, data, is_sending_email: false }).then((res) => {

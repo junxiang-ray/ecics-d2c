@@ -146,6 +146,13 @@ export const MARITAL_STATUS_OPTIONS: DropdownOption[] = [
   { value: MaritalStatusValue.DIVORCED, text: 'Divorced' },
 ];
 
+export const MARITAL_STATUS_MAP: Record<string, MaritalStatusValue> = {
+  M: MaritalStatusValue.MARRIED,
+  S: MaritalStatusValue.SINGLE,
+  W: MaritalStatusValue.WIDOWED,
+  D: MaritalStatusValue.DIVORCED,
+};
+
 export const HELPER_TYPE_OPTIONS: DropdownOption[] = [
   { value: HelperTypeValue.NEW_MAID, text: 'New Maid' },
   { value: HelperTypeValue.RENEWAL_MAID, text: 'Renewal Maid' },

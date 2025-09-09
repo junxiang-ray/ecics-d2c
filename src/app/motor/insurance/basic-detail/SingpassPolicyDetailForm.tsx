@@ -283,6 +283,17 @@ const SingpassPolicyDetailForm = ({
   };
 
   useEffect(() => {
+    if (userInfo?.vehicle_selected) {
+      const v = userInfo.vehicle_selected;
+      setMissingFields({
+        engine_number: !v.engineno?.value,
+        chassis_number: !v.chassisno?.value,
+        reg_yyyy: !v.firstregistrationdate?.value,
+      });
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
     setApplyPromoCode(initPromoCode);
   }, [initPromoCode]);
 
@@ -317,9 +328,15 @@ const SingpassPolicyDetailForm = ({
             ),
         year_of_manufacture:
           userInfo?.vehicle_selected?.yearofmanufacture.value,
-        engine_number: userInfo?.vehicle_selected?.engineno.value,
-        chasis_number: userInfo?.vehicle_selected?.chassisno.value,
-        engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value,
+        engine_number:
+          userInfo?.vehicle_selected?.engineno?.value ||
+          value[MOTOR_QUOTE.engine_number] ||
+          '',
+        chasis_number:
+          userInfo?.vehicle_selected?.chassisno?.value ||
+          value[MOTOR_QUOTE.chassis_number] ||
+          '',
+        engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value || '',
         power_rate: userInfo?.vehicle_selected?.powerrate.value,
       };
 
@@ -413,9 +430,15 @@ const SingpassPolicyDetailForm = ({
         ? (value[MOTOR_QUOTE.reg_yyyy] as string)
         : extractYear(userInfo?.vehicle_selected?.firstregistrationdate.value),
       year_of_manufacture: userInfo?.vehicle_selected?.yearofmanufacture.value,
-      engine_number: userInfo?.vehicle_selected?.engineno.value,
-      chasis_number: userInfo?.vehicle_selected?.chassisno.value,
-      engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value,
+      engine_number:
+        userInfo?.vehicle_selected?.engineno?.value ||
+        value[MOTOR_QUOTE.engine_number] ||
+        '',
+      chasis_number:
+        userInfo?.vehicle_selected?.chassisno?.value ||
+        value[MOTOR_QUOTE.chassis_number] ||
+        '',
+      engine_capacity: userInfo?.vehicle_selected?.enginecapacity.value || '',
       power_rate: userInfo?.vehicle_selected?.powerrate.value,
     };
 
