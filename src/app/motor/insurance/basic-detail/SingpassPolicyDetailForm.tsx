@@ -35,10 +35,7 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
-import {
-  useCheckAIMakeModel,
-  usePostCheckVehicle,
-} from '@/hook/insurance/common';
+import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
@@ -201,6 +198,7 @@ const SingpassPolicyDetailForm = ({
 
   const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
   const [isMoreThan15YearsModal, setIsMoreThan15YearsModal] = useState(false);
+  const [isBlockedByMakeYear, setIsBlockedByMakeYear] = useState(false);
   const [isMaskClosable, setIsMaskClosable] = useState(false);
 
   const { data: quoteInfo } = useGetQuote(key);
@@ -597,6 +595,7 @@ const SingpassPolicyDetailForm = ({
                 make,
                 model,
                 capacity,
+                yearOfManufacture,
               ) => {
                 setVehicleNumber(vehicleNumber);
                 setVehicleMake(make);
@@ -613,6 +612,24 @@ const SingpassPolicyDetailForm = ({
                 } else {
                   setShowUnMatchModal(false);
                 }
+                // Check blocked by make (Lexus, Suzuki) + currentYear
+                const currentYear = dayjs().year();
+                if (
+                  (make.toLowerCase() === 'lexus' ||
+                    make.toLowerCase() === 'suzuki') &&
+                  Number(yearOfManufacture) === currentYear
+                ) {
+                  setIsBlockedByMakeYear(true);
+                  setShowCSModal({
+                    visible: true,
+                    description:
+                      'We are unable to provide a quotation for this brand new car.',
+                  });
+                  return;
+                } else {
+                  setIsBlockedByMakeYear(false);
+                }
+
                 // Check Vehicle (make,model)
                 checkAIMakeModel({
                   vehicle_make: make,
@@ -778,6 +795,7 @@ const SingpassPolicyDetailForm = ({
             form.submit();
           }}
           productType={ProductType.CAR}
+          disabled={isBlockedByMakeYear}
         />
       </div>
       <QuoteModal

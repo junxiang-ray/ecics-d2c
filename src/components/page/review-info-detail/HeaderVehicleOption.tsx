@@ -9,13 +9,13 @@ import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 interface MissingFields {
   engine_number?: boolean;
@@ -42,6 +42,7 @@ interface Props {
     make: string,
     model: string,
     capacity: number,
+    yearOfManufacture: string,
   ) => void;
   setIsShowUnMatchMake: (val: boolean) => void;
   setIsMaskClosable: (val: boolean) => void;
@@ -160,6 +161,8 @@ const HeaderVehicleOption: React.FC<Props> = ({
     };
 
     const regDateStr = vehicle.firstregistrationdate?.value;
+    const yearOfManufacture = vehicle.yearofmanufacture?.value;
+
     const vehicleAge = regDateStr
       ? dayjs().diff(dayjs(regDateStr), 'year')
       : null;
@@ -184,6 +187,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
       make,
       model,
       capacity,
+      yearOfManufacture,
     );
   };
 
