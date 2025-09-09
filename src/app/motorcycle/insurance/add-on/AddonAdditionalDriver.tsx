@@ -27,7 +27,17 @@ export const ADDON_MOTORCYCLE = [
   'MOTORCYCLE_COMP_KRC',
   'MOTORCYCLE_COMP_PA',
   'MOTORCYCLE_COMP_ME',
+  'MOTORCYCLE_COMP_BUN',
+  'MOTORCYCLE_TPFT_BUN',
+  'MOTORCYCLE_TPO_BUN',
+
+  // 'MOTORCYCLE_COMP_AND',
+];
+
+export const ADDON_MOTORCYCLE_AND = [
   'MOTORCYCLE_COMP_AND',
+  'MOTORCYCLE_TPFT_AND',
+  'MOTORCYCLE_TPO_AND',
 ];
 
 function AddonAdditionalDriver({
@@ -43,6 +53,7 @@ function AddonAdditionalDriver({
   policyStartDate: string;
   isPending: boolean;
 }) {
+  console.log('rendering Additional Driver with addon', JSON.stringify(addon));
   const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
   const [editingDriver, setEditingDriver] = useState<AddNamedDriverInfo | null>(
     null,

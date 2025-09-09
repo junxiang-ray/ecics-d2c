@@ -8,6 +8,7 @@ import {
   mappedMotorcycleAddonPremiums,
   mappedMotocycleAddOnIncludePlan,
   mappedPlanPremiums,
+  mappedMotorcycleAddonEligibility,
 } from '@/app/api/utils/quote.helpers';
 
 export async function formatMotorCycleQuoteInfo(
@@ -19,7 +20,8 @@ export async function formatMotorCycleQuoteInfo(
   const mappedAddonValues = mappedMotorcycleAddonPremiums(quoteInfo);
   console.log(`MAPPED ADDON VALUES ${JSON.stringify(mappedAddonValues)}`);
 
-  const mappedAddonEligibilityValues = mappedAddonEligibility(quoteInfo);
+  const mappedAddonEligibilityValues =
+    mappedMotorcycleAddonEligibility(quoteInfo);
   const mappedAddOnIncludePlanValues =
     mappedMotocycleAddOnIncludePlan(quoteInfo);
   logger.info('FORMATTING MOTORCYCLE');
@@ -102,6 +104,9 @@ export async function formatMotorCycleQuoteInfo(
   });
 
   plans.forEach((plan) => {
+    console.log(
+      `for each plan the plan.code = ${plan.code} and map = ${JSON.stringify(mappedPlanValues)}`,
+    );
     if (plan.code && plan.code in mappedPlanValues) {
       plan.premium_with_gst = mappedPlanValues[plan.code];
       plan.add_ons_included_in_this_plan =

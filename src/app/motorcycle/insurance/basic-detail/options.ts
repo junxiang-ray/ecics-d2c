@@ -45,6 +45,10 @@ export enum PolicyDurationValue {
   TWENTY_SIX = '26',
   FOURTEEN = '14',
 }
+export enum AdditionalDriverValue {
+  YES = 'Yes',
+  NO = 'No',
+}
 
 // const DRIVER_EXP_BASE = [
 //   {
@@ -152,4 +156,9 @@ export const MARITAL_STATUS_OPTIONS: DropdownOption[] = [
 export const POLICY_DURATION_OPTIONS: DropdownOption[] = [
   { value: PolicyDurationValue.TWENTY_SIX, text: '26 Months' },
   { value: PolicyDurationValue.FOURTEEN, text: '14 Months' },
+];
+
+export const ADDITIONAL_DRIVER_OPTIONS: DropdownOption[] = [
+  { value: AdditionalDriverValue.YES, text: 'Yes' },
+  { value: AdditionalDriverValue.NO, text: 'No' },
 ];

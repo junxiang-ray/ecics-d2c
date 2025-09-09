@@ -187,19 +187,19 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
     throw new Error('Error generate quote');
   }
 }
-
+/**Gets quote for motorcycle from ISP and formats it to the format that the front end requires*/
 export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
   try {
-    // logger.info(`Generating quote for motorcycle with data: ${JSON.stringify(data)}`);
-
+    /** promocode data */
     let promoCodeData = null;
-    // Check if promo code is valid
+
+    /** checks if promo code exists and checks if it exist in the db*/
     if (data.promo_code) {
       promoCodeData = await prisma.promocode.findFirst({
         where: {
           code: data.promo_code,
           products: {
-            has: PRODUCT_NAME.CAR,
+            has: PRODUCT_NAME.MOTORCYCLE,
           },
         },
       });
@@ -211,7 +211,7 @@ export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
     const productType = await prisma.productType.findFirst({
       where: { name: 'motorcycle' },
     });
-
+    /** payload data to send */
     const payloadData = {
       vehicle: {
         make: data.vehicle_info_selected.vehicle_make,
@@ -235,7 +235,7 @@ export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
 
     logger.info(`Payload for generate quote: ${JSON.stringify(payloadData)}`);
 
-    // Call the API to generate quote
+    /// Call the API to generate quote
     const response = await apiServer.post(
       `${MOTORCYCLE_INSURANCE.PREFIX_ENDPOINT}/quote`,
       payloadData,
@@ -246,7 +246,6 @@ export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
 
     if (response.data.status === 0) {
       const quoteResInfo = response.data.data;
-      logger.info(`quote data: ${JSON.stringify(quoteResInfo)}`);
 
       const planData = await formatMotorCycleQuoteInfo(quoteResInfo, data);
 

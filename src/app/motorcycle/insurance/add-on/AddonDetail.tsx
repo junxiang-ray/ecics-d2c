@@ -34,6 +34,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import AddonAdditionalDriver, {
   ADDON_CARS,
   ADDON_MOTORCYCLE,
+  ADDON_MOTORCYCLE_AND,
 } from './AddonAdditionalDriver';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
 import { ProductType } from '../basic-detail/options';
@@ -59,6 +60,18 @@ export const mapIconToTypeAddOn = [
   {
     code: 'MOTORCYCLE_COMP_ME',
     icon: <MedicalKitIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'MOTORCYCLE_COMP_BUN',
+    icon: <BillIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'MOTORCYCLE_TPFT_BUN',
+    icon: <BillIcon className='text-brand-blue' />,
+  },
+  {
+    code: 'MOTORCYCLE_TPO_BUN',
+    icon: <BillIcon className='text-brand-blue' />,
   },
   {
     code: 'CAR_COM_AND',
@@ -202,7 +215,10 @@ function AddOnDetail({
   }, [quoteInfo]);
 
   const addonAdditionalDriver = useMemo(() => {
-    return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
+    console.log('plan in addonAdditionalDriver', JSON.stringify(plan));
+    return plan?.addons.find((addon) =>
+      ADDON_MOTORCYCLE_AND.includes(addon.code),
+    );
   }, [plan]);
 
   const normalAddons = useMemo(() => {
@@ -324,12 +340,12 @@ function AddOnDetail({
 
   useEffect(() => {
     const addonsAdd: Record<string, string> = { ...addonsAdded };
-    if (plan?.code === 'COM') {
-      addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
-    }
-    if (plan?.code === 'FNCD') {
-      addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
-    }
+    // if (plan?.code === 'COM') {
+    //   addonsAdd['CAR_COM_AJE'] = 'SGD 750.00';
+    // }
+    // if (plan?.code === 'FNCD') {
+    //   addonsAdd['CAR_FNCD_AJE'] = 'SGD 750.00';
+    // }
     //
     if (addonAdditionalDriver?.code) {
       const isExistDriver = drivers.every((driver) => driver.nric_or_fin);
@@ -363,6 +379,7 @@ function AddOnDetail({
     : 0;
   const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
   const premiumWithGst = plan?.premium_with_gst ?? 0;
+  console.log('addonAdditionalDriver', JSON.stringify(addonAdditionalDriver));
   const baseFee = addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
   const totalFeeDriver = drivers.length ? baseFee * (drivers.length - 1) : 0;
   const discountRate = quoteInfo?.promo_code?.discount || 0;

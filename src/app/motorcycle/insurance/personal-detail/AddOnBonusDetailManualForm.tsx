@@ -29,10 +29,14 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { RenewalModal } from '../basic-detail/modal/RenewalModal';
 import { UnableQuote } from '../basic-detail/modal/UnableQuote';
 import {
+  ADDITIONAL_DRIVER_OPTIONS,
+  AdditionalDriverValue,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
   ProductType,
 } from '../basic-detail/options';
+import { MOTORCYCLE_QUOTE } from '@/constants';
+import { DatePickerField } from '@/components/ui/form/datepicker';
 
 const createSchema = (listNric: any[] | undefined) =>
   z.object({
@@ -179,6 +183,9 @@ const AddOnBonusDetailManualForm = (props: Props) => {
 
   const { mutateAsync: saveQuote, isPending: isPending } = useSaveQuote();
   const { mutateAsync: verifyRestrictedUser } = useVerifyRestrictedUser();
+
+  /**Additional driver*/
+  const [choice, setChoice] = useState(AdditionalDriverValue.NO);
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -428,6 +435,149 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                 />
               </Form.Item>
             </div>
+            {/* <div className={`w-1/2 ${isMobile ? '' : 'mt-[32px]'}`}>
+              <Form.Item>
+                <RadioField
+                  className='mt-4'
+                  name='Additional Driver'
+                  label='Would you like to add an additional driver?'
+                  isRequired
+                  options={ADDITIONAL_DRIVER_OPTIONS}
+                  value={choice}
+                  onChange={(e) => {
+                    setChoice(e.target.value);
+                    console.log(`radio checked:${e.target.value}`);
+                  }}
+                />
+              </Form.Item>
+            </div>
+            {choice === AdditionalDriverValue.YES && (
+              <div className={`w-full ${isMobile ? '' : 'mt-[14px]'}`}>
+                <div className='my-3 text-lg font-bold underline'>
+                  Additional Named Driver
+                </div>
+                <div className='grid gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-4'>
+                  <Form.Item
+                    name='name'
+                    validateStatus={errors['name'] ? 'error' : ''}
+                  >
+                    <InputField
+                      name='name'
+                      label='Full Name as per NRIC/FIN'
+                      isRequired
+                      placeholder='Full Name as per NRIC/FIN'
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name='nric'
+                    validateStatus={errors['nric'] ? 'error' : ''}
+                  >
+                    <InputField
+                      name='nric'
+                      label='NRIC/FIN'
+                      isRequired
+                      placeholder='Enter NRIC/FIN'
+                    />
+                  </Form.Item>
+                  <Form.Item
+                                          name={MOTORCYCLE_QUOTE.owner_dob}
+                                          validateStatus={
+                                            errors[MOTORCYCLE_QUOTE.owner_dob] ? 'error' : ''
+                                          }
+                                        >
+                                          <DatePickerField
+                                            name={MOTORCYCLE_QUOTE.owner_dob}
+                                            label='Date of birth'
+                                            format='YYYY-MM-DD'
+                                            minDate={minDob}
+                                            maxDate={maxDob}
+                                            isRequired
+                                            onChange={handleChangeDob}
+                                            defaultPickerValue={dayjs().subtract(40, 'year')}
+                                          />
+                                        </Form.Item>
+
+                  <Form.Item
+                    name='gender'
+                    validateStatus={errors['gender'] ? 'error' : ''}
+                  >
+                    <RadioField
+                      name='gender'
+                      label='Gender'
+                      isRequired
+                      options={GENDER_OPTIONS}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name='maritalStatus'
+                    validateStatus={errors['maritalStatus'] ? 'error' : ''}
+                  >
+                    <RadioField
+                      name='maritalStatus'
+                      label='Marital Status'
+                      isRequired
+                      options={MARITAL_STATUS_OPTIONS}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name='address1'
+                    validateStatus={errors['address1'] ? 'error' : ''}
+                  >
+                    <InputField
+                      name='address1'
+                      isRequired
+                      label='Address Line 1'
+                      placeholder='Block number and street name'
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name='address2'
+                    validateStatus={errors['address2'] ? 'error' : ''}
+                  >
+                    <InputField
+                      name='address2'
+                      label='Address Line 2'
+                      placeholder='Unit number (floor-unit format)'
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name='address3'
+                    validateStatus={errors['address3'] ? 'error' : ''}
+                  >
+                    <InputField
+                      name='address3'
+                      label='Address Line 3'
+                      placeholder='Building Name or estate name (Optional)'
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name='pinCode'
+                    validateStatus={errors['pinCode'] ? 'error' : ''}
+                  >
+                    <InputField
+                      name='pinCode'
+                      label='Postal Code'
+                      isRequired
+                      placeholder='6-digit Postal Code'
+                      inputMode='numeric'
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const onlyNums = e.target.value.replace(/\D/g, '');
+                        methods.setValue('pinCode', onlyNums, {
+                          shouldValidate: true,
+                        });
+                      }}
+                      value={methods.watch('pinCode')}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+            )} */}
           </div>
         </Form>
         <ModalPremium

@@ -395,7 +395,7 @@ function findMotorcycleAddOnData(
     `Finding Motorcycle Addon Data for Plan ID: ${planId}, Addon ID: ${id}`,
   );
   return (
-    findMotorcyclePlanData(quoteData, planId)?.availableOptionalBenefit.find(
+    findMotorcyclePlanData(quoteData, planId)?.availableOptionalBenefit?.find(
       (availableOptionalBenefit: any) => availableOptionalBenefit.id === id,
     ) || null
   );
@@ -421,7 +421,7 @@ export function mappedMotorcyclePlanPremiums(
 ): Record<string, number> {
   return {
     // COM: quoteData?.comp_plan?.plan_premium_with_gst ?? 0,
-    COM: findMotorcyclePlanPremium(quoteData, 'COMP'),
+    COMP: findMotorcyclePlanPremium(quoteData, 'COMP'),
     TPFT: findMotorcyclePlanPremium(quoteData, 'TPFT'),
     TPO: findMotorcyclePlanPremium(quoteData, 'TPO'),
     FNCD: findMotorcyclePlanPremium(quoteData, 'FNCD'),
@@ -457,6 +457,14 @@ export function mappedMotorcycleAddonPremiums(
       'COMP',
       'me',
     ),
+    comp_additional_name_driver_if_selected: findMotorcycleAddOnPremium(
+      quoteData,
+      'COMP',
+      'me',
+    ),
+    buy_up_ncd_comp: findMotorcycleAddOnPremium(quoteData, 'COMP', 'bun'),
+    buy_up_ncd_tpft: findMotorcycleAddOnPremium(quoteData, 'TPFT', 'bun'),
+    buy_up_ncd_tpo: findMotorcycleAddOnPremium(quoteData, 'TPO', 'bun'),
   };
 }
 
@@ -475,24 +483,20 @@ export function mappedMotorcycleAddonEligibility(
 ): Record<string, boolean> {
   return {
     MOTORCYCLE_COMP_LOU:
-      quoteData?.findMotorcycleAddOnData(quoteData, 'COMP', 'lou') !== null
-        ? true
-        : false,
+      findMotorcycleAddOnData(quoteData, 'COMP', 'lou') !== null ? true : false,
     MOTORCYCLE_COMP_RSA:
-      quoteData?.findMotorcycleAddOnData(quoteData, 'COMP', 'rsa') !== null
-        ? true
-        : false,
+      findMotorcycleAddOnData(quoteData, 'COMP', 'rsa') !== null ? true : false,
     MOTORCYCLE_COMP_KRC:
-      quoteData?.findMotorcycleAddOnData(quoteData, 'COMP', 'krc') !== null
-        ? true
-        : false,
+      findMotorcycleAddOnData(quoteData, 'COMP', 'krc') !== null ? true : false,
     MOTORCYCLE_COMP_PA:
-      quoteData?.findMotorcycleAddOnData(quoteData, 'COMP', 'pa') !== null
-        ? true
-        : false,
+      findMotorcycleAddOnData(quoteData, 'COMP', 'pa') !== null ? true : false,
     MOTORCYCLE_COMP_ME:
-      quoteData?.findMotorcycleAddOnData(quoteData, 'COMP', 'me') !== null
-        ? true
-        : false,
+      findMotorcycleAddOnData(quoteData, 'COMP', 'me') !== null ? true : false,
+    MOTORCYCLE_COMP_BUN:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'bun') !== null ? true : false,
+    MOTORCYCLE_TPFT_BUN:
+      findMotorcycleAddOnData(quoteData, 'TPFT', 'bun') !== null ? true : false,
+    MOTORCYCLE_TPO_BUN:
+      findMotorcycleAddOnData(quoteData, 'TPO', 'bun') !== null ? true : false,
   };
 }
