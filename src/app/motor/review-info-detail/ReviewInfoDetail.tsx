@@ -17,6 +17,7 @@ import {
 import {
   calculateDrivingExperienceFromLicences,
   convertDateToDDMMYYYY,
+  extractYear,
 } from '@/libs/utils/date-utils';
 import {
   calculateAge,
@@ -299,12 +300,11 @@ const ReviewInfoDetail = () => {
 
       // Check brand new car Lexus or Suzuki
       const currentYear = dayjs().year();
-      const manufactureYear = Number(vehicle?.yearofmanufacture?.value);
       const make = vehicle?.make?.value?.toLowerCase();
 
       if (
         (make === 'lexus' || make === 'suzuki') &&
-        manufactureYear === currentYear
+        Number(extractYear(regDateStr)) === currentYear
       ) {
         descriptions.push(
           'We are unable to provide a quotation for this brand new car.',

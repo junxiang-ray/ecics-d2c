@@ -595,7 +595,7 @@ const SingpassPolicyDetailForm = ({
                 make,
                 model,
                 capacity,
-                yearOfManufacture,
+                regDateStr,
               ) => {
                 setVehicleNumber(vehicleNumber);
                 setVehicleMake(make);
@@ -617,7 +617,7 @@ const SingpassPolicyDetailForm = ({
                 if (
                   (make.toLowerCase() === 'lexus' ||
                     make.toLowerCase() === 'suzuki') &&
-                  Number(yearOfManufacture) === currentYear
+                  Number(extractYear(regDateStr)) === currentYear
                 ) {
                   setIsBlockedByMakeYear(true);
                   setShowCSModal({

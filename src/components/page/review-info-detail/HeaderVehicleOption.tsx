@@ -42,7 +42,7 @@ interface Props {
     make: string,
     model: string,
     capacity: number,
-    yearOfManufacture: string,
+    regDateStr: string,
   ) => void;
   setIsShowUnMatchMake: (val: boolean) => void;
   setIsMaskClosable: (val: boolean) => void;
@@ -161,8 +161,6 @@ const HeaderVehicleOption: React.FC<Props> = ({
     };
 
     const regDateStr = vehicle.firstregistrationdate?.value;
-    const yearOfManufacture = vehicle.yearofmanufacture?.value;
-
     const vehicleAge = regDateStr
       ? dayjs().diff(dayjs(regDateStr), 'year')
       : null;
@@ -187,7 +185,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
       make,
       model,
       capacity,
-      yearOfManufacture,
+      regDateStr,
     );
   };
 
