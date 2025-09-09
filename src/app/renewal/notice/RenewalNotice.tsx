@@ -10,7 +10,7 @@ import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
-import { EDIT_RENEWAL, PRODUCT_TYPE } from '@/constants/general.constant';
+import { PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
