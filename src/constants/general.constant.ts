@@ -20,4 +20,8 @@ export const ECICS_URL = 'https://www.ecics.com/';
 
 export const EDIT_RENEWAL = 'edit_renewal';
 
+export const TAX = 1.09;
+
+export const GST_RATE = 0.09; // GST is always 9% of the subtotal
+
 export const PRODUCT_TYPE = 'product';

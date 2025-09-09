@@ -5,7 +5,7 @@ import React from 'react';
 
 import { PolicyDetails, RenewalInfo } from '@/libs/types/renewalQuote';
 import { formatToDDMMYYYY, parseCompactDate } from '@/libs/utils/date-utils';
-import { capitalizeWords } from '@/libs/utils/utils';
+import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import {
@@ -23,6 +23,7 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
+import { TAX } from '@/constants/general.constant';
 
 interface RenewalReviewFormProps {
   renewalContent?: {
@@ -419,20 +420,39 @@ const RenewalReviewForm = ({
         <div>
           <p className='mb-2 text-base font-semibold'>Add-ons</p>
           {renewal?.optional_benefits?.length ? (
-            renewal.optional_benefits.map((item) => (
-              <div
-                key={item.id}
-                className='mb-1 flex justify-between space-y-2'
-              >
-                <span className='text-sm'>
-                  {item.name}{' '}
-                  <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
-                    Included
+            <>
+              {renewal.optional_benefits.map((item) => (
+                <div
+                  key={item.id}
+                  className='mb-1 flex justify-between space-y-2'
+                >
+                  <span className='text-sm'>
+                    {item.name}{' '}
+                    <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
+                      Included
+                    </span>
                   </span>
-                </span>
-                <span className='text-sm'>SGD 0.00</span>
-              </div>
-            ))
+                  <span className='text-sm'>SGD 0.00</span>
+                </div>
+              ))}
+
+              {(renewal?.selected_add_on_optional_benefits ?? []).map(
+                (item) => {
+                  const price = item.subOption?.prem ?? item.prem ?? 0;
+                  return (
+                    <div
+                      key={`sel-${item.id}`}
+                      className='mb-1 flex items-center justify-between space-y-2'
+                    >
+                      <span className='text-sm'>{item.name}</span>
+                      <span className='text-sm'>
+                        {formatCurrency(price / TAX)}
+                      </span>
+                    </div>
+                  );
+                },
+              )}
+            </>
           ) : (
             <p className='text-sm text-gray-500'>No add-ons selected</p>
           )}

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   ArrowLeftOutlined,
   MailOutlined,
@@ -10,13 +9,17 @@ import {
 } from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Form } from 'antd';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { InputField } from '@/components/ui/form/inputfield';
+
 import IconEditDriver from '@/components/icons/EditDriver';
-import { useRouter } from 'next/navigation';
-import ModalVerify from './ModalVerify';
+import { InputField } from '@/components/ui/form/inputfield';
+
 import { ROUTES } from '@/constants/routes';
+
+import ModalVerify from './ModalVerify';
 
 const schema = z.object({
   name: z.string(),

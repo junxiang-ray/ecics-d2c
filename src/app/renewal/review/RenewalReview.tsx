@@ -23,7 +23,7 @@ const RenewalReview = () => {
   const router = useRouter();
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
-  const { mutate: savePolicy } = usePostSavePolicy();
+  const { mutate: savePolicy, isPending } = usePostSavePolicy();
 
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
@@ -44,8 +44,12 @@ const RenewalReview = () => {
     };
     const productType = PRODUCT_NAME.MOTOR;
     // Coverage Includes
-    const coverageIncludes =
-      renewal?.optional_benefits?.map((ob) => ob.name) ?? [];
+    const coverageIncludes = [
+      ...(renewal?.optional_benefits?.map((ob) => ob.name) ?? []),
+      ...(renewal?.selected_add_on_optional_benefits?.map(
+        (addon) => addon.name,
+      ) ?? []),
+    ];
 
     // Calculate totalPaid
     const gst = parseFloat(String(renewal?.renewalgst ?? 0));
@@ -147,6 +151,7 @@ const RenewalReview = () => {
           textButtonLeft='Back'
           onClickButtonLeft={handleBackPolicyRenewal}
           onClick={handleMakePayment}
+          loading={isPending}
         />
       </div>
     </>

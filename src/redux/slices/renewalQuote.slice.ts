@@ -17,9 +17,12 @@ const appSlice = createSlice({
     updateRenewalQuote(state, action: PayloadAction<Partial<RenewalQuote>>) {
       state.renewalQuote = { ...state.renewalQuote, ...action.payload };
     },
+    resetRenewalQuote(state) {
+      state.renewalQuote = {} as RenewalQuote;
+    },
   },
 });
 
-export const { updateRenewalQuote } = appSlice.actions;
+export const { updateRenewalQuote, resetRenewalQuote } = appSlice.actions;
 
 export default appSlice.reducer;
