@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
 import { SelectedAddon } from '@/libs/types/renewalQuote';
-import { formatToDDMMYYYY } from '@/libs/utils/date-utils';
+import { formatToDDMMYYYY, parseDMYToDate } from '@/libs/utils/date-utils';
 import { createPassphrase } from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
@@ -59,12 +59,8 @@ const RenewalDetail = () => {
       ? formatToDDMMYYYY(renewal.date_extracted)
       : '',
     scheme: renewal?.scheme ?? '',
-    renewal_start_date: renewal?.renewal_start_date
-      ? dayjs(renewal.renewal_start_date).toDate()
-      : null,
-    renewal_expiry_date: renewal?.renewal_end_date
-      ? dayjs(renewal.renewal_end_date, ['D-M-YYYY', 'DD-MM-YYYY']).toDate()
-      : null,
+    renewal_start_date: parseDMYToDate(renewal?.renewal_start_date),
+    renewal_expiry_date: parseDMYToDate(renewal?.renewal_end_date),
 
     // Renewal excess
     policy_excess_0: renewal?.renewal_excess?.policy_excess?.[0]?.value ?? '',

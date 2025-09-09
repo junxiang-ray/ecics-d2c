@@ -110,9 +110,9 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
 
       const payload = {
         ...renewalQuote.renewal_info,
-        renewal_expiry_date:
-          watchedValues.renewal_expiry_date ??
-          renewalQuote.renewal_info.renewal_expiry_date,
+        renewal_end_date: watchedValues.renewal_expiry_date
+          ? dayjs(watchedValues.renewal_expiry_date).format('DD-MM-YYYY')
+          : renewalQuote.renewal_info.renewal_end_date,
         insured_info: {
           ...renewalQuote.renewal_info.insured_info,
           gender:
@@ -152,6 +152,13 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
         dispatch(updateRenewalQuote({ renewal_info: payload }));
       }
     }, [watchedValues, selectedAddons, dispatch, renewalQuote?.renewal_info]);
+
+    // calculate selected count (add-ons card)
+    const includedCount =
+      renewalQuote?.renewal_info?.optional_benefits?.length ?? 0;
+    const availableCount =
+      includedCount + (renewalQuote?.add_on_optional_benefits?.length ?? 0);
+    const selectedCount = includedCount + (selectedAddons?.length ?? 0);
 
     // Expose submit to parent via ref
     useImperativeHandle(ref, () => ({
@@ -233,7 +240,7 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
             <InfoCard
               icon={<PlusSmallIcon className='text-sky-500' size={20} />}
               title='Add-ons'
-              subtitle={`${selectedAddons.length}/${renewalQuote.addons?.length || 0} add-ons selected`}
+              subtitle={`${selectedCount}/${availableCount} add-ons selected`}
               isPolicyRenewalScreen
             >
               <AddOnsContent

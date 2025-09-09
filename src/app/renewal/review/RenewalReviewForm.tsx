@@ -1,10 +1,15 @@
 'use client';
 
-import dayjs from 'dayjs';
 import React from 'react';
 
 import { PolicyDetails, RenewalInfo } from '@/libs/types/renewalQuote';
-import { formatToDDMMYYYY, parseCompactDate } from '@/libs/utils/date-utils';
+import {
+  formatToDDMMYYYY,
+  getCoverageDuration,
+  parseCompactDate,
+  parseDMYToDate,
+} from '@/libs/utils/date-utils';
+import dayjs from '@/libs/utils/dayjs';
 import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
@@ -93,18 +98,18 @@ const RenewalReviewForm = ({
       : 'N/A';
 
     // Calculate duration
-    const durationInYears = dayjs(renewal?.renewal_end_date, 'DD-MM-YYYY').diff(
-      dayjs(renewal?.renewal_start_date, 'DD-MM-YYYY'),
-      'year',
-    );
+    const coverageDuration =
+      renewal?.renewal_start_date && renewal?.renewal_end_date
+        ? getCoverageDuration(
+            dayjs(parseDMYToDate(renewal.renewal_start_date)),
+            dayjs(parseDMYToDate(renewal.renewal_end_date)),
+          )
+        : 'N/A';
 
     const fields = [
       { label: 'Renewal Start Date', value: startDate },
       { label: 'Renewal Expiry Date', value: endDate },
-      {
-        label: 'Coverage Duration',
-        value: durationInYears > 1 ? `${durationInYears} years` : '1 year',
-      },
+      { label: 'Coverage Duration', value: coverageDuration },
     ];
 
     return (
