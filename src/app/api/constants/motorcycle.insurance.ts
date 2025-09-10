@@ -33,27 +33,31 @@ export const MOTORCYCLE_INSURANCE = {
     },
   },
 
-  CODE_ADDL_DRIVERS: ['CAR_COM_AND', 'CAR_TPFT_AND', 'CAR_TPO_AND'],
+  CODE_ADDL_DRIVERS: [
+    'MOTORCYCLE_COMP_AND',
+    'MOTORCYCLE_TPFT_AND',
+    'MOTORCYCLE_TPO_AND',
+  ],
 
-  CODE_LOUS: ['CAR_COM_LOU'],
+  CODE_LOUS: ['MOTORCYCLE_COMP_LOU'],
 };
 
-export const PLAN_ADDON_CONFIG = {
+export const MOTORCYCLE_PLAN_ADDON_CONFIG = {
   [MOTORCYCLE_INSURANCE.PLAN_NAME.COMP]: {
-    andKey: 'CAR_COM_AND',
-    louKey: 'CAR_COM_LOU',
+    andKey: 'MOTORCYCLE_COMP_AND',
+    louKey: 'MOTORCYCLE_COMP_LOU',
     applyLouAndCc: true,
     setDefaults: false,
   },
   [MOTORCYCLE_INSURANCE.PLAN_NAME.TPFT]: {
-    andKey: 'CAR_TPFT_AND',
-    louKey: 'CAR_TPFT_LOU',
+    andKey: 'MOTORCYCLE_TPFT_AND',
+    louKey: 'MOTORCYCLE_TPFT_LOU',
     applyLouAndCc: true,
     setDefaults: true,
   },
   [MOTORCYCLE_INSURANCE.PLAN_NAME.TPO]: {
-    andKey: 'CAR_TPO_AND',
-    louKey: 'CAR_TPO_LOU',
+    andKey: 'MOTORCYCLE_TPO_AND',
+    louKey: 'MOTORCYCLE_TPO_LOU',
     applyLouAndCc: true,
     setDefaults: true,
   },

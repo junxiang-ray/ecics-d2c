@@ -182,6 +182,11 @@ export const getPlanGroupPrefix = (
       { keyword: 'Exclusive', prefix: 'EXCLU' },
       { keyword: 'Deluxe', prefix: 'DELU' },
     ],
+    [PRODUCT_NAME.MOTORCYCLE]: [
+      { keyword: 'Comprehensive', prefix: 'COMP' },
+      { keyword: 'Third Party, Fire & Theft', prefix: 'TPFT' },
+      { keyword: 'Third Party Only', prefix: 'TPO' },
+    ],
   };
 
   const matched = mapping[planType]?.find((item) =>

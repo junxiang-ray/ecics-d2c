@@ -1,4 +1,5 @@
 import { ADD_ON_VALUES, CAR_INSURANCE } from '../constants/car.insurance';
+import { MOTORCYCLE_INSURANCE } from '../constants/motorcycle.insurance';
 
 export function mappedPlanPremiums(quoteData: any): Record<string, number> {
   return {
@@ -271,9 +272,20 @@ export const addonForCarMapCOM: Record<string, string> = {
   CAR_COM_MDE: 'quick_proposal_me',
   CAR_COM_KRC: 'quick_proposal_krc',
 };
+export const addonForMotorcycleMapCOMP: Record<string, string> = {
+  MOTORCYCLE_COMP_BUN: 'quick_proposal_bun',
+  MOTORCYCLE_COMP_RSA: 'quick_proposal_rsa',
+  MOTORCYCLE_COMP_PAC: 'quick_proposal_pa',
+  MOTORCYCLE_COMP_MDE: 'quick_proposal_me',
+  MOTORCYCLE_COMP_KRC: 'quick_proposal_krc',
+};
 
 export const addonForCarMapTPFT: Record<string, string> = {
   CAR_TPFT_BUN: 'quick_proposal_bun',
+};
+
+export const addonForMotorcycleMapTPFT: Record<string, string> = {
+  MOTORCYCLE_TPFT_BUN: 'quick_proposal_bun',
 };
 
 export const addonForCarMapTPO: Record<string, string> = {
@@ -303,6 +315,17 @@ export function mappingAddonByPlan(
       return addonForCarMapTPO;
     case CAR_INSURANCE.PLAN_NAME.FNCD:
       return addonForCarMapFNCD;
+    default:
+      return {};
+  }
+}
+
+export function mappingMotorcycleAddonByPlan(
+  selected_plan: string,
+): Record<string, string> {
+  switch (selected_plan) {
+    case MOTORCYCLE_INSURANCE.PLAN_NAME.COMP:
+      return addonForMotorcycleMapCOMP;
     default:
       return {};
   }
