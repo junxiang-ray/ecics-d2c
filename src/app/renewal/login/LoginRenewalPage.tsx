@@ -25,8 +25,12 @@ import { EDIT_RENEWAL, PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
-import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import {
+  setTimeoutValue,
+  updateRenewalQuote,
+} from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch } from '@/redux/store';
+import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 
 const schema = z.object({
   veh_reg_no: z
@@ -61,10 +65,15 @@ const LoginRenewalPage = () => {
     isPending,
     error,
   } = useCheckPolicyRenewal();
+  const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
+    defaultValues: {
+      veh_reg_no: '',
+      passphrase: '',
+    },
   });
 
   const {
@@ -73,23 +82,38 @@ const LoginRenewalPage = () => {
   } = methods;
 
   const onSubmitSigninRenewal = (values: FormData) => {
-    checkPolicyRenewal({
-      veh_reg_no: values.veh_reg_no,
-      passphrase: values.passphrase,
-    })
-      .then((res) => {
-        if (res) {
-          if (res.edit_renewal) {
-            saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
-            saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
+    checkPolicyRenewal(
+      {
+        veh_reg_no: values.veh_reg_no,
+        passphrase: values.passphrase,
+      },
+      {
+        onSuccess: (res) => {
+          if (res) {
+            if (res.edit_renewal) {
+              saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
+              saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
+            }
+            dispatch(updateRenewalQuote(res));
+
+            getTimeoutRenewal(undefined, {
+              onSuccess: (timeoutRes) => {
+                const minutes =
+                  timeoutRes?.data?.attributes?.session_timeout_minutes ?? 0;
+                const timeoutMs = Number(minutes) * 60 * 1000;
+                dispatch(setTimeoutValue(timeoutMs));
+              },
+            });
           }
-          dispatch(updateRenewalQuote(res));
-        }
-        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-      })
-      .catch((err: any) => {
-        setMessageError(err?.response?.data?.message ?? 'Something went wrong');
-      });
+          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+        },
+        onError: (err: any) => {
+          setMessageError(
+            err?.response?.data?.message ?? 'Something went wrong',
+          );
+        },
+      },
+    );
   };
 
   return (
