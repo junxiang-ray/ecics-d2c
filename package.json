@@ -58,6 +58,7 @@
     "@svgr/webpack": "^8.1.0",
     "@types/file-saver": "^2.0.7",
     "@types/geoip-lite": "^1.4.4",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^20",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.17",

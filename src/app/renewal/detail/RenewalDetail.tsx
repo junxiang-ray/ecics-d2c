@@ -2,6 +2,7 @@
 
 import { Button } from 'antd';
 import dayjs from 'dayjs';
+import isEqual from 'lodash/isEqual';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
@@ -25,10 +26,12 @@ import { GST_RATE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
-import { useAppSelector } from '@/redux/store';
+import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const RenewalDetail = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const formRef = useRef<{ submit: () => void }>(null);
 
   const renewalQuote = useAppSelector(
@@ -108,7 +111,7 @@ const RenewalDetail = () => {
     named_drivers: (policy?.named_drivers ?? []).map((driver) => ({
       name: driver?.name ?? '',
       nric: driver?.icno ?? '',
-      dob: driver?.dob ? dayjs(driver.dob).format('YYYY-MM-DD') : '',
+      dob: driver?.dob,
       marital_status: MARITAL_STATUS_MAP[driver?.martial_status] ?? '',
       driv_exp: driver?.driv_exp ?? '',
       gender: driver?.gender === 'M' ? 'Male' : 'Female',
@@ -130,26 +133,39 @@ const RenewalDetail = () => {
     const renewalEndDate = value.renewal_expiry_date
       ? dayjs(value.renewal_expiry_date).format('DD-MM-YYYY')
       : '';
-    const email = value.email;
-    const contactNo = value.contact_no;
 
     const payload = {
       policy_id: policyId,
       proposal_id: proposalId,
       veh_reg_no: vehRegNo,
-      passphrase: passphrase,
+      passphrase,
       renewal_end_date: renewalEndDate,
-      email_address: email,
-      contact_no: contactNo,
+      email_address: value.email,
+      contact_no: value.contact_no,
       selected_add_on_optional_benefits: selectedAddons,
       finalize_renewal: false,
     };
+
     const productType = PRODUCT_NAME.MOTOR;
 
     postEditRenewal(
       { productType, payload },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          dispatch(
+            updateRenewalQuote({
+              ...data.data,
+              renewal_info: {
+                ...data.data.renewal_info,
+                insured_info: {
+                  ...data.data.renewal_info.insured_info,
+                  ...value,
+                },
+              },
+              selected_add_on_optional_benefits: selectedAddons,
+            }),
+          );
+
           router.push(ROUTES.RENEWAL.RENEWAL_REVIEW);
         },
         onError: (err) => {
