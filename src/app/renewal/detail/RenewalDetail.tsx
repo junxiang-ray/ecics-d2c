@@ -181,7 +181,8 @@ const RenewalDetail = () => {
   const addonsIncludedTotal = includedAddonsFee.reduce((sum, addon) => {
     return sum + Number(addon.prem ?? 0);
   }, 0);
-  const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
+
+  const selectedAddonsFee = selectedAddons ?? [];
   const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
     const subOptionsTotal =
       addon.sub_options?.reduce(
@@ -261,6 +262,7 @@ const RenewalDetail = () => {
         />
       </div>
       <ModalPremiumRenewal
+        selectedAddons={selectedAddons}
         isShowPopupPremium={isShowPopupPremium}
         setIsShowPopupPremium={setIsShowPopupPremium}
         subtotalFeeAfter={subtotalFeeAfter}
