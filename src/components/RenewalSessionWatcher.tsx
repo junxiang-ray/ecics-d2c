@@ -3,8 +3,10 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
-import { setExpired } from '@/redux/slices/idleWorker.slice';
-import { resetRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import {
+  resetRenewalQuote,
+  setExpired,
+} from '@/redux/slices/renewalQuote.slice';
 import { ROUTES } from '@/constants/routes';
 import { useThrottle } from '@/hook/useThrottle';
 
@@ -12,7 +14,7 @@ export function RenewalSessionWatcher() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const timeoutValue = useAppSelector(
-    (state: RootState) => state.idleWorker.timeoutValue,
+    (state: RootState) => state.renewalQuote.idleWorker.timeoutValue,
   );
 
   const workerRef = useRef<Worker | null>(null);

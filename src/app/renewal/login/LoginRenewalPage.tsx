@@ -26,11 +26,10 @@ import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import {
-  resetRenewalQuote,
+  setTimeoutValue,
   updateRenewalQuote,
 } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { setExpired, setTimeoutValue } from '@/redux/slices/idleWorker.slice';
+import { useAppDispatch } from '@/redux/store';
 import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 
 const schema = z.object({
@@ -50,9 +49,7 @@ type FormData = z.infer<typeof schema>;
 const LoginRenewalPage = () => {
   const [form] = Form.useForm();
   const router = useRouter();
-
   const dispatch = useAppDispatch();
-  const timeOut = useAppSelector((state) => state.idleWorker.timeoutValue);
 
   useEffect(() => {
     sessionStorage.clear();

@@ -16,13 +16,12 @@ import {
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
 import {
-  resetRenewalQuote,
+  setTimeoutValue,
   updateRenewalQuote,
 } from '@/redux/slices/renewalQuote.slice';
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { PRODUCT_NAME } from '../api/constants/product';
-import { setTimeoutValue } from '@/redux/slices/idleWorker.slice';
 import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 
 export default function RenewalPage() {
@@ -33,7 +32,7 @@ export default function RenewalPage() {
     (state: RootState) => state.renewalQuote?.renewalQuote,
   );
   const timeOut = useAppSelector(
-    (state: RootState) => state.idleWorker.timeoutValue,
+    (state: RootState) => state.renewalQuote.idleWorker.timeoutValue,
   );
 
   const [payload, setPayload] = useState({
