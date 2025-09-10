@@ -4,23 +4,32 @@ import React from 'react';
 import { RenewalQuote } from '@/libs/types/renewalQuote';
 import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
+import { GST_RATE } from '@/constants/general.constant';
+
 export interface PremiumBreakdownRenewalContentProps {
+  gst: number;
   tax: number;
   subtotalFeeAfter: number;
+  subtotal: number;
   renewalQuote?: RenewalQuote | null;
   onClose?: () => void;
+  hasAddonsPlus: boolean;
+  total: number;
 }
 
 const PremiumBreakdownRenewalContent = ({
+  gst,
   tax,
+  subtotal,
   subtotalFeeAfter,
   renewalQuote,
   onClose,
+  hasAddonsPlus,
+  total,
 }: PremiumBreakdownRenewalContentProps) => {
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
-  const gstAmount = subtotalFeeAfter * 0.09;
-  const total = (subtotalFeeAfter + gstAmount).toFixed(2);
+  const gstAmount = subtotalFeeAfter * GST_RATE;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -39,7 +48,7 @@ const PremiumBreakdownRenewalContent = ({
           <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
             <span>{capitalizeWords(policy?.coverage)}</span>
             <span className='font-semibold'>
-              {formatCurrency(Number(renewal?.renewalpremb4gst))}
+              {formatCurrency(Number(renewal?.renewalplanprem))}
             </span>
           </div>
         </div>
@@ -61,7 +70,9 @@ const PremiumBreakdownRenewalContent = ({
                       Included
                     </span>
                   </span>
-                  <span className='text-sm'>SGD 0.00</span>
+                  <span className='text-sm'>
+                    {formatCurrency(Number(item.prem))}
+                  </span>
                 </div>
               ))}
 
@@ -115,13 +126,19 @@ const PremiumBreakdownRenewalContent = ({
           <hr className='border-t border-gray-200' />
           <div className='mt-2 flex flex-row justify-between text-sm font-bold text-gray-700'>
             <p className='text-sm text-gray-700'>Subtotal</p>
-            <p>{formatCurrency(subtotalFeeAfter)}</p>
+            <p>
+              {hasAddonsPlus
+                ? formatCurrency(subtotalFeeAfter)
+                : formatCurrency(subtotal)}
+            </p>
           </div>
           <div className='flex flex-row justify-between text-sm font-normal text-gray-700'>
             <p>GST (9%)</p>
             <p className='font-semibold'>
               {' '}
-              {formatCurrency(Number(gstAmount))}
+              {hasAddonsPlus
+                ? formatCurrency(Number(gstAmount))
+                : formatCurrency(Number(gst))}
             </p>
           </div>
           <hr className='mt-4 border-t border-gray-200' />

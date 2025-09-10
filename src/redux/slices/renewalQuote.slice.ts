@@ -25,10 +25,7 @@ const renewalQuoteSlice = createSlice({
     setRenewalKey(state, action: PayloadAction<string>) {
       state.renewalKey = action.payload;
     },
-    resetRenewalQuote(state) {
-      state.renewalQuote = null;
-      state.renewalKey = null;
-    },
+    resetRenewalQuote: () => initialState,
   },
 });
 

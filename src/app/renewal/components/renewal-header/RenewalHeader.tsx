@@ -1,17 +1,19 @@
 'use client';
 
 import { ROUTES } from '@/constants/routes';
+import { resetRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch } from '@/redux/store';
 import {
   ArrowRightOutlined,
-  MenuOutlined,
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Avatar, Dropdown, MenuProps } from 'antd';
+import { MenuProps } from 'antd';
 import { useRouter } from 'next/navigation';
 
 const RenewalHeader = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === 'profile') {
@@ -20,6 +22,13 @@ const RenewalHeader = () => {
     if (key === 'settings') {
       router.push(ROUTES.RENEWAL.SETTINGS);
     }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    dispatch(resetRenewalQuote());
+    router.push(ROUTES.RENEWAL.LOGIN);
   };
 
   const menuItems: MenuProps['items'] = [
@@ -64,7 +73,7 @@ const RenewalHeader = () => {
       </Dropdown> */}
       <p
         className='cursor-pointer text-sm text-[#E7000B]'
-        onClick={() => router.push(ROUTES.RENEWAL.LOGIN)}
+        onClick={handleLogout}
       >
         Log out
       </p>

@@ -10,6 +10,7 @@ import { BackIcon } from '@/components/icons/renewal-icons';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalReviewForm from '@/app/renewal/review/RenewalReviewForm';
+import { GST_RATE, TAX } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
@@ -24,7 +25,7 @@ const RenewalReview = () => {
   const dispatch = useAppDispatch();
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
-  const { mutate: savePolicy } = usePostSavePolicy();
+  const { mutate: savePolicy, isPending } = usePostSavePolicy();
 
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
@@ -45,19 +46,34 @@ const RenewalReview = () => {
     };
     const productType = PRODUCT_NAME.MOTOR;
     // Coverage Includes
-    const coverageIncludes =
-      renewal?.optional_benefits?.map((ob) => ob.name) ?? [];
+    const coverageIncludes = [
+      ...(renewal?.optional_benefits?.map((ob) => ob.name) ?? []),
+      ...(renewal?.selected_add_on_optional_benefits?.map(
+        (addon) => addon.name,
+      ) ?? []),
+    ];
 
     // Calculate totalPaid
     const gst = parseFloat(String(renewal?.renewalgst ?? 0));
     const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
+    const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+
+    const includedAddonsFee = renewal?.optional_benefits ?? [];
+    const addonsincludedTotal = includedAddonsFee.reduce((sum, addon) => {
+      return sum + Number(addon.prem ?? 0);
+    }, 0);
     const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-    const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
+    const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
       return sum + Number(addon.prem ?? 0);
     }, 0);
 
-    const subtotalFeeAfter = subtotal + addonsTotal;
-    const totalPaid = (subtotalFeeAfter + gst).toFixed(2);
+    const subtotalFeeAfter =
+      planFee + addonsincludedTotal + addonsSelectedTotal / TAX;
+    const hasAddonsPlus = addonsSelectedTotal > 0;
+    const gstAmount = subtotalFeeAfter * GST_RATE;
+    const totalPaid = hasAddonsPlus
+      ? subtotalFeeAfter + gstAmount
+      : subtotal + gst;
     const generatedKey = uuid();
 
     postPayment(
@@ -148,6 +164,7 @@ const RenewalReview = () => {
           textButtonLeft='Back'
           onClickButtonLeft={handleBackPolicyRenewal}
           onClick={handleMakePayment}
+          loading={isPending}
         />
       </div>
     </>

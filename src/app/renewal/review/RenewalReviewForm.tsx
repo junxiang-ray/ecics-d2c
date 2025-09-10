@@ -1,11 +1,16 @@
 'use client';
 
-import dayjs from 'dayjs';
 import React from 'react';
 
 import { PolicyDetails, RenewalInfo } from '@/libs/types/renewalQuote';
-import { formatToDDMMYYYY, parseCompactDate } from '@/libs/utils/date-utils';
-import { capitalizeWords } from '@/libs/utils/utils';
+import {
+  formatToDDMMYYYY,
+  getCoverageDuration,
+  parseCompactDate,
+  parseDMYToDate,
+} from '@/libs/utils/date-utils';
+import dayjs from '@/libs/utils/dayjs';
+import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import {
@@ -23,6 +28,7 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
+import { GST_RATE, TAX } from '@/constants/general.constant';
 
 interface RenewalReviewFormProps {
   renewalContent?: {
@@ -92,18 +98,18 @@ const RenewalReviewForm = ({
       : 'N/A';
 
     // Calculate duration
-    const durationInYears = dayjs(renewal?.renewal_end_date, 'DD-MM-YYYY').diff(
-      dayjs(renewal?.renewal_start_date, 'DD-MM-YYYY'),
-      'year',
-    );
+    const coverageDuration =
+      renewal?.renewal_start_date && renewal?.renewal_end_date
+        ? getCoverageDuration(
+            dayjs(parseDMYToDate(renewal.renewal_start_date)),
+            dayjs(parseDMYToDate(renewal.renewal_end_date)),
+          )
+        : 'N/A';
 
     const fields = [
       { label: 'Renewal Start Date', value: startDate },
       { label: 'Renewal Expiry Date', value: endDate },
-      {
-        label: 'Coverage Duration',
-        value: durationInYears > 1 ? `${durationInYears} years` : '1 year',
-      },
+      { label: 'Coverage Duration', value: coverageDuration },
     ];
 
     return (
@@ -404,7 +410,21 @@ const RenewalReviewForm = ({
   const PremiumSummaryContent = () => {
     const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
     const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-    const total = (subtotal + gst).toFixed(2);
+    const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+    const includedAddonsFee = renewal?.optional_benefits ?? [];
+    const addonsincludedTotal = includedAddonsFee.reduce((sum, addon) => {
+      return sum + Number(addon.prem ?? 0);
+    }, 0);
+    const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
+    const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
+      return sum + Number(addon.prem ?? 0);
+    }, 0);
+
+    const subtotalFeeAfter =
+      planFee + addonsincludedTotal + addonsSelectedTotal / TAX;
+    const hasAddonsPlus = addonsSelectedTotal > 0;
+    const gstAmount = subtotalFeeAfter * GST_RATE;
+    const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
 
     return (
       <div className='space-y-4'>
@@ -412,27 +432,48 @@ const RenewalReviewForm = ({
         <div className='text-base font-semibold'>Plan</div>
         <div className='flex items-center justify-between text-sm font-normal'>
           <span>{capitalizeWords(policy?.coverage)}</span>
-          <span>SGD {renewal?.renewalpremb4gst}</span>
+          <span>{formatCurrency(Number(renewal?.renewalplanprem))}</span>
         </div>
 
         {/* Add-ons */}
         <div>
           <p className='mb-2 text-base font-semibold'>Add-ons</p>
           {renewal?.optional_benefits?.length ? (
-            renewal.optional_benefits.map((item) => (
-              <div
-                key={item.id}
-                className='mb-1 flex justify-between space-y-2'
-              >
-                <span className='text-sm'>
-                  {item.name}{' '}
-                  <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
-                    Included
+            <>
+              {renewal.optional_benefits.map((item) => (
+                <div
+                  key={item.id}
+                  className='mb-1 flex justify-between space-y-2'
+                >
+                  <span className='text-sm'>
+                    {item.name}{' '}
+                    <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
+                      Included
+                    </span>
                   </span>
-                </span>
-                <span className='text-sm'>SGD 0.00</span>
-              </div>
-            ))
+                  <span className='text-sm'>
+                    {formatCurrency(Number(item.prem))}
+                  </span>
+                </div>
+              ))}
+
+              {(renewal?.selected_add_on_optional_benefits ?? []).map(
+                (item) => {
+                  const price = item.subOption?.prem ?? item.prem ?? 0;
+                  return (
+                    <div
+                      key={`sel-${item.id}`}
+                      className='mb-1 flex items-center justify-between space-y-2'
+                    >
+                      <span className='text-sm'>{item.name}</span>
+                      <span className='text-sm'>
+                        {formatCurrency(price / TAX)}
+                      </span>
+                    </div>
+                  );
+                },
+              )}
+            </>
           ) : (
             <p className='text-sm text-gray-500'>No add-ons selected</p>
           )}
@@ -458,23 +499,31 @@ const RenewalReviewForm = ({
               </div>
             ))}
           </div>
-        ) : (
-          <p className='italic text-gray-400'>No named drivers</p>
-        )}
+        ) : null}
 
         {/* Total */}
         <div className='space-y-1 border-t pt-3'>
           <div className='flex justify-between'>
             <span className='text-base font-semibold'>Subtotal</span>
-            <span className='font-bold'>SGD {renewal?.renewalpremwgst}</span>
+            <span className='font-bold'>
+              {hasAddonsPlus
+                ? formatCurrency(subtotalFeeAfter)
+                : formatCurrency(subtotal)}
+            </span>
           </div>
           <div className='flex justify-between pb-3 text-sm'>
             <span>GST (9%)</span>
-            <span className='font-medium'>SGD {renewal?.renewalgst}</span>
+            <span className='font-medium'>
+              {hasAddonsPlus
+                ? formatCurrency(Number(gstAmount))
+                : formatCurrency(Number(gst))}
+            </span>
           </div>
           <div className='flex justify-between border-t pt-3 text-lg font-bold'>
             <span>Net Premium (Total)</span>
-            <span className='text-blue-600'>SGD {total}</span>
+            <span className='text-blue-600'>
+              {formatCurrency(Number(total))}
+            </span>
           </div>
         </div>
       </div>

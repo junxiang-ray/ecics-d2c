@@ -9,7 +9,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Form } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -46,6 +46,11 @@ const LoginRenewalPage = () => {
   const [form] = Form.useForm();
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  }, []);
 
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');

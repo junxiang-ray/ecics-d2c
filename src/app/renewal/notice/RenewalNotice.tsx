@@ -24,7 +24,7 @@ const RenewalNotice = () => {
   const dispatch = useAppDispatch();
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
-  const { mutate: savePolicy } = usePostSavePolicy();
+  const { mutate: savePolicy, isPending } = usePostSavePolicy();
 
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
@@ -154,6 +154,7 @@ const RenewalNotice = () => {
         <PricingSummaryRenewal
           onClickButtonLeft={handleEditRenewal}
           onClick={handleMakePayment}
+          loading={isPending}
         />
       </div>
     </>

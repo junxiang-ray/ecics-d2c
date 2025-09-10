@@ -42,14 +42,14 @@ export const useRequestSignInSingpass = (
   });
 };
 
-export const usePostUserInfoRenewal = ({
-  payload,
-  productType,
-}: {
-  payload: UserInfoPayload;
-  productType: ProductTypeWeb;
-}) => {
-  const postUserInfoRenewal = async () => {
+export const usePostUserInfoRenewal = () => {
+  const postUserInfoRenewal = async ({
+    payload,
+    productType,
+  }: {
+    payload: UserInfoPayload;
+    productType: ProductTypeWeb;
+  }) => {
     const res = await auth.postUserInfoRenewal({ payload, productType });
     saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data.data) });
     saveToSessionStorage({
@@ -57,13 +57,8 @@ export const usePostUserInfoRenewal = ({
     });
     return res.data;
   };
-  return useQuery({
-    queryFn: postUserInfoRenewal,
-    queryKey: ['user-info-renewal', payload],
-    enabled:
-      !!payload.code_verifier &&
-      !!payload.nonce &&
-      !!payload.state &&
-      !!payload?.code,
+  return useMutation({
+    mutationFn: postUserInfoRenewal,
+    mutationKey: ['user-info-renewal'],
   });
 };
