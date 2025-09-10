@@ -83,33 +83,36 @@ export default function RenewalPage() {
 
   useEffect(() => {
     if (renewalQuote?.uinfin?.value) {
-      verifyRetrieveRenewal({
-        nric: renewalQuote?.uinfin?.value,
-      }).then((res) => {
-        if (res) {
-          const worker = new Worker(
-            new URL('@/web-worker/idleWorker.ts', import.meta.url),
-            { type: 'module' },
-          );
+      verifyRetrieveRenewal(
+        { nric: renewalQuote?.uinfin?.value },
+        {
+          onSuccess: (res) => {
+            if (res) {
+              const worker = new Worker(
+                new URL('@/web-worker/idleWorker.ts', import.meta.url),
+                { type: 'module' },
+              );
 
-          worker.postMessage({ type: 'SET_TIMEOUT', payload: timeOut });
-          worker.postMessage({ type: 'START' });
+              worker.postMessage({ type: 'SET_TIMEOUT', payload: timeOut });
+              worker.postMessage({ type: 'START' });
 
-          worker.onmessage = (e) => {
-            if (e.data?.type === 'TIMEOUT') {
-              dispatch(setExpired(true));
-              sessionStorage.clear();
-              localStorage.clear();
-              dispatch(resetRenewalQuote());
-              router.push(ROUTES.RENEWAL.LOGIN);
+              worker.onmessage = (e) => {
+                if (e.data?.type === 'TIMEOUT') {
+                  dispatch(setExpired(true));
+                  sessionStorage.clear();
+                  localStorage.clear();
+                  dispatch(resetRenewalQuote());
+                  router.push(ROUTES.RENEWAL.LOGIN);
+                }
+              };
+
+              return () => worker.terminate();
             }
-          };
-
-          return () => worker.terminate();
-        }
-      });
+          },
+        },
+      );
     }
-  }, [renewalQuote?.uinfin?.value]);
+  }, [renewalQuote?.uinfin?.value, timeOut]);
 
   useEffect(() => {
     if (vehData) {

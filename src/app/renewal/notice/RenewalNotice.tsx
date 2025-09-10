@@ -23,7 +23,6 @@ const RenewalNotice = () => {
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
   const { mutate: savePolicy, isPending } = usePostSavePolicy();
-
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
