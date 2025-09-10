@@ -98,60 +98,8 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
 
     const {
       formState: { errors },
-      watch,
       handleSubmit,
     } = methods;
-
-    const watchedValues = watch();
-
-    // Sync form changes to redux
-    useEffect(() => {
-      if (!renewalQuote?.renewal_info) return;
-
-      const payload = {
-        ...renewalQuote.renewal_info,
-        renewal_end_date: watchedValues.renewal_expiry_date
-          ? dayjs(watchedValues.renewal_expiry_date).format('DD-MM-YYYY')
-          : renewalQuote.renewal_info.renewal_end_date,
-        insured_info: {
-          ...renewalQuote.renewal_info.insured_info,
-          gender:
-            watchedValues.gender ??
-            renewalQuote.renewal_info.insured_info.gender,
-          marital_status:
-            watchedValues.marital_status ??
-            renewalQuote.renewal_info.insured_info.marital_status,
-          email:
-            watchedValues.email ?? renewalQuote.renewal_info.insured_info.email,
-          contact_no:
-            watchedValues.contact_no ??
-            renewalQuote.renewal_info.insured_info.contact_no,
-          address: {
-            ...renewalQuote.renewal_info.insured_info.address,
-            address_line1:
-              watchedValues.address_line1 ??
-              renewalQuote.renewal_info.insured_info.address.address_line1,
-            address_line2:
-              watchedValues.address_line2 ??
-              renewalQuote.renewal_info.insured_info.address.address_line2,
-            address_line3:
-              watchedValues.address_line3 ??
-              renewalQuote.renewal_info.insured_info.address.address_line3,
-            postal:
-              watchedValues.postal ??
-              renewalQuote.renewal_info.insured_info.address.postal,
-          },
-        },
-        selected_add_on_optional_benefits: selectedAddons,
-      };
-
-      const isEqual =
-        JSON.stringify(payload) === JSON.stringify(renewalQuote.renewal_info);
-
-      if (!isEqual) {
-        dispatch(updateRenewalQuote({ renewal_info: payload }));
-      }
-    }, [watchedValues, selectedAddons, dispatch, renewalQuote?.renewal_info]);
 
     // calculate selected count (add-ons card)
     const includedCount =

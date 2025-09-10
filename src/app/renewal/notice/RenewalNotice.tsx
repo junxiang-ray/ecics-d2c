@@ -70,10 +70,11 @@ const RenewalNotice = () => {
               policy_summary: {
                 policy_type: sessionStorage.getItem(PRODUCT_TYPE),
                 policy_start_date: renewal?.renewal_start_date
-                  ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
+                  ? dayjs(renewal.renewal_start_date).format('DD/MM/YYYY')
                   : undefined,
+
                 policy_end_date: renewal?.renewal_end_date
-                  ? dayjs(renewal.renewal_end_date).format('D-M-YYYY')
+                  ? dayjs(renewal.renewal_end_date).format('DD/MM/YYYY')
                   : undefined,
                 veh_reg_no: policy?.vehicle_details?.reg_no,
               },
