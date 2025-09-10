@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 import { setExpired } from '@/redux/slices/idleWorker.slice';
 import { resetRenewalQuote } from '@/redux/slices/renewalQuote.slice';
 import { ROUTES } from '@/constants/routes';
+import { useDebounceCallback } from '@/hook/useDebounceRenewal';
 
 export function RenewalSessionWatcher() {
   const dispatch = useAppDispatch();
@@ -13,6 +14,13 @@ export function RenewalSessionWatcher() {
   const timeoutValue = useAppSelector(
     (state: RootState) => state.idleWorker.timeoutValue,
   );
+
+  const workerRef = useRef<Worker | null>(null);
+
+  const resetTimer = useDebounceCallback(() => {
+    workerRef.current?.postMessage({ type: 'RESET' });
+  }, 1000);
+
   useEffect(() => {
     if (!timeoutValue) return;
 
@@ -20,9 +28,11 @@ export function RenewalSessionWatcher() {
       new URL('@/web-worker/idleWorker.ts', import.meta.url),
       { type: 'module' },
     );
+    workerRef.current = worker;
 
     worker.postMessage({ type: 'SET_TIMEOUT', payload: timeoutValue });
     worker.postMessage({ type: 'START' });
+
     const idleEvents = [
       'load',
       'mousemove',
@@ -31,13 +41,11 @@ export function RenewalSessionWatcher() {
       'scroll',
       'keypress',
     ];
-    const resetTimer = () => {
-      worker.postMessage({ type: 'RESET' });
-    };
 
     idleEvents.forEach((event) =>
       window.addEventListener(event, resetTimer, true),
     );
+
     worker.onmessage = (e) => {
       if (e.data?.type === 'TIMEOUT') {
         dispatch(setExpired(true));
@@ -51,11 +59,12 @@ export function RenewalSessionWatcher() {
 
     return () => {
       worker.terminate();
+      workerRef.current = null;
       idleEvents.forEach((event) =>
         window.removeEventListener(event, resetTimer, true),
       );
     };
-  }, [timeoutValue]);
+  }, [timeoutValue, resetTimer]);
 
   return null;
 }
