@@ -48,7 +48,7 @@ const PremiumBreakdownRenewalContent = ({
           <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
             <span>{capitalizeWords(policy?.coverage)}</span>
             <span className='font-semibold'>
-              {formatCurrency(Number(renewal?.renewalpremb4gst))}
+              {formatCurrency(Number(renewal?.renewalplanprem))}
             </span>
           </div>
         </div>
@@ -70,7 +70,9 @@ const PremiumBreakdownRenewalContent = ({
                       Included
                     </span>
                   </span>
-                  <span className='text-sm'>SGD 0.00</span>
+                  <span className='text-sm'>
+                    {formatCurrency(Number(item.prem))}
+                  </span>
                 </div>
               ))}
 

@@ -71,6 +71,7 @@ interface OptionalBenefit {
   description?: string;
   code?: string;
   sub_option?: string;
+  prem?: string;
 }
 
 interface SubOption {
@@ -96,6 +97,7 @@ export interface RenewalInfo {
   scheme: string;
   renewal_excess: RenewalExcess;
   optional_benefits: OptionalBenefit[];
+  renewalplanprem: string;
   renewalpremb4gst: string;
   renewalgst: string;
   renewalpremwgst: string;
