@@ -62,7 +62,7 @@ const LoginRenewalPage = () => {
   useEffect(() => {
     getTimeoutRenewal(undefined, {
       onSuccess: (res) => {
-        const minutes = res?.data?.attributes?.session_timeout_minutes;
+        const minutes = res?.data?.attributes?.session_timeout_minutes ?? 0;
         const timeoutMs = Number(minutes) * 60 * 1000;
         dispatch(setTimeoutValue(timeoutMs));
       },

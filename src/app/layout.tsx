@@ -8,6 +8,7 @@ import '@/styles/app.scss';
 import { NavigationConfirmProvider } from '@/providers/NavigationConfirmProvider';
 import { ReactQueryProvider } from '@/providers/react-query';
 import { ReduxProvider } from '@/providers/redux';
+import { GlobalSessionWatcher } from '@/components/RenewalSessionWatcher';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -73,6 +74,7 @@ export default function RootLayout({
             <ReactQueryProvider>
               <AntdRegistry>
                 {/*<NavigationConfirmProvider />*/}
+                <GlobalSessionWatcher />
                 {children}
               </AntdRegistry>
             </ReactQueryProvider>

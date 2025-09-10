@@ -2,12 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IdleState {
   isExpired: boolean;
-  timeoutValue: number | null;
+  timeoutValue: number;
 }
 
 const initialState: IdleState = {
   isExpired: false,
-  timeoutValue: null,
+  timeoutValue: 0,
 };
 
 const appSlice = createSlice({
