@@ -23,13 +23,7 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
         const subOption = addon.sub_options?.find((s) => s.id === subOptionId);
 
         return {
-          id: addon.id,
           name: addon.name,
-          prem: subOption
-            ? Number(subOption.prem)
-            : addon.prem !== undefined
-              ? Number(addon.prem)
-              : undefined,
           subOption: subOption
             ? {
                 id: subOption.id,
