@@ -112,6 +112,7 @@ export interface RenewalInfo {
   renewalgst: string;
   renewalpremwgst: string;
   selected_add_on_optional_benefits?: SelectedAddon[];
+  selectedAddons?: SelectedAddon[];
   coverage?: string;
 }
 
