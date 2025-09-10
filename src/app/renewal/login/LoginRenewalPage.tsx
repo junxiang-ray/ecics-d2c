@@ -25,8 +25,13 @@ import { EDIT_RENEWAL } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
-import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store';
+import {
+  resetRenewalQuote,
+  updateRenewalQuote,
+} from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { setExpired, setTimeoutValue } from '@/redux/slices/idleWorker.slice';
+import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 
 const schema = z.object({
   veh_reg_no: z
@@ -45,11 +50,23 @@ type FormData = z.infer<typeof schema>;
 const LoginRenewalPage = () => {
   const [form] = Form.useForm();
   const router = useRouter();
+
   const dispatch = useAppDispatch();
+  const timeOut = useAppSelector((state) => state.idleWorker.timeoutValue);
 
   useEffect(() => {
     sessionStorage.clear();
     localStorage.clear();
+  }, []);
+
+  useEffect(() => {
+    getTimeoutRenewal(undefined, {
+      onSuccess: (res) => {
+        const minutes = res?.data?.attributes?.session_timeout_minutes;
+        const timeoutMs = Number(minutes) * 60 * 1000;
+        dispatch(setTimeoutValue(timeoutMs));
+      },
+    });
   }, []);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +78,7 @@ const LoginRenewalPage = () => {
     isPending,
     error,
   } = useCheckPolicyRenewal();
+  const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -83,6 +101,24 @@ const LoginRenewalPage = () => {
             saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
           }
           dispatch(updateRenewalQuote(res));
+          if (timeOut) {
+            const worker = new Worker(
+              new URL('@/web-worker/idleWorker.ts', import.meta.url),
+              { type: 'module' },
+            );
+            worker.postMessage({ type: 'SET_TIMEOUT', payload: timeOut });
+            worker.postMessage({ type: 'START' });
+
+            worker.onmessage = (e) => {
+              if (e.data?.type === 'TIMEOUT') {
+                dispatch(setExpired(true));
+                sessionStorage.clear();
+                localStorage.clear();
+                dispatch(resetRenewalQuote());
+                router.push(ROUTES.RENEWAL.LOGIN);
+              }
+            };
+          }
         }
         router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
       })

@@ -48,3 +48,5 @@ export const API_RENEWAL_PROCESS_PAYMENT = (productType: ProductTypeWeb) =>
 
 export const API_POST_SAVE_POLICY = (productType: ProductTypeWeb) =>
   `/renewal/${productType}/save-policy`;
+
+export const API_GET_SESSION_TIMEOUT = '/renewal-section-timeout';

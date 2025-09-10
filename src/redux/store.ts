@@ -7,6 +7,7 @@ import maidQuoteReducer from './slices/maidQuote.slice';
 import quoteReducer from './slices/quote.slice';
 import renewalQuoteReducer from './slices/renewalQuote.slice';
 import userInfoCarReducer from './slices/userInfoCar.slice';
+import idleWorkerReducer from './slices/idleWorker.slice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     quote: quoteReducer,
     renewalQuote: renewalQuoteReducer,
     userInfoCar: userInfoCarReducer,
+    idleWorker: idleWorkerReducer,
   },
 });
 

@@ -3,9 +3,7 @@
 import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
 import { createPassphrase } from '@/libs/utils/utils';
-
 import Announcements from '@/app/renewal/components/announcements/Announcements';
 import PoliciesPendingRenewal from '@/app/renewal/components/policies-renewal/PoliciesPendingRenewal';
 import Promotions from '@/app/renewal/components/promotions/Promotions';
@@ -17,10 +15,14 @@ import {
   useCheckPolicyRenewal,
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
-import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import {
+  resetRenewalQuote,
+  updateRenewalQuote,
+} from '@/redux/slices/renewalQuote.slice';
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { PRODUCT_NAME } from '../api/constants/product';
+import { setExpired } from '@/redux/slices/idleWorker.slice';
 
 export default function RenewalPage() {
   const router = useRouter();
@@ -28,6 +30,9 @@ export default function RenewalPage() {
 
   const renewalQuote = useAppSelector(
     (state: RootState) => state.renewalQuote?.renewalQuote,
+  );
+  const timeOut = useAppSelector(
+    (state: RootState) => state.idleWorker.timeoutValue,
   );
 
   const [payload, setPayload] = useState({
@@ -80,6 +85,28 @@ export default function RenewalPage() {
     if (renewalQuote?.uinfin?.value) {
       verifyRetrieveRenewal({
         nric: renewalQuote?.uinfin?.value,
+      }).then((res) => {
+        if (res) {
+          const worker = new Worker(
+            new URL('@/web-worker/idleWorker.ts', import.meta.url),
+            { type: 'module' },
+          );
+
+          worker.postMessage({ type: 'SET_TIMEOUT', payload: timeOut });
+          worker.postMessage({ type: 'START' });
+
+          worker.onmessage = (e) => {
+            if (e.data?.type === 'TIMEOUT') {
+              dispatch(setExpired(true));
+              sessionStorage.clear();
+              localStorage.clear();
+              dispatch(resetRenewalQuote());
+              router.push(ROUTES.RENEWAL.LOGIN);
+            }
+          };
+
+          return () => worker.terminate();
+        }
       });
     }
   }, [renewalQuote?.uinfin?.value]);
