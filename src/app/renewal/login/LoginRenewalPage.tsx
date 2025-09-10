@@ -73,6 +73,10 @@ const LoginRenewalPage = () => {
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
+    defaultValues: {
+      veh_reg_no: '',
+      passphrase: '',
+    },
   });
 
   const {

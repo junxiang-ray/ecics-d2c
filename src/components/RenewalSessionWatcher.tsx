@@ -6,7 +6,7 @@ import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 import { setExpired } from '@/redux/slices/idleWorker.slice';
 import { resetRenewalQuote } from '@/redux/slices/renewalQuote.slice';
 import { ROUTES } from '@/constants/routes';
-import { useDebounceCallback } from '@/hook/useDebounceRenewal';
+import { useThrottle } from '@/hook/useThrottle';
 
 export function RenewalSessionWatcher() {
   const dispatch = useAppDispatch();
@@ -17,9 +17,9 @@ export function RenewalSessionWatcher() {
 
   const workerRef = useRef<Worker | null>(null);
 
-  const resetTimer = useDebounceCallback(() => {
+  const resetTimer = useThrottle(() => {
     workerRef.current?.postMessage({ type: 'RESET' });
-  }, 1000);
+  }, 3000);
 
   useEffect(() => {
     if (!timeoutValue) return;
@@ -64,7 +64,7 @@ export function RenewalSessionWatcher() {
         window.removeEventListener(event, resetTimer, true),
       );
     };
-  }, [timeoutValue, resetTimer]);
+  }, [timeoutValue]);
 
   return null;
 }
