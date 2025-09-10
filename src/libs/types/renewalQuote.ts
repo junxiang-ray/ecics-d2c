@@ -122,10 +122,12 @@ export interface RenewalQuote {
 }
 
 export interface SelectedAddon {
+  id: number;
   name: string;
-  subOption?: {
+  prem?: number;
+  sub_options: {
     id: number;
     name: string;
     prem: number;
-  };
+  }[];
 }
