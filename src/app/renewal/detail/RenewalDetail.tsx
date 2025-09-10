@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
 import { SelectedAddon } from '@/libs/types/renewalQuote';
-import { formatToDDMMYYYY } from '@/libs/utils/date-utils';
+import { formatToDDMMYYYY, parseDMYToDate } from '@/libs/utils/date-utils';
 import { createPassphrase } from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
@@ -21,7 +21,7 @@ import RenewalDetailForm, {
   RenewalFormData,
 } from '@/app/renewal/detail/RenewalDetailForm';
 import ModalPremiumRenewal from '@/app/renewal/modal/ModalPremiumRenewal';
-import { GST_RATE, TAX } from '@/constants/general.constant';
+import { GST_RATE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
@@ -59,12 +59,8 @@ const RenewalDetail = () => {
       ? formatToDDMMYYYY(renewal.date_extracted)
       : '',
     scheme: renewal?.scheme ?? '',
-    renewal_start_date: renewal?.renewal_start_date
-      ? dayjs(renewal.renewal_start_date).toDate()
-      : null,
-    renewal_expiry_date: renewal?.renewal_end_date
-      ? dayjs(renewal.renewal_end_date, ['D-M-YYYY', 'DD-MM-YYYY']).toDate()
-      : null,
+    renewal_start_date: parseDMYToDate(renewal?.renewal_start_date),
+    renewal_expiry_date: parseDMYToDate(renewal?.renewal_end_date),
 
     // Renewal excess
     policy_excess_0: renewal?.renewal_excess?.policy_excess?.[0]?.value ?? '',
@@ -163,17 +159,34 @@ const RenewalDetail = () => {
     );
   };
   const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-  const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
-  const planFee = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
-  const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-  const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
+  const subtotal = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
+  const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+
+  const includedAddonsFee = renewal?.optional_benefits ?? [];
+  const addonsIncludedTotal = includedAddonsFee.reduce((sum, addon) => {
     return sum + Number(addon.prem ?? 0);
   }, 0);
+  const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
+  const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
+    const subOptionsTotal =
+      addon.sub_options?.reduce(
+        (subSum, sub) => subSum + Number(sub.prem ?? 0),
+        0,
+      ) ?? 0;
 
-  const addonsTotalAfterTax = addonsTotal / TAX;
-  const subtotalFeeAfter = planFee + addonsTotalAfterTax;
+    const premValue = Number(addon.prem ?? 0) + subOptionsTotal;
+    return sum + premValue;
+  }, 0);
 
-  const hasAddonsPlus = addonsTotalAfterTax > 0;
+  const nameDriversTotalFee =
+    (policy?.named_drivers?.length ?? 0) > 1
+      ? (policy.named_drivers.length - 1) * 60
+      : 0;
+
+  const subtotalFeeAfter =
+    planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
+
+  const hasAddonsPlus = addonsSelectedTotal > 0;
   const gstAmount = subtotalFeeAfter * GST_RATE;
   const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
 
@@ -237,7 +250,6 @@ const RenewalDetail = () => {
         setIsShowPopupPremium={setIsShowPopupPremium}
         subtotalFeeAfter={subtotalFeeAfter}
         renewalQuote={renewalQuote}
-        tax={TAX}
         gst={gst}
         subtotal={subtotal}
         total={total}

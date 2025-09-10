@@ -8,7 +8,6 @@ import { GST_RATE } from '@/constants/general.constant';
 
 export interface PremiumBreakdownRenewalContentProps {
   gst: number;
-  tax: number;
   subtotalFeeAfter: number;
   subtotal: number;
   renewalQuote?: RenewalQuote;
@@ -19,7 +18,6 @@ export interface PremiumBreakdownRenewalContentProps {
 
 const PremiumBreakdownRenewalContent = ({
   gst,
-  tax,
   subtotal,
   subtotalFeeAfter,
   renewalQuote,
@@ -48,7 +46,7 @@ const PremiumBreakdownRenewalContent = ({
           <div className='flex flex-row justify-between text-sm font-normal text-[#303030]'>
             <span>{capitalizeWords(policy?.coverage)}</span>
             <span className='font-semibold'>
-              {formatCurrency(Number(renewal?.renewalpremb4gst))}
+              {formatCurrency(Number(renewal?.renewalplanprem))}
             </span>
           </div>
         </div>
@@ -70,23 +68,30 @@ const PremiumBreakdownRenewalContent = ({
                       Included
                     </span>
                   </span>
-                  <span className='text-sm'>SGD 0.00</span>
+                  <span className='text-sm'>
+                    {formatCurrency(Number(item.prem))}
+                  </span>
                 </div>
               ))}
 
               {/* Selected add-ons */}
               {(renewal?.selected_add_on_optional_benefits ?? []).map(
                 (item) => {
-                  const price = item.subOption?.prem ?? item.prem ?? 0;
+                  const subOptionsTotal =
+                    item.sub_options?.reduce(
+                      (sum, sub) => sum + Number(sub.prem ?? 0),
+                      0,
+                    ) ?? 0;
+
+                  const price = Number(item.prem ?? 0) + subOptionsTotal;
+
                   return (
                     <div
                       key={`sel-${item.id}`}
                       className='mb-1 flex items-center justify-between space-y-2'
                     >
-                      <span className='text-sm'>{item.name} </span>
-                      <span className='text-sm'>
-                        {formatCurrency(price / tax)}
-                      </span>
+                      <span className='text-sm'>{item.name}</span>
+                      <span className='text-sm'>{formatCurrency(price)}</span>
                     </div>
                   );
                 },

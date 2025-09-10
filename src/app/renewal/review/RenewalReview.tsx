@@ -10,6 +10,7 @@ import { BackIcon } from '@/components/icons/renewal-icons';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalReviewForm from '@/app/renewal/review/RenewalReviewForm';
+import { GST_RATE, PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
@@ -53,13 +54,36 @@ const RenewalReview = () => {
     // Calculate totalPaid
     const gst = parseFloat(String(renewal?.renewalgst ?? 0));
     const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
-    const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-    const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
+    const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+
+    const includedAddonsFee = renewal?.optional_benefits ?? [];
+    const addonsIncludedTotal = includedAddonsFee.reduce((sum, addon) => {
       return sum + Number(addon.prem ?? 0);
     }, 0);
+    const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
+    const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
+      const subOptionsTotal =
+        addon.sub_options?.reduce(
+          (subSum, sub) => subSum + Number(sub.prem ?? 0),
+          0,
+        ) ?? 0;
 
-    const subtotalFeeAfter = subtotal + addonsTotal;
-    const totalPaid = (subtotalFeeAfter + gst).toFixed(2);
+      const premValue = Number(addon.prem ?? 0) + subOptionsTotal;
+      return sum + premValue;
+    }, 0);
+    const nameDriversTotalFee =
+      (policy?.named_drivers?.length ?? 0) > 1
+        ? (policy.named_drivers.length - 1) * 60
+        : 0;
+
+    const subtotalFeeAfter =
+      planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
+
+    const hasAddonsPlus = addonsSelectedTotal > 0;
+    const gstAmount = subtotalFeeAfter * GST_RATE;
+    const totalPaid = hasAddonsPlus
+      ? subtotalFeeAfter + gstAmount
+      : subtotal + gst;
     const generatedKey = uuid();
 
     postPayment(
@@ -77,7 +101,7 @@ const RenewalReview = () => {
                 poily_no: policy?.current_policy_no,
               },
               policy_summary: {
-                policy_type: paymentData.data.product,
+                policy_type: sessionStorage.getItem(PRODUCT_TYPE),
                 policy_start_date: renewal?.renewal_start_date
                   ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
                   : undefined,

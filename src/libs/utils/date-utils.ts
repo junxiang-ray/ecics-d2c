@@ -384,3 +384,20 @@ export const getCoverageDuration = (
   if (parts.length === 2) return parts.join(' and ');
   return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
 };
+
+/**
+ * Parse a date string in `DD-MM-YYYY` or `D-M-YYYY` format into a JavaScript `Date` object.
+ * @param {string | null | undefined} date - The date string to parse (e.g., "18-10-2026" or "1-1-2025").
+ *                                           If `null` or `undefined`, the function returns `null`.
+ * @returns {Date | null} - A `Date` object if the input is a valid date string, otherwise `null`.
+ * @example
+ * parseDMYToDate("18-10-2026"); // returns Date object for 18 Oct 2026
+ * parseDMYToDate("1-1-2025");   // returns Date object for 01 Jan 2025
+ * parseDMYToDate("2025-10-18"); // returns null (invalid format)
+ * parseDMYToDate(null);         // returns null
+ */
+export const parseDMYToDate = (date?: string | null): Date | null => {
+  if (!date) return null;
+  const parsed = dayjs(date, ['D-M-YYYY', 'DD-MM-YYYY'], true);
+  return parsed.isValid() ? parsed.toDate() : null;
+};

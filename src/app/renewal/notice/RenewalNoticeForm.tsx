@@ -1,11 +1,16 @@
 'use client';
 
-import dayjs from 'dayjs';
 import React from 'react';
 
 import { PolicyDetails, RenewalInfo } from '@/libs/types/renewalQuote';
-import { formatToDDMMYYYY, parseCompactDate } from '@/libs/utils/date-utils';
-import { capitalizeWords } from '@/libs/utils/utils';
+import {
+  formatToDDMMYYYY,
+  getCoverageDuration,
+  parseCompactDate,
+  parseDMYToDate,
+} from '@/libs/utils/date-utils';
+import dayjs from '@/libs/utils/dayjs';
+import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import {
@@ -92,18 +97,18 @@ const RenewalNoticeForm = ({
       : 'N/A';
 
     // Calculate duration
-    const durationInYears = dayjs(renewal?.renewal_end_date, 'DD-MM-YYYY').diff(
-      dayjs(renewal?.renewal_start_date, 'DD-MM-YYYY'),
-      'year',
-    );
+    const coverageDuration =
+      renewal?.renewal_start_date && renewal?.renewal_end_date
+        ? getCoverageDuration(
+            dayjs(parseDMYToDate(renewal.renewal_start_date)),
+            dayjs(parseDMYToDate(renewal.renewal_end_date)),
+          )
+        : 'N/A';
 
     const fields = [
       { label: 'Renewal Start Date', value: startDate },
       { label: 'Renewal Expiry Date', value: endDate },
-      {
-        label: 'Coverage Duration',
-        value: durationInYears > 1 ? `${durationInYears} years` : '1 year',
-      },
+      { label: 'Coverage Duration', value: coverageDuration },
     ];
 
     return (
@@ -412,7 +417,7 @@ const RenewalNoticeForm = ({
         <div className='text-base font-semibold'>Plan</div>
         <div className='flex items-center justify-between text-sm font-normal'>
           <span>{capitalizeWords(policy?.coverage)}</span>
-          <span>SGD {renewal?.renewalpremb4gst}</span>
+          <span>{formatCurrency(Number(renewal?.renewalplanprem))}</span>
         </div>
 
         {/* Add-ons */}
@@ -430,7 +435,9 @@ const RenewalNoticeForm = ({
                     Included
                   </span>
                 </span>
-                <span className='text-sm'>SGD 0.00</span>
+                <span className='text-sm'>
+                  {formatCurrency(Number(item.prem))}
+                </span>
               </div>
             ))
           ) : (
@@ -458,15 +465,15 @@ const RenewalNoticeForm = ({
               </div>
             ))}
           </div>
-        ) : (
-          <p className='italic text-gray-400'>No named drivers</p>
-        )}
+        ) : null}
 
         {/* Total */}
         <div className='space-y-1 border-t pt-3'>
           <div className='flex justify-between'>
             <span className='text-base font-semibold'>Subtotal</span>
-            <span className='font-bold'>SGD {renewal?.renewalpremwgst}</span>
+            <span className='font-bold'>
+              {formatCurrency(Number(renewal?.renewalpremb4gst))}
+            </span>
           </div>
           <div className='flex justify-between pb-3 text-sm'>
             <span>GST (9%)</span>
@@ -474,7 +481,9 @@ const RenewalNoticeForm = ({
           </div>
           <div className='flex justify-between border-t pt-3 text-lg font-bold'>
             <span>Net Premium (Total)</span>
-            <span className='text-blue-600'>SGD {total}</span>
+            <span className='text-blue-600'>
+              {formatCurrency(Number(renewal?.renewalpremwgst))}
+            </span>
           </div>
         </div>
       </div>
