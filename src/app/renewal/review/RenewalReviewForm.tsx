@@ -28,7 +28,7 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
-import { TAX } from '@/constants/general.constant';
+import { GST_RATE, TAX } from '@/constants/general.constant';
 
 interface RenewalReviewFormProps {
   renewalContent?: {
@@ -410,7 +410,21 @@ const RenewalReviewForm = ({
   const PremiumSummaryContent = () => {
     const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
     const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-    const total = (subtotal + gst).toFixed(2);
+    const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+    const includedAddonsFee = renewal?.optional_benefits ?? [];
+    const addonsincludedTotal = includedAddonsFee.reduce((sum, addon) => {
+      return sum + Number(addon.prem ?? 0);
+    }, 0);
+    const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
+    const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
+      return sum + Number(addon.prem ?? 0);
+    }, 0);
+
+    const subtotalFeeAfter =
+      planFee + addonsincludedTotal + addonsSelectedTotal / TAX;
+    const hasAddonsPlus = addonsSelectedTotal > 0;
+    const gstAmount = subtotalFeeAfter * GST_RATE;
+    const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
 
     return (
       <div className='space-y-4'>
@@ -418,7 +432,7 @@ const RenewalReviewForm = ({
         <div className='text-base font-semibold'>Plan</div>
         <div className='flex items-center justify-between text-sm font-normal'>
           <span>{capitalizeWords(policy?.coverage)}</span>
-          <span>SGD {renewal?.renewalpremb4gst}</span>
+          <span>{formatCurrency(Number(renewal?.renewalplanprem))}</span>
         </div>
 
         {/* Add-ons */}
@@ -437,7 +451,9 @@ const RenewalReviewForm = ({
                       Included
                     </span>
                   </span>
-                  <span className='text-sm'>SGD 0.00</span>
+                  <span className='text-sm'>
+                    {formatCurrency(Number(item.prem))}
+                  </span>
                 </div>
               ))}
 
@@ -483,23 +499,31 @@ const RenewalReviewForm = ({
               </div>
             ))}
           </div>
-        ) : (
-          <p className='italic text-gray-400'>No named drivers</p>
-        )}
+        ) : null}
 
         {/* Total */}
         <div className='space-y-1 border-t pt-3'>
           <div className='flex justify-between'>
             <span className='text-base font-semibold'>Subtotal</span>
-            <span className='font-bold'>SGD {renewal?.renewalpremwgst}</span>
+            <span className='font-bold'>
+              {hasAddonsPlus
+                ? formatCurrency(subtotalFeeAfter)
+                : formatCurrency(subtotal)}
+            </span>
           </div>
           <div className='flex justify-between pb-3 text-sm'>
             <span>GST (9%)</span>
-            <span className='font-medium'>SGD {renewal?.renewalgst}</span>
+            <span className='font-medium'>
+              {hasAddonsPlus
+                ? formatCurrency(Number(gstAmount))
+                : formatCurrency(Number(gst))}
+            </span>
           </div>
           <div className='flex justify-between border-t pt-3 text-lg font-bold'>
             <span>Net Premium (Total)</span>
-            <span className='text-blue-600'>SGD {total}</span>
+            <span className='text-blue-600'>
+              {formatCurrency(Number(total))}
+            </span>
           </div>
         </div>
       </div>

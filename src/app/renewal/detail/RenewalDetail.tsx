@@ -159,17 +159,22 @@ const RenewalDetail = () => {
     );
   };
   const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-  const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
-  const planFee = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
+  const subtotal = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
+  const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+
+  const includedAddonsFee = renewal?.optional_benefits ?? [];
+  const addonsincludedTotal = includedAddonsFee.reduce((sum, addon) => {
+    return sum + Number(addon.prem ?? 0);
+  }, 0);
   const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-  const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
+  const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
     return sum + Number(addon.prem ?? 0);
   }, 0);
 
-  const addonsTotalAfterTax = addonsTotal / TAX;
-  const subtotalFeeAfter = planFee + addonsTotalAfterTax;
+  const subtotalFeeAfter =
+    planFee + addonsincludedTotal + addonsSelectedTotal / TAX;
 
-  const hasAddonsPlus = addonsTotalAfterTax > 0;
+  const hasAddonsPlus = addonsSelectedTotal > 0;
   const gstAmount = subtotalFeeAfter * GST_RATE;
   const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
 

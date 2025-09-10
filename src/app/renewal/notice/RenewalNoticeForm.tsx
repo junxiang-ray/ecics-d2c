@@ -10,7 +10,7 @@ import {
   parseDMYToDate,
 } from '@/libs/utils/date-utils';
 import dayjs from '@/libs/utils/dayjs';
-import { capitalizeWords } from '@/libs/utils/utils';
+import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import {
@@ -417,7 +417,7 @@ const RenewalNoticeForm = ({
         <div className='text-base font-semibold'>Plan</div>
         <div className='flex items-center justify-between text-sm font-normal'>
           <span>{capitalizeWords(policy?.coverage)}</span>
-          <span>SGD {renewal?.renewalpremb4gst}</span>
+          <span>{formatCurrency(Number(renewal?.renewalplanprem))}</span>
         </div>
 
         {/* Add-ons */}
@@ -435,7 +435,9 @@ const RenewalNoticeForm = ({
                     Included
                   </span>
                 </span>
-                <span className='text-sm'>SGD 0.00</span>
+                <span className='text-sm'>
+                  {formatCurrency(Number(item.prem))}
+                </span>
               </div>
             ))
           ) : (
@@ -463,15 +465,15 @@ const RenewalNoticeForm = ({
               </div>
             ))}
           </div>
-        ) : (
-          <p className='italic text-gray-400'>No named drivers</p>
-        )}
+        ) : null}
 
         {/* Total */}
         <div className='space-y-1 border-t pt-3'>
           <div className='flex justify-between'>
             <span className='text-base font-semibold'>Subtotal</span>
-            <span className='font-bold'>SGD {renewal?.renewalpremwgst}</span>
+            <span className='font-bold'>
+              {formatCurrency(Number(renewal?.renewalpremb4gst))}
+            </span>
           </div>
           <div className='flex justify-between pb-3 text-sm'>
             <span>GST (9%)</span>
@@ -479,7 +481,9 @@ const RenewalNoticeForm = ({
           </div>
           <div className='flex justify-between border-t pt-3 text-lg font-bold'>
             <span>Net Premium (Total)</span>
-            <span className='text-blue-600'>SGD {total}</span>
+            <span className='text-blue-600'>
+              {formatCurrency(Number(renewal?.renewalpremwgst))}
+            </span>
           </div>
         </div>
       </div>

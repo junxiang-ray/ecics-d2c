@@ -17,6 +17,7 @@ import {
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
 import { useAppSelector } from '@/redux/store';
+import { GST_RATE, TAX } from '@/constants/general.constant';
 
 const RenewalReview = () => {
   const router = useRouter();
@@ -53,13 +54,24 @@ const RenewalReview = () => {
     // Calculate totalPaid
     const gst = parseFloat(String(renewal?.renewalgst ?? 0));
     const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
+    const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+
+    const includedAddonsFee = renewal?.optional_benefits ?? [];
+    const addonsincludedTotal = includedAddonsFee.reduce((sum, addon) => {
+      return sum + Number(addon.prem ?? 0);
+    }, 0);
     const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-    const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
+    const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
       return sum + Number(addon.prem ?? 0);
     }, 0);
 
-    const subtotalFeeAfter = subtotal + addonsTotal;
-    const totalPaid = (subtotalFeeAfter + gst).toFixed(2);
+    const subtotalFeeAfter =
+      planFee + addonsincludedTotal + addonsSelectedTotal / TAX;
+    const hasAddonsPlus = addonsSelectedTotal > 0;
+    const gstAmount = subtotalFeeAfter * GST_RATE;
+    const totalPaid = hasAddonsPlus
+      ? subtotalFeeAfter + gstAmount
+      : subtotal + gst;
     const generatedKey = uuid();
 
     postPayment(
