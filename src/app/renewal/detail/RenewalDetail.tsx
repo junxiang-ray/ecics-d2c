@@ -21,7 +21,7 @@ import RenewalDetailForm, {
   RenewalFormData,
 } from '@/app/renewal/detail/RenewalDetailForm';
 import ModalPremiumRenewal from '@/app/renewal/modal/ModalPremiumRenewal';
-import { GST_RATE, TAX } from '@/constants/general.constant';
+import { GST_RATE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
@@ -163,16 +163,28 @@ const RenewalDetail = () => {
   const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
 
   const includedAddonsFee = renewal?.optional_benefits ?? [];
-  const addonsincludedTotal = includedAddonsFee.reduce((sum, addon) => {
+  const addonsIncludedTotal = includedAddonsFee.reduce((sum, addon) => {
     return sum + Number(addon.prem ?? 0);
   }, 0);
   const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
   const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
-    return sum + Number(addon.prem ?? 0);
+    const subOptionsTotal =
+      addon.sub_options?.reduce(
+        (subSum, sub) => subSum + Number(sub.prem ?? 0),
+        0,
+      ) ?? 0;
+
+    const premValue = Number(addon.prem ?? 0) + subOptionsTotal;
+    return sum + premValue;
   }, 0);
 
+  const nameDriversTotalFee =
+    (policy?.named_drivers?.length ?? 0) > 1
+      ? (policy.named_drivers.length - 1) * 60
+      : 0;
+
   const subtotalFeeAfter =
-    planFee + addonsincludedTotal + addonsSelectedTotal / TAX;
+    planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
 
   const hasAddonsPlus = addonsSelectedTotal > 0;
   const gstAmount = subtotalFeeAfter * GST_RATE;
@@ -238,7 +250,6 @@ const RenewalDetail = () => {
         setIsShowPopupPremium={setIsShowPopupPremium}
         subtotalFeeAfter={subtotalFeeAfter}
         renewalQuote={renewalQuote}
-        tax={TAX}
         gst={gst}
         subtotal={subtotal}
         total={total}

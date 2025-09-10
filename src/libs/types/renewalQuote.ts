@@ -125,9 +125,9 @@ export interface SelectedAddon {
   id: number;
   name: string;
   prem?: number;
-  subOption?: {
+  sub_options: {
     id: number;
     name: string;
     prem: number;
-  };
+  }[];
 }

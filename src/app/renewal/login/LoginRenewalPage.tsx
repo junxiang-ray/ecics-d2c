@@ -21,7 +21,7 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { EDIT_RENEWAL } from '@/constants/general.constant';
+import { EDIT_RENEWAL, PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
@@ -81,6 +81,7 @@ const LoginRenewalPage = () => {
         if (res) {
           if (res.edit_renewal) {
             saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
+            saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
           }
           dispatch(updateRenewalQuote(res));
         }

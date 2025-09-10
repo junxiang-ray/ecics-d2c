@@ -28,7 +28,7 @@ import {
   MARITAL_STATUS_OPTIONS,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
-import { GST_RATE, TAX } from '@/constants/general.constant';
+import { GST_RATE } from '@/constants/general.constant';
 
 interface RenewalReviewFormProps {
   renewalContent?: {
@@ -412,16 +412,27 @@ const RenewalReviewForm = ({
     const gst = parseFloat(String(renewal?.renewalgst ?? 0));
     const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
     const includedAddonsFee = renewal?.optional_benefits ?? [];
-    const addonsincludedTotal = includedAddonsFee.reduce((sum, addon) => {
+    const addonsIncludedTotal = includedAddonsFee.reduce((sum, addon) => {
       return sum + Number(addon.prem ?? 0);
     }, 0);
     const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
     const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
-      return sum + Number(addon.prem ?? 0);
+      const subOptionsTotal =
+        addon.sub_options?.reduce(
+          (subSum, sub) => subSum + Number(sub.prem ?? 0),
+          0,
+        ) ?? 0;
+
+      const premValue = Number(addon.prem ?? 0) + subOptionsTotal;
+      return sum + premValue;
     }, 0);
+    const nameDriversTotalFee =
+      (policy?.named_drivers?.length ?? 0) > 1
+        ? (policy!.named_drivers!.length - 1) * 60
+        : 0;
 
     const subtotalFeeAfter =
-      planFee + addonsincludedTotal + addonsSelectedTotal / TAX;
+      planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
     const hasAddonsPlus = addonsSelectedTotal > 0;
     const gstAmount = subtotalFeeAfter * GST_RATE;
     const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
@@ -459,16 +470,21 @@ const RenewalReviewForm = ({
 
               {(renewal?.selected_add_on_optional_benefits ?? []).map(
                 (item) => {
-                  const price = item.subOption?.prem ?? item.prem ?? 0;
+                  const subOptionsTotal =
+                    item.sub_options?.reduce(
+                      (sum, sub) => sum + Number(sub.prem ?? 0),
+                      0,
+                    ) ?? 0;
+
+                  const price = Number(item.prem ?? 0) + subOptionsTotal;
+
                   return (
                     <div
                       key={`sel-${item.id}`}
                       className='mb-1 flex items-center justify-between space-y-2'
                     >
                       <span className='text-sm'>{item.name}</span>
-                      <span className='text-sm'>
-                        {formatCurrency(price / TAX)}
-                      </span>
+                      <span className='text-sm'>{formatCurrency(price)}</span>
                     </div>
                   );
                 },

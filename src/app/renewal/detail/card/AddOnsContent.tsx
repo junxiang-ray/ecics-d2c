@@ -20,23 +20,29 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
         const addon = renewalQuote.add_on_optional_benefits.find(
           (a) => a.id === Number(addonId),
         )!;
-        const subOption = addon.sub_options?.find((s) => s.id === subOptionId);
+
+        const subOption = addon.sub_options?.find(
+          (s) => s.id === Number(subOptionId),
+        );
 
         return {
           id: addon.id,
           name: addon.name,
-          prem: subOption
-            ? Number(subOption.prem)
-            : addon.prem !== undefined
-              ? Number(addon.prem)
-              : undefined,
-          subOption: subOption
-            ? {
-                id: subOption.id,
-                name: subOption.name,
-                prem: Number(subOption.prem),
-              }
-            : undefined,
+          prem:
+            subOption !== undefined
+              ? Number(subOption.prem)
+              : addon.prem !== undefined
+                ? Number(addon.prem)
+                : undefined,
+          sub_options: subOption
+            ? [
+                {
+                  id: subOption.id,
+                  name: subOption.name,
+                  prem: Number(subOption.prem),
+                },
+              ]
+            : [],
         };
       },
     );

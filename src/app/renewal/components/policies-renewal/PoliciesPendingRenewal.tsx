@@ -7,7 +7,11 @@ import { createPassphrase, saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrivateMotorCarIcon } from '@/components/icons/renewal-icons';
 
-import { ECICS_USER_INFO, EDIT_RENEWAL } from '@/constants/general.constant';
+import {
+  ECICS_USER_INFO,
+  EDIT_RENEWAL,
+  PRODUCT_TYPE,
+} from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
@@ -51,6 +55,7 @@ const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
       if (res) {
         if (res.edit_renewal) {
           saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
+          saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
         }
         dispatch(updateRenewalQuote(res));
       }
