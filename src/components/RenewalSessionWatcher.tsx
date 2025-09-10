@@ -13,7 +13,6 @@ export function GlobalSessionWatcher() {
   const timeoutValue = useAppSelector(
     (state: RootState) => state.idleWorker.timeoutValue,
   );
-
   useEffect(() => {
     if (!timeoutValue) return;
 

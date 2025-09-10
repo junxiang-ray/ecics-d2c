@@ -22,7 +22,8 @@ import {
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { PRODUCT_NAME } from '../api/constants/product';
-import { setExpired } from '@/redux/slices/idleWorker.slice';
+import { setTimeoutValue } from '@/redux/slices/idleWorker.slice';
+import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 
 export default function RenewalPage() {
   const router = useRouter();
@@ -51,6 +52,7 @@ export default function RenewalPage() {
   } = useVerifyRetrieveRenewal();
   const { mutateAsync: checkPolicyRenewal, isPending: isLoadingCheckPolicy } =
     useCheckPolicyRenewal();
+  const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -87,27 +89,14 @@ export default function RenewalPage() {
         { nric: renewalQuote?.uinfin?.value },
         {
           onSuccess: (res) => {
-            if (res) {
-              const worker = new Worker(
-                new URL('@/web-worker/idleWorker.ts', import.meta.url),
-                { type: 'module' },
-              );
-
-              worker.postMessage({ type: 'SET_TIMEOUT', payload: timeOut });
-              worker.postMessage({ type: 'START' });
-
-              worker.onmessage = (e) => {
-                if (e.data?.type === 'TIMEOUT') {
-                  dispatch(setExpired(true));
-                  sessionStorage.clear();
-                  localStorage.clear();
-                  dispatch(resetRenewalQuote());
-                  router.push(ROUTES.RENEWAL.LOGIN);
-                }
-              };
-
-              return () => worker.terminate();
-            }
+            getTimeoutRenewal(undefined, {
+              onSuccess: (timeoutRes) => {
+                const minutes =
+                  timeoutRes?.data?.attributes?.session_timeout_minutes ?? 0;
+                const timeoutMs = Number(minutes) * 60 * 1000;
+                dispatch(setTimeoutValue(timeoutMs));
+              },
+            });
           },
         },
       );

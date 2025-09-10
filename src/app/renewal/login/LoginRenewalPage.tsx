@@ -59,16 +59,6 @@ const LoginRenewalPage = () => {
     localStorage.clear();
   }, []);
 
-  useEffect(() => {
-    getTimeoutRenewal(undefined, {
-      onSuccess: (res) => {
-        const minutes = res?.data?.attributes?.session_timeout_minutes ?? 0;
-        const timeoutMs = Number(minutes) * 60 * 1000;
-        dispatch(setTimeoutValue(timeoutMs));
-      },
-    });
-  }, []);
-
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');
   const { mutate: requestSignInSingpass, error: errorLoginRenewal } =
@@ -91,40 +81,38 @@ const LoginRenewalPage = () => {
   } = methods;
 
   const onSubmitSigninRenewal = (values: FormData) => {
-    checkPolicyRenewal({
-      veh_reg_no: values.veh_reg_no,
-      passphrase: values.passphrase,
-    })
-      .then((res) => {
-        if (res) {
-          if (res.edit_renewal) {
-            saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
-          }
-          dispatch(updateRenewalQuote(res));
-          if (timeOut) {
-            const worker = new Worker(
-              new URL('@/web-worker/idleWorker.ts', import.meta.url),
-              { type: 'module' },
-            );
-            worker.postMessage({ type: 'SET_TIMEOUT', payload: timeOut });
-            worker.postMessage({ type: 'START' });
+    checkPolicyRenewal(
+      {
+        veh_reg_no: values.veh_reg_no,
+        passphrase: values.passphrase,
+      },
+      {
+        onSuccess: (res) => {
+          if (res) {
+            if (res.edit_renewal) {
+              saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
+            }
+            dispatch(updateRenewalQuote(res));
 
-            worker.onmessage = (e) => {
-              if (e.data?.type === 'TIMEOUT') {
-                dispatch(setExpired(true));
-                sessionStorage.clear();
-                localStorage.clear();
-                dispatch(resetRenewalQuote());
-                router.push(ROUTES.RENEWAL.LOGIN);
-              }
-            };
+            getTimeoutRenewal(undefined, {
+              onSuccess: (timeoutRes) => {
+                const minutes =
+                  timeoutRes?.data?.attributes?.session_timeout_minutes ?? 0;
+                const timeoutMs = Number(minutes) * 60 * 1000;
+                dispatch(setTimeoutValue(timeoutMs));
+              },
+            });
           }
-        }
-        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-      })
-      .catch((err: any) => {
-        setMessageError(err?.response?.data?.message ?? 'Something went wrong');
-      });
+
+          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+        },
+        onError: (err: any) => {
+          setMessageError(
+            err?.response?.data?.message ?? 'Something went wrong',
+          );
+        },
+      },
+    );
   };
 
   return (
