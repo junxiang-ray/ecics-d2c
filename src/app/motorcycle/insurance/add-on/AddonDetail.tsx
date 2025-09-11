@@ -210,13 +210,13 @@ function AddOnDetail({
   const plan = useMemo(() => {
     console.log('quoteInfo in AddonDetail', JSON.stringify(quoteInfo));
     return quoteInfo?.data?.plans?.find(
-      (plan) => quoteInfo.data?.selected_plan === plan.title,
+      (plan: any) => quoteInfo.data?.selected_plan === plan.title,
     );
   }, [quoteInfo]);
 
   const addonAdditionalDriver = useMemo(() => {
     console.log('plan in addonAdditionalDriver', JSON.stringify(plan));
-    return plan?.addons.find((addon) =>
+    return plan?.addons.find((addon: any) =>
       ADDON_MOTORCYCLE_AND.includes(addon.code),
     );
   }, [plan]);
@@ -225,16 +225,17 @@ function AddOnDetail({
     console.log('plan in normalAddons', JSON.stringify(plan));
 
     return (
-      plan?.addons.filter((addon) => ADDON_MOTORCYCLE.includes(addon.code)) ??
-      []
+      plan?.addons.filter((addon: any) =>
+        ADDON_MOTORCYCLE.includes(addon.code),
+      ) ?? []
     );
   }, [plan]);
 
   const defaultAddonsAdded = useMemo(() => {
     if (!normalAddons.length) return {};
-    const addonCodes = normalAddons.map((addon) => addon.code);
+    const addonCodes = normalAddons.map((addon: any) => addon.code);
     return Object.fromEntries(
-      addonCodes.map((code) => [
+      addonCodes.map((code: any) => [
         code,
         quoteInfo?.data?.selected_addons?.[code] ?? 'NO',
       ]),
@@ -245,7 +246,7 @@ function AddOnDetail({
     if (!plan?.addons.length) return {};
     const selected_addons = quoteInfo?.data?.selected_addons ?? {};
     return plan.addons.reduce(
-      (acc: Record<string, string>, addon) => {
+      (acc: Record<string, string>, addon: any) => {
         if (addon.type === 'checkbox') {
           acc[addon.code] = 'YES';
         } else {
@@ -254,7 +255,7 @@ function AddOnDetail({
             acc[addon.code] = selectedValue;
           } else {
             const defaultOption = addon.options.find(
-              (option) => option.id === addon.default_option_id,
+              (option: any) => option.id === addon.default_option_id,
             );
             acc[addon.code] = defaultOption
               ? defaultOption.value
@@ -273,7 +274,7 @@ function AddOnDetail({
     setAddonsSelected(defaultAddonsSelected);
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
-  const addonsFormatted: AddOnFormat[] = normalAddons.map((addon) => {
+  const addonsFormatted: AddOnFormat[] = normalAddons.map((addon: any) => {
     console.log('addon', JSON.stringify(addon));
     // map the icon to the addon
     const iconMatched = mapIconToTypeAddOn.find(
@@ -289,7 +290,7 @@ function AddOnDetail({
     console.log('initValueForAdded', JSON.stringify(initValueForAdded));
 
     const selectedOptionForAdded = addon.options.find(
-      (option) => option.value === initValueForAdded,
+      (option: any) => option.value === initValueForAdded,
     );
     const feeAdded = selectedOptionForAdded
       ? calculateFee(selectedOptionForAdded, addonsAdded)
@@ -300,7 +301,7 @@ function AddOnDetail({
     // For feeSelected use the "addonsSelected" defaults
     const initValueForSelected = addonsSelected?.[addon.code] ?? null;
     const activeOption = addon.options.find(
-      (option) => option.value === initValueForSelected,
+      (option: any) => option.value === initValueForSelected,
     );
     const feeSelected = activeOption
       ? calculateFee(activeOption, addonsAdded)
@@ -493,7 +494,7 @@ function AddOnDetail({
                   isPending={isPending}
                 />
               )}
-              {plan?.add_ons_included_in_this_plan?.map((addon) => (
+              {plan?.add_ons_included_in_this_plan?.map((addon: any) => (
                 <AddOnRow
                   key={addon.add_on_id}
                   title={addon.add_on_name}

@@ -64,7 +64,7 @@ function PlanDetail({
     });
   }, [selectedPlan]);
 
-  const plansFormatted: FormatPlan[] = plans.map((plan) => ({
+  const plansFormatted: FormatPlan[] = plans.map((plan: any) => ({
     ...plan,
     discount: quoteInfo?.promo_code?.discount ?? 0,
     currentPrice:

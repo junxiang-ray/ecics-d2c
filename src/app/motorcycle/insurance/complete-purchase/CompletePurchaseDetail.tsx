@@ -80,7 +80,7 @@ export default function CompletePurchaseDetail({
   const selectedPlan = quote?.data?.selected_plan;
 
   const plan = quote?.data?.plans?.find(
-    (plan) => quote.data?.selected_plan === plan.title,
+    (plan: any) => quote.data?.selected_plan === plan.title,
   );
 
   const {
@@ -158,7 +158,9 @@ export default function CompletePurchaseDetail({
 
   // Addon Additional Driver
   const addonAdditionalDriver = useMemo(() => {
-    return plan?.addons.find((addon) => ADDON_MOTORCYCLE.includes(addon.code));
+    return plan?.addons.find((addon: any) =>
+      ADDON_MOTORCYCLE.includes(addon.code),
+    );
   }, [plan]);
   const baseFeeAdditionalDriver =
     addonAdditionalDriver?.options?.[0]?.premium_with_gst ?? 0;
@@ -249,12 +251,12 @@ export default function CompletePurchaseDetail({
   const selectedPlanTitle = quote?.data?.selected_plan || 'N/A';
   const plans = quote?.data?.plans || [];
   const matchedPlan = plans.find(
-    (plan) => plan.title && plan.title.includes(selectedPlanTitle),
+    (plan: any) => plan.title && plan.title.includes(selectedPlanTitle),
   );
   const addonsTitles =
     matchedPlan?.benefits
-      ?.filter((benefit) => benefit.is_active)
-      .map((benefit) => benefit.name)
+      ?.filter((benefit: any) => benefit.is_active)
+      .map((benefit: any) => benefit.name)
       .filter(Boolean) || [];
 
   const sharedDataMap: {

@@ -324,7 +324,7 @@ export default function CompletePurchaseDetail({
   const selectedPlanTitle = maidQuote?.data?.selected_plan || 'N/A';
   const selectedPlanCode = maidQuote?.data?.selected_plan_code;
   const plans = maidQuote?.data?.plans || [];
-  const matchedPlan = plans.find((plan) => plan.code === selectedPlanCode);
+  const matchedPlan = plans.find((plan: any) => plan.code === selectedPlanCode);
 
   const addonsTitles = matchedPlan?.benefits || [];
 
