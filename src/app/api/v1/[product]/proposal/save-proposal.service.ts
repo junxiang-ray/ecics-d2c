@@ -8,7 +8,7 @@ import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
-import { convertDate } from '@/app/api/utils/date.helper';
+import { convertDate, convertDateDash } from '@/app/api/utils/date.helper';
 import {
   applyAddlDriverLogic,
   applyLouAndCcLogic,
@@ -290,9 +290,124 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
   });
 }
 
+///Helpers to translate
+function getPlanIdfromTitle(quoteInfo: any, planTitle: string): string {
+  return (
+    quoteInfo?.data?.plans?.find((plan: any) => plan.title === planTitle)
+      .code ?? ''
+  );
+}
+
+const codes: Record<string, string> = {
+  MOTORCYCLE_COMP_ME: 'me',
+  MOTORCYCLE_COMP_PA: 'pa',
+  MOTORCYCLE_COMP_KRC: 'krc',
+  MOTORCYCLE_COMP_LOU: 'lou',
+  MOTORCYCLE_COMP_RSA: 'rsa',
+  MOTORCYCLE_COMP_BUN: 'bun',
+  MOTORCYCLE_TPFT_BUN: 'bun',
+  MOTORCYCLE_TPO_BUN: 'bun',
+};
+
+function getOptionalBenefitCodes(selected_addons: Record<string, string>): any {
+  return Object.entries(selected_addons)
+    .filter(([_, value]) => value === 'YES') // keep only YES
+    .map(([key]) => codes[key]);
+}
+
+function formatGender(gender: string): string {
+  switch (gender) {
+    case 'MALE':
+      return 'M';
+    case 'FEMALE':
+      return 'F';
+    default:
+      return 'M';
+  }
+}
+function formatMaritalStatus(status: string): string {
+  switch (status) {
+    case 'SINGLE':
+      return 'S';
+    case 'MARRIED':
+      return 'M';
+    case 'DIVORCED':
+      return 'D';
+    case 'WIDOWED':
+      return 'W';
+    default:
+      return 'S';
+  }
+}
+
+function getPersonalInfo(quoteInfo: any): any {
+  const personalInfo = quoteInfo?.data?.personal_info;
+
+  if (personalInfo) {
+    return {
+      fullName: personalInfo.name || '',
+      dateOfBirth: convertDateDash(personalInfo.date_of_birth) || '',
+      NRIC: personalInfo.nric || '',
+      gender: formatGender(personalInfo.gender) || '',
+      maritalStatus: formatMaritalStatus(personalInfo.marital_status) || '',
+      addressLine1: personalInfo.address[0] || '',
+      addressLine2: personalInfo.address[1] || '',
+      addressLine3: personalInfo.address[2] || '',
+      postalCode: personalInfo.post_code || '',
+      mobile: personalInfo.phone || '',
+      email: personalInfo.email || '',
+    };
+  } else {
+    return undefined;
+  }
+}
+
+function getVehicleInfo(quoteInfo: any): any {
+  const vehicleInfo = quoteInfo?.data?.vehicle_info_selected;
+
+  if (vehicleInfo) {
+    return {
+      vehRegNumber: vehicleInfo.vehicle_number || '',
+      engineNumber: vehicleInfo.engine_number || '',
+      chassisNumber: vehicleInfo.chasis_number || '',
+    };
+  } else {
+    return undefined;
+  }
+}
+
+function getAdditionalDriverInfo(quoteInfo: any): any {
+  const addDriverInfo = quoteInfo?.data?.add_named_driver_info;
+
+  if (addDriverInfo) {
+    return {
+      hasAdditionalDriver: addDriverInfo.length == 0 ? false : true || false,
+      driverDetails:
+        addDriverInfo.length == 0
+          ? {}
+          : {
+              driverFullName: addDriverInfo[0].name || '',
+              driverNRIC: addDriverInfo[0].nric_or_fin || '',
+              driverDob: convertDateDash(addDriverInfo[0].date_of_birth) || '',
+              driverGender: formatGender(addDriverInfo[0].gender) || '',
+              driverMaritalStatus:
+                formatMaritalStatus(addDriverInfo[0].marital_status) || '',
+              driverDrivingExp: addDriverInfo[0].driving_experience || '',
+            },
+    };
+  } else {
+    return undefined;
+  }
+}
+
+///
+
 /// save proposal for motorcycle
-export async function saveProposalForMotorcycle(data: saveQuoteProposalDTO) {
-  const { key, selected_plan, selected_addons, add_named_driver_info } = data;
+export async function saveProposalForMotorcycle(
+  currData: saveQuoteProposalDTO,
+) {
+  const { key, selected_plan, selected_addons, add_named_driver_info } =
+    currData;
 
   const quoteInfo = await prisma.quote.findFirst({
     where: {
@@ -312,101 +427,66 @@ export async function saveProposalForMotorcycle(data: saveQuoteProposalDTO) {
   if (!quoteInfo) {
     return ErrNotFound('Quote not found');
   }
-  console.log('quoteInfo', JSON.stringify(quoteInfo));
-  console.log('selectedplan', JSON.stringify(selected_plan));
+  // console.log('quoteInfo', JSON.stringify(quoteInfo));
+  // console.log('selectedplan', JSON.stringify(selected_plan));
+  // console.log('datahere', JSON.stringify(currData));
 
-  const { quote_id, policy_id, proposal_id } = quoteInfo;
+  const { quote_id, proposal_id } = quoteInfo;
+  // console.log('quotedatahere', JSON.stringify(data));
+
   const payload: any = {
-    product_id: process.env.PRODUCT_CAR_ID || '',
-    policy_id,
-    quote_id,
-    proposal_id,
-    quick_proposal_plan: selected_plan,
-    __finalize: 1,
-    redirect_url: `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_WEBSITE}?key=${key}`,
-    return_baseurl: process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL,
+    quoteId: quote_id,
+    proposalId: proposal_id,
+    selected: {
+      planId: getPlanIdfromTitle(quoteInfo, selected_plan),
+      optionalBenefits: getOptionalBenefitCodes(selected_addons),
+      personalDetails: getPersonalInfo(quoteInfo),
+      vehicle: getVehicleInfo(quoteInfo),
+      additionalDriver: getAdditionalDriverInfo(quoteInfo),
+      hirePurchaseCompany: quoteInfo.company?.name || '',
+      finalize: true,
+    },
   };
 
-  const addonKeysMapping = mappingMotorcycleAddonByPlan(selected_plan);
-  for (const [addonKey, quickKey] of Object.entries(addonKeysMapping)) {
-    payload[quickKey] = selected_addons[addonKey] || 'NO';
-  }
-
-  const planAddOnConfig = MOTORCYCLE_PLAN_ADDON_CONFIG[selected_plan];
-
-  if (planAddOnConfig) {
-    if (planAddOnConfig.setDefaults) {
-      payload.quick_proposal_any_workshop = 'N.A.';
-      payload.quick_proposal_excess = 'N.A.';
-    }
-
-    const { quick_proposal_has_addl_driver, quick_proposal_has_yied_driver } =
-      applyAddlDriverLogic(selected_addons[planAddOnConfig.andKey]);
-
-    payload.quick_proposal_has_addl_driver = quick_proposal_has_addl_driver;
-    payload.quick_proposal_has_yied_driver = quick_proposal_has_yied_driver;
-
-    if (planAddOnConfig.applyLouAndCc && planAddOnConfig.louKey) {
-      const { quick_proposal_lou, quick_proposal_cc } = applyLouAndCcLogic(
-        selected_addons[planAddOnConfig.louKey],
-      );
-
-      payload.quick_proposal_lou = quick_proposal_lou;
-      payload.quick_proposal_cc = quick_proposal_cc;
-    }
-  }
-
-  // Add named driver information
-  for (let i = 0; i < 3; i++) {
-    const driver = add_named_driver_info[i];
-    payload[`quick_proposal_addl_nd${i + 1}_name`] = driver?.name || '';
-    payload[`quick_proposal_addl_nd${i + 1}_dob`] = driver?.date_of_birth || '';
-    payload[`quick_proposal_addl_nd${i + 1}_drv_exp`] =
-      driver?.driving_experience ?? '';
-    payload[`quick_proposal_addl_nd${i + 1}_nric`] = driver?.nric_or_fin || '';
-    payload[`quick_proposal_addl_nd${i + 1}_gender`] = driver?.gender || '';
-    payload[`quick_proposal_addl_nd${i + 1}_marital_status`] =
-      driver?.marital_status || '';
-  }
-
-  // Add personal information
-  const { personal_info, vehicle_info_selected } = quoteInfo.data as {
-    personal_info: {
-      name?: string;
-      nric?: string;
-      gender?: string;
-      date_of_birth?: string;
-      marital_status?: string;
-      address?: string[];
-      post_code?: string;
-    };
-    vehicle_info_selected: {
-      chasis_number?: string;
-      chassis_no?: string;
-      engine_number?: string;
-      vehicle_number?: string;
-    };
-  };
-
-  payload.quick_proposal_veh_reg_no =
-    vehicle_info_selected?.vehicle_number || '';
-  payload.quick_proposal_chassis_no =
-    vehicle_info_selected?.chasis_number || '';
-  payload.quick_proposal_engine_no = vehicle_info_selected?.engine_number || '';
-  payload.quick_proposal_hire_purchase = quoteInfo.company?.name || '';
-  payload.quick_proposal_other_hire_purchase =
-    quoteInfo.company?.name === '-- Others (Not Available in this list) --'
-      ? quoteInfo?.company_name_other
-      : '';
-  payload.quick_proposal_proposer_name = personal_info?.name || '';
-  payload.quick_proposal_proposer_nric = personal_info?.nric || '';
-  payload.quick_proposal_proposer_gender = personal_info?.gender || '';
-  payload.quick_proposal_proposer_marital_status =
-    personal_info?.marital_status || '';
-  payload.quick_proposal_address_line1 = personal_info?.address?.[0] || '';
-  payload.quick_proposal_address_line2 = personal_info?.address?.[1] || '';
-  payload.quick_proposal_address_line3 = personal_info?.address?.[2] || '';
-  payload.quick_proposal_post_code = personal_info?.post_code || '';
+  // const payload: any = {
+  //   quoteId: 'Q000000040664',
+  //   proposalId: 'PR000000036101',
+  //   selected: {
+  //     planId: 'COMP',
+  //     optionalBenefits: ['lou', 'rsa'],
+  //     personalDetails: {
+  //       fullName: 'David',
+  //       dateOfBirth: '1993-12-29',
+  //       NRIC: 'S1234567D',
+  //       gender: 'M',
+  //       maritalStatus: 'S',
+  //       addressLine1: 'Jurong West Street 100',
+  //       addressLine2: 'BLK 69 # 001-100',
+  //       addressLine3: 'Singapore',
+  //       postalCode: '555666',
+  //       mobile: '88889999',
+  //       email: 'abc@gmail.com',
+  //     },
+  //     vehicle: {
+  //       vehRegNumber: 'SBA123A',
+  //       engineNumber: 'ABC12345',
+  //       chassisNumber: 'ABC12345',
+  //     },
+  //     additionalDriver: {
+  //       hasAdditionalDriver: true,
+  //       driverDetails: {
+  //         driverFullName: 'Carl',
+  //         driverNRIC: 'S5872997C',
+  //         driverDob: '2000-12-25',
+  //         driverGender: 'M',
+  //         driverMaritalStatus: 'S',
+  //         driverDrivingExp: 5,
+  //       },
+  //     },
+  //     hirePurchaseCompany: 'DBS BANK LTD',
+  //     finalize: true,
+  //   },
+  // };
 
   logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
 
@@ -424,6 +504,8 @@ export async function saveProposalForMotorcycle(data: saveQuoteProposalDTO) {
 
   // Update the quote in the database
   const quoteData = quoteInfo.data;
+  console.log('quoteData', JSON.stringify(quoteData));
+
   await prisma.quote.update({
     where: {
       id: quoteInfo.id,
@@ -436,7 +518,7 @@ export async function saveProposalForMotorcycle(data: saveQuoteProposalDTO) {
       },
       quote_finalize_from_ISP: resSaveProposal,
       is_finalized: true,
-      payment_id: resSaveProposal.data?.payment_id || '',
+      payment_id: resSaveProposal.data?.paymentId || '',
     },
   });
 

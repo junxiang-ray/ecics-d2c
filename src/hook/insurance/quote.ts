@@ -105,9 +105,11 @@ export const useSaveProposalFinalize = () => {
 
 export const usePayment = () => {
   const payment = async (key: string) => {
+    console.log('payment key', key);
     const res = await insurance.payment({ key });
     return res.data.data;
   };
+
   return useMutation({
     mutationFn: payment,
     mutationKey: ['payload'],

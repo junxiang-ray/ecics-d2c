@@ -7,13 +7,13 @@ import {
 
 import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
 
-import insurance from '@/api/base-service/insurance';
+// import insurance from '@/api/base-service/insurance';
 import { ProductTypeWeb } from '@/app/api/constants/product';
 import motorcycle from '@/api/base-service/motorcycle';
 
 export const useGetQuote = (key: string) => {
   const fetchQuote = async () => {
-    const res = await insurance.getQuoteByKey(key);
+    const res = await motorcycle.getMotorcycleQuoteByKey(key);
     return res.data.data;
   };
 
@@ -44,7 +44,7 @@ export const useSaveProposal = () => {
     data: ProposalPayload;
     productType: ProductTypeWeb;
   }) => {
-    const res = await insurance.saveProposal(data, productType);
+    const res = await motorcycle.saveMotorcycleProposal(data, productType);
     return res.data.data;
   };
   return useMutation({
@@ -63,7 +63,11 @@ export const useSaveQuote = () => {
     data: any;
     is_sending_email: boolean;
   }) => {
-    const res = await insurance.saveQuote(key, data, is_sending_email);
+    const res = await motorcycle.saveMotorcycleQuote(
+      key,
+      data,
+      is_sending_email,
+    );
     return res.data.data;
   };
   return useMutation({
@@ -85,7 +89,7 @@ export const useMotorcycleGetHirePurchaseList = (product_type: string) => {
 
 export const useRequestLog = (product_type: string) => {
   const requestLog = async () => {
-    const res = await insurance.requestLog(product_type);
+    const res = await motorcycle.requestLog(product_type);
     return res.data;
   };
   return useMutation({
@@ -96,7 +100,7 @@ export const useRequestLog = (product_type: string) => {
 
 export const useSaveProposalFinalize = () => {
   const saveProposalFinalize = async (key: string) => {
-    const res = await insurance.saveProposalFinalize({ key });
+    const res = await motorcycle.saveProposalFinalize({ key });
     return res.data.data;
   };
   return useMutation({
@@ -107,7 +111,7 @@ export const useSaveProposalFinalize = () => {
 
 export const usePayment = () => {
   const payment = async (key: string) => {
-    const res = await insurance.payment({ key });
+    const res = await motorcycle.payment({ key, product_type: 'motorcycle' });
     return res.data.data;
   };
   return useMutation({
@@ -123,7 +127,7 @@ export const usePostZipFilesDownload = (): UseMutationResult<
   unknown
 > => {
   const zipFilesDownload = async (documents: string[]) => {
-    const res = await insurance.postZipFilesDownload({ documents });
+    const res = await motorcycle.postZipFilesDownload({ documents });
     return res.data;
   };
 

@@ -26,7 +26,8 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ADDON_MOTORCYCLE } from '@/app/motorcycle/insurance/add-on/AddonAdditionalDriver';
 import { UnMatchAddonModal } from '@/app/motorcycle/insurance/complete-purchase/review-your-detail/modal/UnmatchAddonModal';
 import { ROUTES } from '@/constants/routes';
-import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
+import { useSaveProposal } from '@/hook/insurance/quote';
+import { usePayment } from '@/hook/insurance/motorcycle';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
@@ -652,8 +653,8 @@ export default function CompletePurchaseDetail({
   }, [isSuccess]);
 
   useEffect(() => {
-    if (dataPayment?.payment_url) {
-      router.push(dataPayment.payment_url);
+    if (dataPayment?.paymentlink) {
+      router.push(dataPayment.paymentlink);
     }
   }, [dataPayment]);
 

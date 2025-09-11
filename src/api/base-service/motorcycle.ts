@@ -57,7 +57,7 @@ export default {
   saveProposalFinalize(data: { key: string }) {
     return baseClient.post<any>('/car/proposal/finalize', data);
   },
-  payment(data: { key: string }) {
+  payment(data: { key: string; product_type: string }) {
     return baseClient.post<any>(`${API_POST_PAYMENT}`, data);
   },
   postZipFilesDownload(data: { documents: string[] }) {
