@@ -123,6 +123,7 @@ export interface RenewalQuote {
   edit_renewal: boolean;
   renewal_info: RenewalInfo;
   add_on_optional_benefits: AddOnOptionalBenefit[];
+  selected_add_on_optional_benefits?: AddOnOptionalBenefit[];
   name: {
     value: string;
   };

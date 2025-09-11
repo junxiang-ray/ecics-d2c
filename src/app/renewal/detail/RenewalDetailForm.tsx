@@ -24,7 +24,6 @@ import PolicyDetailsContent from '@/app/renewal/detail/card/PolicyDetailsContent
 import PolicyHolderContent from '@/app/renewal/detail/card/PolicyHolderContent';
 import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent';
 import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
-import { useAppDispatch } from '@/redux/store';
 
 import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
 
@@ -85,8 +84,6 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       policy,
       renewal,
     } = props;
-
-    const dispatch = useAppDispatch();
 
     const methods = useForm<RenewalFormData>({
       resolver: zodResolver(schema),

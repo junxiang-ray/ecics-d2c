@@ -26,6 +26,7 @@ import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import {
   MARITAL_STATUS_MAP,
   MARITAL_STATUS_OPTIONS,
+  MaritalCode,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
 import { GST_RATE } from '@/constants/general.constant';
@@ -349,17 +350,30 @@ const RenewalReviewForm = ({
   };
 
   const AdditionalNamedDriversContent = () => {
-    const drivers = policy?.named_drivers.map((d, idx) => ({
-      name: d.name,
-      badge: idx === 0 ? 'Included' : 'SGD 65.40',
-      details: [
-        { label: 'NRIC', value: d.icno || '-' },
-        { label: 'Date of Birth', value: d.dob || '-' },
-        { label: 'Gender', value: d.gender === 'M' ? 'Male' : 'Female' },
-        { label: 'Marital Status', value: d.martial_status || '-' },
-        { label: 'Driving Experience', value: d.driv_exp || '-' },
-      ],
-    }));
+    const drivers = policy?.named_drivers.map((d, idx) => {
+      const maritalCode =
+        (d.martial_status?.toUpperCase() as MaritalCode) || undefined;
+      const mappedValue = maritalCode
+        ? MARITAL_STATUS_MAP[maritalCode]
+        : undefined;
+
+      const maritalStatusText = mappedValue
+        ? MARITAL_STATUS_OPTIONS.find((opt: any) => opt.value === mappedValue)
+            ?.text || '-'
+        : '-';
+
+      return {
+        name: d.name,
+        badge: idx === 0 ? 'Included' : 'SGD 60.00',
+        details: [
+          { label: 'NRIC', value: d.icno || '-' },
+          { label: 'Date of Birth', value: d.dob || '-' },
+          { label: 'Gender', value: d.gender === 'M' ? 'Male' : 'Female' },
+          { label: 'Marital Status', value: maritalStatusText },
+          { label: 'Driving Experience', value: d.driv_exp || '-' },
+        ],
+      };
+    });
 
     return (
       <div className='space-y-4'>
