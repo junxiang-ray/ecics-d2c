@@ -146,7 +146,9 @@ export const MARITAL_STATUS_OPTIONS: DropdownOption[] = [
   { value: MaritalStatusValue.DIVORCED, text: 'Divorced' },
 ];
 
-export const MARITAL_STATUS_MAP: Record<string, MaritalStatusValue> = {
+export type MaritalCode = 'M' | 'S' | 'W' | 'D';
+
+export const MARITAL_STATUS_MAP: Record<MaritalCode, MaritalStatusValue> = {
   M: MaritalStatusValue.MARRIED,
   S: MaritalStatusValue.SINGLE,
   W: MaritalStatusValue.WIDOWED,

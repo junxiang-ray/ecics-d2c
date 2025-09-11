@@ -10,10 +10,24 @@ interface Props {
 }
 
 const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
-  const [selectedOptions, setSelectedOptions] = useState<{
-    [key: number]: number;
-  }>({});
+  // Initialize the state from renewalQuote.selected_add_on_optional_benefits.
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<number, number>
+  >(() => {
+    const initial: Record<number, number> = {};
+    renewalQuote.selected_add_on_optional_benefits?.forEach((addon) => {
+      if (addon.sub_options?.length) {
+        // Get the exact selected sub_option.
+        initial[addon.id] = addon.sub_options[0].id;
+      } else {
+        // addon without sub_options
+        initial[addon.id] = -1;
+      }
+    });
+    return initial;
+  });
 
+  // On selectedOptions change → convert to SelectedAddon[] and send to parent.
   useEffect(() => {
     const selected: SelectedAddon[] = Object.entries(selectedOptions)
       .map(([addonId, subOptionId]) => {
@@ -76,7 +90,7 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
 
   return (
     <div className='space-y-4'>
-      {/* Optional benefits already included */}
+      {/* Optional benefits included */}
       {renewalQuote.renewal_info?.optional_benefits?.map((benefit) => (
         <div
           key={benefit.id}
@@ -104,7 +118,9 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
         return (
           <div
             key={addon.id}
-            className={`cursor-pointer rounded-lg border-2 p-4 ${isAddonSelected ? 'border-blue-500' : 'border-gray-200'}`}
+            className={`cursor-pointer rounded-lg border-2 p-4 ${
+              isAddonSelected ? 'border-blue-500' : 'border-gray-200'
+            }`}
             onClick={() => handleClickAddon(addon)}
           >
             <div className='flex justify-between font-medium'>
