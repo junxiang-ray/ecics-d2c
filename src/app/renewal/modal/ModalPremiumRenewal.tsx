@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 import PremiumBreakdownRenewalContent, {
   PremiumBreakdownRenewalContentProps,
@@ -21,6 +22,19 @@ const ModalPremiumRenewal = (props: Props) => {
     setIsShowPopupPremium(false),
   );
 
+  // Disable background scroll
+  useEffect(() => {
+    if (isShowPopupPremium) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isShowPopupPremium]);
+
   if (!isShowPopupPremium) return null;
 
   return (
@@ -34,16 +48,17 @@ const ModalPremiumRenewal = (props: Props) => {
       <motion.div
         {...sheetProps}
         animate={controls}
-        className='w-full rounded-t-2xl bg-white p-4'
+        className='flex w-full flex-col rounded-t-2xl bg-white p-4'
         style={{ maxHeight: isMobile ? '85vh' : '80vh' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className='mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300' />
-
-        <PremiumBreakdownRenewalContent
-          {...rest}
-          onClose={() => setIsShowPopupPremium(false)}
-        />
+        <div className='scrollbar-hide flex-1 overflow-y-auto'>
+          <PremiumBreakdownRenewalContent
+            {...rest}
+            onClose={() => setIsShowPopupPremium(false)}
+          />
+        </div>
       </motion.div>
     </motion.div>
   );

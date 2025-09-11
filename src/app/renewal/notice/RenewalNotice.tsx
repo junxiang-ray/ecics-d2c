@@ -31,11 +31,25 @@ const RenewalNotice = () => {
   const productTypeState = useAppSelector(
     (state) => state.renewalQuote.productType,
   );
+  const vehData = useAppSelector((state) => state.renewalQuote.vehData);
+
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
 
+  const isSingpassFlowRenewal = useAppSelector(
+    (state) => state.general.isSingpassFlowRenewal,
+  );
+
   const handleBackDashboard = () => {
-    router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
+    if (isSingpassFlowRenewal) {
+      if (vehData?.length && vehData.length > 1) {
+        router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
+      } else {
+        router.push(ROUTES.RENEWAL.LOGIN);
+      }
+    } else {
+      router.push(ROUTES.RENEWAL.LOGIN); // Manual flow
+    }
   };
 
   const handleEditRenewal = () => {

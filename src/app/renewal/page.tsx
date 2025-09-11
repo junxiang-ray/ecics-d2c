@@ -18,9 +18,11 @@ import {
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
 import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
+import { setIsSingpassFlowRenewal } from '@/redux/slices/general.slice';
 import {
   setTimeoutValue,
   updateRenewalQuote,
+  updateVehData,
 } from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -90,6 +92,7 @@ export default function RenewalPage() {
         { nric: renewalQuote?.uinfin?.value },
         {
           onSuccess: (res) => {
+            dispatch(setIsSingpassFlowRenewal(true));
             getTimeoutRenewal(undefined, {
               onSuccess: (timeoutRes) => {
                 const minutes =
@@ -106,7 +109,7 @@ export default function RenewalPage() {
 
   useEffect(() => {
     if (vehData) {
-      dispatch(updateRenewalQuote(vehData));
+      dispatch(updateVehData(vehData));
     }
   }, [vehData]);
 

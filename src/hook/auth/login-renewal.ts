@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-} from '@tanstack/react-query';
+import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { UserInfoPayload } from '@/libs/types/auth';
 import { saveToSessionStorage } from '@/libs/utils/utils';
