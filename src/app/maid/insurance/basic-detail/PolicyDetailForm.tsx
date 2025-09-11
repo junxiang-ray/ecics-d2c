@@ -45,7 +45,7 @@ import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { SelectField } from '@/components/ui/form/selectfield';
 import { RadioCardField } from '@/components/ui/form/radiocardfield';
-import { HELPER_TYPE_CARD_OPTIONS } from './options';
+import { HELPER_TYPE_CARD_OPTIONS, HELPER_VALUE_INFO } from './options';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -447,13 +447,14 @@ const PolicyDetailForm = ({
                         />
                       </Form.Item>
                     </div>
-                    <div className='flex w-full py-4'>
-                      <Card className='w-2/3 bg-blue-200 '>
-                        <div className='flex items-center space-x-4'>
+                    <div className='flex w-full flex-col space-y-4 py-4 md:flex-row md:space-x-4 md:space-y-0'>
+                      {/* Left Card */}
+                      <Card className='w-full bg-blue-100 md:w-2/3'>
+                        <div className='flex flex-col items-start md:flex-row md:items-center md:space-x-4'>
                           {/* Left: Info Card */}
-                          <div className='w-1/2 flex-shrink-0 text-pretty px-4'>
+                          <div className='mb-4 w-full flex-shrink-0 text-pretty px-4 md:mb-0 md:w-1/2'>
                             <strong className='text-lg'>
-                              Set the Right Start Date for Your Maid Insurance
+                              {HELPER_VALUE_INFO[helperType]?.title}
                             </strong>
                             <br />
                             <p className='mt-1 text-pretty text-sm'>
@@ -463,7 +464,7 @@ const PolicyDetailForm = ({
                           </div>
 
                           {/* Right: DatePicker */}
-                          <div className='w-1/2 flex-shrink-0'>
+                          <div className='w-full flex-shrink-0 px-4 md:w-1/2'>
                             <Form.Item
                               name={MAID_QUOTE.start_date}
                               validateStatus={
@@ -483,7 +484,9 @@ const PolicyDetailForm = ({
                           </div>
                         </div>
                       </Card>
-                      <div className='w-1/3 p-4'>
+
+                      {/* Right: Plan Duration */}
+                      <div className='w-full px-4 md:w-1/3'>
                         <Form.Item
                           name={MAID_QUOTE.plan_period}
                           validateStatus={
@@ -508,6 +511,7 @@ const PolicyDetailForm = ({
                         </Form.Item>
                       </div>
                     </div>
+
                     <div className='mb-4 grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6'>
                       <Form.Item
                         name={MAID_QUOTE.end_date}

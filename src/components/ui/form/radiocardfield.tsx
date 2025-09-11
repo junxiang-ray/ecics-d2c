@@ -43,7 +43,7 @@ export const RadioCardField = ({
           )}
 
           <div
-            className={`grid w-full grid-cols-3 gap-4 md:grid-cols-3 ${className}`}
+            className={`grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 ${className}`}
           >
             {options.map((option) => {
               const isSelected = field.value === option.value;

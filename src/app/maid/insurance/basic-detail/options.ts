@@ -6,6 +6,11 @@ export enum HelperTypeValue {
   TRANSFER_MAID = 'Transfer Maid',
 }
 
+type HelperTypeInfo = {
+  title: string;
+  description: string;
+};
+
 export const HELPER_TYPE_CARD_OPTIONS: CardOptions[] = [
   {
     value: HelperTypeValue.NEW_MAID,
@@ -24,3 +29,20 @@ export const HELPER_TYPE_CARD_OPTIONS: CardOptions[] = [
       'Helper is already in Singapore but moving from another employer to you',
   },
 ];
+
+export const HELPER_VALUE_INFO: Record<string, HelperTypeInfo> = {
+  [HelperTypeValue.NEW_MAID]: {
+    title: 'Set the Right Start Date for Your Maid Insurance',
+    description:
+      'Set the Policy Start Date as your helper’s arrival in Singapore',
+  },
+  [HelperTypeValue.RENEWAL_MAID]: {
+    title: 'Align Insurance Start Date with MOM Application',
+    description:
+      'Set the start date as the work permit application date at MOM',
+  },
+  [HelperTypeValue.TRANSFER_MAID]: {
+    title: 'Start Date Should Match Current Work Permit Expiry',
+    description: 'Set the start date as the current work permit’s expiry date',
+  },
+};
