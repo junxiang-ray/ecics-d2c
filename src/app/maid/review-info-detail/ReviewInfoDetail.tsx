@@ -26,7 +26,7 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfoMaid } from '@/hook/auth/login-maid';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useAppDispatch } from '@/redux/store/configureStore';
+import { useAppDispatch } from '@/redux/store';
 
 import { ModalAge } from './ModalAge';
 

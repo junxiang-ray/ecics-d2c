@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -24,8 +24,7 @@ import PolicyDetailsContent from '@/app/renewal/detail/card/PolicyDetailsContent
 import PolicyHolderContent from '@/app/renewal/detail/card/PolicyHolderContent';
 import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent';
 import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
-import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store/configureStore';
+import { useAppDispatch } from '@/redux/store';
 
 import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
 

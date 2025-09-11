@@ -1,8 +1,9 @@
 'use client';
 
+import { useAppSelector } from '@/redux/store';
+
 import { PolicyDetail } from './PolicyDetail';
 import MaidInsuranceLayout from '../MaidInsuranceLayout';
-import { useAppSelector } from '@/redux/store/configureStore';
 
 export default function PolicyDetailPage() {
   const isSingPassFlow = useAppSelector(

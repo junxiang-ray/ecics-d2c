@@ -10,7 +10,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { EDIT_RENEWAL } from '@/constants/general.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { setIsLoadingStep } from '@/redux/slices/general.slice';
-import { useAppDispatch } from '@/redux/store/configureStore';
+import { useAppDispatch } from '@/redux/store';
 
 export function PricingSummaryRenewal({
   onClick,

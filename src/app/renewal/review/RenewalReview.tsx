@@ -18,7 +18,7 @@ import {
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
 import { setRenewalKey } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const RenewalReview = () => {
   const router = useRouter();
@@ -75,7 +75,7 @@ const RenewalReview = () => {
     }, 0);
     const nameDriversTotalFee =
       (policy?.named_drivers?.length ?? 0) > 1
-        ? (policy.named_drivers.length - 1) * 60
+        ? ((policy?.named_drivers?.length ?? 0) - 1) * 60
         : 0;
 
     const subtotalFeeAfter =

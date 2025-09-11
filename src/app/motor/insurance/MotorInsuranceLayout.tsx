@@ -9,7 +9,7 @@ import InsuranceLayout from '@/components/layouts/InsuranceLayout';
 
 import { ROUTES } from '@/constants/routes';
 import { setIsSingpassFlow } from '@/redux/slices/general.slice';
-import { useAppDispatch } from '@/redux/store/configureStore';
+import { useAppDispatch } from '@/redux/store';
 
 import { ProductType } from './basic-detail/options';
 

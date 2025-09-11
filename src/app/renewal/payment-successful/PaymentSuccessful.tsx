@@ -22,7 +22,7 @@ import {
 
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalPaymentSuccess } from '@/hook/insurance/renewal';
-import { useAppSelector } from '@/redux/store/configureStore';
+import { useAppSelector } from '@/redux/store';
 
 import ImportantDoc from './ImportantDoc';
 

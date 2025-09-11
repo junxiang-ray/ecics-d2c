@@ -408,35 +408,6 @@ const RenewalReviewForm = ({
   };
 
   const PremiumSummaryContent = () => {
-    const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
-    const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-    const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
-    const includedAddonsFee = renewal?.optional_benefits ?? [];
-    const addonsIncludedTotal = includedAddonsFee.reduce((sum, addon) => {
-      return sum + Number(addon.prem ?? 0);
-    }, 0);
-    const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-    const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
-      const subOptionsTotal =
-        addon.sub_options?.reduce(
-          (subSum, sub) => subSum + Number(sub.prem ?? 0),
-          0,
-        ) ?? 0;
-
-      const premValue = Number(addon.prem ?? 0) + subOptionsTotal;
-      return sum + premValue;
-    }, 0);
-    const nameDriversTotalFee =
-      (policy?.named_drivers?.length ?? 0) > 1
-        ? (policy!.named_drivers!.length - 1) * 60
-        : 0;
-
-    const subtotalFeeAfter =
-      planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
-    const hasAddonsPlus = addonsSelectedTotal > 0;
-    const gstAmount = subtotalFeeAfter * GST_RATE;
-    const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
-
     return (
       <div className='space-y-4'>
         {/* Plan */}

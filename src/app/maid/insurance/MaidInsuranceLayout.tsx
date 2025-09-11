@@ -10,7 +10,7 @@ import InsuranceLayout from '@/components/layouts/InsuranceLayout';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { setIsSingpassFlow } from '@/redux/slices/general.slice';
-import { useAppDispatch } from '@/redux/store/configureStore';
+import { useAppDispatch } from '@/redux/store';
 
 const maidSteps = {
   [StepProcessBar.FIRST]: ROUTES.MAID.REVIEW_INFO_DETAIL,

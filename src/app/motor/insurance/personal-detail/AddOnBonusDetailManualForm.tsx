@@ -24,7 +24,7 @@ import { useSaveQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote, useAddNamedDriverInfo } from '@/redux/slices/quote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { RenewalModal } from '../basic-detail/modal/RenewalModal';
 import { UnableQuote } from '../basic-detail/modal/UnableQuote';

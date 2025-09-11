@@ -18,7 +18,7 @@ import {
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
 import { setRenewalKey } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const RenewalNotice = () => {
   const router = useRouter();

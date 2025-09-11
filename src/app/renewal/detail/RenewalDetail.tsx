@@ -26,7 +26,7 @@ import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const RenewalDetail = () => {
   const router = useRouter();
@@ -200,7 +200,7 @@ const RenewalDetail = () => {
 
   const nameDriversTotalFee =
     (policy?.named_drivers?.length ?? 0) > 1
-      ? (policy.named_drivers.length - 1) * 60
+      ? ((policy?.named_drivers?.length ?? 0) - 1) * 60
       : 0;
 
   const subtotalFeeAfter =

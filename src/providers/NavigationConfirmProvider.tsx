@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import NavigationConfirmModal from '@/providers/modal/NavigationConfirmModal';
-import { useAppSelector } from '@/redux/store/configureStore';
+import { useAppSelector } from '@/redux/store';
 
 function isPathAllowed(pathname: string) {
   return (

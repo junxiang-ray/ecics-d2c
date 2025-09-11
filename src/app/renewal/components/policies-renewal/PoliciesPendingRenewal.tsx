@@ -15,7 +15,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store/configureStore';
+import { useAppDispatch } from '@/redux/store';
 
 interface Policy {
   id: string;

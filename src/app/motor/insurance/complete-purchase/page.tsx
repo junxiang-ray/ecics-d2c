@@ -1,8 +1,9 @@
 'use client';
 
+import { useAppSelector } from '@/redux/store';
+
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import MotorInsuranceLayout from '../MotorInsuranceLayout';
-import { useAppSelector } from '@/redux/store/configureStore';
 
 export default function CompletePurchasePage() {
   const isSingPassFlow = useAppSelector(

@@ -30,7 +30,7 @@ import { usePayment, useSaveProposal } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateQuote } from '@/redux/slices/quote.slice';
-import { useAppDispatch, useAppSelector } from '@/redux/store/configureStore';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { ProductType } from '../basic-detail/options';
 

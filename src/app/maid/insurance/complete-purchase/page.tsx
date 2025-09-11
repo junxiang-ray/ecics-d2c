@@ -1,8 +1,9 @@
 'use client';
 
+import { useAppSelector } from '@/redux/store';
+
 import CompletePurchaseDetail from './CompletePurchaseDetail';
 import MaidInsuranceLayout from '../MaidInsuranceLayout';
-import { useAppSelector } from '@/redux/store/configureStore';
 
 interface PolicyDetailPageProps {}
 

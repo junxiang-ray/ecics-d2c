@@ -30,7 +30,7 @@ import {
   setTimeoutValue,
   updateRenewalQuote,
 } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store/configureStore';
+import { useAppDispatch } from '@/redux/store';
 
 const schema = z.object({
   veh_reg_no: z
