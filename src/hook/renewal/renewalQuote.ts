@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import renewal from '@/api/base-service/renewal';
 import { ProductTypeWeb } from '@/app/api/constants/product';
+import verify from '@/api/cms-service/verify';
 
 type EditRenewalParams = {
   productType: ProductTypeWeb;
@@ -50,5 +51,17 @@ export const usePostSavePolicy = () => {
   return useMutation({
     mutationFn: postSavePolicyPayment,
     mutationKey: ['save-policy'],
+  });
+};
+
+export const useGetTimeoutRenewal = () => {
+  const getTimeoutRenewal = async () => {
+    const res = await verify.getTimeoutRenewal();
+    return res.data;
+  };
+
+  return useMutation({
+    mutationFn: getTimeoutRenewal,
+    mutationKey: ['get-timeout-renewal'],
   });
 };

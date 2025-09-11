@@ -88,6 +88,15 @@ interface AddOnOptionalBenefit {
   sub_options?: SubOption[];
 }
 
+export interface PolicyOptionalBenefit {
+  id: number;
+  name: string;
+  sub_option?: string;
+  description?: string;
+  prem: string;
+  isIncluded: boolean;
+}
+
 export interface RenewalInfo {
   policy_details: PolicyDetails;
   renewal_start_date: string;
@@ -97,11 +106,13 @@ export interface RenewalInfo {
   scheme: string;
   renewal_excess: RenewalExcess;
   optional_benefits: OptionalBenefit[];
+  policy_optional_benefits?: PolicyOptionalBenefit[];
   renewalplanprem: string;
   renewalpremb4gst: string;
   renewalgst: string;
   renewalpremwgst: string;
   selected_add_on_optional_benefits?: SelectedAddon[];
+  selectedAddons?: SelectedAddon[];
   coverage?: string;
 }
 
@@ -125,9 +136,9 @@ export interface SelectedAddon {
   id: number;
   name: string;
   prem?: number;
-  subOption?: {
+  sub_options: {
     id: number;
     name: string;
     prem: number;
-  };
+  }[];
 }

@@ -1,31 +1,31 @@
 import { Button } from 'antd';
 import React from 'react';
 
-import { RenewalQuote } from '@/libs/types/renewalQuote';
+import { RenewalQuote, SelectedAddon } from '@/libs/types/renewalQuote';
 import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 import { GST_RATE } from '@/constants/general.constant';
 
 export interface PremiumBreakdownRenewalContentProps {
   gst: number;
-  tax: number;
   subtotalFeeAfter: number;
   subtotal: number;
   renewalQuote?: RenewalQuote | null;
   onClose?: () => void;
   hasAddonsPlus: boolean;
   total: number;
+  selectedAddons?: SelectedAddon[];
 }
 
 const PremiumBreakdownRenewalContent = ({
   gst,
-  tax,
   subtotal,
   subtotalFeeAfter,
   renewalQuote,
   onClose,
   hasAddonsPlus,
   total,
+  selectedAddons = [],
 }: PremiumBreakdownRenewalContentProps) => {
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
@@ -77,26 +77,26 @@ const PremiumBreakdownRenewalContent = ({
               ))}
 
               {/* Selected add-ons */}
-              {(renewal?.selected_add_on_optional_benefits ?? []).map(
-                (item) => {
-                  const price = item.subOption?.prem ?? item.prem ?? 0;
-                  return (
-                    <div
-                      key={`sel-${item.id}`}
-                      className='mb-1 flex items-center justify-between space-y-2'
-                    >
-                      <span className='text-sm'>{item.name} </span>
-                      <span className='text-sm'>
-                        {formatCurrency(price / tax)}
-                      </span>
-                    </div>
-                  );
-                },
-              )}
+              {(selectedAddons || []).map((item) => {
+                const subTotal =
+                  item.sub_options?.reduce(
+                    (sum, sub) => sum + Number(sub.prem ?? 0),
+                    0,
+                  ) || 0;
+                const price = Number(item.prem ?? 0) + subTotal;
+
+                return (
+                  <div
+                    key={item.id}
+                    className='mb-1 flex items-center justify-between space-y-2'
+                  >
+                    <span className='text-sm'>{item.name}</span>
+                    <span className='text-sm'>{formatCurrency(price)}</span>
+                  </div>
+                );
+              })}
             </>
-          ) : (
-            <p className='text-sm text-gray-500'>No add-ons selected</p>
-          )}
+          ) : null}
         </div>
 
         {/* Named Drivers */}

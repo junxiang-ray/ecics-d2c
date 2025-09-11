@@ -10,6 +10,7 @@ import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
+import { PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
@@ -25,7 +26,6 @@ const RenewalNotice = () => {
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
   const { mutate: savePolicy, isPending } = usePostSavePolicy();
-
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
@@ -65,17 +65,18 @@ const RenewalNotice = () => {
               renewal_summary: {
                 coverage: renewal?.coverage,
                 total_paid:
-                  Number(renewal?.renewalpremwgst ?? 0) +
+                  Number(renewal?.renewalpremb4gst ?? 0) +
                   Number(renewal?.renewalgst ?? 0),
                 poily_no: policy?.current_policy_no,
               },
               policy_summary: {
-                policy_type: paymentData.data.product,
+                policy_type: sessionStorage.getItem(PRODUCT_TYPE),
                 policy_start_date: renewal?.renewal_start_date
-                  ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
+                  ? dayjs(renewal.renewal_start_date).format('DD/MM/YYYY')
                   : undefined,
+
                 policy_end_date: renewal?.renewal_end_date
-                  ? dayjs(renewal.renewal_end_date).format('D-M-YYYY')
+                  ? dayjs(renewal.renewal_end_date).format('DD/MM/YYYY')
                   : undefined,
                 veh_reg_no: policy?.vehicle_details?.reg_no,
               },
