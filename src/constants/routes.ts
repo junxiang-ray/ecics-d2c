@@ -26,6 +26,17 @@ export const ROUTES = {
     LOGIN: '/motorcycle',
     REVIEW_INFO_DETAIL: '/motorcycle/review-info-detail',
   },
+  RENEWAL: {
+    LOGIN: '/renewal/login',
+    RENEWAL: '/renewal',
+    RENEWAL_DASHBOARD: '/renewal',
+    PROFILE: '/renewal/profile',
+    SETTINGS: '/renewal/settings',
+    RENEWAL_NOTICE: '/renewal/notice',
+    RENEWAL_DETAIL: '/renewal/detail',
+    RENEWAL_REVIEW: '/renewal/review',
+    RENEWAL_ACCOUNT_SETUP: '/renewal/account-setup',
+  },
 };
 
 export const STEP_TO_ROUTE: Record<number, string> = {

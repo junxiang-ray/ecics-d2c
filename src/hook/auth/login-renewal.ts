@@ -1,0 +1,64 @@
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+} from '@tanstack/react-query';
+
+import { UserInfoPayload } from '@/libs/types/auth';
+import { saveToSessionStorage } from '@/libs/utils/utils';
+
+import auth from '@/api/singpass-renewal-service/auth';
+import { ProductTypeWeb } from '@/app/api/constants/product';
+import {
+  DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
+} from '@/constants/general.constant';
+
+export const useRequestSignInSingpass = (
+  productType: ProductTypeWeb,
+  options?: UseMutationOptions<any, unknown, void, unknown>,
+) => {
+  const requestSignInSingpass = async () => {
+    const res = await auth.requestSignInSingpass(productType);
+    return res.data;
+  };
+
+  return useMutation({
+    mutationFn: requestSignInSingpass,
+    mutationKey: ['login', productType],
+    onSuccess: (data) => {
+      const { url, state, nonce, code_verifier } = data.data;
+      window.location.href = url;
+      saveToSessionStorage({
+        state: state,
+        nonce: nonce,
+        code_verifier: code_verifier,
+      });
+    },
+    onError: (error, variables, context) => {
+      console.log(error);
+      options?.onError?.(error, variables, context);
+    },
+  });
+};
+
+export const usePostUserInfoRenewal = () => {
+  const postUserInfoRenewal = async ({
+    payload,
+    productType,
+  }: {
+    payload: UserInfoPayload;
+    productType: ProductTypeWeb;
+  }) => {
+    const res = await auth.postUserInfoRenewal({ payload, productType });
+    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data.data) });
+    saveToSessionStorage({
+      [DATA_FROM_SINGPASS]: JSON.stringify(res.data.data),
+    });
+    return res.data;
+  };
+  return useMutation({
+    mutationFn: postUserInfoRenewal,
+    mutationKey: ['user-info-renewal'],
+  });
+};

@@ -18,7 +18,7 @@ export const PrimaryButton = forwardRef<HTMLButtonElement, CustomButtonProps>(
       <Button
         type='primary'
         size='large'
-        className={`${className} ${baseStyle} ${disabled ? disabledStyle : enabledStyle}`}
+        className={`${baseStyle} ${className} ${disabled ? disabledStyle : enabledStyle}`}
         ref={ref}
         disabled={disabled}
         htmlType={htmlType}
