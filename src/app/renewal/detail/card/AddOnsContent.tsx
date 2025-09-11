@@ -15,15 +15,17 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
   }>({});
 
   useEffect(() => {
-    const selected: SelectedAddon[] = Object.entries(selectedOptions).map(
-      ([addonId, subOptionId]) => {
-        const addon = renewalQuote.add_on_optional_benefits.find(
+    const selected: SelectedAddon[] = Object.entries(selectedOptions)
+      .map(([addonId, subOptionId]) => {
+        const addon = renewalQuote.add_on_optional_benefits?.find(
           (a) => a.id === Number(addonId),
-        )!;
+        );
+        if (!addon) return null;
 
         const subOption = addon.sub_options?.find(
           (s) => s.id === Number(subOptionId),
         );
+
         return {
           id: addon.id,
           name: addon.name,
@@ -38,8 +40,8 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
               ]
             : [],
         };
-      },
-    );
+      })
+      .filter(Boolean) as SelectedAddon[];
 
     onChangeSelectedAddons(selected);
   }, [
