@@ -10,7 +10,7 @@ import { BackIcon } from '@/components/icons/renewal-icons';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalReviewForm from '@/app/renewal/review/RenewalReviewForm';
-import { GST_RATE, PRODUCT_TYPE } from '@/constants/general.constant';
+import { GST_RATE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
@@ -29,6 +29,9 @@ const RenewalReview = () => {
 
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
+  );
+  const productTypeState = useAppSelector(
+    (state) => state.renewalQuote.productType,
   );
 
   const policy = renewalQuote?.renewal_info?.policy_details;
@@ -73,10 +76,10 @@ const RenewalReview = () => {
       const premValue = Number(addon.prem ?? 0) + subOptionsTotal;
       return sum + premValue;
     }, 0);
+
+    const namedDriversCount = policy?.named_drivers?.length ?? 0;
     const nameDriversTotalFee =
-      (policy?.named_drivers?.length ?? 0) > 1
-        ? ((policy?.named_drivers?.length ?? 0) - 1) * 60
-        : 0;
+      namedDriversCount > 1 ? (namedDriversCount - 1) * 60 : 0;
 
     const subtotalFeeAfter =
       planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
@@ -103,7 +106,7 @@ const RenewalReview = () => {
                 poily_no: policy?.current_policy_no,
               },
               policy_summary: {
-                policy_type: sessionStorage.getItem(PRODUCT_TYPE),
+                policy_type: productTypeState,
                 policy_start_date: renewal?.renewal_start_date
                   ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
                   : undefined,

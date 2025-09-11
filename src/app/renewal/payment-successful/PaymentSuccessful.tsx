@@ -44,8 +44,7 @@ const StepItem = ({
 const PaymentSuccessful = () => {
   const router = useRouter();
   const renewalKey = useAppSelector((state) => state.renewalQuote.renewalKey);
-
-  const { data, isLoading } = useGetRenewalPaymentSuccess(renewalKey);
+  const { data, isLoading } = useGetRenewalPaymentSuccess(renewalKey ?? '');
 
   const handleBackToHome = () => {
     router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);

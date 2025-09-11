@@ -10,7 +10,6 @@ import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
-import { PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
@@ -28,6 +27,9 @@ const RenewalNotice = () => {
   const { mutate: savePolicy, isPending } = usePostSavePolicy();
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
+  );
+  const productTypeState = useAppSelector(
+    (state) => state.renewalQuote.productType,
   );
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
@@ -70,7 +72,7 @@ const RenewalNotice = () => {
                 poily_no: policy?.current_policy_no,
               },
               policy_summary: {
-                policy_type: sessionStorage.getItem(PRODUCT_TYPE),
+                policy_type: productTypeState,
                 policy_start_date: renewal?.renewal_start_date
                   ? dayjs(renewal.renewal_start_date).format('DD/MM/YYYY')
                   : undefined,

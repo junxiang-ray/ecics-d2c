@@ -38,7 +38,7 @@ const RenewalDetail = () => {
   );
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
-  const dob = renewal?.insured_info?.dob;
+  const dob = renewal?.insured_info?.dob || '';
 
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postEditRenewal, isPending } = usePostEditRenewal();
@@ -128,9 +128,6 @@ const RenewalDetail = () => {
       renewalQuote?.renewal_info?.policy_details?.vehicle_details?.reg_no ?? '';
     const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
 
-    if (!dob || !nric) {
-      throw new Error('Missing dob or nric');
-    }
     const passphrase = createPassphrase(dob, nric);
 
     const renewalEndDate = value.renewal_expiry_date
@@ -198,10 +195,9 @@ const RenewalDetail = () => {
     return sum + premValue;
   }, 0);
 
+  const namedDriversCount = policy?.named_drivers?.length ?? 0;
   const nameDriversTotalFee =
-    (policy?.named_drivers?.length ?? 0) > 1
-      ? ((policy?.named_drivers?.length ?? 0) - 1) * 60
-      : 0;
+    namedDriversCount > 1 ? (namedDriversCount - 1) * 60 : 0;
 
   const subtotalFeeAfter =
     planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;

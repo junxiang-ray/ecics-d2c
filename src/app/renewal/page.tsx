@@ -3,7 +3,9 @@
 import { Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
 import { createPassphrase } from '@/libs/utils/utils';
+
 import Announcements from '@/app/renewal/components/announcements/Announcements';
 import PoliciesPendingRenewal from '@/app/renewal/components/policies-renewal/PoliciesPendingRenewal';
 import Promotions from '@/app/renewal/components/promotions/Promotions';
@@ -15,24 +17,24 @@ import {
   useCheckPolicyRenewal,
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
+import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 import {
   setTimeoutValue,
   updateRenewalQuote,
 } from '@/redux/slices/renewalQuote.slice';
-import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { PRODUCT_NAME } from '../api/constants/product';
-import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 
 export default function RenewalPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   const renewalQuote = useAppSelector(
-    (state: RootState) => state.renewalQuote?.renewalQuote,
+    (state) => state.renewalQuote?.renewalQuote,
   );
   const timeOut = useAppSelector(
-    (state: RootState) => state.renewalQuote.idleWorker.timeoutValue,
+    (state) => state.renewalQuote.idleWorker.timeoutValue,
   );
 
   const [payload, setPayload] = useState({
@@ -113,19 +115,21 @@ export default function RenewalPage() {
     if (vehData?.length < 2) {
       const policy = vehData[0];
       const veh_reg_no = policy?.veh_reg_no;
-      const passphrase = createPassphrase(
-        policy.dob,
-        renewalQuote?.uinfin?.value,
-      );
-      checkPolicyRenewal({
-        veh_reg_no: veh_reg_no,
-        passphrase,
-      }).then((res) => {
-        if (res) {
-          dispatch(updateRenewalQuote(res));
-        }
-        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-      });
+      if (policy.dob && renewalQuote?.uinfin?.value) {
+        const passphrase = createPassphrase(
+          policy.dob,
+          renewalQuote.uinfin.value,
+        );
+        checkPolicyRenewal({
+          veh_reg_no: veh_reg_no,
+          passphrase,
+        }).then((res) => {
+          if (res) {
+            dispatch(updateRenewalQuote(res));
+          }
+          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+        });
+      }
     }
   }, [vehData, router]);
 

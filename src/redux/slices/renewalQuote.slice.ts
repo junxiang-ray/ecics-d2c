@@ -11,16 +11,20 @@ interface RenewalQuoteState {
   renewalQuote: RenewalQuote | null;
   idleWorker: IdleWorkerState;
   renewalKey: string | null;
+  editRenewal?: boolean;
+  productType?: string;
 }
 
 const initialState: RenewalQuoteState = {
   renewalQuote: {} as RenewalQuote,
+  // renewalQuote: null,
   idleWorker: {
     isExpired: false,
     timeoutValue: 0,
   },
-  // renewalQuote: null,
   renewalKey: null,
+  editRenewal: false,
+  productType: undefined,
 };
 
 const renewalQuoteSlice = createSlice({
@@ -43,6 +47,12 @@ const renewalQuoteSlice = createSlice({
     setTimeoutValue(state, action: PayloadAction<number>) {
       state.idleWorker.timeoutValue = action.payload;
     },
+    setEditRenewal(state, action: PayloadAction<boolean>) {
+      state.editRenewal = action.payload;
+    },
+    setProductType(state, action: PayloadAction<string>) {
+      state.productType = action.payload;
+    },
   },
 });
 
@@ -52,6 +62,8 @@ export const {
   resetRenewalQuote,
   setExpired,
   setTimeoutValue,
+  setEditRenewal,
+  setProductType,
 } = renewalQuoteSlice.actions;
 
 export default renewalQuoteSlice.reducer;

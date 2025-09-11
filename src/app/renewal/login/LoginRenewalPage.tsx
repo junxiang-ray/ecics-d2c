@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { saveToSessionStorage } from '@/libs/utils/utils';
 import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 
 import { CarIcon } from '@/components/icons/add-on-icons';
@@ -21,12 +20,13 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { EDIT_RENEWAL, PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 import {
+  setEditRenewal,
+  setProductType,
   setTimeoutValue,
   updateRenewalQuote,
 } from '@/redux/slices/renewalQuote.slice';
@@ -90,11 +90,9 @@ const LoginRenewalPage = () => {
       {
         onSuccess: (res) => {
           if (res) {
-            if (res.edit_renewal) {
-              saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
-              saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
-            }
             dispatch(updateRenewalQuote(res));
+            dispatch(setEditRenewal(res.edit_renewal));
+            dispatch(setProductType(res.product));
 
             getTimeoutRenewal(undefined, {
               onSuccess: (timeoutRes) => {
