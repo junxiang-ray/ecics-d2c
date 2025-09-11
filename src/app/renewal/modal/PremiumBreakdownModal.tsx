@@ -10,7 +10,7 @@ export interface PremiumBreakdownRenewalContentProps {
   gst: number;
   subtotalFeeAfter: number;
   subtotal: number;
-  renewalQuote?: RenewalQuote;
+  renewalQuote?: RenewalQuote | null;
   onClose?: () => void;
   hasAddonsPlus: boolean;
   total: number;

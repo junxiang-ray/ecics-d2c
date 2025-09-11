@@ -7,10 +7,9 @@ import { formatCurrency } from '@/libs/utils/utils';
 import { EditRenewalIcon } from '@/components/icons/renewal-icons';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 
-import { EDIT_RENEWAL } from '@/constants/general.constant';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { setIsLoadingStep } from '@/redux/slices/general.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 export function PricingSummaryRenewal({
   onClick,
@@ -34,15 +33,18 @@ export function PricingSummaryRenewal({
   const { isMobile } = useDeviceDetection();
   const dispatch = useAppDispatch();
 
-  const [editRenewal, setEditRenewal] = useState<string | null>(null);
+  const editRenewalState = useAppSelector(
+    (state) => state.renewalQuote.editRenewal,
+  );
+  const [editRenewal, setEditRenewal] = useState<boolean>(false);
 
   useEffect(() => {
-    setEditRenewal(sessionStorage.getItem(EDIT_RENEWAL));
+    setEditRenewal(!!editRenewalState);
 
     if (!loading) {
       dispatch(setIsLoadingStep(false));
     }
-  }, [loading, dispatch]);
+  }, [loading, dispatch, editRenewalState]);
 
   return (
     <div
@@ -55,7 +57,7 @@ export function PricingSummaryRenewal({
           {isMobile ? (
             <div className='flex w-full flex-col items-center gap-3'>
               <div className='flex w-full items-center justify-between gap-2'>
-                {editRenewal === 'true' && (
+                {editRenewal && (
                   <SecondaryButton
                     onClick={(e) => {
                       e.stopPropagation();
@@ -101,7 +103,7 @@ export function PricingSummaryRenewal({
           ) : (
             <div className='grid w-full grid-cols-3 items-center md:my-3'>
               <div>
-                {editRenewal === 'true' && (
+                {editRenewal && (
                   <SecondaryButton
                     onClick={(e) => {
                       e.stopPropagation();

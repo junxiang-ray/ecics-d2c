@@ -1,28 +1,64 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist';
 
-import appReducer from './slices/app.slice';
-import generalReducer from './slices/general.slice';
-import maidQuoteReducer from './slices/maidQuote.slice';
-import quoteReducer from './slices/quote.slice';
-import renewalQuoteReducer from './slices/renewalQuote.slice';
-import userInfoCarReducer from './slices/userInfoCar.slice';
+import appReducer from '@/redux/slices/app.slice';
+import generalReducer from '@/redux/slices/general.slice';
+import maidQuoteReducer from '@/redux/slices/maidQuote.slice';
+import quoteReducer from '@/redux/slices/quote.slice';
+import renewalQuoteReducer from '@/redux/slices/renewalQuote.slice';
+import userInfoCarReducer from '@/redux/slices/userInfoCar.slice';
+import storage from '@/redux/store/storage';
 
-const store = configureStore({
-  reducer: {
-    app: appReducer,
-    general: generalReducer,
-    maidQuote: maidQuoteReducer,
-    quote: quoteReducer,
-    renewalQuote: renewalQuoteReducer,
-    userInfoCar: userInfoCarReducer,
-  },
+// Root reducer
+const rootReducer = combineReducers({
+  app: appReducer,
+  general: generalReducer,
+  maidQuote: maidQuoteReducer,
+  quote: quoteReducer,
+  renewalQuote: renewalQuoteReducer,
+  userInfoCar: userInfoCarReducer,
 });
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
+// Persist config
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['app', 'general', 'renewalQuote'],
+};
+
+// Persisted reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// Store
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
+
+// Persistor
+export const persistor = persistStore(store);
+
+// Types
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+
+// Custom hooks
+export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export default store;

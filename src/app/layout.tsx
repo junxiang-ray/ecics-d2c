@@ -1,13 +1,14 @@
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata, Viewport } from 'next';
 import { Open_Sans } from 'next/font/google';
+import Script from 'next/script';
 import { Suspense } from 'react';
 
 import '@/styles/app.scss';
 
 import { NavigationConfirmProvider } from '@/providers/NavigationConfirmProvider';
 import { ReactQueryProvider } from '@/providers/react-query';
-import { ReduxProvider } from '@/providers/redux';
+import ReduxProvider from '@/redux/store/ReduxProvider';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -36,43 +37,37 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <head>
-        <title>ECICS Insurance</title>
-
+      <body className={openSans.className}>
         {/* Google Analytics */}
-        <script
-          async
+        <Script
           src='https://www.googletagmanager.com/gtag/js?id=G-HYWYT61GW5'
-        ></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-HYWYT61GW5');
-            `,
-          }}
+          strategy='afterInteractive'
         />
+        <Script id='ga' strategy='afterInteractive'>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-HYWYT61GW5');
+          `}
+        </Script>
 
         {/* Microsoft Clarity */}
-        <script
-          type='text/javascript'
-          dangerouslySetInnerHTML={{
-            __html: `(function(c,l,a,r,i,t,y){
+        <Script id='clarity' strategy='afterInteractive'>
+          {`
+            (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
               t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
               y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "rntrxo7r12");`,
-          }}
-        />
-      </head>
-      <body className={openSans.className}>
+            })(window, document, "clarity", "script", "rntrxo7r12");
+          `}
+        </Script>
+
         <Suspense fallback={null}>
           <ReduxProvider>
             <ReactQueryProvider>
               <AntdRegistry>
-                {/*<NavigationConfirmProvider />*/}
+                {/* <NavigationConfirmProvider /> */}
                 {children}
               </AntdRegistry>
             </ReactQueryProvider>

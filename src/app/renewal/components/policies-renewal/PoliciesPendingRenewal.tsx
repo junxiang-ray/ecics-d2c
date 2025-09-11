@@ -3,18 +3,18 @@
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
-import { createPassphrase, saveToSessionStorage } from '@/libs/utils/utils';
+import { createPassphrase } from '@/libs/utils/utils';
 
 import { PrivateMotorCarIcon } from '@/components/icons/renewal-icons';
 
-import {
-  ECICS_USER_INFO,
-  EDIT_RENEWAL,
-  PRODUCT_TYPE,
-} from '@/constants/general.constant';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
-import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import {
+  setEditRenewal,
+  setProductType,
+  updateRenewalQuote,
+} from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch } from '@/redux/store';
 
 interface Policy {
@@ -53,11 +53,9 @@ const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
       passphrase,
     }).then((res) => {
       if (res) {
-        if (res.edit_renewal) {
-          saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
-          saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
-        }
         dispatch(updateRenewalQuote(res));
+        dispatch(setEditRenewal(res.edit_renewal));
+        dispatch(setProductType(res.product));
       }
       router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
     });
