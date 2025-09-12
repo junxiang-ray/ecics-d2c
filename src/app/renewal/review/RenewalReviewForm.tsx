@@ -435,7 +435,7 @@ const RenewalReviewForm = ({
         <div>
           {renewal?.policy_optional_benefits?.length ? (
             <>
-              <p className='text-base font-semibold'>Add-ons</p>
+              <p className='mb-2 text-base font-semibold'>Add-ons</p>
               {renewal.policy_optional_benefits
                 .filter((item) => item.isIncluded)
                 .map((item) => (
