@@ -25,6 +25,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { PRODUCT_NAME } from '../api/constants/product';
+import { AllInsurancesRenewed } from './components/allInsurancesRenewed';
 
 export default function RenewalPage() {
   const router = useRouter();
@@ -115,6 +116,9 @@ export default function RenewalPage() {
     if (vehData?.length < 2) {
       const policy = vehData[0];
       const veh_reg_no = policy?.veh_reg_no;
+      if (policy.status.toLowerCase() === 'renewed') {
+        return;
+      }
       if (policy.dob && renewalQuote?.uinfin?.value) {
         const passphrase = createPassphrase(
           policy.dob,
@@ -141,6 +145,10 @@ export default function RenewalPage() {
     );
   }
 
+  const policiesPending = Array.isArray(vehData)
+    ? vehData.filter((item: any) => item?.status?.toLowerCase() !== 'renewed')
+    : [];
+
   return (
     <main>
       <div className='border-b border-gray-200 '>
@@ -154,9 +162,19 @@ export default function RenewalPage() {
           Manage your policies and stay protected
         </p>
       </div>
-      <section className='mb-8'>
-        <PoliciesPendingRenewal policies={vehData} />
-      </section>
+
+      {vehData?.length === 1 &&
+        vehData[0]?.status?.toLowerCase() === 'renewed' && (
+          <AllInsurancesRenewed />
+        )}
+      {vehData?.length >= 2 && policiesPending.length > 0 && (
+        <section className='mb-8'>
+          <PoliciesPendingRenewal policies={policiesPending} />
+        </section>
+      )}
+      {vehData?.length >= 2 && policiesPending.length === 0 && (
+        <AllInsurancesRenewed />
+      )}
 
       <div className='mb-8 grid gap-6 md:grid-cols-2'>
         <Promotions />
