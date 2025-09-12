@@ -1,9 +1,10 @@
 'use client';
 
 import { Button } from 'antd';
-import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { v4 as uuid } from 'uuid';
+
+import { formatDateString } from '@/libs/utils/dayjs';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -87,13 +88,10 @@ const RenewalNotice = () => {
               },
               policy_summary: {
                 policy_type: productTypeState,
-                policy_start_date: renewal?.renewal_start_date
-                  ? dayjs(renewal.renewal_start_date).format('DD/MM/YYYY')
-                  : undefined,
-
-                policy_end_date: renewal?.renewal_end_date
-                  ? dayjs(renewal.renewal_end_date).format('DD/MM/YYYY')
-                  : undefined,
+                policy_start_date: formatDateString(
+                  renewal?.renewal_start_date,
+                ),
+                policy_end_date: formatDateString(renewal?.renewal_end_date),
                 veh_reg_no: policy?.vehicle_details?.reg_no,
               },
               coverage_includes: coverageIncludes,
