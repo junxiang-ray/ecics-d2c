@@ -17,7 +17,7 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
   // Reset state when changing account / renewalQuote
   useEffect(() => {
     const initial: Record<number, number> = {};
-    renewalQuote.selected_add_on_optional_benefits?.forEach((addon) => {
+    renewalQuote?.selected_add_on_optional_benefits?.forEach((addon) => {
       if (addon.sub_options?.length) {
         initial[addon.id] = addon.sub_options[0].id;
       } else {
@@ -31,7 +31,7 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
   useEffect(() => {
     const selected: SelectedAddon[] = Object.entries(selectedOptions)
       .map(([addonId, subOptionId]) => {
-        const addon = renewalQuote.add_on_optional_benefits?.find(
+        const addon = renewalQuote?.add_on_optional_benefits?.find(
           (a) => a.id === Number(addonId),
         );
         if (!addon) return null;
@@ -60,7 +60,7 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
     onChangeSelectedAddons(selected);
   }, [
     selectedOptions,
-    renewalQuote.add_on_optional_benefits,
+    renewalQuote?.add_on_optional_benefits,
     onChangeSelectedAddons,
   ]);
 
@@ -91,7 +91,7 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
   return (
     <div className='space-y-4'>
       {/* Optional benefits included */}
-      {renewalQuote.renewal_info?.optional_benefits?.map((benefit) => (
+      {renewalQuote?.renewal_info?.optional_benefits?.map((benefit) => (
         <div
           key={benefit.id}
           className='flex items-center justify-between rounded-lg border-2 border-green-300 bg-white p-4'
@@ -112,7 +112,7 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
       ))}
 
       {/* Add-ons */}
-      {renewalQuote.add_on_optional_benefits?.map((addon) => {
+      {renewalQuote?.add_on_optional_benefits?.map((addon) => {
         const isAddonSelected = !!selectedOptions[addon.id];
 
         return (

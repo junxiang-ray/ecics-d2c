@@ -70,7 +70,12 @@ const VehicleDetailsContent = () => {
                 {/*        showSearch*/}
                 {/*    />*/}
                 {/*) : (*/}
-                <InputField name={name} disabled label={label} />
+                <InputField
+                  name={name}
+                  disabled
+                  label={label}
+                  isRenewalFlow={true}
+                />
                 {/*)}*/}
               </Form.Item>
             ))}

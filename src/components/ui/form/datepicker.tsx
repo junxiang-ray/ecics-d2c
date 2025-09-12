@@ -8,12 +8,14 @@ interface DatePickerFieldProps extends Omit<DatePickerProps, 'value'> {
   name: string;
   label?: string;
   isRequired?: boolean;
+  isRenewalFlow?: boolean;
 }
 
 export const DatePickerField = ({
   name,
   label,
   isRequired,
+  isRenewalFlow,
   format = 'DD/MM/YYYY',
   ...props
 }: DatePickerFieldProps) => {
@@ -25,12 +27,19 @@ export const DatePickerField = ({
       render={({ field, fieldState }) => {
         return (
           <>
-            <span className='text-base font-semibold'>
+            <span
+              className={
+                isRenewalFlow
+                  ? 'text-xs font-normal text-gray-800'
+                  : 'text-base font-semibold'
+              }
+            >
               {label}
               {isRequired && (
                 <span className='font-semibold text-[#C80F1E]'>*</span>
               )}
             </span>
+
             <DatePicker
               {...props}
               {...field}
@@ -53,7 +62,7 @@ export const DatePickerField = ({
                 />
               }
               inputReadOnly={true}
-              className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
+              className={`h-10 w-full ${isRenewalFlow ? 'font-semibold' : ''} ${fieldState.invalid ? '!border-red-500' : ''}`}
             />
             {fieldState.error && (
               <span className='block text-sm text-red-500'>

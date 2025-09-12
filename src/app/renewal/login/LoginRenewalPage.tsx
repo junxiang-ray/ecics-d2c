@@ -56,7 +56,7 @@ const LoginRenewalPage = () => {
     dispatch(resetRenewalQuote());
     sessionStorage.clear();
     localStorage.clear();
-  }, []);
+  }, [dispatch]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');

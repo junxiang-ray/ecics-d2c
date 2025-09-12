@@ -163,6 +163,12 @@ const RenewalDetail = () => {
               renewal_info: {
                 ...renewalQuote?.renewal_info,
                 ...data.data.renewal_info, // Merge from API
+                policy_details: {
+                  ...data.data.renewal_info.policy_details,
+                  current_policy_no:
+                    renewalQuote?.renewal_info?.policy_details
+                      ?.current_policy_no ?? '',
+                },
                 insured_info: {
                   ...data.data.renewal_info.insured_info,
                   ...value,
@@ -172,6 +178,8 @@ const RenewalDetail = () => {
                   marital_status: value.marital_status
                     ? value.marital_status.charAt(0).toUpperCase()
                     : '',
+                  driv_exp:
+                    renewalQuote?.renewal_info?.insured_info?.driv_exp ?? '',
                   address: {
                     ...data.data.renewal_info.insured_info.address,
                     address_line1: value.address_line1,

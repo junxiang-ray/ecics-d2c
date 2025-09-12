@@ -5,10 +5,7 @@ import { useEffect, useRef } from 'react';
 
 import { ROUTES } from '@/constants/routes';
 import { useThrottle } from '@/hook/useThrottle';
-import {
-  resetRenewalQuote,
-  setExpired,
-} from '@/redux/slices/renewalQuote.slice';
+import { setExpired } from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 export function RenewalSessionWatcher() {
@@ -44,6 +41,7 @@ export function RenewalSessionWatcher() {
       'scroll',
       'keypress',
     ];
+    console.log('idleEvents', idleEvents);
 
     idleEvents.forEach((event) =>
       window.addEventListener(event, resetTimer, true),
@@ -52,9 +50,6 @@ export function RenewalSessionWatcher() {
     worker.onmessage = (e) => {
       if (e.data?.type === 'TIMEOUT') {
         dispatch(setExpired(true));
-        sessionStorage.clear();
-        localStorage.clear();
-        dispatch(resetRenewalQuote());
         worker.postMessage({ type: 'STOP' });
         router.push(ROUTES.RENEWAL.LOGIN);
       }

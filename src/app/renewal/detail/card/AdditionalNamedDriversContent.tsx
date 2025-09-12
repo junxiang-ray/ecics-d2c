@@ -46,6 +46,7 @@ const AdditionalNamedDriversContent = () => {
                   label={detail.label}
                   name={`named_drivers.${idx}.${detail.name}`}
                   disabled
+                  isRenewalFlow={true}
                   className='cursor-not-allowed bg-gray-100'
                 />
               </Form.Item>

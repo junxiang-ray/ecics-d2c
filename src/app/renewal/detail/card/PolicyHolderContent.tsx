@@ -72,6 +72,7 @@ const PolicyHolderContent = () => {
                           ? GENDER_OPTIONS
                           : MARITAL_STATUS_OPTIONS
                       }
+                      isRenewalFlow={true}
                       placeholder={`Select ${label.toLowerCase()}`}
                       isRequired={!!isRequired}
                     />
@@ -81,6 +82,7 @@ const PolicyHolderContent = () => {
                       label={label}
                       disabled={!!disabled}
                       isRequired={!!isRequired}
+                      isRenewalFlow={true}
                     />
                   )}
                 </Form.Item>
