@@ -25,7 +25,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { PRODUCT_NAME } from '../api/constants/product';
-import { AllInsurancesRenewed } from './components/allInsurancesRenewed';
+import { AllInsurancesRenewed } from './components/AllInsurancesRenewed';
 
 export default function RenewalPage() {
   const router = useRouter();
