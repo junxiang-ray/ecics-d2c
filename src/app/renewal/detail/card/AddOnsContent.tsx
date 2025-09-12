@@ -10,22 +10,22 @@ interface Props {
 }
 
 const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
-  // Initialize the state from renewalQuote.selected_add_on_optional_benefits.
   const [selectedOptions, setSelectedOptions] = useState<
     Record<number, number>
-  >(() => {
+  >({});
+
+  // Reset state when changing account / renewalQuote
+  useEffect(() => {
     const initial: Record<number, number> = {};
     renewalQuote.selected_add_on_optional_benefits?.forEach((addon) => {
       if (addon.sub_options?.length) {
-        // Get the exact selected sub_option.
         initial[addon.id] = addon.sub_options[0].id;
       } else {
-        // addon without sub_options
         initial[addon.id] = -1;
       }
     });
-    return initial;
-  });
+    setSelectedOptions(initial);
+  }, [renewalQuote]);
 
   // On selectedOptions change → convert to SelectedAddon[] and send to parent.
   useEffect(() => {

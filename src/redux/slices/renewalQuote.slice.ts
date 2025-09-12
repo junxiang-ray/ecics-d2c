@@ -17,8 +17,7 @@ interface RenewalQuoteState {
 }
 
 const initialState: RenewalQuoteState = {
-  renewalQuote: {} as RenewalQuote,
-  // renewalQuote: null,
+  renewalQuote: null,
   idleWorker: {
     isExpired: false,
     timeoutValue: 0,
@@ -42,7 +41,7 @@ const renewalQuoteSlice = createSlice({
     setRenewalKey(state, action: PayloadAction<string>) {
       state.renewalKey = action.payload;
     },
-    resetRenewalQuote: () => initialState,
+    resetRenewalQuote: () => ({ ...initialState }),
     setExpired(state, action: PayloadAction<boolean>) {
       state.idleWorker.isExpired = action.payload;
     },
