@@ -33,15 +33,15 @@ const PremiumBreakdownRenewalContent = ({
 
   return (
     <div className='flex flex-col gap-4'>
-      <div>
-        <p className='sticky top-0 z-10 bg-white pt-2 font-semibold leading-[30px] text-[#171A1F]'>
+      <div className='sticky top-0 z-10 bg-white pt-2'>
+        <p className='font-semibold leading-[30px] text-[#171A1F]'>
           Premium Breakdown
         </p>
         <div className='pb-2 text-sm text-gray-600'>
           Detailed breakdown of your renewal premium
         </div>
       </div>
-      <div className='flex max-h-[calc(100vh-100px)] flex-1 flex-col gap-4 overflow-y-auto'>
+      <div className='flex flex-1 flex-col gap-4 overflow-y-auto'>
         {/* Plan */}
         <div className='flex flex-col gap-2'>
           <p className='text-base font-bold text-[#303030]'>Plan</p>
