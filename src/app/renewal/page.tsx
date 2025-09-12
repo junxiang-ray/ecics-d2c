@@ -26,8 +26,8 @@ import {
 } from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import { PRODUCT_NAME } from '../api/constants/product';
 import { AllInsurancesRenewed } from './components/AllInsurancesRenewed';
+import { PRODUCT_NAME } from '../api/constants/product';
 
 export default function RenewalPage() {
   const router = useRouter();

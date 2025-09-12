@@ -13,6 +13,7 @@ interface InputFieldProps extends InputProps {
   name: string;
   label?: string;
   isRequired?: boolean;
+  isRenewalFlow?: boolean;
 }
 
 interface InputFieldWithIconProps extends InputProps {
@@ -27,6 +28,7 @@ export const InputField = ({
   name,
   label,
   isRequired,
+  isRenewalFlow,
   ...props
 }: InputFieldProps) => {
   const { control, setValue } = useFormContext();
@@ -38,14 +40,16 @@ export const InputField = ({
         control={control}
         render={({ field, fieldState }) => (
           <>
-            <span className='text-base font-semibold'>
-              {label && (
-                <label className='text-base font-semibold'>
-                  {label}
-                  {isRequired && <span className='text-red-500'>*</span>}
-                </label>
-              )}
-            </span>
+            {label && (
+              <label
+                className={`${
+                  isRenewalFlow ? 'text-xs font-normal text-gray-800' : ''
+                }`}
+              >
+                {label}
+                {isRequired && <span className='text-red-500'>*</span>}
+              </label>
+            )}
             <Input
               {...props}
               {...field}
@@ -54,9 +58,7 @@ export const InputField = ({
                 props.onChange?.(e);
               }}
               status={fieldState.invalid ? 'error' : undefined}
-              className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''} ${
-                props.disabled ? 'bg-gray-200' : ''
-              }`}
+              className={`h-10 w-full ${isRenewalFlow ? 'font-semibold' : ''} ${fieldState.invalid ? '!border-red-500' : ''} ${props.disabled ? 'bg-gray-200' : ''}`}
               onBlur={() => {
                 const trimmed = field.value?.trim();
                 setValue(name, trimmed, { shouldValidate: true });
