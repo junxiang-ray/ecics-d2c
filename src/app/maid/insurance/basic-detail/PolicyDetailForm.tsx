@@ -444,27 +444,26 @@ const PolicyDetailForm = ({
                           options={HELPER_TYPE_CARD_OPTIONS}
                           className=' w-full'
                           isRequired={true}
+                          defaultChecked={true}
                         />
                       </Form.Item>
                     </div>
                     <div className='flex w-full flex-col space-y-4 py-4 md:flex-row md:space-x-4 md:space-y-0'>
                       {/* Left Card */}
                       <Card className='w-full bg-blue-100 md:w-2/3'>
-                        <div className='flex flex-col items-start md:flex-row md:items-center md:space-x-4'>
+                        <div className='flex w-full flex-col space-y-4 md:flex-row md:items-center md:space-x-4 md:space-y-0'>
                           {/* Left: Info Card */}
-                          <div className='mb-4 w-full flex-shrink-0 text-pretty px-4 md:mb-0 md:w-1/2'>
-                            <strong className='text-lg'>
+                          <div className='w-full flex-shrink-0 px-3 md:w-1/2'>
+                            <strong className='text-base md:text-lg'>
                               {HELPER_VALUE_INFO[helperType]?.title}
                             </strong>
-                            <br />
-                            <p className='mt-1 text-pretty text-sm'>
-                              Set the Policy Start Date as your helper’s arrival
-                              in Singapore
+                            <p className='mt-1 text-pretty text-sm md:text-base'>
+                              {HELPER_VALUE_INFO[helperType]?.description}
                             </p>
                           </div>
 
                           {/* Right: DatePicker */}
-                          <div className='w-full flex-shrink-0 px-4 md:w-1/2'>
+                          <div className='w-full flex-shrink-0 px-3 md:w-1/2'>
                             <Form.Item
                               name={MAID_QUOTE.start_date}
                               validateStatus={

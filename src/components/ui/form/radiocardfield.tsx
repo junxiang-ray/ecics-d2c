@@ -31,6 +31,7 @@ export const RadioCardField = ({
     <Controller
       name={name}
       control={control}
+      defaultValue={options?.[0]?.value}
       render={({ field, fieldState }) => (
         <div className='flex flex-col gap-2'>
           {label && (
