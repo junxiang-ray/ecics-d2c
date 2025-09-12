@@ -67,7 +67,7 @@ const LoginRenewalPage = () => {
     isPending,
     error,
   } = useCheckPolicyRenewal();
-  const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
+  const { mutateAsync: getTimeoutRenewal } = useGetTimeoutRenewal();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -102,10 +102,10 @@ const LoginRenewalPage = () => {
                   timeoutRes?.data?.attributes?.session_timeout_minutes ?? 0;
                 const timeoutMs = Number(minutes) * 60 * 1000;
                 dispatch(setTimeoutValue(timeoutMs));
+                router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
               },
             });
           }
-          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
         },
         onError: (err: any) => {
           setMessageError(
