@@ -54,10 +54,10 @@ const PremiumBreakdownRenewalContent = ({
         </div>
         {/* Add-ons */}
         <div>
-          <p className='mb-2 text-base font-semibold'>Add-ons</p>
           {renewal?.optional_benefits?.length ||
-          renewal?.selected_add_on_optional_benefits?.length ? (
+          (selectedAddons || []).length ? (
             <>
+              <p className='text-base font-semibold'>Add-ons</p>
               {/* Optional benefits */}
               {renewal?.optional_benefits?.map((item) => (
                 <div

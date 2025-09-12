@@ -487,7 +487,9 @@ const RenewalNoticeForm = ({
                 </span>
               </div>
             ))
-          ) : null}
+          ) : (
+            <p className='text-sm text-gray-500'>No add-ons available</p>
+          )}
         </div>
 
         {/* Named Drivers */}
