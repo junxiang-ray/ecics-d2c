@@ -60,14 +60,18 @@ const LoginRenewalPage = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');
-  const { mutate: requestSignInSingpass, error: errorLoginRenewal } =
-    useRequestSignInSingpass(PRODUCT_NAME.RENEWAL);
+  const {
+    mutate: requestSignInSingpass,
+    error: errorLoginRenewal,
+    isPending: isPendingSignIn,
+  } = useRequestSignInSingpass(PRODUCT_NAME.RENEWAL);
   const {
     mutateAsync: checkPolicyRenewal,
     isPending,
     error,
   } = useCheckPolicyRenewal();
-  const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
+  const { mutate: getTimeoutRenewal, isPending: isPendingTimeout } =
+    useGetTimeoutRenewal();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -102,10 +106,10 @@ const LoginRenewalPage = () => {
                   timeoutRes?.data?.attributes?.session_timeout_minutes ?? 0;
                 const timeoutMs = Number(minutes) * 60 * 1000;
                 dispatch(setTimeoutValue(timeoutMs));
+                router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
               },
             });
           }
-          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
         },
         onError: (err: any) => {
           setMessageError(
@@ -222,7 +226,7 @@ const LoginRenewalPage = () => {
             )}
             <PrimaryButton
               htmlType='submit'
-              loading={isPending}
+              loading={isPending || isPendingSignIn || isPendingTimeout}
               disabled={isPending}
               className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'
             >
