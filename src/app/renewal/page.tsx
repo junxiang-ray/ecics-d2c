@@ -106,7 +106,7 @@ export default function RenewalPage() {
         },
       );
     }
-  }, [renewalQuote?.uinfin?.value, timeOut]);
+  }, [renewalQuote?.uinfin?.value]);
 
   useEffect(() => {
     if (vehData) {
