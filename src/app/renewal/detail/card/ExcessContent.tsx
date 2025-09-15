@@ -59,6 +59,7 @@ const ExcessContent = ({ renewal }: ExcessContentProps) => {
                   label={field.label}
                   value={field.value}
                   disabled
+                  isRenewalFlow={true}
                   className='cursor-not-allowed bg-gray-100'
                 />
               </Form.Item>

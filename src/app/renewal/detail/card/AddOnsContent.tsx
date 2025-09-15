@@ -10,20 +10,36 @@ interface Props {
 }
 
 const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
-  const [selectedOptions, setSelectedOptions] = useState<{
-    [key: number]: number;
-  }>({});
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<number, number>
+  >({});
 
+  // Reset state when changing account / renewalQuote
   useEffect(() => {
-    const selected: SelectedAddon[] = Object.entries(selectedOptions).map(
-      ([addonId, subOptionId]) => {
-        const addon = renewalQuote.add_on_optional_benefits.find(
+    const initial: Record<number, number> = {};
+    renewalQuote?.selected_add_on_optional_benefits?.forEach((addon) => {
+      if (addon.sub_options?.length) {
+        initial[addon.id] = addon.sub_options[0].id;
+      } else {
+        initial[addon.id] = -1;
+      }
+    });
+    setSelectedOptions(initial);
+  }, [renewalQuote]);
+
+  // On selectedOptions change → convert to SelectedAddon[] and send to parent.
+  useEffect(() => {
+    const selected: SelectedAddon[] = Object.entries(selectedOptions)
+      .map(([addonId, subOptionId]) => {
+        const addon = renewalQuote?.add_on_optional_benefits?.find(
           (a) => a.id === Number(addonId),
-        )!;
+        );
+        if (!addon) return null;
 
         const subOption = addon.sub_options?.find(
           (s) => s.id === Number(subOptionId),
         );
+
         return {
           id: addon.id,
           name: addon.name,
@@ -38,13 +54,13 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
               ]
             : [],
         };
-      },
-    );
+      })
+      .filter(Boolean) as SelectedAddon[];
 
     onChangeSelectedAddons(selected);
   }, [
     selectedOptions,
-    renewalQuote.add_on_optional_benefits,
+    renewalQuote?.add_on_optional_benefits,
     onChangeSelectedAddons,
   ]);
 
@@ -74,8 +90,8 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
 
   return (
     <div className='space-y-4'>
-      {/* Optional benefits already included */}
-      {renewalQuote.renewal_info?.optional_benefits?.map((benefit) => (
+      {/* Optional benefits included */}
+      {renewalQuote?.renewal_info?.optional_benefits?.map((benefit) => (
         <div
           key={benefit.id}
           className='flex items-center justify-between rounded-lg border-2 border-green-300 bg-white p-4'
@@ -96,13 +112,15 @@ const AddOnsContent = ({ renewalQuote, onChangeSelectedAddons }: Props) => {
       ))}
 
       {/* Add-ons */}
-      {renewalQuote.add_on_optional_benefits?.map((addon) => {
+      {renewalQuote?.add_on_optional_benefits?.map((addon) => {
         const isAddonSelected = !!selectedOptions[addon.id];
 
         return (
           <div
             key={addon.id}
-            className={`cursor-pointer rounded-lg border-2 p-4 ${isAddonSelected ? 'border-blue-500' : 'border-gray-200'}`}
+            className={`cursor-pointer rounded-lg border-2 p-4 ${
+              isAddonSelected ? 'border-blue-500' : 'border-gray-200'
+            }`}
             onClick={() => handleClickAddon(addon)}
           >
             <div className='flex justify-between font-medium'>

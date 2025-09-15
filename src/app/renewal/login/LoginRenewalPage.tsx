@@ -25,6 +25,7 @@ import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
 import {
+  resetRenewalQuote,
   setEditRenewal,
   setProductType,
   setTimeoutValue,
@@ -52,9 +53,10 @@ const LoginRenewalPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(resetRenewalQuote());
     sessionStorage.clear();
     localStorage.clear();
-  }, []);
+  }, [dispatch]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');

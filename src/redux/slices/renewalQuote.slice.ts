@@ -13,11 +13,11 @@ interface RenewalQuoteState {
   renewalKey: string | null;
   editRenewal?: boolean;
   productType?: string;
+  vehData?: any[];
 }
 
 const initialState: RenewalQuoteState = {
-  renewalQuote: {} as RenewalQuote,
-  // renewalQuote: null,
+  renewalQuote: null,
   idleWorker: {
     isExpired: false,
     timeoutValue: 0,
@@ -25,6 +25,7 @@ const initialState: RenewalQuoteState = {
   renewalKey: null,
   editRenewal: false,
   productType: undefined,
+  vehData: [],
 };
 
 const renewalQuoteSlice = createSlice({
@@ -40,7 +41,7 @@ const renewalQuoteSlice = createSlice({
     setRenewalKey(state, action: PayloadAction<string>) {
       state.renewalKey = action.payload;
     },
-    resetRenewalQuote: () => initialState,
+    resetRenewalQuote: () => ({ ...initialState }),
     setExpired(state, action: PayloadAction<boolean>) {
       state.idleWorker.isExpired = action.payload;
     },
@@ -53,6 +54,9 @@ const renewalQuoteSlice = createSlice({
     setProductType(state, action: PayloadAction<string>) {
       state.productType = action.payload;
     },
+    updateVehData(state, action: PayloadAction<any[]>) {
+      state.vehData = action.payload;
+    },
   },
 });
 
@@ -64,6 +68,7 @@ export const {
   setTimeoutValue,
   setEditRenewal,
   setProductType,
+  updateVehData,
 } = renewalQuoteSlice.actions;
 
 export default renewalQuoteSlice.reducer;

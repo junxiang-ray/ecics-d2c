@@ -24,7 +24,6 @@ import PolicyDetailsContent from '@/app/renewal/detail/card/PolicyDetailsContent
 import PolicyHolderContent from '@/app/renewal/detail/card/PolicyHolderContent';
 import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent';
 import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
-import { useAppDispatch } from '@/redux/store';
 
 import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
 
@@ -86,8 +85,6 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       renewal,
     } = props;
 
-    const dispatch = useAppDispatch();
-
     const methods = useForm<RenewalFormData>({
       resolver: zodResolver(schema),
       mode: 'onChange',
@@ -116,9 +113,9 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='mb-2 flex w-full flex-col px-4 sm:px-4 md:mb-16 md:px-6 lg:px-0'
+          className='mb-2 flex w-full flex-col sm:px-4 md:mb-16 md:px-6 lg:px-0'
         >
-          <div className='mx-auto mt-[12px]'>
+          <div className='mx-auto'>
             <InfoCard
               icon={<PolicyDetailsIcon className='text-sky-500' size={20} />}
               title='Policy Details'

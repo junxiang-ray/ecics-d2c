@@ -7,7 +7,7 @@ import { useRef, useState } from 'react';
 
 import { SelectedAddon } from '@/libs/types/renewalQuote';
 import { formatToDDMMYYYY, parseDMYToDate } from '@/libs/utils/date-utils';
-import { createPassphrase } from '@/libs/utils/utils';
+import { capitalizeWords, createPassphrase } from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -15,6 +15,7 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import {
   MARITAL_STATUS_MAP,
   MARITAL_STATUS_OPTIONS,
+  MaritalCode,
 } from '@/app/motor/insurance/basic-detail/options';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalDetailForm, {
@@ -95,7 +96,9 @@ const RenewalDetail = () => {
       ? (MARITAL_STATUS_OPTIONS.find(
           (opt) =>
             opt.value ===
-            MARITAL_STATUS_MAP[renewal.insured_info.marital_status],
+            MARITAL_STATUS_MAP[
+              renewal.insured_info.marital_status as MaritalCode
+            ],
         )?.text ?? 'N/A')
       : 'N/A',
     address_line1: renewal?.insured_info?.address?.address_line1 ?? '',
@@ -111,7 +114,9 @@ const RenewalDetail = () => {
       name: driver?.name ?? '',
       nric: driver?.icno ?? '',
       dob: driver?.dob,
-      marital_status: MARITAL_STATUS_MAP[driver?.martial_status] ?? '',
+      marital_status: capitalizeWords(
+        MARITAL_STATUS_MAP[driver?.martial_status as MaritalCode] ?? '',
+      ),
       driv_exp: driver?.driv_exp ?? '',
       gender: driver?.gender === 'M' ? 'Male' : 'Female',
     })),
@@ -156,11 +161,37 @@ const RenewalDetail = () => {
             updateRenewalQuote({
               ...data.data,
               renewal_info: {
-                ...data.data.renewal_info,
+                ...renewalQuote?.renewal_info,
+                ...data.data.renewal_info, // Merge from API
+                policy_details: {
+                  ...data.data.renewal_info.policy_details,
+                  current_policy_no:
+                    renewalQuote?.renewal_info?.policy_details
+                      ?.current_policy_no ?? '',
+                },
                 insured_info: {
                   ...data.data.renewal_info.insured_info,
                   ...value,
+                  gender: value.gender?.toUpperCase().startsWith('M')
+                    ? 'M'
+                    : 'F',
+                  marital_status: value.marital_status
+                    ? value.marital_status.charAt(0).toUpperCase()
+                    : '',
+                  driv_exp:
+                    renewalQuote?.renewal_info?.insured_info?.driv_exp ?? '',
+                  address: {
+                    ...data.data.renewal_info.insured_info.address,
+                    address_line1: value.address_line1,
+                    address_line2: value.address_line2,
+                    address_line3: value.address_line3,
+                    postal: value.postal,
+                  },
                 },
+                optional_benefits:
+                  renewalQuote?.renewal_info?.optional_benefits ?? [],
+                policy_optional_benefits:
+                  data.data.renewal_info?.policy_optional_benefits ?? [],
               },
               selected_add_on_optional_benefits: selectedAddons,
             }),

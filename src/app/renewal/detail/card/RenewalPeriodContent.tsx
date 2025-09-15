@@ -48,6 +48,7 @@ const RenewalPeriodContent = ({
             name='renewal_start_date'
             label='Renewal Start Date'
             disabled
+            isRenewalFlow={true}
           />
         </Form.Item>
         <Form.Item
@@ -58,6 +59,7 @@ const RenewalPeriodContent = ({
             name='renewal_expiry_date'
             label='Renewal Expiry Date'
             isRequired
+            isRenewalFlow={true}
             onChange={handleExpiryChange}
             disabledDate={(current: Dayjs) => {
               if (!startDate) return true;
@@ -71,8 +73,8 @@ const RenewalPeriodContent = ({
 
         {/* Coverage Duration */}
         <div className='col-span-full flex flex-col'>
-          <div className='mb-2 flex items-center justify-between'>
-            <label className='mb-1 text-xs font-medium text-gray-700'>
+          <div className='mb-1 flex items-center justify-between'>
+            <label className='text-xs font-medium text-gray-700'>
               Coverage Duration
             </label>
             <div
@@ -82,6 +84,7 @@ const RenewalPeriodContent = ({
               <ReloadIcon size={14} className='mr-1' /> Reset to 1 Year
             </div>
           </div>
+
           <input
             type='text'
             value={
@@ -90,8 +93,9 @@ const RenewalPeriodContent = ({
                 : ''
             }
             disabled
-            className='cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
+            className='mt-1 cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
           />
+
           <div className='text-[10px] font-normal'>
             Duration is calculated from renewal start date to expiry date. Use
             the reset button to quickly set coverage to exactly one year.
