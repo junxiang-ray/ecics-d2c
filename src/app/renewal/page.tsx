@@ -12,7 +12,7 @@ import Promotions from '@/app/renewal/components/promotions/Promotions';
 import QuickActions from '@/app/renewal/components/quick-action/QuickActions';
 import RenewalHeader from '@/app/renewal/components/renewal-header/RenewalHeader';
 import { ROUTES } from '@/constants/routes';
-import { usePostUserInfoRenewal } from '@/hook/auth/login-renewal';
+import { useRetriveNricSingpass } from '@/hook/auth/login-renewal';
 import {
   useCheckPolicyRenewal,
   useVerifyRetrieveRenewal,
@@ -27,7 +27,6 @@ import {
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { AllInsurancesRenewed } from './components/AllInsurancesRenewed';
-import { PRODUCT_NAME } from '../api/constants/product';
 
 export default function RenewalPage() {
   const router = useRouter();
@@ -36,10 +35,6 @@ export default function RenewalPage() {
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
-  const timeOut = useAppSelector(
-    (state) => state.renewalQuote.idleWorker.timeoutValue,
-  );
-
   const [payload, setPayload] = useState({
     code_verifier: '',
     nonce: '',
@@ -47,8 +42,8 @@ export default function RenewalPage() {
     code: '',
   });
 
-  const { mutateAsync: postUserInfoRenewal, isPending } =
-    usePostUserInfoRenewal();
+  const { mutateAsync: retriveNricSingpass, isPending: isRetriveNricLoading } =
+    useRetriveNricSingpass();
   const {
     mutateAsync: verifyRetrieveRenewal,
     data: vehData,
@@ -70,20 +65,16 @@ export default function RenewalPage() {
   }, []);
 
   useEffect(() => {
-    if (
-      !renewalQuote?.uinfin?.value &&
-      payload.code_verifier &&
-      payload.nonce &&
-      payload.state &&
-      payload.code
-    ) {
-      postUserInfoRenewal({ payload, productType: PRODUCT_NAME.RENEWAL }).then(
-        (res) => {
-          if (res?.data) {
-            dispatch(updateRenewalQuote(res.data));
-          }
-        },
-      );
+    if (!renewalQuote?.uinfin?.value && payload.code_verifier && payload.code) {
+      retriveNricSingpass({ payload }).then((res) => {
+        if (res?.data) {
+          dispatch(
+            updateRenewalQuote({
+              uinfin: { value: res.data },
+            }),
+          );
+        }
+      });
     }
   }, [payload, renewalQuote?.renewal_info?.insured_info?.nric]);
 
@@ -140,7 +131,7 @@ export default function RenewalPage() {
     }
   }, [vehData, router]);
 
-  if (isPending || isVehLoading || isLoadingCheckPolicy) {
+  if (isRetriveNricLoading || isVehLoading || isLoadingCheckPolicy) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
         <Spin size='large' />
