@@ -23,7 +23,11 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
-import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
+import {
+  useGetTimeoutRenewal,
+  usePostCheckPolicies,
+  usePostRenewalProcessPayment,
+} from '@/hook/renewal/renewalQuote';
 import {
   resetRenewalQuote,
   setEditRenewal,
@@ -72,6 +76,7 @@ const LoginRenewalPage = () => {
   } = useCheckPolicyRenewal();
   const { mutate: getTimeoutRenewal, isPending: isPendingTimeout } =
     useGetTimeoutRenewal();
+  const { mutate: checkPolicies } = usePostCheckPolicies();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -88,27 +93,53 @@ const LoginRenewalPage = () => {
   } = methods;
 
   const onSubmitSigninRenewal = (values: FormData) => {
-    checkPolicyRenewal(
+    checkPolicies(
       {
-        veh_reg_no: values.veh_reg_no,
-        passphrase: values.passphrase,
+        policies: [
+          {
+            veh_reg_no: values.veh_reg_no,
+          },
+        ],
       },
       {
         onSuccess: (res) => {
-          if (res) {
-            dispatch(updateRenewalQuote(res));
-            dispatch(setEditRenewal(res.edit_renewal));
-            dispatch(setProductType(res.product));
-
-            getTimeoutRenewal(undefined, {
-              onSuccess: (timeoutRes) => {
-                const minutes =
-                  timeoutRes?.data?.attributes?.session_timeout_minutes ?? 0;
-                const timeoutMs = Number(minutes) * 60 * 1000;
-                dispatch(setTimeoutValue(timeoutMs));
-                router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+          if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+            const vehRegNo = res.data[0].veh_reg_no;
+            checkPolicyRenewal(
+              {
+                veh_reg_no: vehRegNo,
+                passphrase: values.passphrase,
               },
-            });
+              {
+                onSuccess: (res) => {
+                  if (res) {
+                    dispatch(updateRenewalQuote(res));
+                    dispatch(setEditRenewal(res.edit_renewal));
+                    dispatch(setProductType(res.product));
+
+                    getTimeoutRenewal(undefined, {
+                      onSuccess: (timeoutRes) => {
+                        const minutes =
+                          timeoutRes?.data?.attributes
+                            ?.session_timeout_minutes ?? 0;
+                        const timeoutMs = Number(minutes) * 60 * 1000;
+                        dispatch(setTimeoutValue(timeoutMs));
+                        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+                      },
+                    });
+                  }
+                },
+                onError: (err: any) => {
+                  setMessageError(
+                    err?.response?.data?.message ?? 'Something went wrong',
+                  );
+                },
+              },
+            );
+          } else {
+            setMessageError(
+              'Policy has been renewed already. Please contact ECICS for further information',
+            );
           }
         },
         onError: (err: any) => {
@@ -218,7 +249,7 @@ const LoginRenewalPage = () => {
                 E.g <span className='font-semibold'>300619701234J</span>
               </p>
             </Form.Item>
-            {error && (
+            {(error || messageError !== '') && (
               <div className='mt-2 flex w-full flex-row items-start gap-2 rounded-lg border border-[#FFC9C9] bg-[#FEF2F2] p-2 font-normal text-[#E7000B]'>
                 <InfoCircleOutlined className='mt-1' />
                 <p>{messageError}</p>
