@@ -104,16 +104,15 @@ export default function RenewalPage() {
       dispatch(updateVehData(vehData));
     }
   }, [vehData]);
-
   useEffect(() => {
-    if (!vehData || !Array.isArray(vehData)) return;
-    if (vehData?.length < 2) {
-      const policy = vehData[0];
+    if (!vehData || !Array.isArray(vehData?.policies)) return;
+    if (vehData?.policies?.length < 2) {
+      const policy = vehData?.policies[0];
       const veh_reg_no = policy?.veh_reg_no;
-      if (policy.status.toLowerCase() === 'renewed') {
+      if (policy?.status.toLowerCase() === 'renewed') {
         return;
       }
-      if (policy.dob && renewalQuote?.uinfin?.value) {
+      if (policy?.dob && renewalQuote?.uinfin?.value) {
         const passphrase = createPassphrase(
           policy.dob,
           renewalQuote.uinfin.value,
@@ -138,8 +137,11 @@ export default function RenewalPage() {
       </div>
     );
   }
-  const policiesPending = Array.isArray(vehData)
-    ? vehData.filter((item: any) => item?.status?.toLowerCase() !== 'renewed')
+
+  const policiesPending = Array.isArray(vehData?.policies)
+    ? vehData.policies.filter(
+        (item: any) => item?.status?.toLowerCase() !== 'renewed',
+      )
     : [];
 
   return (
@@ -149,7 +151,7 @@ export default function RenewalPage() {
       </div>
       <div className='mx-auto max-w-[1200px] px-4 py-4 md:px-0 md:py-8'>
         <h1 className='mb-2 text-2xl font-bold md:text-3xl'>
-          Welcome back, {renewalQuote?.name?.value}
+          Welcome back {renewalQuote?.renewal_info?.insured_info?.name || ''}!
         </h1>
         <p className='mb-6 text-gray-500'>
           Manage your policies and stay protected
@@ -157,12 +159,12 @@ export default function RenewalPage() {
       </div>
 
       {(!vehData ||
-        vehData.length === 0 ||
-        (vehData.length === 1 &&
-          vehData[0]?.status?.toLowerCase() === 'renewed') ||
+        vehData.policies?.length === 0 ||
+        (vehData.policies?.length === 1 &&
+          vehData.policies[0]?.status?.toLowerCase() === 'renewed') ||
         policiesPending.length === 0) && <AllInsurancesRenewed />}
 
-      {vehData?.length >= 2 && policiesPending.length > 0 && (
+      {vehData?.policies?.length >= 2 && policiesPending.length > 0 && (
         <section className='mb-8'>
           <PoliciesPendingRenewal policies={policiesPending} />
         </section>
