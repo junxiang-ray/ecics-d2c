@@ -226,8 +226,8 @@ const LoginRenewalPage = () => {
             )}
             <PrimaryButton
               htmlType='submit'
-              loading={isPending || isPendingSignIn || isPendingTimeout}
-              disabled={isPending}
+              loading={isPendingSignIn || isPendingTimeout}
+              disabled={isPending || isPendingSignIn || isPendingTimeout}
               className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'
             >
               Sign in
