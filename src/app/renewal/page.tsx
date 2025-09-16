@@ -147,7 +147,6 @@ export default function RenewalPage() {
       </div>
     );
   }
-
   const policiesPending = Array.isArray(vehData)
     ? vehData.filter((item: any) => item?.status?.toLowerCase() !== 'renewed')
     : [];
@@ -166,17 +165,16 @@ export default function RenewalPage() {
         </p>
       </div>
 
-      {vehData?.length === 1 &&
-        vehData[0]?.status?.toLowerCase() === 'renewed' && (
-          <AllInsurancesRenewed />
-        )}
+      {(!vehData ||
+        vehData.length === 0 ||
+        (vehData.length === 1 &&
+          vehData[0]?.status?.toLowerCase() === 'renewed') ||
+        policiesPending.length === 0) && <AllInsurancesRenewed />}
+
       {vehData?.length >= 2 && policiesPending.length > 0 && (
         <section className='mb-8'>
           <PoliciesPendingRenewal policies={policiesPending} />
         </section>
-      )}
-      {vehData?.length >= 2 && policiesPending.length === 0 && (
-        <AllInsurancesRenewed />
       )}
 
       <div className='mb-8 grid gap-6 md:grid-cols-2'>
