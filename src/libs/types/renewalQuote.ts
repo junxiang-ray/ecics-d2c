@@ -143,3 +143,9 @@ export interface SelectedAddon {
     prem: number;
   }[];
 }
+
+export type CheckPoliciesParams = {
+  policies: {
+    veh_reg_no: string;
+  }[];
+};

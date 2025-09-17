@@ -17,9 +17,14 @@ import {
   useCheckPolicyRenewal,
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
-import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
+import {
+  useGetTimeoutRenewal,
+  usePostCheckPolicies,
+} from '@/hook/renewal/renewalQuote';
 import { setIsSingpassFlowRenewal } from '@/redux/slices/general.slice';
 import {
+  setEditRenewal,
+  setProductType,
   setTimeoutValue,
   updateRenewalQuote,
   updateVehData,
@@ -42,16 +47,17 @@ export default function RenewalPage() {
     code: '',
   });
 
-  const { mutateAsync: retriveNricSingpass, isPending: isRetriveNricLoading } =
+  const { mutate: retriveNricSingpass, isPending: isRetriveNricLoading } =
     useRetriveNricSingpass();
   const {
-    mutateAsync: verifyRetrieveRenewal,
+    mutate: verifyRetrieveRenewal,
     data: vehData,
     isPending: isVehLoading,
   } = useVerifyRetrieveRenewal();
-  const { mutateAsync: checkPolicyRenewal, isPending: isLoadingCheckPolicy } =
+  const { mutate: checkPolicyRenewal, isPending: isLoadingCheckPolicy } =
     useCheckPolicyRenewal();
   const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
+  const { mutate: checkPolicies } = usePostCheckPolicies();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -66,15 +72,20 @@ export default function RenewalPage() {
 
   useEffect(() => {
     if (!renewalQuote?.uinfin?.value && payload.code_verifier && payload.code) {
-      retriveNricSingpass({ payload }).then((res) => {
-        if (res?.data) {
-          dispatch(
-            updateRenewalQuote({
-              uinfin: { value: res.data },
-            }),
-          );
-        }
-      });
+      retriveNricSingpass(
+        { payload },
+        {
+          onSuccess: (res) => {
+            if (res?.data) {
+              dispatch(
+                updateRenewalQuote({
+                  uinfin: { value: res.data },
+                }),
+              );
+            }
+          },
+        },
+      );
     }
   }, [payload, renewalQuote?.renewal_info?.insured_info?.nric]);
 
@@ -104,6 +115,7 @@ export default function RenewalPage() {
       dispatch(updateVehData(vehData));
     }
   }, [vehData]);
+
   useEffect(() => {
     if (!vehData || !Array.isArray(vehData?.policies)) return;
     if (vehData?.policies?.length < 2) {
@@ -117,15 +129,37 @@ export default function RenewalPage() {
           policy.dob,
           renewalQuote.uinfin.value,
         );
-        checkPolicyRenewal({
-          veh_reg_no: veh_reg_no,
-          passphrase,
-        }).then((res) => {
-          if (res) {
-            dispatch(updateRenewalQuote(res));
-          }
-          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-        });
+        // Call api checkPolicies
+        checkPolicies(
+          [
+            {
+              veh_reg_no: veh_reg_no,
+            },
+          ],
+          {
+            onSuccess: (res) => {
+              if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+                const vehRegNo = res.data[0].veh_reg_no;
+                checkPolicyRenewal(
+                  {
+                    veh_reg_no: vehRegNo,
+                    passphrase,
+                  },
+                  {
+                    onSuccess: (res) => {
+                      if (res) {
+                        dispatch(updateRenewalQuote(res));
+                        dispatch(setEditRenewal(res.edit_renewal));
+                        dispatch(setProductType(res.product));
+                      }
+                      router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+                    },
+                  },
+                );
+              }
+            },
+          },
+        );
       }
     }
   }, [vehData, router]);
