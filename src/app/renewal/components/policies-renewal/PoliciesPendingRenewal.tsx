@@ -10,7 +10,6 @@ import { PrivateMotorCarIcon } from '@/components/icons/renewal-icons';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
-import { usePostCheckPolicies } from '@/hook/renewal/renewalQuote';
 import {
   setEditRenewal,
   setProductType,
@@ -19,7 +18,7 @@ import {
 import { useAppDispatch } from '@/redux/store';
 
 interface Policy {
-  id: string;
+  id?: string;
   product: string;
   plan: string;
   policy_no: string;
@@ -38,7 +37,6 @@ const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
   const dispatch = useAppDispatch();
 
   const { mutate: checkPolicyRenewal } = useCheckPolicyRenewal();
-  const { mutate: checkPolicies } = usePostCheckPolicies();
 
   const handleRenew = (policy: Policy) => {
     const renewalUserInfoStr = sessionStorage.getItem(ECICS_USER_INFO);
@@ -49,36 +47,20 @@ const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
     const renewalUserInfo = JSON.parse(renewalUserInfoStr);
     const nric = renewalUserInfo?.uinfin?.value || '';
     const passphrase = createPassphrase(policy.dob, nric);
-    checkPolicies(
-      [
-        {
-          veh_reg_no: policy.veh_reg_no,
-        },
-      ],
+
+    checkPolicyRenewal(
+      {
+        veh_reg_no: policy.veh_reg_no,
+        passphrase,
+      },
       {
         onSuccess: (res) => {
-          if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-            const vehRegNo = res.data[0].veh_reg_no;
-            checkPolicyRenewal(
-              {
-                veh_reg_no: vehRegNo,
-                passphrase,
-              },
-              {
-                onSuccess: (res) => {
-                  if (res) {
-                    dispatch(updateRenewalQuote(res));
-                    dispatch(setEditRenewal(res.edit_renewal));
-                    dispatch(setProductType(res.product));
-                  }
-                  router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-                },
-              },
-            );
+          if (res) {
+            dispatch(updateRenewalQuote(res));
+            dispatch(setEditRenewal(res.edit_renewal));
+            dispatch(setProductType(res.product));
           }
-        },
-        onError: (err: any) => {
-          console.log('err', err);
+          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
         },
       },
     );

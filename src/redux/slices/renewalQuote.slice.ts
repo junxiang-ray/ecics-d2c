@@ -7,13 +7,28 @@ interface IdleWorkerState {
   timeoutValue: number;
 }
 
+interface Policy {
+  policy_no: string;
+  veh_reg_no: string;
+  expiry_date: string;
+  dob: string;
+  product: string;
+  plan: string;
+  status: string;
+}
+
+interface VehData {
+  insuredname: string;
+  policies: Policy[];
+}
+
 interface RenewalQuoteState {
   renewalQuote: RenewalQuote | null;
   idleWorker: IdleWorkerState;
   renewalKey: string | null;
   editRenewal?: boolean;
   productType?: string;
-  vehData?: any[];
+  vehData?: VehData | null;
 }
 
 const initialState: RenewalQuoteState = {
@@ -25,7 +40,7 @@ const initialState: RenewalQuoteState = {
   renewalKey: null,
   editRenewal: false,
   productType: undefined,
-  vehData: [],
+  vehData: null,
 };
 
 const renewalQuoteSlice = createSlice({
@@ -54,7 +69,7 @@ const renewalQuoteSlice = createSlice({
     setProductType(state, action: PayloadAction<string>) {
       state.productType = action.payload;
     },
-    updateVehData(state, action: PayloadAction<any[]>) {
+    updateVehData(state, action: PayloadAction<VehData>) {
       state.vehData = action.payload;
     },
   },
