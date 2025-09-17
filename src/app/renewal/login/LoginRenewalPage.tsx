@@ -26,7 +26,6 @@ import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
 import {
   useGetTimeoutRenewal,
   usePostCheckPolicies,
-  usePostRenewalProcessPayment,
 } from '@/hook/renewal/renewalQuote';
 import {
   resetRenewalQuote,
@@ -70,7 +69,7 @@ const LoginRenewalPage = () => {
     isPending: isPendingSignIn,
   } = useRequestSignInSingpass(PRODUCT_NAME.RENEWAL);
   const {
-    mutateAsync: checkPolicyRenewal,
+    mutate: checkPolicyRenewal,
     isPending,
     error,
   } = useCheckPolicyRenewal();
@@ -94,13 +93,11 @@ const LoginRenewalPage = () => {
 
   const onSubmitSigninRenewal = (values: FormData) => {
     checkPolicies(
-      {
-        policies: [
-          {
-            veh_reg_no: values.veh_reg_no,
-          },
-        ],
-      },
+      [
+        {
+          veh_reg_no: values.veh_reg_no,
+        },
+      ],
       {
         onSuccess: (res) => {
           if (res?.data && Array.isArray(res.data) && res.data.length > 0) {

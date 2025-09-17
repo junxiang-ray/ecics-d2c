@@ -1,7 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { CheckPoliciesParams } from '@/libs/types/renewalQuote';
-
 import renewal from '@/api/base-service/renewal';
 import verify from '@/api/cms-service/verify';
 import { ProductTypeWeb } from '@/app/api/constants/product';
@@ -69,8 +67,8 @@ export const useGetTimeoutRenewal = () => {
 };
 
 export const usePostCheckPolicies = () => {
-  const postCheckPolicies = async (payload: CheckPoliciesParams) => {
-    const res = await verify.checkPolicies(payload);
+  const postCheckPolicies = async (policies: { veh_reg_no: string }[]) => {
+    const res = await verify.checkPolicies({ policies });
     return res.data;
   };
 
