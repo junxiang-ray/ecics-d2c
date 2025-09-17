@@ -49,4 +49,4 @@ export const HELPER_VALUE_INFO: Record<
     value,
     { title, description },
   ]),
-) as Record<HelperTypeValue, Omit<HelperTypeInfo, 'cardDescription'>>;
+) as any;

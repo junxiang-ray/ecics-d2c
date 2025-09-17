@@ -455,10 +455,16 @@ const PolicyDetailForm = ({
                           {/* Left: Info Card */}
                           <div className='w-full flex-shrink-0 px-3 md:w-1/2'>
                             <strong className='text-base md:text-lg'>
-                              {HELPER_VALUE_INFO[helperType]?.title}
+                              {
+                                HELPER_VALUE_INFO[helperType as HelperTypeValue]
+                                  ?.title
+                              }
                             </strong>
                             <p className='mt-1 text-pretty text-sm md:text-base'>
-                              {HELPER_VALUE_INFO[helperType]?.description}
+                              {
+                                HELPER_VALUE_INFO[helperType as HelperTypeValue]
+                                  ?.description
+                              }
                             </p>
                           </div>
 
