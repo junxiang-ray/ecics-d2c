@@ -1,8 +1,6 @@
-import { Radio, RadioProps, Card } from 'antd';
+import { RadioProps, Card } from 'antd';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-
-import { DropdownOption, OptionType } from './dropdownfield';
 
 export type CardOptions = {
   label: string;

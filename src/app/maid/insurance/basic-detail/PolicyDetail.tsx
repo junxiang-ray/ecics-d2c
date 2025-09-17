@@ -129,8 +129,6 @@ export const PolicyDetail = ({
       });
   };
 
-  // console.log('Initial Values:', initialValues);
-
   return (
     <div className='mt-4 w-full'>
       <PolicyDetailForm
