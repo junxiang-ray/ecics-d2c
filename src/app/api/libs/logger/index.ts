@@ -1,6 +1,16 @@
 // utils/logger.ts
 import winston from 'winston';
 import 'winston-daily-rotate-file';
+import fs from 'fs';
+
+// Use /tmp/logs on Vercel; fallback to env or 'logs' locally
+const logDir =
+  process.env.LOG_FILE_PATH || (process.env.VERCEL ? '/tmp/logs' : 'logs');
+
+// Ensure directory exists
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
 
 const logger = winston.createLogger({
   level: 'info',
@@ -11,13 +21,15 @@ const logger = winston.createLogger({
     }),
   ),
   transports: [
+    // Daily rotated file logs (ephemeral on Vercel)
     new winston.transports.DailyRotateFile({
-      dirname: process.env.LOG_FILE_PATH || '/tmp/logs',
+      dirname: logDir,
       filename: 'ecics-log-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: process.env.LOG_MAX_SIZE || '100m',
     }),
+    // Console logs (appears in Vercel dashboard)
     new winston.transports.Console(),
   ],
 });
