@@ -100,7 +100,7 @@ const LoginRenewalPage = () => {
       ],
       {
         onSuccess: (res) => {
-          if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+          if (res?.data?.length > 0) {
             const vehRegNo = res.data[0].veh_reg_no;
             checkPolicyRenewal(
               {

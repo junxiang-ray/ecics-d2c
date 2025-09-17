@@ -58,6 +58,7 @@ export default function RenewalPage() {
     useCheckPolicyRenewal();
   const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
   const { mutate: checkPolicies } = usePostCheckPolicies();
+  const vehDataStore = useAppSelector((state) => state.renewalQuote.vehData);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -117,52 +118,85 @@ export default function RenewalPage() {
   }, [vehData]);
 
   useEffect(() => {
-    if (!vehData || !Array.isArray(vehData?.policies)) return;
+    if (!vehData?.policies?.length) return;
+    // case < 2 policies
     if (vehData?.policies?.length < 2) {
-      const policy = vehData?.policies[0];
+      const policy = vehData.policies[0];
       const veh_reg_no = policy?.veh_reg_no;
-      if (policy?.status.toLowerCase() === 'renewed') {
-        return;
-      }
+      if (policy?.status?.toLowerCase() === 'renewed') return;
+
       if (policy?.dob && renewalQuote?.uinfin?.value) {
         const passphrase = createPassphrase(
           policy.dob,
           renewalQuote.uinfin.value,
         );
-        // Call api checkPolicies
-        checkPolicies(
-          [
-            {
-              veh_reg_no: veh_reg_no,
-            },
-          ],
-          {
-            onSuccess: (res) => {
-              if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-                const vehRegNo = res.data[0].veh_reg_no;
-                checkPolicyRenewal(
-                  {
-                    veh_reg_no: vehRegNo,
-                    passphrase,
+
+        checkPolicies([{ veh_reg_no }], {
+          onSuccess: (res) => {
+            if (res?.data?.length) {
+              const vehRegNo = res.data[0].veh_reg_no;
+              checkPolicyRenewal(
+                { veh_reg_no: vehRegNo, passphrase },
+                {
+                  onSuccess: (res) => {
+                    if (res) {
+                      dispatch(updateRenewalQuote(res));
+                      dispatch(setEditRenewal(res.edit_renewal));
+                      dispatch(setProductType(res.product));
+                    }
+                    router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
                   },
-                  {
-                    onSuccess: (res) => {
-                      if (res) {
-                        dispatch(updateRenewalQuote(res));
-                        dispatch(setEditRenewal(res.edit_renewal));
-                        dispatch(setProductType(res.product));
-                      }
-                      router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-                    },
-                  },
-                );
-              }
-            },
+                },
+              );
+            } else {
+              // Get list of reg_no confirmed by API
+              const validVehs = res.data.map(
+                (r: { veh_reg_no: string }) => r.veh_reg_no,
+              );
+              const updatedPolicies = vehData.policies.filter((p: any) =>
+                validVehs.includes(p.veh_reg_no),
+              );
+              dispatch(
+                updateVehData({
+                  insuredname: vehData.insuredname,
+                  policies: updatedPolicies,
+                }),
+              );
+            }
           },
-        );
+        });
       }
+    } else {
+      // case >= 2 policies
+      const payload = vehData.policies.map((p: any) => ({
+        veh_reg_no: p.veh_reg_no,
+      }));
+
+      checkPolicies(payload, {
+        onSuccess: (res) => {
+          if (res?.data?.length > 0) {
+            // Get list of reg_no confirmed by API
+            const validVehs = res.data.map(
+              (r: { veh_reg_no: string }) => r.veh_reg_no,
+            );
+
+            const updatedPolicies = vehData.policies.filter((p: any) =>
+              validVehs.includes(p.veh_reg_no),
+            );
+
+            dispatch(
+              updateVehData({
+                insuredname: vehData.insuredname,
+                policies: updatedPolicies,
+              }),
+            );
+          } else {
+            dispatch(updateVehData({ insuredname: '', policies: [] }));
+          }
+        },
+      });
     }
-  }, [vehData, router]);
+  }, [vehData, router, renewalQuote, dispatch]);
 
   if (isRetriveNricLoading || isVehLoading || isLoadingCheckPolicy) {
     return (
@@ -172,11 +206,10 @@ export default function RenewalPage() {
     );
   }
 
-  const policiesPending = Array.isArray(vehData?.policies)
-    ? vehData.policies.filter(
-        (item: any) => item?.status?.toLowerCase() !== 'renewed',
-      )
-    : [];
+  const policiesPending =
+    vehDataStore?.policies?.filter(
+      (item: any) => item?.status?.trim().toLowerCase() !== 'renewed',
+    ) ?? [];
 
   return (
     <main>
@@ -192,13 +225,13 @@ export default function RenewalPage() {
         </p>
       </div>
 
-      {(!vehData ||
-        vehData.policies?.length === 0 ||
-        (vehData.policies?.length === 1 &&
-          vehData.policies[0]?.status?.toLowerCase() === 'renewed') ||
+      {(!vehDataStore ||
+        vehDataStore.policies?.length === 0 ||
+        (vehDataStore.policies?.length === 1 &&
+          vehDataStore.policies[0]?.status?.toLowerCase() === 'renewed') ||
         policiesPending.length === 0) && <AllInsurancesRenewed />}
 
-      {vehData?.policies?.length >= 2 && policiesPending.length > 0 && (
+      {vehDataStore?.policies && policiesPending.length > 0 && (
         <section className='mb-8'>
           <PoliciesPendingRenewal policies={policiesPending} />
         </section>

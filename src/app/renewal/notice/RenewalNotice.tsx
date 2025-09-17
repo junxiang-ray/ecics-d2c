@@ -43,7 +43,7 @@ const RenewalNotice = () => {
 
   const handleBackDashboard = () => {
     if (isSingpassFlowRenewal) {
-      if (vehData?.length && vehData.length > 1) {
+      if (vehData?.policies?.length && vehData.policies.length > 1) {
         router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
       } else {
         router.push(ROUTES.RENEWAL.LOGIN);
