@@ -12,7 +12,7 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.DailyRotateFile({
-      dirname: process.env.LOG_FILE_PATH || 'logs',
+      dirname: process.env.LOG_FILE_PATH || '/tmp/logs',
       filename: 'ecics-log-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
