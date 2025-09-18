@@ -20,14 +20,15 @@ const HELPER_DATA: Record<HelperTypeValue, HelperTypeInfo> = {
     cardDescription: 'A helper without any existing contract/work permit',
   },
   [HelperTypeValue.RENEWAL_MAID]: {
-    title: 'Align Insurance Start Date with MOM Application',
+    title: 'Start Date Should Match Current Work Permit Expiry',
     description:
-      'Set the start date as the work permit application date at MOM',
+      'Set the Policy Start Date as the current work permit’s expiry date',
     cardDescription: 'Extending your current helper’s work permit with you',
   },
   [HelperTypeValue.TRANSFER_MAID]: {
-    title: 'Start Date Should Match Current Work Permit Expiry',
-    description: 'Set the start date as the current work permit’s expiry date',
+    title: 'Align Insurance and Work Permit Start Date',
+    description:
+      'Set the Policy Start Date as the new work permit issuance date',
     cardDescription:
       'Helper is already in Singapore but moving from another employer to you',
   },
