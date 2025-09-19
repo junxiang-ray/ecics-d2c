@@ -36,7 +36,6 @@ const RenewalNotice = () => {
 
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
-
   const isSingpassFlowRenewal = useAppSelector(
     (state) => state.general.isSingpassFlowRenewal,
   );
@@ -80,7 +79,7 @@ const RenewalNotice = () => {
             key: generatedKey,
             renewal_data: {
               renewal_summary: {
-                coverage: renewal?.coverage,
+                coverage: policy?.coverage,
                 total_paid:
                   Number(renewal?.renewalpremb4gst ?? 0) +
                   Number(renewal?.renewalgst ?? 0),

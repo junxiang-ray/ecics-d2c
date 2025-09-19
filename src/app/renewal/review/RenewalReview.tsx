@@ -102,7 +102,7 @@ const RenewalReview = () => {
             key: generatedKey,
             renewal_data: {
               renewal_summary: {
-                coverage: renewal?.coverage,
+                coverage: policy?.coverage,
                 total_paid: totalPaid,
                 poily_no: policy?.current_policy_no,
               },
