@@ -33,7 +33,7 @@ const RenewalPeriodContent = ({
 
   const handleReset = () => {
     if (!startDate) return;
-    const newDate = startDate.add(1, 'year');
+    const newDate = startDate.add(1, 'year').subtract(1, 'day');
     setValue('renewal_expiry_date', newDate.toDate());
   };
 
@@ -64,8 +64,8 @@ const RenewalPeriodContent = ({
             disabledDate={(current: Dayjs) => {
               if (!startDate) return true;
               return (
-                current < startDate.add(1, 'year') ||
-                current > startDate.add(2, 'year')
+                current < startDate.add(1, 'year').subtract(1, 'day') ||
+                current > startDate.add(18, 'month').subtract(1, 'day')
               );
             }}
           />
