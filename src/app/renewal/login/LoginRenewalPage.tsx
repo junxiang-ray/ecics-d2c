@@ -197,9 +197,8 @@ const LoginRenewalPage = () => {
             >
               <InputField
                 name='veh_reg_no'
-                label='Vehicle Registration No'
+                label='Vehicle Registration No. *'
                 placeholder='Example: SBA123A'
-                isRequired
                 prefix={<CarIcon size={16} className='mr-2 text-gray-400' />}
                 autoFocus
               />
