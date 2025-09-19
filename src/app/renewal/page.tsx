@@ -210,7 +210,6 @@ export default function RenewalPage() {
     vehDataStore?.policies?.filter(
       (item: any) => item?.status?.trim().toLowerCase() !== 'renewed',
     ) ?? [];
-
   return (
     <main>
       <div className='border-b border-gray-200 '>
@@ -218,7 +217,7 @@ export default function RenewalPage() {
       </div>
       <div className='mx-auto max-w-[1200px] px-4 py-4 md:px-0 md:py-8'>
         <h1 className='mb-2 text-2xl font-bold md:text-3xl'>
-          Welcome back {renewalQuote?.renewal_info?.insured_info?.name || ''}!
+          Welcome back {vehDataStore?.insuredname || ''}!
         </h1>
         <p className='mb-6 text-gray-500'>
           Manage your policies and stay protected
