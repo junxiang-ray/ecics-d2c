@@ -41,7 +41,6 @@ export function RenewalSessionWatcher() {
       'scroll',
       'keypress',
     ];
-    console.log('idleEvents', idleEvents);
 
     idleEvents.forEach((event) =>
       window.addEventListener(event, resetTimer, true),

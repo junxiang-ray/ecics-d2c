@@ -341,9 +341,11 @@ export const getCoverageDuration = (
   expiryDate: Dayjs,
 ): string => {
   const totalDays = expiryDate.diff(startDate, 'day');
-
+  if (totalDays === 364) {
+    return '1 year';
+  }
   // Insurance logic: 364 days or more is considered as ≥ 1 year.
-  if (totalDays >= 364) {
+  if (totalDays >= 365) {
     const years = expiryDate.diff(startDate, 'year');
     const months = expiryDate.diff(startDate.add(years, 'year'), 'month');
     const days = expiryDate.diff(

@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 
 import renewal from '@/api/base-service/renewal';
-import { ProductTypeWeb } from '@/app/api/constants/product';
 import verify from '@/api/cms-service/verify';
+import { ProductTypeWeb } from '@/app/api/constants/product';
 
 type EditRenewalParams = {
   productType: ProductTypeWeb;
@@ -63,5 +63,17 @@ export const useGetTimeoutRenewal = () => {
   return useMutation({
     mutationFn: getTimeoutRenewal,
     mutationKey: ['get-timeout-renewal'],
+  });
+};
+
+export const usePostCheckPolicies = () => {
+  const postCheckPolicies = async (policies: { veh_reg_no: string }[]) => {
+    const res = await verify.checkPolicies({ policies });
+    return res.data;
+  };
+
+  return useMutation({
+    mutationFn: postCheckPolicies,
+    mutationKey: ['check-policies'],
   });
 };

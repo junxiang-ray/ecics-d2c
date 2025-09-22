@@ -12,14 +12,19 @@ import Promotions from '@/app/renewal/components/promotions/Promotions';
 import QuickActions from '@/app/renewal/components/quick-action/QuickActions';
 import RenewalHeader from '@/app/renewal/components/renewal-header/RenewalHeader';
 import { ROUTES } from '@/constants/routes';
-import { usePostUserInfoRenewal } from '@/hook/auth/login-renewal';
+import { useRetriveNricSingpass } from '@/hook/auth/login-renewal';
 import {
   useCheckPolicyRenewal,
   useVerifyRetrieveRenewal,
 } from '@/hook/insurance/renewal';
-import { useGetTimeoutRenewal } from '@/hook/renewal/renewalQuote';
+import {
+  useGetTimeoutRenewal,
+  usePostCheckPolicies,
+} from '@/hook/renewal/renewalQuote';
 import { setIsSingpassFlowRenewal } from '@/redux/slices/general.slice';
 import {
+  setEditRenewal,
+  setProductType,
   setTimeoutValue,
   updateRenewalQuote,
   updateVehData,
@@ -27,7 +32,6 @@ import {
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { AllInsurancesRenewed } from './components/AllInsurancesRenewed';
-import { PRODUCT_NAME } from '../api/constants/product';
 
 export default function RenewalPage() {
   const router = useRouter();
@@ -36,10 +40,6 @@ export default function RenewalPage() {
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
-  const timeOut = useAppSelector(
-    (state) => state.renewalQuote.idleWorker.timeoutValue,
-  );
-
   const [payload, setPayload] = useState({
     code_verifier: '',
     nonce: '',
@@ -47,16 +47,18 @@ export default function RenewalPage() {
     code: '',
   });
 
-  const { mutateAsync: postUserInfoRenewal, isPending } =
-    usePostUserInfoRenewal();
+  const { mutate: retriveNricSingpass, isPending: isRetriveNricLoading } =
+    useRetriveNricSingpass();
   const {
-    mutateAsync: verifyRetrieveRenewal,
+    mutate: verifyRetrieveRenewal,
     data: vehData,
     isPending: isVehLoading,
   } = useVerifyRetrieveRenewal();
-  const { mutateAsync: checkPolicyRenewal, isPending: isLoadingCheckPolicy } =
+  const { mutate: checkPolicyRenewal, isPending: isLoadingCheckPolicy } =
     useCheckPolicyRenewal();
   const { mutate: getTimeoutRenewal } = useGetTimeoutRenewal();
+  const { mutate: checkPolicies } = usePostCheckPolicies();
+  const vehDataStore = useAppSelector((state) => state.renewalQuote.vehData);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -70,18 +72,19 @@ export default function RenewalPage() {
   }, []);
 
   useEffect(() => {
-    if (
-      !renewalQuote?.uinfin?.value &&
-      payload.code_verifier &&
-      payload.nonce &&
-      payload.state &&
-      payload.code
-    ) {
-      postUserInfoRenewal({ payload, productType: PRODUCT_NAME.RENEWAL }).then(
-        (res) => {
-          if (res?.data) {
-            dispatch(updateRenewalQuote(res.data));
-          }
+    if (!renewalQuote?.uinfin?.value && payload.code_verifier && payload.code) {
+      retriveNricSingpass(
+        { payload },
+        {
+          onSuccess: (res) => {
+            if (res?.data) {
+              dispatch(
+                updateRenewalQuote({
+                  uinfin: { value: res.data },
+                }),
+              );
+            }
+          },
         },
       );
     }
@@ -106,7 +109,7 @@ export default function RenewalPage() {
         },
       );
     }
-  }, [renewalQuote?.uinfin?.value, timeOut]);
+  }, [renewalQuote?.uinfin?.value]);
 
   useEffect(() => {
     if (vehData) {
@@ -115,32 +118,87 @@ export default function RenewalPage() {
   }, [vehData]);
 
   useEffect(() => {
-    if (!vehData || !Array.isArray(vehData)) return;
-    if (vehData?.length < 2) {
-      const policy = vehData[0];
+    if (!vehData?.policies?.length) return;
+    // case < 2 policies
+    if (vehData?.policies?.length < 2) {
+      const policy = vehData.policies[0];
       const veh_reg_no = policy?.veh_reg_no;
-      if (policy.status.toLowerCase() === 'renewed') {
-        return;
-      }
-      if (policy.dob && renewalQuote?.uinfin?.value) {
+      if (policy?.status?.toLowerCase() === 'renewed') return;
+
+      if (policy?.dob && renewalQuote?.uinfin?.value) {
         const passphrase = createPassphrase(
           policy.dob,
           renewalQuote.uinfin.value,
         );
-        checkPolicyRenewal({
-          veh_reg_no: veh_reg_no,
-          passphrase,
-        }).then((res) => {
-          if (res) {
-            dispatch(updateRenewalQuote(res));
-          }
-          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+
+        checkPolicies([{ veh_reg_no }], {
+          onSuccess: (res) => {
+            if (res?.data?.length) {
+              const vehRegNo = res.data[0].veh_reg_no;
+              checkPolicyRenewal(
+                { veh_reg_no: vehRegNo, passphrase },
+                {
+                  onSuccess: (res) => {
+                    if (res) {
+                      dispatch(updateRenewalQuote(res));
+                      dispatch(setEditRenewal(res.edit_renewal));
+                      dispatch(setProductType(res.product));
+                    }
+                    router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+                  },
+                },
+              );
+            } else {
+              // Get list of reg_no confirmed by API
+              const validVehs = res.data.map(
+                (r: { veh_reg_no: string }) => r.veh_reg_no,
+              );
+              const updatedPolicies = vehData.policies.filter((p: any) =>
+                validVehs.includes(p.veh_reg_no),
+              );
+              dispatch(
+                updateVehData({
+                  insuredname: vehData.insuredname,
+                  policies: updatedPolicies,
+                }),
+              );
+            }
+          },
         });
       }
-    }
-  }, [vehData, router]);
+    } else {
+      // case >= 2 policies
+      const payload = vehData.policies.map((p: any) => ({
+        veh_reg_no: p.veh_reg_no,
+      }));
 
-  if (isPending || isVehLoading || isLoadingCheckPolicy) {
+      checkPolicies(payload, {
+        onSuccess: (res) => {
+          if (res?.data?.length > 0) {
+            // Get list of reg_no confirmed by API
+            const validVehs = res.data.map(
+              (r: { veh_reg_no: string }) => r.veh_reg_no,
+            );
+
+            const updatedPolicies = vehData.policies.filter((p: any) =>
+              validVehs.includes(p.veh_reg_no),
+            );
+
+            dispatch(
+              updateVehData({
+                insuredname: vehData.insuredname,
+                policies: updatedPolicies,
+              }),
+            );
+          } else {
+            dispatch(updateVehData({ insuredname: '', policies: [] }));
+          }
+        },
+      });
+    }
+  }, [vehData, router, renewalQuote, dispatch]);
+
+  if (isRetriveNricLoading || isVehLoading || isLoadingCheckPolicy) {
     return (
       <div className='flex h-96 w-full items-center justify-center'>
         <Spin size='large' />
@@ -148,10 +206,10 @@ export default function RenewalPage() {
     );
   }
 
-  const policiesPending = Array.isArray(vehData)
-    ? vehData.filter((item: any) => item?.status?.toLowerCase() !== 'renewed')
-    : [];
-
+  const policiesPending =
+    vehDataStore?.policies?.filter(
+      (item: any) => item?.status?.trim().toLowerCase() !== 'renewed',
+    ) ?? [];
   return (
     <main>
       <div className='border-b border-gray-200 '>
@@ -159,24 +217,23 @@ export default function RenewalPage() {
       </div>
       <div className='mx-auto max-w-[1200px] px-4 py-4 md:px-0 md:py-8'>
         <h1 className='mb-2 text-2xl font-bold md:text-3xl'>
-          Welcome back, {renewalQuote?.name?.value}
+          Welcome back {vehDataStore?.insuredname || ''}!
         </h1>
         <p className='mb-6 text-gray-500'>
           Manage your policies and stay protected
         </p>
       </div>
 
-      {vehData?.length === 1 &&
-        vehData[0]?.status?.toLowerCase() === 'renewed' && (
-          <AllInsurancesRenewed />
-        )}
-      {vehData?.length >= 2 && policiesPending.length > 0 && (
+      {(!vehDataStore ||
+        vehDataStore.policies?.length === 0 ||
+        (vehDataStore.policies?.length === 1 &&
+          vehDataStore.policies[0]?.status?.toLowerCase() === 'renewed') ||
+        policiesPending.length === 0) && <AllInsurancesRenewed />}
+
+      {vehDataStore?.policies && policiesPending.length > 0 && (
         <section className='mb-8'>
           <PoliciesPendingRenewal policies={policiesPending} />
         </section>
-      )}
-      {vehData?.length >= 2 && policiesPending.length === 0 && (
-        <AllInsurancesRenewed />
       )}
 
       <div className='mb-8 grid gap-6 md:grid-cols-2'>

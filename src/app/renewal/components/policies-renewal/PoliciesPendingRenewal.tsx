@@ -18,7 +18,7 @@ import {
 import { useAppDispatch } from '@/redux/store';
 
 interface Policy {
-  id: string;
+  id?: string;
   product: string;
   plan: string;
   policy_no: string;
@@ -36,7 +36,7 @@ const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const { mutateAsync: checkPolicyRenewal } = useCheckPolicyRenewal();
+  const { mutate: checkPolicyRenewal } = useCheckPolicyRenewal();
 
   const handleRenew = (policy: Policy) => {
     const renewalUserInfoStr = sessionStorage.getItem(ECICS_USER_INFO);
@@ -48,17 +48,22 @@ const PoliciesPendingRenewal: FC<Props> = ({ policies }) => {
     const nric = renewalUserInfo?.uinfin?.value || '';
     const passphrase = createPassphrase(policy.dob, nric);
 
-    checkPolicyRenewal({
-      veh_reg_no: policy.veh_reg_no,
-      passphrase,
-    }).then((res) => {
-      if (res) {
-        dispatch(updateRenewalQuote(res));
-        dispatch(setEditRenewal(res.edit_renewal));
-        dispatch(setProductType(res.product));
-      }
-      router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-    });
+    checkPolicyRenewal(
+      {
+        veh_reg_no: policy.veh_reg_no,
+        passphrase,
+      },
+      {
+        onSuccess: (res) => {
+          if (res) {
+            dispatch(updateRenewalQuote(res));
+            dispatch(setEditRenewal(res.edit_renewal));
+            dispatch(setProductType(res.product));
+          }
+          router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+        },
+      },
+    );
   };
 
   return (

@@ -1,7 +1,10 @@
 import { LoginResponse, UserInfoPayload } from '@/libs/types/auth';
 
 import { ProductTypeWeb } from '@/app/api/constants/product';
-import { API_GET_USER_INFO, API_LOGIN } from '@/constants/api.constant';
+import {
+  API_LOGIN,
+  API_RETRIVE_NRIC_SINGPASS_RENEWAL,
+} from '@/constants/api.constant';
 
 import singpassRenewalService from './api.config';
 
@@ -12,15 +15,10 @@ export default {
       `${API_LOGIN}/${productType}`,
     );
   },
-  postUserInfoRenewal({
-    payload,
-    productType,
-  }: {
-    payload: UserInfoPayload;
-    productType: ProductTypeWeb;
-  }) {
+
+  retriveNricSingpass({ payload }: { payload: UserInfoPayload }) {
     return singpassRenewalService.post<any>(
-      `${API_GET_USER_INFO}/${productType}`,
+      API_RETRIVE_NRIC_SINGPASS_RENEWAL,
       payload,
     );
   },
