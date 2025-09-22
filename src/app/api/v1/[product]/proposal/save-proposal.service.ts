@@ -220,6 +220,20 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
     return ErrNotFound('Company not found');
   }
 
+  let redirectUrl = '';
+  let returnBaseUrl = '';
+  if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MAID_WEBSITE) {
+    redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MAID_WEBSITE}?key=${key}`;
+  } else {
+    redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/maid/summary?key=${key}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+    returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+  } else {
+    returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+  }
+
   const payload: any = {
     product_id: process.env.PRODUCT_MAID_ID || '',
     policy_id: policy_id,
@@ -243,8 +257,8 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
     quote_previous_insurer_others: maid_info.company_name_other,
     quote_employed_by_proposer: maid_info.has_helper_worked_12_months,
     __finalize: 1,
-    redirect_url: `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MAID_WEBSITE}?key=${key}`,
-    return_baseurl: process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL,
+    redirect_url: redirectUrl,
+    return_baseurl: returnBaseUrl,
   };
 
   const convertedAddons = Object.entries(mappingAddonForMaid)
