@@ -36,7 +36,7 @@ const RenewalNotice = () => {
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
-  console.log('renewalQuote222', renewalQuote);
+
   const productTypeState = useAppSelector(
     (state) => state.renewalQuote.productType,
   );
