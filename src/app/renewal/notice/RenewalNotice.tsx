@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { formatDateString } from '@/libs/utils/dayjs';
-import { createPassphrase } from '@/libs/utils/utils';
+import { buildRenewalPayload } from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -20,10 +20,7 @@ import {
   usePostRenewalProcessPayment,
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
-import {
-  setRenewalKey,
-  updateRenewalQuote,
-} from '@/redux/slices/renewalQuote.slice';
+import { setRenewalKey } from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const RenewalNotice = () => {
@@ -32,7 +29,7 @@ const RenewalNotice = () => {
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
   const { mutate: savePolicy, isPending } = usePostSavePolicy();
-  const { mutate: postEditRenewal } = usePostEditRenewal();
+  const { mutate: postEditRenewal } = usePostEditRenewal('basic');
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
@@ -49,61 +46,11 @@ const RenewalNotice = () => {
   );
 
   useEffect(() => {
-    const policyId = renewalQuote?.policy_id ?? '';
-    const proposalId = renewalQuote?.proposal_id ?? '';
-    const vehRegNo =
-      renewalQuote?.renewal_info.policy_details.vehicle_details?.reg_no ?? '';
-    const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
-    const dob = renewalQuote?.renewal_info?.insured_info?.dob || '';
-    const renewalEndDate = renewalQuote?.renewal_info?.renewal_end_date ?? '';
-    const selectedAddons =
-      renewalQuote?.selected_add_on_optional_benefits ?? [];
-    const passphrase = createPassphrase(dob, nric);
-    const payload = {
-      policy_id: policyId,
-      proposal_id: proposalId,
-      veh_reg_no: vehRegNo,
-      passphrase,
-      renewal_end_date: renewalEndDate,
-      email_address: '',
-      contact_no: '',
-      selected_add_on_optional_benefits: selectedAddons,
-      finalize_renewal: false,
-    };
+    const payload = buildRenewalPayload(renewalQuote);
+    if (!payload) return;
 
-    const productType = PRODUCT_NAME.MOTOR;
-    postEditRenewal(
-      { productType, payload },
-      {
-        onSuccess: (data) => {
-          const apiData = data?.data ?? data ?? {};
-          if (!renewalQuote) return;
-          const updatedRenewalQuote = {
-            ...renewalQuote,
-            renewal_info: {
-              ...renewalQuote.renewal_info,
-              renewalplanprem:
-                apiData.renewal_info?.renewalplanprem ??
-                renewalQuote.renewal_info?.renewalplanprem,
-              renewalpremb4gst:
-                apiData.renewal_info?.renewalpremb4gst ??
-                renewalQuote.renewal_info?.renewalpremb4gst,
-              renewalgst:
-                apiData.renewal_info?.renewalgst ??
-                renewalQuote.renewal_info?.renewalgst,
-              renewalpremwgst:
-                apiData.renewal_info?.renewalpremwgst ??
-                renewalQuote.renewal_info?.renewalpremwgst,
-            },
-          };
-          dispatch(updateRenewalQuote(updatedRenewalQuote));
-        },
-        onError: (err) => {
-          console.error('Failed to update renewal', err);
-        },
-      },
-    );
-  }, [dispatch]);
+    postEditRenewal({ productType: PRODUCT_NAME.MOTOR, payload });
+  }, [postEditRenewal]);
 
   const handleBackDashboard = () => {
     if (isSingpassFlowRenewal) {
