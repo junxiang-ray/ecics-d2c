@@ -318,6 +318,7 @@ const codes: Record<string, string> = {
   MOTORCYCLE_COMP_KRC: 'krc',
   MOTORCYCLE_COMP_LOU: 'lou',
   MOTORCYCLE_COMP_RSA: 'rsa',
+  MOTORCYCLE_COMP_NFOR: 'nfor',
   MOTORCYCLE_COMP_BUN: 'bun',
   MOTORCYCLE_TPFT_BUN: 'bun',
   MOTORCYCLE_TPO_BUN: 'bun',

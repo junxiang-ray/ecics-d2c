@@ -54,6 +54,10 @@ export const mapIconToTypeAddOn = [
     icon: <KeyIcon className='text-brand-blue' />,
   },
   {
+    code: 'MOTORCYCLE_COMP_NFOR',
+    icon: <KeyIcon className='text-brand-blue' />,
+  },
+  {
     code: 'MOTORCYCLE_COMP_PA',
     icon: <MedicalKitIcon className='text-brand-blue' />,
   },

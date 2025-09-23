@@ -662,12 +662,16 @@ export default function CompletePurchaseDetail({
 
   const onPay = async () => {
     // Check mismatch
+    console.log('selectedAddons', selectedAddons);
+    console.log('selectedPlan', selectedPlan);
     if (selectedAddons && selectedPlan) {
       const expectedPrefix = getPlanGroupPrefix(
         selectedPlan,
         PRODUCT_NAME.MOTORCYCLE,
       );
+      console.log('expectedPrefix', expectedPrefix);
       const addonKeys = Object.keys(selectedAddons);
+      console.log('addonKeys', addonKeys);
       const hasUnmatchedAddon = addonKeys.some((key) => {
         const parts = key.split('_');
         return parts.length > 1 && parts[1] !== expectedPrefix;

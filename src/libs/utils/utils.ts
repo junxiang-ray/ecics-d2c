@@ -185,6 +185,7 @@ export const getPlanGroupPrefix = (
     [PRODUCT_NAME.MOTORCYCLE]: [
       { keyword: 'Comprehensive', prefix: 'COMP' },
       { keyword: 'Third Party, Fire & Theft', prefix: 'TPFT' },
+      { keyword: 'Third Party, Fire and Theft', prefix: 'TPFT' },
       { keyword: 'Third Party Only', prefix: 'TPO' },
     ],
   };

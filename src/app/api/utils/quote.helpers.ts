@@ -480,6 +480,7 @@ export function mappedMotorcycleAddonPremiums(
       'COMP',
       'me',
     ),
+    new_for_old_comp: findMotorcycleAddOnPremium(quoteData, 'COMP', 'nfor'),
     buy_up_ncd_comp: findMotorcycleAddOnPremium(quoteData, 'COMP', 'bun'),
     buy_up_ncd_tpft: findMotorcycleAddOnPremium(quoteData, 'TPFT', 'bun'),
     buy_up_ncd_tpo: findMotorcycleAddOnPremium(quoteData, 'TPO', 'bun'),
@@ -510,6 +511,10 @@ export function mappedMotorcycleAddonEligibility(
       findMotorcycleAddOnData(quoteData, 'COMP', 'pa') !== null ? true : false,
     MOTORCYCLE_COMP_ME:
       findMotorcycleAddOnData(quoteData, 'COMP', 'me') !== null ? true : false,
+    MOTORCYCLE_COMP_NFOR:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'nfor') !== null
+        ? true
+        : false,
     MOTORCYCLE_COMP_BUN:
       findMotorcycleAddOnData(quoteData, 'COMP', 'bun') !== null ? true : false,
     MOTORCYCLE_TPFT_BUN:
