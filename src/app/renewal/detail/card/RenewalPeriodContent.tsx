@@ -1,17 +1,17 @@
 import { Form } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { RenewalQuote } from '@/libs/types/renewalQuote';
 import { getCoverageDuration } from '@/libs/utils/date-utils';
-import { createPassphrase, normalizeName } from '@/libs/utils/utils';
+import { createPassphrase } from '@/libs/utils/utils';
 
 import { ReloadIcon } from '@/components/icons/renewal-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
+import { usePostQueryEditRenewal } from '@/hook/renewal/renewalQuote';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch } from '@/redux/store';
 
@@ -26,7 +26,20 @@ const RenewalPeriodContent = ({
 }) => {
   const { setValue, watch } = useFormContext();
   const dispatch = useAppDispatch();
-  const { mutate: postEditRenewal } = usePostEditRenewal();
+  const [payload, setPayload] = useState<any | null>(null);
+
+  usePostQueryEditRenewal(
+    {
+      productType: PRODUCT_NAME.MOTOR,
+      payload,
+      renewalQuote,
+    },
+    {
+      onSuccess: (data) => {
+        dispatch(updateRenewalQuote(data));
+      },
+    },
+  );
 
   const startDate = useMemo(
     () =>
@@ -52,7 +65,8 @@ const RenewalPeriodContent = ({
     const passphrase = createPassphrase(dob, nric);
 
     const renewalEndDate = value ? value.format('DD-MM-YYYY') : '';
-    const payload = {
+
+    setPayload({
       policy_id: policyId,
       proposal_id: proposalId,
       veh_reg_no: vehRegNo,
@@ -62,77 +76,7 @@ const RenewalPeriodContent = ({
       contact_no: '',
       selected_add_on_optional_benefits: [],
       finalize_renewal: false,
-    };
-
-    const productType = PRODUCT_NAME.MOTOR;
-
-    postEditRenewal(
-      { productType, payload },
-      {
-        onSuccess: (data) => {
-          const apiData = data?.data ?? data ?? {};
-          // Get the policy_optional_benefits array from the response (if any)
-          const policyOptionals =
-            apiData.policy_optional_benefits ??
-            apiData.renewal_info?.policy_optional_benefits ??
-            [];
-
-          // Build map: normalizedName -> policyOptionalObject
-          const policyMap = new Map<string, any>();
-          policyOptionals.forEach((p: any) => {
-            const key = normalizeName(p.name) || `id:${p.id}`;
-            policyMap.set(key, p);
-          });
-
-          const currentOptionals =
-            renewalQuote?.renewal_info?.optional_benefits ?? [];
-
-          // Map over currentOptionals, override prem if a match by name is found
-          const mergedOptionals = currentOptionals.map((opt: any) => {
-            const key = normalizeName(opt.name);
-            const matchedPolicy = policyMap.get(key);
-
-            if (matchedPolicy) {
-              // override only prem
-              return {
-                ...opt,
-                prem: matchedPolicy.prem ?? opt.prem,
-              };
-            }
-
-            return opt;
-          });
-
-          const updatedRenewalQuote = {
-            ...renewalQuote,
-            add_on_optional_benefits:
-              apiData.add_on_optional_benefits ??
-              renewalQuote.add_on_optional_benefits,
-            renewal_info: {
-              ...renewalQuote.renewal_info,
-              renewalplanprem:
-                apiData.renewal_info?.renewalplanprem ??
-                renewalQuote.renewal_info?.renewalplanprem,
-              renewalpremb4gst:
-                apiData.renewal_info?.renewalpremb4gst ??
-                renewalQuote.renewal_info?.renewalpremb4gst,
-              renewalgst:
-                apiData.renewal_info?.renewalgst ??
-                renewalQuote.renewal_info?.renewalgst,
-              renewalpremwgst:
-                apiData.renewal_info?.renewalpremwgst ??
-                renewalQuote.renewal_info?.renewalpremwgst,
-              optional_benefits: mergedOptionals,
-            },
-          };
-
-          dispatch(updateRenewalQuote(updatedRenewalQuote));
-        },
-        onError: (err) => {
-          console.error('Failed to update renewal', err);
-        },
-      },
-    );
+    });
   };
 
   const handleReset = () => {

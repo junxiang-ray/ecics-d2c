@@ -603,13 +603,17 @@ const RenewalNoticeForm = ({
         <RenewalPeriodContent />
       </InfoCard>
 
-      <InfoCard
-        icon={<ExcessIcon className='text-sky-500' size={20} />}
-        title='Excess'
-        subtitle='Excess amounts applicable to your policy'
-      >
-        <ExcessContent />
-      </InfoCard>
+      {renewal?.renewal_excess &&
+        (renewal.renewal_excess.policy_excess?.length > 0 ||
+          renewal.renewal_excess.additional_excess?.length > 0) && (
+          <InfoCard
+            icon={<ExcessIcon className='text-sky-500' size={20} />}
+            title='Excess'
+            subtitle='Excess amounts applicable to your policy'
+          >
+            <ExcessContent />
+          </InfoCard>
+        )}
 
       <InfoCard
         icon={<PrivateMotorCarIcon className='text-sky-500' size={20} />}
