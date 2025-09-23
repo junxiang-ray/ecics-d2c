@@ -480,11 +480,6 @@ export function mappedMotorcycleAddonPremiums(
       'COMP',
       'me',
     ),
-    comp_additional_name_driver_if_selected: findMotorcycleAddOnPremium(
-      quoteData,
-      'COMP',
-      'me',
-    ),
     buy_up_ncd_comp: findMotorcycleAddOnPremium(quoteData, 'COMP', 'bun'),
     buy_up_ncd_tpft: findMotorcycleAddOnPremium(quoteData, 'TPFT', 'bun'),
     buy_up_ncd_tpo: findMotorcycleAddOnPremium(quoteData, 'TPO', 'bun'),

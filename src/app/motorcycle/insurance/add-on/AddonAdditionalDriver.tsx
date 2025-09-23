@@ -99,17 +99,19 @@ function AddonAdditionalDriver({
                 No drivers added yet
               </p>
             )}
-            <Button
-              className={`h-8 w-28 rounded-xl text-xs font-semibold ${drivers.length >= 3 ? 'border border-[#d9d9d9] bg-[#f5f5f5] !text-gray-300' : 'border border-[#00ADEF] bg-[#00ADEF] text-white'}`}
-              onClick={() => {
-                setEditingDriver(null);
-                setEditingIndex(null);
-                setIsShowAdditionDriver(true);
-              }}
-              disabled={isPending || drivers.length >= 3}
-            >
-              Add Driver
-            </Button>
+            {drivers.length < 1 && (
+              <Button
+                className={`h-8 w-28 rounded-xl text-xs font-semibold ${drivers.length >= 3 ? 'border border-[#d9d9d9] bg-[#f5f5f5] !text-gray-300' : 'border border-[#00ADEF] bg-[#00ADEF] text-white'}`}
+                onClick={() => {
+                  setEditingDriver(null);
+                  setEditingIndex(null);
+                  setIsShowAdditionDriver(true);
+                }}
+                disabled={isPending || drivers.length >= 1}
+              >
+                Add Driver
+              </Button>
+            )}
           </div>
 
           {isShowAdditionDriver && (
