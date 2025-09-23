@@ -37,7 +37,7 @@ const RenewalDetail = () => {
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
-  console.log('renewalQuote333', renewalQuote);
+
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
   const dob = renewal?.insured_info?.dob || '';

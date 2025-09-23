@@ -216,3 +216,6 @@ export function isSafePaymentUrl(savedUrl: string | null): boolean {
     return false;
   }
 }
+
+export const normalizeName = (s?: string) =>
+  (s || '').toString().trim().toLowerCase();
