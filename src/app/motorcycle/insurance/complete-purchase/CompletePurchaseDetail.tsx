@@ -772,7 +772,7 @@ export default function CompletePurchaseDetail({
                     data={driverSection.data}
                     isExpanded={true}
                     setShowModal={setShowModal}
-                    editRoute={ROUTES.INSURANCE.ADD_ON}
+                    editRoute={ROUTES.INSURANCE_MOTORCYCLE.ADD_ON}
                     isPendingSave={isPendingSave}
                     isPendingPay={isPendingPay}
                     isSingPassFlow={isSingPassFlow}
