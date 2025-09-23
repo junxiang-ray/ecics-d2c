@@ -3,19 +3,31 @@ import dayjs, { Dayjs } from 'dayjs';
 import React, { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
+import { RenewalQuote } from '@/libs/types/renewalQuote';
 import { getCoverageDuration } from '@/libs/utils/date-utils';
+import { createPassphrase } from '@/libs/utils/utils';
 
 import { ReloadIcon } from '@/components/icons/renewal-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
+import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch } from '@/redux/store';
+
 const RenewalPeriodContent = ({
   errors,
   renewalStartDate,
+  renewalQuote,
 }: {
   errors: any;
   renewalStartDate: Dayjs | null;
+  renewalQuote: RenewalQuote;
 }) => {
   const { setValue, watch } = useFormContext();
+  const dispatch = useAppDispatch();
+  const { mutate: postEditRenewal } = usePostEditRenewal();
+
   const startDate = useMemo(
     () =>
       renewalStartDate && renewalStartDate.isValid() ? renewalStartDate : null,
@@ -29,6 +41,47 @@ const RenewalPeriodContent = ({
   const handleExpiryChange = (value: Dayjs | null) => {
     if (!value) return;
     setValue('renewal_expiry_date', value.toDate());
+
+    const policyId = renewalQuote?.policy_id ?? '';
+    const proposalId = renewalQuote?.proposal_id ?? '';
+    const vehRegNo =
+      renewalQuote?.renewal_info?.policy_details?.vehicle_details?.reg_no ?? '';
+    const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+    const dob = renewalQuote?.renewal_info?.insured_info?.dob || '';
+
+    const passphrase = createPassphrase(dob, nric);
+
+    const renewalEndDate = value ? value.format('DD-MM-YYYY') : '';
+    const payload = {
+      policy_id: policyId,
+      proposal_id: proposalId,
+      veh_reg_no: vehRegNo,
+      passphrase,
+      renewal_end_date: renewalEndDate,
+      email_address: '',
+      contact_no: '',
+      selected_add_on_optional_benefits: [],
+      finalize_renewal: false,
+    };
+
+    const productType = PRODUCT_NAME.MOTOR;
+
+    postEditRenewal(
+      { productType, payload },
+      {
+        onSuccess: (data) => {
+          dispatch(
+            updateRenewalQuote({
+              ...renewalQuote,
+              add_on_optional_benefits: data.data.add_on_optional_benefits,
+            }),
+          );
+        },
+        onError: (err) => {
+          console.error('Failed to update renewal', err);
+        },
+      },
+    );
   };
 
   const handleReset = () => {

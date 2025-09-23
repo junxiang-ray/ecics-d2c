@@ -133,6 +133,7 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
             >
               <RenewalPeriodContent
                 errors={errors}
+                renewalQuote={renewalQuote}
                 renewalStartDate={
                   initialValues.renewal_start_date
                     ? dayjs(initialValues.renewal_start_date)
