@@ -1,6 +1,6 @@
 import { Form } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { RenewalQuote } from '@/libs/types/renewalQuote';
@@ -27,19 +27,17 @@ const RenewalPeriodContent = ({
   const { setValue, watch } = useFormContext();
   const dispatch = useAppDispatch();
   const [payload, setPayload] = useState<any | null>(null);
+  const { data: updatedRenewalQuote } = usePostQueryEditRenewal({
+    productType: PRODUCT_NAME.MOTOR,
+    payload,
+    renewalQuote,
+  });
 
-  usePostQueryEditRenewal(
-    {
-      productType: PRODUCT_NAME.MOTOR,
-      payload,
-      renewalQuote,
-    },
-    {
-      onSuccess: (data) => {
-        dispatch(updateRenewalQuote(data));
-      },
-    },
-  );
+  useEffect(() => {
+    if (updatedRenewalQuote) {
+      dispatch(updateRenewalQuote(updatedRenewalQuote));
+    }
+  }, [updatedRenewalQuote, dispatch]);
 
   const startDate = useMemo(
     () =>

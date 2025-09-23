@@ -26,18 +26,11 @@ export const usePostEditRenewal = () => {
   });
 };
 
-export const usePostQueryEditRenewal = (
-  {
-    productType,
-    payload,
-    renewalQuote,
-  }: EditRenewalParams & { renewalQuote: any },
-  options?: {
-    enabled?: boolean;
-    onSuccess?: (data: any) => void;
-    onError?: (err: any) => void;
-  },
-) => {
+export const usePostQueryEditRenewal = ({
+  productType,
+  payload,
+  renewalQuote,
+}: EditRenewalParams & { renewalQuote: any }) => {
   const postQueryEditRenewal = async () => {
     const res = await renewal.postEditRenewal(productType, payload);
     const apiData = res.data?.data ?? res.data ?? {};
@@ -86,7 +79,6 @@ export const usePostQueryEditRenewal = (
     queryKey: ['edit-renewal', productType, payload],
     queryFn: postQueryEditRenewal,
     enabled: !!payload,
-    ...options,
   });
 };
 
