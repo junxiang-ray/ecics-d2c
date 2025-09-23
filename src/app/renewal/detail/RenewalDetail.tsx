@@ -3,11 +3,15 @@
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { SelectedAddon } from '@/libs/types/renewalQuote';
 import { formatToDDMMYYYY, parseDMYToDate } from '@/libs/utils/date-utils';
-import { capitalizeWords, createPassphrase } from '@/libs/utils/utils';
+import {
+  capitalizeWords,
+  createPassphrase,
+  normalizeName,
+} from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -47,6 +51,99 @@ const RenewalDetail = () => {
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [selectedAddons, setSelectedAddons] = useState<SelectedAddon[]>([]);
+
+  useEffect(() => {
+    const policyId = renewalQuote?.policy_id ?? '';
+    const proposalId = renewalQuote?.proposal_id ?? '';
+    const vehRegNo =
+      renewalQuote?.renewal_info.policy_details.vehicle_details?.reg_no ?? '';
+    const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+    const dob = renewalQuote?.renewal_info?.insured_info?.dob || '';
+    const renewalEndDate = renewalQuote?.renewal_info?.renewal_end_date ?? '';
+    const selectedAddons =
+      renewalQuote?.selected_add_on_optional_benefits ?? [];
+    const passphrase = createPassphrase(dob, nric);
+    const payload = {
+      policy_id: policyId,
+      proposal_id: proposalId,
+      veh_reg_no: vehRegNo,
+      passphrase,
+      renewal_end_date: renewalEndDate,
+      email_address: '',
+      contact_no: '',
+      selected_add_on_optional_benefits: selectedAddons,
+      finalize_renewal: false,
+    };
+
+    const productType = PRODUCT_NAME.MOTOR;
+    postEditRenewal(
+      { productType, payload },
+      {
+        onSuccess: (data) => {
+          const apiData = data?.data ?? data ?? {};
+          // Get the policy_optional_benefits array from the response (if any)
+          const policyOptionals =
+            apiData.policy_optional_benefits ??
+            apiData.renewal_info?.policy_optional_benefits ??
+            [];
+
+          // Build map: normalizedName -> policyOptionalObject
+          const policyMap = new Map<string, any>();
+          policyOptionals.forEach((p: any) => {
+            const key = normalizeName(p.name) || `id:${p.id}`;
+            policyMap.set(key, p);
+          });
+
+          const currentOptionals =
+            renewalQuote?.renewal_info?.optional_benefits ?? [];
+
+          // Map over currentOptionals, override prem if a match by name is found
+          const mergedOptionals = currentOptionals.map((opt: any) => {
+            const key = normalizeName(opt.name);
+            const matchedPolicy = policyMap.get(key);
+
+            if (matchedPolicy) {
+              // override only prem
+              return {
+                ...opt,
+                prem: matchedPolicy.prem ?? opt.prem,
+              };
+            }
+
+            return opt;
+          });
+          if (!renewalQuote) return;
+          const updatedRenewalQuote = {
+            ...renewalQuote,
+            add_on_optional_benefits:
+              apiData.add_on_optional_benefits ??
+              renewalQuote.add_on_optional_benefits,
+            renewal_info: {
+              ...renewalQuote.renewal_info,
+              renewalplanprem:
+                apiData.renewal_info?.renewalplanprem ??
+                renewalQuote.renewal_info?.renewalplanprem,
+              renewalpremb4gst:
+                apiData.renewal_info?.renewalpremb4gst ??
+                renewalQuote.renewal_info?.renewalpremb4gst,
+              renewalgst:
+                apiData.renewal_info?.renewalgst ??
+                renewalQuote.renewal_info?.renewalgst,
+              renewalpremwgst:
+                apiData.renewal_info?.renewalpremwgst ??
+                renewalQuote.renewal_info?.renewalpremwgst,
+              optional_benefits: mergedOptionals,
+            },
+          };
+
+          dispatch(updateRenewalQuote(updatedRenewalQuote));
+        },
+        onError: (err) => {
+          console.error('Failed to update renewal', err);
+        },
+      },
+    );
+  }, [dispatch]);
 
   const initialValues: any = {
     // Policy details

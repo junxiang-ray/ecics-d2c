@@ -113,6 +113,15 @@ const RenewalPeriodContent = ({
               renewalplanprem:
                 apiData.renewal_info?.renewalplanprem ??
                 renewalQuote.renewal_info?.renewalplanprem,
+              renewalpremb4gst:
+                apiData.renewal_info?.renewalpremb4gst ??
+                renewalQuote.renewal_info?.renewalpremb4gst,
+              renewalgst:
+                apiData.renewal_info?.renewalgst ??
+                renewalQuote.renewal_info?.renewalgst,
+              renewalpremwgst:
+                apiData.renewal_info?.renewalpremwgst ??
+                renewalQuote.renewal_info?.renewalpremwgst,
               optional_benefits: mergedOptionals,
             },
           };
