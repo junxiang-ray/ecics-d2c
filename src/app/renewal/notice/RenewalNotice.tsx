@@ -2,9 +2,11 @@
 
 import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { formatDateString } from '@/libs/utils/dayjs';
+import { buildRenewalPayload } from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -14,6 +16,7 @@ import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
+  usePostEditRenewal,
   usePostRenewalProcessPayment,
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
@@ -26,9 +29,11 @@ const RenewalNotice = () => {
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
   const { mutate: savePolicy, isPending } = usePostSavePolicy();
+  const { mutate: postEditRenewal } = usePostEditRenewal('basic');
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
+
   const productTypeState = useAppSelector(
     (state) => state.renewalQuote.productType,
   );
@@ -39,6 +44,13 @@ const RenewalNotice = () => {
   const isSingpassFlowRenewal = useAppSelector(
     (state) => state.general.isSingpassFlowRenewal,
   );
+
+  useEffect(() => {
+    const payload = buildRenewalPayload(renewalQuote);
+    if (!payload) return;
+
+    postEditRenewal({ productType: PRODUCT_NAME.MOTOR, payload });
+  }, [postEditRenewal]);
 
   const handleBackDashboard = () => {
     if (isSingpassFlowRenewal) {
