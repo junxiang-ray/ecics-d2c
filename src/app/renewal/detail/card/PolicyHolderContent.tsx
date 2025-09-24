@@ -75,6 +75,7 @@ const PolicyHolderContent = () => {
                       isRenewalFlow={true}
                       placeholder={`Select ${label.toLowerCase()}`}
                       isRequired={!!isRequired}
+                      disabled={name === 'gender'}
                     />
                   ) : (
                     <InputField
