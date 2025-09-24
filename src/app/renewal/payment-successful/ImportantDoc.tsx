@@ -12,7 +12,12 @@ interface ImportantDocProps {
 
 const ImportantDoc: React.FC<ImportantDocProps> = ({ title, url }) => {
   return (
-    <div className='flex cursor-pointer items-center justify-between rounded-lg border border-[#BEDBFF] bg-[#EFF6FF] p-3'>
+    <div
+      className='flex cursor-pointer items-center justify-between rounded-lg border border-[#BEDBFF] bg-[#EFF6FF] p-3'
+      onClick={() => {
+        window.open(url, '_blank');
+      }}
+    >
       <div className='flex items-center gap-2'>
         <PolicyDetailsIcon
           className='h-8 w-8 rounded-lg bg-[#D1FAE5] text-[#155DFC]'
@@ -25,12 +30,7 @@ const ImportantDoc: React.FC<ImportantDocProps> = ({ title, url }) => {
           </div>
         </div>
       </div>
-      <DownloadIcon
-        className='h-4 w-4 text-gray-500'
-        onClick={() => {
-          window.open(url, '_blank');
-        }}
-      />
+      <DownloadIcon className='h-4 w-4 text-gray-500' />
     </div>
   );
 };
