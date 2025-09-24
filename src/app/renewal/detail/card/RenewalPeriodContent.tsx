@@ -81,6 +81,7 @@ const RenewalPeriodContent = ({
     if (!startDate) return;
     const newDate = startDate.add(1, 'year').subtract(1, 'day');
     setValue('renewal_expiry_date', newDate.toDate());
+    handleExpiryChange(newDate);
   };
 
   return (
