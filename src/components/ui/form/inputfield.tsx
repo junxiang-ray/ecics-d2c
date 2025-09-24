@@ -58,7 +58,7 @@ export const InputField = ({
                 props.onChange?.(e);
               }}
               status={fieldState.invalid ? 'error' : undefined}
-              className={`h-10 w-full ${isRenewalFlow ? 'font-semibold' : ''} ${fieldState.invalid ? '!border-red-500' : ''} ${props.disabled ? 'bg-gray-200' : ''}`}
+              className={`h-10 w-full ${isRenewalFlow ? 'font-semibold' : ''} ${fieldState.invalid ? '!border-red-500' : ''} ${props.disabled ? 'bg-gray-150' : ''}`}
               onBlur={() => {
                 const trimmed = field.value?.trim();
                 setValue(name, trimmed, { shouldValidate: true });
