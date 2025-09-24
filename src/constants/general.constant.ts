@@ -19,3 +19,6 @@ export const GROUP_COUNTRY = {
 export const ECICS_URL = 'https://www.ecics.com/';
 
 export const GST_RATE = 0.09; // GST is always 9% of the subtotal
+
+//value title document screen payment success
+export const VALUE_TITLE_DOC = 'List of Authorised Workshops';
