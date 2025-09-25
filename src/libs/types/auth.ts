@@ -13,9 +13,9 @@ export interface LoginResponse {
 }
 
 export interface UserInfoPayload {
-  nonce: string;
+  nonce?: string;
   code_verifier: string;
-  state: string;
+  state?: string;
   code?: string;
 }
 

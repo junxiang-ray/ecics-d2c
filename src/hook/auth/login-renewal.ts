@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-} from '@tanstack/react-query';
+import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { UserInfoPayload } from '@/libs/types/auth';
 import { saveToSessionStorage } from '@/libs/utils/utils';
@@ -42,23 +38,26 @@ export const useRequestSignInSingpass = (
   });
 };
 
-export const usePostUserInfoRenewal = () => {
-  const postUserInfoRenewal = async ({
+export const useRetriveNricSingpass = () => {
+  const retriveNricSingpass = async ({
     payload,
-    productType,
   }: {
     payload: UserInfoPayload;
-    productType: ProductTypeWeb;
   }) => {
-    const res = await auth.postUserInfoRenewal({ payload, productType });
-    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data.data) });
+    const res = await auth.retriveNricSingpass({ payload });
+    const resData = {
+      uinfin: {
+        value: res?.data?.data || '',
+      },
+    };
+    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(resData) });
     saveToSessionStorage({
-      [DATA_FROM_SINGPASS]: JSON.stringify(res.data.data),
+      [DATA_FROM_SINGPASS]: JSON.stringify(resData),
     });
     return res.data;
   };
   return useMutation({
-    mutationFn: postUserInfoRenewal,
-    mutationKey: ['user-info-renewal'],
+    mutationFn: retriveNricSingpass,
+    mutationKey: ['retrive-nric-singpass'],
   });
 };

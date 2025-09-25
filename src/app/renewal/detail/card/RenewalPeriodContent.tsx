@@ -1,21 +1,44 @@
 import { Form } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
+import { RenewalQuote } from '@/libs/types/renewalQuote';
 import { getCoverageDuration } from '@/libs/utils/date-utils';
+import { createPassphrase } from '@/libs/utils/utils';
 
 import { ReloadIcon } from '@/components/icons/renewal-icons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { usePostQueryEditRenewal } from '@/hook/renewal/renewalQuote';
+import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch } from '@/redux/store';
+
 const RenewalPeriodContent = ({
   errors,
   renewalStartDate,
+  renewalQuote,
 }: {
   errors: any;
   renewalStartDate: Dayjs | null;
+  renewalQuote: RenewalQuote;
 }) => {
   const { setValue, watch } = useFormContext();
+  const dispatch = useAppDispatch();
+  const [payload, setPayload] = useState<any | null>(null);
+  const { data: updatedRenewalQuote } = usePostQueryEditRenewal({
+    productType: PRODUCT_NAME.MOTOR,
+    payload,
+    renewalQuote,
+  });
+
+  useEffect(() => {
+    if (updatedRenewalQuote) {
+      dispatch(updateRenewalQuote(updatedRenewalQuote));
+    }
+  }, [updatedRenewalQuote, dispatch]);
+
   const startDate = useMemo(
     () =>
       renewalStartDate && renewalStartDate.isValid() ? renewalStartDate : null,
@@ -29,12 +52,36 @@ const RenewalPeriodContent = ({
   const handleExpiryChange = (value: Dayjs | null) => {
     if (!value) return;
     setValue('renewal_expiry_date', value.toDate());
+
+    const policyId = renewalQuote?.policy_id ?? '';
+    const proposalId = renewalQuote?.proposal_id ?? '';
+    const vehRegNo =
+      renewalQuote?.renewal_info?.policy_details?.vehicle_details?.reg_no ?? '';
+    const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+    const dob = renewalQuote?.renewal_info?.insured_info?.dob || '';
+
+    const passphrase = createPassphrase(dob, nric);
+
+    const renewalEndDate = value ? value.format('DD-MM-YYYY') : '';
+
+    setPayload({
+      policy_id: policyId,
+      proposal_id: proposalId,
+      veh_reg_no: vehRegNo,
+      passphrase,
+      renewal_end_date: renewalEndDate,
+      email_address: '',
+      contact_no: '',
+      selected_add_on_optional_benefits: [],
+      finalize_renewal: false,
+    });
   };
 
   const handleReset = () => {
     if (!startDate) return;
-    const newDate = startDate.add(1, 'year');
+    const newDate = startDate.add(1, 'year').subtract(1, 'day');
     setValue('renewal_expiry_date', newDate.toDate());
+    handleExpiryChange(newDate);
   };
 
   return (
@@ -48,6 +95,7 @@ const RenewalPeriodContent = ({
             name='renewal_start_date'
             label='Renewal Start Date'
             disabled
+            isRenewalFlow={true}
           />
         </Form.Item>
         <Form.Item
@@ -58,12 +106,13 @@ const RenewalPeriodContent = ({
             name='renewal_expiry_date'
             label='Renewal Expiry Date'
             isRequired
+            isRenewalFlow={true}
             onChange={handleExpiryChange}
             disabledDate={(current: Dayjs) => {
               if (!startDate) return true;
               return (
-                current < startDate.add(1, 'year') ||
-                current > startDate.add(2, 'year')
+                current < startDate.add(1, 'year').subtract(1, 'day') ||
+                current > startDate.add(18, 'month').subtract(1, 'day')
               );
             }}
           />
@@ -71,8 +120,8 @@ const RenewalPeriodContent = ({
 
         {/* Coverage Duration */}
         <div className='col-span-full flex flex-col'>
-          <div className='mb-2 flex items-center justify-between'>
-            <label className='mb-1 text-xs font-medium text-gray-700'>
+          <div className='mb-1 flex items-center justify-between'>
+            <label className='text-xs font-medium text-gray-700'>
               Coverage Duration
             </label>
             <div
@@ -82,6 +131,7 @@ const RenewalPeriodContent = ({
               <ReloadIcon size={14} className='mr-1' /> Reset to 1 Year
             </div>
           </div>
+
           <input
             type='text'
             value={
@@ -90,8 +140,9 @@ const RenewalPeriodContent = ({
                 : ''
             }
             disabled
-            className='cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
+            className='mt-1 cursor-not-allowed rounded-md border border-[#BEDBFF] bg-[#EFF6FF] px-3 py-2 text-sm font-semibold text-gray-700'
           />
+
           <div className='text-[10px] font-normal'>
             Duration is calculated from renewal start date to expiry date. Use
             the reset button to quickly set coverage to exactly one year.

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -24,8 +24,6 @@ import PolicyDetailsContent from '@/app/renewal/detail/card/PolicyDetailsContent
 import PolicyHolderContent from '@/app/renewal/detail/card/PolicyHolderContent';
 import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent';
 import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
-import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
-import { useAppDispatch } from '@/redux/store';
 
 import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
 
@@ -87,8 +85,6 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       renewal,
     } = props;
 
-    const dispatch = useAppDispatch();
-
     const methods = useForm<RenewalFormData>({
       resolver: zodResolver(schema),
       mode: 'onChange',
@@ -98,60 +94,15 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
 
     const {
       formState: { errors },
-      watch,
       handleSubmit,
     } = methods;
 
-    const watchedValues = watch();
-
-    // Sync form changes to redux
-    useEffect(() => {
-      if (!renewalQuote?.renewal_info) return;
-
-      const payload = {
-        ...renewalQuote.renewal_info,
-        renewal_expiry_date:
-          watchedValues.renewal_expiry_date ??
-          renewalQuote.renewal_info.renewal_expiry_date,
-        insured_info: {
-          ...renewalQuote.renewal_info.insured_info,
-          gender:
-            watchedValues.gender ??
-            renewalQuote.renewal_info.insured_info.gender,
-          marital_status:
-            watchedValues.marital_status ??
-            renewalQuote.renewal_info.insured_info.marital_status,
-          email:
-            watchedValues.email ?? renewalQuote.renewal_info.insured_info.email,
-          contact_no:
-            watchedValues.contact_no ??
-            renewalQuote.renewal_info.insured_info.contact_no,
-          address: {
-            ...renewalQuote.renewal_info.insured_info.address,
-            address_line1:
-              watchedValues.address_line1 ??
-              renewalQuote.renewal_info.insured_info.address.address_line1,
-            address_line2:
-              watchedValues.address_line2 ??
-              renewalQuote.renewal_info.insured_info.address.address_line2,
-            address_line3:
-              watchedValues.address_line3 ??
-              renewalQuote.renewal_info.insured_info.address.address_line3,
-            postal:
-              watchedValues.postal ??
-              renewalQuote.renewal_info.insured_info.address.postal,
-          },
-        },
-        selected_add_on_optional_benefits: selectedAddons,
-      };
-
-      const isEqual =
-        JSON.stringify(payload) === JSON.stringify(renewalQuote.renewal_info);
-
-      if (!isEqual) {
-        dispatch(updateRenewalQuote({ renewal_info: payload }));
-      }
-    }, [watchedValues, selectedAddons, dispatch, renewalQuote?.renewal_info]);
+    // calculate selected count (add-ons card)
+    const includedCount =
+      renewalQuote?.renewal_info?.optional_benefits?.length ?? 0;
+    const availableCount =
+      includedCount + (renewalQuote?.add_on_optional_benefits?.length ?? 0);
+    const selectedCount = includedCount + (selectedAddons?.length ?? 0);
 
     // Expose submit to parent via ref
     useImperativeHandle(ref, () => ({
@@ -162,9 +113,9 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='mb-2 flex w-full flex-col px-4 sm:px-4 md:mb-16 md:px-6 lg:px-0'
+          className='mb-2 flex w-full flex-col sm:px-4 md:mb-16 md:px-6 lg:px-0'
         >
-          <div className='mx-auto mt-[12px]'>
+          <div className='mx-auto'>
             <InfoCard
               icon={<PolicyDetailsIcon className='text-sky-500' size={20} />}
               title='Policy Details'
@@ -182,6 +133,7 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
             >
               <RenewalPeriodContent
                 errors={errors}
+                renewalQuote={renewalQuote}
                 renewalStartDate={
                   initialValues.renewal_start_date
                     ? dayjs(initialValues.renewal_start_date)
@@ -190,14 +142,18 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
               />
             </InfoCard>
 
-            <InfoCard
-              icon={<ExcessIcon className='text-sky-500' size={20} />}
-              title='Excess'
-              subtitle='Excess amounts applicable to your policy'
-              isPolicyRenewalScreen
-            >
-              <ExcessContent renewal={renewal} />
-            </InfoCard>
+            {renewal?.renewal_excess &&
+              (renewal.renewal_excess.policy_excess?.length > 0 ||
+                renewal.renewal_excess.additional_excess?.length > 0) && (
+                <InfoCard
+                  icon={<ExcessIcon className='text-sky-500' size={20} />}
+                  title='Excess'
+                  subtitle='Excess amounts applicable to your policy'
+                  isPolicyRenewalScreen
+                >
+                  <ExcessContent renewal={renewal} />
+                </InfoCard>
+              )}
 
             <InfoCard
               icon={<PrivateMotorCarIcon className='text-sky-500' size={20} />}
@@ -233,7 +189,7 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
             <InfoCard
               icon={<PlusSmallIcon className='text-sky-500' size={20} />}
               title='Add-ons'
-              subtitle={`${selectedAddons.length}/${renewalQuote.addons?.length || 0} add-ons selected`}
+              subtitle={`${selectedCount}/${availableCount} add-ons selected`}
               isPolicyRenewalScreen
             >
               <AddOnsContent

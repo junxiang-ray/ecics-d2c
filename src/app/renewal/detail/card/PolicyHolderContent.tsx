@@ -27,7 +27,7 @@ const PolicyHolderContent = () => {
         { label: 'Full Name', name: 'name', disabled: true },
         { label: 'NRIC', name: 'nric', disabled: true },
         { label: 'Date of Birth', name: 'dob', disabled: true },
-        { label: 'Gender', name: 'gender', isDropdown: true },
+        { label: 'Gender', name: 'gender', isDropdown: true, disabled: true },
         { label: 'Marital Status', name: 'marital_status', isDropdown: true },
         {
           label: 'Driving Experience',
@@ -72,8 +72,10 @@ const PolicyHolderContent = () => {
                           ? GENDER_OPTIONS
                           : MARITAL_STATUS_OPTIONS
                       }
+                      isRenewalFlow={true}
                       placeholder={`Select ${label.toLowerCase()}`}
                       isRequired={!!isRequired}
+                      disabled={!!disabled}
                     />
                   ) : (
                     <InputField
@@ -81,6 +83,7 @@ const PolicyHolderContent = () => {
                       label={label}
                       disabled={!!disabled}
                       isRequired={!!isRequired}
+                      isRenewalFlow={true}
                     />
                   )}
                 </Form.Item>

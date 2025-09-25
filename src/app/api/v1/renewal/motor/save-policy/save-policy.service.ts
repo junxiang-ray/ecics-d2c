@@ -9,8 +9,16 @@ import { prisma } from '@/app/api/libs/prisma';
 export async function savePolicyFromISP(bodyData: savePolicyDTO) {
   try {
     logger.info(`Saving renewal policy with data: ${JSON.stringify(bodyData)}`);
-    const renewalData = await prisma.renewalInfo.create({
-      data: bodyData,
+    const renewalData = await prisma.renewalInfo.upsert({
+      where: {
+        proposal_id: bodyData.proposal_id,
+      },
+      update: {
+        ...bodyData,
+      },
+      create: {
+        ...bodyData,
+      },
     });
 
     if (renewalData) {

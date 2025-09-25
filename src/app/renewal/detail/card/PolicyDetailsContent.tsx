@@ -23,7 +23,12 @@ const PolicyDetailsContent = ({ errors }: { errors: any }) => {
             name={field.name}
             validateStatus={errors?.[field.name] ? 'error' : ''}
           >
-            <InputField name={field.name} label={field.label} disabled />
+            <InputField
+              name={field.name}
+              label={field.label}
+              isRenewalFlow={true}
+              disabled
+            />
           </Form.Item>
         ))}
       </div>

@@ -195,7 +195,6 @@ export const cn = (...inputs: ClassValue[]) => {
 };
 
 export const createPassphrase = (dob: string, nric: string): string => {
-  if (!nric) return dob;
   const last5 = nric.slice(-5);
   return `${dob}${last5}`;
 };
@@ -217,3 +216,32 @@ export function isSafePaymentUrl(savedUrl: string | null): boolean {
     return false;
   }
 }
+
+export const normalizeName = (s?: string) =>
+  (s || '').toString().trim().toLowerCase();
+
+export const buildRenewalPayload = (renewalQuote: any) => {
+  if (!renewalQuote) return null;
+
+  const policyId = renewalQuote?.policy_id ?? '';
+  const proposalId = renewalQuote?.proposal_id ?? '';
+  const vehRegNo =
+    renewalQuote?.renewal_info.policy_details.vehicle_details?.reg_no ?? '';
+  const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+  const dob = renewalQuote?.renewal_info?.insured_info?.dob || '';
+  const renewalEndDate = renewalQuote?.renewal_info?.renewal_end_date ?? '';
+  const selectedAddons = renewalQuote?.selected_add_on_optional_benefits ?? [];
+  const passphrase = createPassphrase(dob, nric);
+
+  return {
+    policy_id: policyId,
+    proposal_id: proposalId,
+    veh_reg_no: vehRegNo,
+    passphrase,
+    renewal_end_date: renewalEndDate,
+    email_address: '',
+    contact_no: '',
+    selected_add_on_optional_benefits: selectedAddons,
+    finalize_renewal: false,
+  };
+};

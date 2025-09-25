@@ -3,11 +3,15 @@
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { SelectedAddon } from '@/libs/types/renewalQuote';
-import { formatToDDMMYYYY } from '@/libs/utils/date-utils';
-import { createPassphrase } from '@/libs/utils/utils';
+import { formatToDDMMYYYY, parseDMYToDate } from '@/libs/utils/date-utils';
+import {
+  buildRenewalPayload,
+  capitalizeWords,
+  createPassphrase,
+} from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -15,34 +19,46 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import {
   MARITAL_STATUS_MAP,
   MARITAL_STATUS_OPTIONS,
+  MaritalCode,
 } from '@/app/motor/insurance/basic-detail/options';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalDetailForm, {
   RenewalFormData,
 } from '@/app/renewal/detail/RenewalDetailForm';
 import ModalPremiumRenewal from '@/app/renewal/modal/ModalPremiumRenewal';
-import { GST_RATE, TAX } from '@/constants/general.constant';
+import { GST_RATE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
-import { useAppSelector } from '@/redux/store';
+import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const RenewalDetail = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const formRef = useRef<{ submit: () => void }>(null);
 
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
+
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
-  const dob = renewal?.insured_info?.dob;
+  const dob = renewal?.insured_info?.dob || '';
 
   const { data: renewalContent } = useGetRenewalContent();
-  const { mutate: postEditRenewal, isPending } = usePostEditRenewal();
+  const { mutate: postEditRenewal, isPending } =
+    usePostEditRenewal('withOptionals');
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [selectedAddons, setSelectedAddons] = useState<SelectedAddon[]>([]);
+
+  useEffect(() => {
+    const payload = buildRenewalPayload(renewalQuote);
+    if (!payload) return;
+
+    postEditRenewal({ productType: PRODUCT_NAME.MOTOR, payload });
+  }, [postEditRenewal]);
 
   const initialValues: any = {
     // Policy details
@@ -59,12 +75,8 @@ const RenewalDetail = () => {
       ? formatToDDMMYYYY(renewal.date_extracted)
       : '',
     scheme: renewal?.scheme ?? '',
-    renewal_start_date: renewal?.renewal_start_date
-      ? dayjs(renewal.renewal_start_date).toDate()
-      : null,
-    renewal_expiry_date: renewal?.renewal_end_date
-      ? dayjs(renewal.renewal_end_date, ['D-M-YYYY', 'DD-MM-YYYY']).toDate()
-      : null,
+    renewal_start_date: parseDMYToDate(renewal?.renewal_start_date),
+    renewal_expiry_date: parseDMYToDate(renewal?.renewal_end_date),
 
     // Renewal excess
     policy_excess_0: renewal?.renewal_excess?.policy_excess?.[0]?.value ?? '',
@@ -97,7 +109,9 @@ const RenewalDetail = () => {
       ? (MARITAL_STATUS_OPTIONS.find(
           (opt) =>
             opt.value ===
-            MARITAL_STATUS_MAP[renewal.insured_info.marital_status],
+            MARITAL_STATUS_MAP[
+              renewal.insured_info.marital_status as MaritalCode
+            ],
         )?.text ?? 'N/A')
       : 'N/A',
     address_line1: renewal?.insured_info?.address?.address_line1 ?? '',
@@ -112,8 +126,10 @@ const RenewalDetail = () => {
     named_drivers: (policy?.named_drivers ?? []).map((driver) => ({
       name: driver?.name ?? '',
       nric: driver?.icno ?? '',
-      dob: driver?.dob ? dayjs(driver.dob).format('YYYY-MM-DD') : '',
-      marital_status: MARITAL_STATUS_MAP[driver?.martial_status] ?? '',
+      dob: driver?.dob,
+      marital_status: capitalizeWords(
+        MARITAL_STATUS_MAP[driver?.martial_status as MaritalCode] ?? '',
+      ),
       driv_exp: driver?.driv_exp ?? '',
       gender: driver?.gender === 'M' ? 'Male' : 'Female',
     })),
@@ -129,31 +145,71 @@ const RenewalDetail = () => {
     const vehRegNo =
       renewalQuote?.renewal_info?.policy_details?.vehicle_details?.reg_no ?? '';
     const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+
     const passphrase = createPassphrase(dob, nric);
 
     const renewalEndDate = value.renewal_expiry_date
       ? dayjs(value.renewal_expiry_date).format('DD-MM-YYYY')
       : '';
-    const email = value.email;
-    const contactNo = value.contact_no;
 
     const payload = {
       policy_id: policyId,
       proposal_id: proposalId,
       veh_reg_no: vehRegNo,
-      passphrase: passphrase,
+      passphrase,
       renewal_end_date: renewalEndDate,
-      email_address: email,
-      contact_no: contactNo,
+      email_address: value.email,
+      contact_no: value.contact_no,
       selected_add_on_optional_benefits: selectedAddons,
       finalize_renewal: false,
     };
+
     const productType = PRODUCT_NAME.MOTOR;
 
     postEditRenewal(
       { productType, payload },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          dispatch(
+            updateRenewalQuote({
+              ...data.data,
+              renewal_info: {
+                ...renewalQuote?.renewal_info,
+                ...data.data.renewal_info, // Merge from API
+                policy_details: {
+                  ...data.data.renewal_info.policy_details,
+                  current_policy_no:
+                    renewalQuote?.renewal_info?.policy_details
+                      ?.current_policy_no ?? '',
+                },
+                insured_info: {
+                  ...data.data.renewal_info.insured_info,
+                  ...value,
+                  gender: value.gender?.toUpperCase().startsWith('M')
+                    ? 'M'
+                    : 'F',
+                  marital_status: value.marital_status
+                    ? value.marital_status.charAt(0).toUpperCase()
+                    : '',
+                  driv_exp:
+                    renewalQuote?.renewal_info?.insured_info?.driv_exp ?? '',
+                  address: {
+                    ...data.data.renewal_info.insured_info.address,
+                    address_line1: value.address_line1,
+                    address_line2: value.address_line2,
+                    address_line3: value.address_line3,
+                    postal: value.postal,
+                  },
+                },
+                optional_benefits:
+                  renewalQuote?.renewal_info?.optional_benefits ?? [],
+                policy_optional_benefits:
+                  data.data.renewal_info?.policy_optional_benefits ?? [],
+              },
+              selected_add_on_optional_benefits: selectedAddons,
+            }),
+          );
+
           router.push(ROUTES.RENEWAL.RENEWAL_REVIEW);
         },
         onError: (err) => {
@@ -163,17 +219,34 @@ const RenewalDetail = () => {
     );
   };
   const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-  const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
-  const planFee = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
-  const selectedAddonsFee = renewal?.selected_add_on_optional_benefits ?? [];
-  const addonsTotal = selectedAddonsFee.reduce((sum, addon) => {
+  const subtotal = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
+  const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
+
+  const includedAddonsFee = renewal?.optional_benefits ?? [];
+  const addonsIncludedTotal = includedAddonsFee.reduce((sum, addon) => {
     return sum + Number(addon.prem ?? 0);
   }, 0);
 
-  const addonsTotalAfterTax = addonsTotal / TAX;
-  const subtotalFeeAfter = planFee + addonsTotalAfterTax;
+  const selectedAddonsFee = selectedAddons ?? [];
+  const addonsSelectedTotal = selectedAddonsFee.reduce((sum, addon) => {
+    const subOptionsTotal =
+      addon.sub_options?.reduce(
+        (subSum, sub) => subSum + Number(sub.prem ?? 0),
+        0,
+      ) ?? 0;
 
-  const hasAddonsPlus = addonsTotalAfterTax > 0;
+    const premValue = Number(addon.prem ?? 0) + subOptionsTotal;
+    return sum + premValue;
+  }, 0);
+
+  const namedDriversCount = policy?.named_drivers?.length ?? 0;
+  const nameDriversTotalFee =
+    namedDriversCount > 1 ? (namedDriversCount - 1) * 60 : 0;
+
+  const subtotalFeeAfter =
+    planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
+
+  const hasAddonsPlus = addonsSelectedTotal > 0;
   const gstAmount = subtotalFeeAfter * GST_RATE;
   const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
 
@@ -233,11 +306,11 @@ const RenewalDetail = () => {
         />
       </div>
       <ModalPremiumRenewal
+        selectedAddons={selectedAddons}
         isShowPopupPremium={isShowPopupPremium}
         setIsShowPopupPremium={setIsShowPopupPremium}
         subtotalFeeAfter={subtotalFeeAfter}
         renewalQuote={renewalQuote}
-        tax={TAX}
         gst={gst}
         subtotal={subtotal}
         total={total}

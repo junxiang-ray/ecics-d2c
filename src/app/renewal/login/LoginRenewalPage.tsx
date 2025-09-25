@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { saveToSessionStorage } from '@/libs/utils/utils';
 import { sgCarRegNoValidator } from '@/libs/utils/validation-utils';
 
 import { CarIcon } from '@/components/icons/add-on-icons';
@@ -21,11 +20,20 @@ import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { EDIT_RENEWAL, PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestSignInSingpass } from '@/hook/auth/login-renewal';
 import { useCheckPolicyRenewal } from '@/hook/insurance/renewal';
-import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import {
+  useGetTimeoutRenewal,
+  usePostCheckPolicies,
+} from '@/hook/renewal/renewalQuote';
+import {
+  resetRenewalQuote,
+  setEditRenewal,
+  setProductType,
+  setTimeoutValue,
+  updateRenewalQuote,
+} from '@/redux/slices/renewalQuote.slice';
 import { useAppDispatch } from '@/redux/store';
 
 const schema = z.object({
@@ -48,23 +56,34 @@ const LoginRenewalPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(resetRenewalQuote());
     sessionStorage.clear();
     localStorage.clear();
-  }, []);
+  }, [dispatch]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [messageError, setMessageError] = useState('');
-  const { mutate: requestSignInSingpass, error: errorLoginRenewal } =
-    useRequestSignInSingpass(PRODUCT_NAME.RENEWAL);
   const {
-    mutateAsync: checkPolicyRenewal,
+    mutate: requestSignInSingpass,
+    error: errorLoginRenewal,
+    isPending: isPendingSignIn,
+  } = useRequestSignInSingpass(PRODUCT_NAME.RENEWAL);
+  const {
+    mutate: checkPolicyRenewal,
     isPending,
     error,
   } = useCheckPolicyRenewal();
+  const { mutate: getTimeoutRenewal, isPending: isPendingTimeout } =
+    useGetTimeoutRenewal();
+  const { mutate: checkPolicies } = usePostCheckPolicies();
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
+    defaultValues: {
+      veh_reg_no: '',
+      passphrase: '',
+    },
   });
 
   const {
@@ -73,23 +92,60 @@ const LoginRenewalPage = () => {
   } = methods;
 
   const onSubmitSigninRenewal = (values: FormData) => {
-    checkPolicyRenewal({
-      veh_reg_no: values.veh_reg_no,
-      passphrase: values.passphrase,
-    })
-      .then((res) => {
-        if (res) {
-          if (res.edit_renewal) {
-            saveToSessionStorage({ [EDIT_RENEWAL]: res.edit_renewal });
-            saveToSessionStorage({ [PRODUCT_TYPE]: res.product });
+    checkPolicies(
+      [
+        {
+          veh_reg_no: values.veh_reg_no,
+        },
+      ],
+      {
+        onSuccess: (res) => {
+          if (res?.data?.length > 0) {
+            const vehRegNo = res.data[0].veh_reg_no;
+            checkPolicyRenewal(
+              {
+                veh_reg_no: vehRegNo,
+                passphrase: values.passphrase,
+              },
+              {
+                onSuccess: (res) => {
+                  if (res) {
+                    dispatch(updateRenewalQuote(res));
+                    dispatch(setEditRenewal(res.edit_renewal));
+                    dispatch(setProductType(res.product));
+
+                    getTimeoutRenewal(undefined, {
+                      onSuccess: (timeoutRes) => {
+                        const minutes =
+                          timeoutRes?.data?.attributes
+                            ?.session_timeout_minutes ?? 0;
+                        const timeoutMs = Number(minutes) * 60 * 1000;
+                        dispatch(setTimeoutValue(timeoutMs));
+                        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
+                      },
+                    });
+                  }
+                },
+                onError: (err: any) => {
+                  setMessageError(
+                    err?.response?.data?.message ?? 'Something went wrong',
+                  );
+                },
+              },
+            );
+          } else {
+            setMessageError(
+              'Policy has been renewed already. Please contact ECICS for further information',
+            );
           }
-          dispatch(updateRenewalQuote(res));
-        }
-        router.push(ROUTES.RENEWAL.RENEWAL_NOTICE);
-      })
-      .catch((err: any) => {
-        setMessageError(err?.response?.data?.message ?? 'Something went wrong');
-      });
+        },
+        onError: (err: any) => {
+          setMessageError(
+            err?.response?.data?.message ?? 'Something went wrong',
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -141,7 +197,7 @@ const LoginRenewalPage = () => {
             >
               <InputField
                 name='veh_reg_no'
-                label='Vehicle Registration No'
+                label='Vehicle Registration No. '
                 placeholder='Example: SBA123A'
                 isRequired
                 prefix={<CarIcon size={16} className='mr-2 text-gray-400' />}
@@ -158,7 +214,8 @@ const LoginRenewalPage = () => {
               <InputField
                 type={showPassword ? 'text' : 'password'}
                 name='passphrase'
-                label='Password *'
+                label='Password '
+                isRequired
                 placeholder='Enter your password'
                 prefix={
                   <LockOutlined size={18} className='mr-2 text-gray-400' />
@@ -190,7 +247,7 @@ const LoginRenewalPage = () => {
                 E.g <span className='font-semibold'>300619701234J</span>
               </p>
             </Form.Item>
-            {error && (
+            {(error || messageError !== '') && (
               <div className='mt-2 flex w-full flex-row items-start gap-2 rounded-lg border border-[#FFC9C9] bg-[#FEF2F2] p-2 font-normal text-[#E7000B]'>
                 <InfoCircleOutlined className='mt-1' />
                 <p>{messageError}</p>
@@ -198,8 +255,8 @@ const LoginRenewalPage = () => {
             )}
             <PrimaryButton
               htmlType='submit'
-              loading={isPending}
-              disabled={isPending}
+              loading={isPendingSignIn || isPendingTimeout}
+              disabled={isPending || isPendingSignIn || isPendingTimeout}
               className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'
             >
               Sign in

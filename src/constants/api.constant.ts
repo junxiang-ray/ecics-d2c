@@ -51,3 +51,10 @@ export const API_RENEWAL_PROCESS_PAYMENT = (productType: ProductTypeWeb) =>
 
 export const API_POST_SAVE_POLICY = (productType: ProductTypeWeb) =>
   `/renewal/${productType}/save-policy`;
+
+export const API_GET_SESSION_TIMEOUT = '/renewal-section-timeout';
+
+export const API_RETRIVE_NRIC_SINGPASS_RENEWAL =
+  '/renewal/motor/retrieve-nric-singpass';
+
+export const API_POST_CMS_CHECK_POLICIES = '/check-policies';

@@ -1,38 +1,67 @@
 'use client';
 
 import { Button } from 'antd';
-import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
+
+import { formatDateString } from '@/libs/utils/dayjs';
+import { buildRenewalPayload } from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { PricingSummaryRenewal } from '@/app/renewal/components/FeeBarRenewal';
 import RenewalNoticeForm from '@/app/renewal/notice/RenewalNoticeForm';
-import { PRODUCT_TYPE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import {
+  usePostEditRenewal,
   usePostRenewalProcessPayment,
   usePostSavePolicy,
 } from '@/hook/renewal/renewalQuote';
-import { useAppSelector } from '@/redux/store';
+import { setRenewalKey } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 const RenewalNotice = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { data: renewalContent } = useGetRenewalContent();
   const { mutate: postPayment } = usePostRenewalProcessPayment();
   const { mutate: savePolicy, isPending } = usePostSavePolicy();
-
+  const { mutate: postEditRenewal } = usePostEditRenewal('basic');
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
+
+  const productTypeState = useAppSelector(
+    (state) => state.renewalQuote.productType,
+  );
+  const vehData = useAppSelector((state) => state.renewalQuote.vehData);
+
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
+  const isSingpassFlowRenewal = useAppSelector(
+    (state) => state.general.isSingpassFlowRenewal,
+  );
+
+  useEffect(() => {
+    const payload = buildRenewalPayload(renewalQuote);
+    if (!payload) return;
+
+    postEditRenewal({ productType: PRODUCT_NAME.MOTOR, payload });
+  }, [postEditRenewal]);
 
   const handleBackDashboard = () => {
-    router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
+    if (isSingpassFlowRenewal) {
+      if (vehData?.policies?.length && vehData.policies.length > 1) {
+        router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
+      } else {
+        router.push(ROUTES.RENEWAL.LOGIN);
+      }
+    } else {
+      router.push(ROUTES.RENEWAL.LOGIN); // Manual flow
+    }
   };
 
   const handleEditRenewal = () => {
@@ -62,20 +91,18 @@ const RenewalNotice = () => {
             key: generatedKey,
             renewal_data: {
               renewal_summary: {
-                coverage: renewal?.coverage,
+                coverage: policy?.coverage,
                 total_paid:
-                  Number(renewal?.renewalpremwgst ?? 0) +
+                  Number(renewal?.renewalpremb4gst ?? 0) +
                   Number(renewal?.renewalgst ?? 0),
                 poily_no: policy?.current_policy_no,
               },
               policy_summary: {
-                policy_type: sessionStorage.getItem(PRODUCT_TYPE),
-                policy_start_date: renewal?.renewal_start_date
-                  ? dayjs(renewal.renewal_start_date).format('D-M-YYYY')
-                  : undefined,
-                policy_end_date: renewal?.renewal_end_date
-                  ? dayjs(renewal.renewal_end_date).format('D-M-YYYY')
-                  : undefined,
+                policy_type: productTypeState,
+                policy_start_date: formatDateString(
+                  renewal?.renewal_start_date,
+                ),
+                policy_end_date: formatDateString(renewal?.renewal_end_date),
                 veh_reg_no: policy?.vehicle_details?.reg_no,
               },
               coverage_includes: coverageIncludes,
@@ -88,7 +115,7 @@ const RenewalNotice = () => {
                 ) ?? [],
             },
           };
-          localStorage.setItem('renewalKey', generatedKey);
+          dispatch(setRenewalKey(generatedKey));
 
           // Call api savePolicy
           savePolicy(

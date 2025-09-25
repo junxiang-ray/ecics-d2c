@@ -1,11 +1,16 @@
 'use client';
 
-import dayjs from 'dayjs';
 import React from 'react';
 
 import { PolicyDetails, RenewalInfo } from '@/libs/types/renewalQuote';
-import { formatToDDMMYYYY, parseCompactDate } from '@/libs/utils/date-utils';
-import { capitalizeWords } from '@/libs/utils/utils';
+import {
+  formatToDDMMYYYY,
+  getCoverageDuration,
+  parseCompactDate,
+  parseDMYToDate,
+} from '@/libs/utils/date-utils';
+import dayjs from '@/libs/utils/dayjs';
+import { capitalizeWords, formatCurrency } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
 import {
@@ -21,6 +26,7 @@ import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import {
   MARITAL_STATUS_MAP,
   MARITAL_STATUS_OPTIONS,
+  MaritalCode,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
 
@@ -92,18 +98,18 @@ const RenewalNoticeForm = ({
       : 'N/A';
 
     // Calculate duration
-    const durationInYears = dayjs(renewal?.renewal_end_date, 'DD-MM-YYYY').diff(
-      dayjs(renewal?.renewal_start_date, 'DD-MM-YYYY'),
-      'year',
-    );
+    const coverageDuration =
+      renewal?.renewal_start_date && renewal?.renewal_end_date
+        ? getCoverageDuration(
+            dayjs(parseDMYToDate(renewal.renewal_start_date)),
+            dayjs(parseDMYToDate(renewal.renewal_end_date)),
+          )
+        : 'N/A';
 
     const fields = [
       { label: 'Renewal Start Date', value: startDate },
       { label: 'Renewal Expiry Date', value: endDate },
-      {
-        label: 'Coverage Duration',
-        value: durationInYears > 1 ? `${durationInYears} years` : '1 year',
-      },
+      { label: 'Coverage Duration', value: coverageDuration },
     ];
 
     return (
@@ -343,17 +349,30 @@ const RenewalNoticeForm = ({
   };
 
   const AdditionalNamedDriversContent = () => {
-    const drivers = policy?.named_drivers.map((d, idx) => ({
-      name: d.name,
-      badge: idx === 0 ? 'Included' : 'SGD 65.40',
-      details: [
-        { label: 'NRIC', value: d.icno || '-' },
-        { label: 'Date of Birth', value: d.dob || '-' },
-        { label: 'Gender', value: d.gender === 'M' ? 'Male' : 'Female' },
-        { label: 'Marital Status', value: d.martial_status || '-' },
-        { label: 'Driving Experience', value: d.driv_exp || '-' },
-      ],
-    }));
+    const drivers = policy?.named_drivers.map((d, idx) => {
+      const maritalCode =
+        (d.martial_status?.toUpperCase() as MaritalCode) || undefined;
+      const mappedValue = maritalCode
+        ? MARITAL_STATUS_MAP[maritalCode]
+        : undefined;
+
+      const maritalStatusText = mappedValue
+        ? MARITAL_STATUS_OPTIONS.find((opt: any) => opt.value === mappedValue)
+            ?.text || '-'
+        : '-';
+
+      return {
+        name: d.name,
+        badge: idx === 0 ? 'Included' : 'SGD 60.00',
+        details: [
+          { label: 'NRIC', value: d.icno || '-' },
+          { label: 'Date of Birth', value: d.dob || '-' },
+          { label: 'Gender', value: d.gender === 'M' ? 'Male' : 'Female' },
+          { label: 'Marital Status', value: maritalStatusText },
+          { label: 'Driving Experience', value: d.driv_exp || '-' },
+        ],
+      };
+    });
 
     return (
       <div className='space-y-4'>
@@ -402,9 +421,8 @@ const RenewalNoticeForm = ({
   };
 
   const PremiumSummaryContent = () => {
-    const subtotal = parseFloat(String(renewal?.renewalpremwgst ?? 0));
-    const gst = parseFloat(String(renewal?.renewalgst ?? 0));
-    const total = (subtotal + gst).toFixed(2);
+    const hasPolicyOptional = renewal?.policy_optional_benefits?.length;
+    const hasOptional = renewal?.optional_benefits?.length;
 
     return (
       <div className='space-y-4'>
@@ -412,13 +430,47 @@ const RenewalNoticeForm = ({
         <div className='text-base font-semibold'>Plan</div>
         <div className='flex items-center justify-between text-sm font-normal'>
           <span>{capitalizeWords(policy?.coverage)}</span>
-          <span>SGD {renewal?.renewalpremb4gst}</span>
+          <span>{formatCurrency(Number(renewal?.renewalplanprem))}</span>
         </div>
 
         {/* Add-ons */}
         <div>
           <p className='mb-2 text-base font-semibold'>Add-ons</p>
-          {renewal?.optional_benefits?.length ? (
+          {hasPolicyOptional ? (
+            <>
+              {(renewal?.policy_optional_benefits ?? [])
+                .filter((item) => item.isIncluded)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className='mb-1 flex justify-between space-y-2'
+                  >
+                    <span className='text-sm'>
+                      {item.name}{' '}
+                      <span className='rounded-xl bg-green-100 px-2 py-1 text-xs text-green-700'>
+                        Included
+                      </span>
+                    </span>
+                    <span className='text-sm'>
+                      {formatCurrency(Number(item.prem ?? 0))}
+                    </span>
+                  </div>
+                ))}
+              {(renewal.policy_optional_benefits ?? [])
+                .filter((item) => !item.isIncluded)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className='mb-1 flex justify-between space-y-2'
+                  >
+                    <span className='text-sm'>{item.name}</span>
+                    <span className='text-sm'>
+                      {formatCurrency(Number(item.prem ?? 0))}
+                    </span>
+                  </div>
+                ))}
+            </>
+          ) : hasOptional ? (
             renewal.optional_benefits.map((item) => (
               <div
                 key={item.id}
@@ -430,11 +482,13 @@ const RenewalNoticeForm = ({
                     Included
                   </span>
                 </span>
-                <span className='text-sm'>SGD 0.00</span>
+                <span className='text-sm'>
+                  {formatCurrency(Number(item.prem))}
+                </span>
               </div>
             ))
           ) : (
-            <p className='text-sm text-gray-500'>No add-ons selected</p>
+            <p className='text-sm text-gray-500'>No add-ons available</p>
           )}
         </div>
 
@@ -458,15 +512,15 @@ const RenewalNoticeForm = ({
               </div>
             ))}
           </div>
-        ) : (
-          <p className='italic text-gray-400'>No named drivers</p>
-        )}
+        ) : null}
 
         {/* Total */}
         <div className='space-y-1 border-t pt-3'>
           <div className='flex justify-between'>
             <span className='text-base font-semibold'>Subtotal</span>
-            <span className='font-bold'>SGD {renewal?.renewalpremwgst}</span>
+            <span className='font-bold'>
+              {formatCurrency(Number(renewal?.renewalpremb4gst))}
+            </span>
           </div>
           <div className='flex justify-between pb-3 text-sm'>
             <span>GST (9%)</span>
@@ -474,7 +528,9 @@ const RenewalNoticeForm = ({
           </div>
           <div className='flex justify-between border-t pt-3 text-lg font-bold'>
             <span>Net Premium (Total)</span>
-            <span className='text-blue-600'>SGD {total}</span>
+            <span className='text-blue-600'>
+              {formatCurrency(Number(renewal?.renewalpremwgst))}
+            </span>
           </div>
         </div>
       </div>
@@ -547,13 +603,17 @@ const RenewalNoticeForm = ({
         <RenewalPeriodContent />
       </InfoCard>
 
-      <InfoCard
-        icon={<ExcessIcon className='text-sky-500' size={20} />}
-        title='Excess'
-        subtitle='Excess amounts applicable to your policy'
-      >
-        <ExcessContent />
-      </InfoCard>
+      {renewal?.renewal_excess &&
+        (renewal.renewal_excess.policy_excess?.length > 0 ||
+          renewal.renewal_excess.additional_excess?.length > 0) && (
+          <InfoCard
+            icon={<ExcessIcon className='text-sky-500' size={20} />}
+            title='Excess'
+            subtitle='Excess amounts applicable to your policy'
+          >
+            <ExcessContent />
+          </InfoCard>
+        )}
 
       <InfoCard
         icon={<PrivateMotorCarIcon className='text-sky-500' size={20} />}
