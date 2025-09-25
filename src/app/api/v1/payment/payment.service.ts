@@ -23,12 +23,24 @@ export async function handlePayment(data: paymentDTO) {
     if (!quoteInfo) {
       return ErrNotFound('Quote not found');
     }
+    let redirectUrl = '';
+    let returnBaseUrl = '';
+    if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_WEBSITE) {
+      redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_WEBSITE}?key=${key}`;
+    } else {
+      redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/motor/summary?key=${key}`;
+    }
+    if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+      returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+    } else {
+      returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+    }
 
     const payloadData = {
       payment_id: quoteInfo.payment_id,
       email: quoteInfo.email,
-      redirect_url: `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_WEBSITE}?key=${key}`,
-      return_baseurl: process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL,
+      redirect_url: redirectUrl,
+      return_baseurl: returnBaseUrl,
     };
 
     const resPayment = await handleApiCallToISP(

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ROUTES } from '@/constants/routes';
 
 const baseClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
