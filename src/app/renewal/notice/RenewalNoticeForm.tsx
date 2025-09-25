@@ -29,6 +29,7 @@ import {
   MaritalCode,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
+import { Input } from 'antd';
 
 interface RenewalNoticeFormProps {
   renewalContent?: {
@@ -75,7 +76,7 @@ const RenewalNoticeForm = ({
               <label className='mb-1 text-xs font-medium text-gray-700'>
                 {field.label}
               </label>
-              <input
+              <Input
                 type='text'
                 value={field.value}
                 disabled
@@ -123,7 +124,7 @@ const RenewalNoticeForm = ({
               <label className='mb-1 text-xs font-medium text-gray-700'>
                 {field.label}
               </label>
-              <input
+              <Input
                 type='text'
                 value={field.value}
                 disabled
@@ -160,7 +161,7 @@ const RenewalNoticeForm = ({
           <label className='mb-1 text-xs font-medium text-gray-700'>
             {field.label}
           </label>
-          <input
+          <Input
             type='text'
             value={field.value}
             disabled
@@ -250,7 +251,7 @@ const RenewalNoticeForm = ({
                   <label className='mb-1 text-xs font-medium text-gray-700'>
                     {label}
                   </label>
-                  <input
+                  <Input
                     type='text'
                     value={value || '-'}
                     disabled
@@ -325,7 +326,7 @@ const RenewalNoticeForm = ({
           <label className='mb-1 text-xs font-medium text-gray-700'>
             {label}
           </label>
-          <input
+          <Input
             type='text'
             value={value ?? '-'}
             disabled
@@ -405,7 +406,7 @@ const RenewalNoticeForm = ({
                   <label className='block text-xs font-medium text-gray-700'>
                     {detail.label}
                   </label>
-                  <input
+                  <Input
                     type='text'
                     value={detail.value}
                     disabled
