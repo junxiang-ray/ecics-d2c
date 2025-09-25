@@ -22,6 +22,7 @@ import {
   RenewalPeriodIcon,
 } from '@/components/icons/renewal-icons';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
+import { CustomInputAntd } from '@/components/ui/form/inputfield';
 
 import {
   MARITAL_STATUS_MAP,
@@ -72,10 +73,8 @@ const RenewalNoticeForm = ({
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           {fields.map((field, idx) => (
             <div key={idx} className='flex flex-col'>
-              <label className='mb-1 text-xs font-medium text-gray-700'>
-                {field.label}
-              </label>
-              <input
+              <CustomInputAntd
+                label={field.label}
                 type='text'
                 value={field.value}
                 disabled
@@ -120,10 +119,8 @@ const RenewalNoticeForm = ({
               key={idx}
               className={`flex flex-col ${field.label === 'Coverage Duration' ? 'col-span-full' : ''}`}
             >
-              <label className='mb-1 text-xs font-medium text-gray-700'>
-                {field.label}
-              </label>
-              <input
+              <CustomInputAntd
+                label={field.label}
                 type='text'
                 value={field.value}
                 disabled
@@ -157,10 +154,8 @@ const RenewalNoticeForm = ({
     const renderFields = (fields: { label: string; value: string }[]) =>
       fields.map((field, idx) => (
         <div key={idx} className='flex flex-col'>
-          <label className='mb-1 text-xs font-medium text-gray-700'>
-            {field.label}
-          </label>
-          <input
+          <CustomInputAntd
+            label={field.label}
             type='text'
             value={field.value}
             disabled
@@ -247,10 +242,8 @@ const RenewalNoticeForm = ({
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
               {fields.map(({ label, value }, idx) => (
                 <div key={idx} className='flex flex-col'>
-                  <label className='mb-1 text-xs font-medium text-gray-700'>
-                    {label}
-                  </label>
-                  <input
+                  <CustomInputAntd
+                    label={label}
                     type='text'
                     value={value || '-'}
                     disabled
@@ -322,10 +315,8 @@ const RenewalNoticeForm = ({
     ) =>
       fields.map(({ label, value }, idx) => (
         <div key={idx} className='flex flex-col'>
-          <label className='mb-1 text-xs font-medium text-gray-700'>
-            {label}
-          </label>
-          <input
+          <CustomInputAntd
+            label={label}
             type='text'
             value={value ?? '-'}
             disabled
@@ -402,10 +393,8 @@ const RenewalNoticeForm = ({
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
               {driver.details.map((detail, i) => (
                 <div key={i}>
-                  <label className='block text-xs font-medium text-gray-700'>
-                    {detail.label}
-                  </label>
-                  <input
+                  <CustomInputAntd
+                    label={detail.label}
                     type='text'
                     value={detail.value}
                     disabled
