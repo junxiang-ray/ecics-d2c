@@ -32,6 +32,7 @@ import {
   useGetVehicleMakes,
   useGetVehicleModels,
 } from '@/hook/insurance/common';
+import { useBlockedByMakeYear } from '@/hook/useBlockedByMakeYear';
 import { useDebounce } from '@/hook/useDebounce';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
@@ -513,6 +514,14 @@ const PolicyDetailForm = ({
     }
   }, [start_date, date_of_birth]);
 
+  // Check if vehicle is blocked by make and year
+  const regYear = watch(MOTOR_QUOTE.reg_yyyy) as string | undefined;
+  const isBlockedByMakeYear = useBlockedByMakeYear(
+    vehicle_make,
+    regYear,
+    setShowCSModal,
+  );
+
   const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
 
   return (
@@ -756,6 +765,7 @@ const PolicyDetailForm = ({
             form.submit();
           }}
           productType={ProductType.CAR}
+          disabled={isBlockedByMakeYear}
         />
       </div>
       <QuoteModal

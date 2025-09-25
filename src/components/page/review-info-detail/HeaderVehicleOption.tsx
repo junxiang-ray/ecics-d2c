@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { capitalizeWords } from '@/libs/utils/utils';
@@ -9,8 +9,10 @@ import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
+import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -39,7 +41,11 @@ interface Props {
     vehicleNumber: string,
     make: string,
     model: string,
+    capacity: number,
+    regDateStr: string,
   ) => void;
+  setIsShowUnMatchMake: (val: boolean) => void;
+  setIsMaskClosable: (val: boolean) => void;
 }
 
 const HeaderVehicleOption: React.FC<Props> = ({
@@ -48,20 +54,27 @@ const HeaderVehicleOption: React.FC<Props> = ({
   isMobile,
   getVehicleTopRow,
   getVehicleBottomRow,
-  onVehicleSelect: onVehicleSelect,
+  onVehicleSelect,
+  setIsShowUnMatchMake,
+  setIsMaskClosable,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const partner_code = localStorage.getItem(PARTNER_CODE);
-  const promo_code = localStorage.getItem(PROMO_CODE);
+  const partner_code =
+    typeof window !== 'undefined' ? localStorage.getItem(PARTNER_CODE) : null;
+  const promo_code =
+    typeof window !== 'undefined' ? localStorage.getItem(PROMO_CODE) : null;
 
   const carUserInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
 
   const sourceVehicles =
     listAfterSelectedVehicle?.length > 0 ? listAfterSelectedVehicle : vehicles;
-  const liveVehicles =
-    sourceVehicles?.filter((v) => v.status?.desc === 'LIVE') || [];
+
+  const liveVehicles = useMemo(
+    () => sourceVehicles?.filter((v) => v.status?.desc === 'LIVE') || [],
+    [sourceVehicles],
+  );
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(
     liveVehicles.length === 1 ? 0 : null,
@@ -70,7 +83,55 @@ const HeaderVehicleOption: React.FC<Props> = ({
   const [isVehicleNumberInvalidModal, setIsVehicleNumberInvalidModal] =
     useState(false);
 
+  const { mutateAsync: checkAIMakeModel } = useCheckAIMakeModel();
+  const [aiCheckResults, setAiCheckResults] = useState<{
+    [vehicleno: string]: boolean;
+  }>({});
+
   const { mutate: requestLog } = useRequestLog(PRODUCT_NAME.CAR);
+
+  useEffect(() => {
+    if (!liveVehicles.length) return;
+
+    const runChecks = async () => {
+      const results: { [vehicleno: string]: boolean } = {};
+
+      const settledResults = await Promise.allSettled(
+        liveVehicles.map((vehicle) =>
+          checkAIMakeModel({
+            vehicle_make: vehicle.make?.value,
+            vehicle_model: vehicle.model?.value,
+            vehicle_capacity:
+              vehicle.enginecapacity?.value || vehicle.powerrate?.value,
+            vehicle_type: ProductType.CAR,
+          }),
+        ),
+      );
+
+      settledResults.forEach((res, index) => {
+        const vehicleno = liveVehicles[index].vehicleno?.value ?? 'unknown';
+
+        if (res.status === 'fulfilled') {
+          const data = res.value;
+          const isInvalid = data.similarity < 0.85 && !data.vehicle_make_id;
+          results[vehicleno] = isInvalid;
+        } else {
+          console.error('AI check failed', res.reason);
+          results[vehicleno] = true;
+        }
+      });
+
+      setAiCheckResults(results);
+
+      const allInvalid = Object.values(results).every((val) => val === true);
+      if (allInvalid) {
+        setIsShowUnMatchMake(true);
+        setIsMaskClosable(false);
+      }
+    };
+
+    runChecks();
+  }, [liveVehicles, setIsShowUnMatchMake, setIsMaskClosable]);
 
   useEffect(() => {
     if (selectedIndex !== null) return;
@@ -108,13 +169,24 @@ const HeaderVehicleOption: React.FC<Props> = ({
     const make = vehicle.make?.value;
     const model = vehicle.model?.value;
 
+    // get engineCapacity, if null then use powerRate (EV car)
+    const capacity = vehicle.enginecapacity?.value || vehicle.powerrate?.value;
+
     const updatedUserInfoCar = {
       ...carUserInfo,
       vehicle_selected: vehicle,
     };
     dispatch(setUserInfoCar(updatedUserInfoCar));
 
-    onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
+    onVehicleSelect?.(
+      missing,
+      vehicleAge,
+      vehicleNumber,
+      make,
+      model,
+      capacity,
+      regDateStr,
+    );
   };
 
   const handleExit = () => {
@@ -173,6 +245,9 @@ const HeaderVehicleOption: React.FC<Props> = ({
           const isSelected = selectedIndex === index;
           const isExpanded = expandedIndex === index;
           const isOver15y = isVehicleOver15YearsOld(vehicle);
+          const isInvalidAI =
+            aiCheckResults[vehicle.vehicleno?.value ?? 'unknown'];
+          const isDisabled = isOver15y || isInvalidAI;
 
           const topRow = getVehicleTopRow(vehicle);
           const bottomRow = getVehicleBottomRow(vehicle);
@@ -186,7 +261,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
             <div
               key={index}
               className={`rounded-md border shadow-sm ${
-                isOver15y
+                isDisabled
                   ? 'cursor-not-allowed border-gray-300 bg-gray-100 opacity-60'
                   : isSelected
                     ? 'border-[#00ADEF] bg-white'
@@ -205,19 +280,19 @@ const HeaderVehicleOption: React.FC<Props> = ({
 
                 <button
                   type='button'
-                  disabled={isOver15y}
+                  disabled={isDisabled}
                   className={`flex h-8 w-8 items-center justify-center rounded-full border-[2px] ${
-                    isOver15y
+                    isDisabled
                       ? 'border-gray-400 bg-gray-200'
                       : 'border-[#00ADEF] bg-white'
                   }`}
                   onClick={() => {
-                    if (isOver15y) return;
+                    if (isDisabled) return;
                     setSelectedIndex(index);
                     chooseVehicle(vehicle);
                   }}
                 >
-                  {isSelected && !isOver15y && (
+                  {isSelected && !isDisabled && (
                     <div className='h-6 w-6 rounded-full bg-[#00ADEF]' />
                   )}
                 </button>

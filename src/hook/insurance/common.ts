@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { VehicleCheckResponse } from '@/libs/types/auth';
+import {
+  CheckAIMakeModelResponse,
+  CheckVehicleParams,
+  VehicleCheckResponse,
+} from '@/libs/types/auth';
 import { formatPromoCode } from '@/libs/utils/utils';
 
 import verify from '@/api/base-service/verify';
@@ -94,5 +98,19 @@ export const useGetNationality = (group_name: string) => {
   return useQuery({
     queryFn: fetchNational,
     queryKey: ['nationalities', group_name],
+  });
+};
+
+export const useCheckAIMakeModel = () => {
+  const fetchCheckAIVehicle = async (
+    params: CheckVehicleParams,
+  ): Promise<CheckAIMakeModelResponse> => {
+    const res = await verify.getCheckAIMakeModel(params);
+    return res.data.data;
+  };
+
+  return useMutation({
+    mutationFn: fetchCheckAIVehicle,
+    mutationKey: ['check-ai-make-model'],
   });
 };

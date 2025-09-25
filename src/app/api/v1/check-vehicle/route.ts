@@ -1,32 +1,37 @@
 import { NextRequest } from 'next/server';
-
-import { successRes } from '@/app/api/core/success.response';
+import { z } from 'zod';
 
 import { checkVehicleDTOSchema } from './check-vechicle.dto';
 import { checkVehicleMakeAndModel } from './vehicle.service';
-import { ErrNotFound } from '../../core/error.response';
+import { ErrBadRequest, ErrNotFound } from '../../core/error.response';
 import logger from '../../libs/logger';
 
-export const POST = async (
+export const GET = async (
   req: NextRequest,
-  context: { params: { product_type: string } },
+  context: {
+    params: {
+      vehicle_make: string;
+      vehicle_model: string;
+      vehicle_type: string;
+      vehicle_capacity: string;
+    };
+  },
 ) => {
-  const body = await req.json();
-  logger.info(`Received request to check vehicle: ${JSON.stringify(body)}`);
-  const data = checkVehicleDTOSchema.parse(body);
+  const { searchParams } = new URL(req.url);
+  const queryParams = {
+    vehicle_make: searchParams.get('vehicle_make') || '',
+    vehicle_model: searchParams.get('vehicle_model') || '',
+    vehicle_type: searchParams.get('vehicle_type') || '',
+    vehicle_capacity: searchParams.get('vehicle_capacity') || '',
+  };
 
-  const results = await checkVehicleMakeAndModel(
-    data.vehicle_make,
-    data.vehicle_model,
-  );
-  logger.info(`Successfully checked vehicle: ${JSON.stringify(results)}`);
-
-  if (!results) {
-    return ErrNotFound('Vehicle make or model not found');
+  try {
+    checkVehicleDTOSchema.parse(queryParams);
+    return await checkVehicleMakeAndModel(queryParams);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      logger.error(`Validation error: ${JSON.stringify(error)}`);
+      return ErrBadRequest(error.errors[0].message);
+    }
   }
-
-  return successRes({
-    data: results,
-    message: 'Check vehicle successfully',
-  });
 };
