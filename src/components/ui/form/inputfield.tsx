@@ -24,6 +24,12 @@ interface InputFieldWithIconProps extends InputProps {
   helperText?: string;
 }
 
+interface CustomInputAntdProps extends InputProps {
+  label?: string;
+  isRequired?: boolean;
+  helperText?: string;
+}
+
 export const InputField = ({
   name,
   label,
@@ -43,7 +49,9 @@ export const InputField = ({
             {label && (
               <label
                 className={`${
-                  isRenewalFlow ? 'text-xs font-normal text-gray-800' : ''
+                  isRenewalFlow
+                    ? 'pb-[10px] text-xs font-light text-gray-800'
+                    : ''
                 }`}
               >
                 {label}
@@ -187,3 +195,28 @@ export const InputFieldWithIcon = ({
     />
   );
 };
+
+export function CustomInputAntd({
+  label,
+  isRequired,
+  helperText,
+  ...props
+}: CustomInputAntdProps) {
+  return (
+    <div className='flex w-full flex-col'>
+      {label && (
+        <label className='text-xs font-medium text-gray-800'>
+          {label}
+          {isRequired && <span className='ml-1 text-red-500'>*</span>}
+        </label>
+      )}
+      <Input
+        {...props}
+        className={`h-10 w-full font-semibold ${props.disabled ? 'bg-gray-150' : ''}`}
+      />
+      {helperText && (
+        <span className='mt-1 text-xs text-gray-500'>{helperText}</span>
+      )}
+    </div>
+  );
+}

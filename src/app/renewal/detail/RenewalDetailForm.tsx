@@ -113,7 +113,7 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='mb-2 flex w-full flex-col sm:px-4 md:mb-16 md:px-6 lg:px-0'
+          className='mb-2 flex w-full flex-col md:mb-16 md:px-6 lg:px-0'
         >
           <div className='mx-auto'>
             <InfoCard
