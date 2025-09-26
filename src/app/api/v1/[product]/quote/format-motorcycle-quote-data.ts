@@ -9,6 +9,7 @@ import {
   mappedMotocycleAddOnIncludePlan,
   mappedPlanPremiums,
   mappedMotorcycleAddonEligibility,
+  mappedMotorcyclePolicyExcess,
 } from '@/app/api/utils/quote.helpers';
 
 export async function formatMotorCycleQuoteInfo(
@@ -16,15 +17,13 @@ export async function formatMotorCycleQuoteInfo(
   data: any,
 ): Promise<any[]> {
   const mappedPlanValues = mappedMotorcyclePlanPremiums(quoteInfo);
-  console.log(`MAPPED PLAN VALUES ${JSON.stringify(mappedPlanValues)}`);
   const mappedAddonValues = mappedMotorcycleAddonPremiums(quoteInfo);
-  console.log(`MAPPED ADDON VALUES ${JSON.stringify(mappedAddonValues)}`);
 
   const mappedAddonEligibilityValues =
     mappedMotorcycleAddonEligibility(quoteInfo);
   const mappedAddOnIncludePlanValues =
     mappedMotocycleAddOnIncludePlan(quoteInfo);
-  logger.info('FORMATTING MOTORCYCLE');
+  const mappedPolicyExcess = mappedMotorcyclePolicyExcess(quoteInfo);
 
   const plans = await prisma.plan.findMany({
     where: {
@@ -103,24 +102,22 @@ export async function formatMotorCycleQuoteInfo(
     orderBy: [{ is_recommended: 'desc' }, { id: 'asc' }],
   });
 
-  plans.forEach((plan) => {
-    console.log(
-      `for each plan the plan.code = ${plan.code} and map = ${JSON.stringify(mappedPlanValues)}`,
-    );
+  plans.forEach((plan: any) => {
     if (plan.code && plan.code in mappedPlanValues) {
       plan.premium_with_gst = mappedPlanValues[plan.code];
       plan.add_ons_included_in_this_plan =
         mappedAddOnIncludePlanValues[plan.code];
     }
+    for (const benefits of plan.benefits) {
+      if (benefits.name.includes('Policy Excess:')) {
+        benefits.name =
+          mappedPolicyExcess[plan.code as string] || benefits.name;
+      }
+    }
 
     for (const addon of plan.addons) {
-      console.log(`addon before processing: ${JSON.stringify(addon)}`);
-      console.log(
-        `Processing addon ${addon.code} with key map ${addon.key_map}`,
-      );
       addon.is_display = mappedAddonEligibilityValues[addon.code as string];
       if (addon.key_map && addon.options.length === 0) {
-        console.log(`mappedAddonValues[${addon.key_map}]`);
         addon.premium_with_gst = mappedAddonValues[addon.key_map];
       } else {
         for (const option of addon.options) {
@@ -138,6 +135,5 @@ export async function formatMotorCycleQuoteInfo(
       }
     }
   });
-  console.log(`number of plans ${plans.length}`);
   return plans;
 }

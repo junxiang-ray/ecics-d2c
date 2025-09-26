@@ -414,9 +414,6 @@ function findMotorcycleAddOnData(
   planId: string,
   id: string,
 ): any {
-  console.log(
-    `Finding Motorcycle Addon Data for Plan ID: ${planId}, Addon ID: ${id}`,
-  );
   return (
     findMotorcyclePlanData(quoteData, planId)?.availableOptionalBenefit?.find(
       (availableOptionalBenefit: any) => availableOptionalBenefit.id === id,
@@ -436,6 +433,15 @@ function findMotorcycleAddOnPremium(
 ): number {
   const planData = findMotorcycleAddOnData(quoteData, planId, id);
   return (Number(planData?.basePremium) ?? 0) * 1.09; // GST of 9%
+}
+
+function findMotorcyclePolicyExcess(quoteData: any, planId: string): string {
+  const planData = findMotorcyclePlanData(quoteData, planId);
+  const coverages = planData?.coverages || [];
+  const policyExcessCoverage = coverages.find((coverage: any) =>
+    coverage.name.includes('Policy Excess:'),
+  );
+  return policyExcessCoverage.name || '';
 }
 ///
 
@@ -494,6 +500,16 @@ export function mappedMotocycleAddOnIncludePlan(
     COMP: [],
     TPFT: [],
     TPO: [],
+  };
+}
+
+export function mappedMotorcyclePolicyExcess(
+  quoteData: any,
+): Record<string, string> {
+  return {
+    COMP: findMotorcyclePolicyExcess(quoteData, 'COMP'),
+    TPFT: findMotorcyclePolicyExcess(quoteData, 'TPFT'),
+    TPO: findMotorcyclePolicyExcess(quoteData, 'TPO'),
   };
 }
 
