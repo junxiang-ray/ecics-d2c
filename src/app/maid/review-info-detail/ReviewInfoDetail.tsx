@@ -26,7 +26,7 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfoMaid } from '@/hook/auth/login-maid';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import { ModalAge } from './ModalAge';
 
@@ -65,6 +65,9 @@ export const ReviewInfoDetailMaid = () => {
   }
   const [isShowModalAge, setIsShowModalAge] = useState(false);
 
+  const maidUserInfoo = useAppSelector(
+    (state) => state.ecicsUserInfo?.userInfo,
+  );
   const maidUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
   const personalInfo = maidUserInfo ? JSON.parse(maidUserInfo) : null;
 

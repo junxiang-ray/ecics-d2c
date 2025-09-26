@@ -17,6 +17,7 @@ import maidQuoteReducer from '@/redux/slices/maidQuote.slice';
 import quoteReducer from '@/redux/slices/quote.slice';
 import renewalQuoteReducer from '@/redux/slices/renewalQuote.slice';
 import userInfoCarReducer from '@/redux/slices/userInfoCar.slice';
+import ecicsUserInfoReducer from '@/redux/slices/ecicsUserInfo.slice';
 import storage from '@/redux/store/storage';
 
 // Root reducer
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   quote: quoteReducer,
   renewalQuote: renewalQuoteReducer,
   userInfoCar: userInfoCarReducer,
+  ecicsUserInfo: ecicsUserInfoReducer,
 });
 
 // Persist config

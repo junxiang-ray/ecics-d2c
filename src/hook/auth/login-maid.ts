@@ -12,11 +12,12 @@ import auth from '@/api/singpass-maid-service/auth';
 import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
   DATA_FROM_SINGPASS,
-  ECICS_USER_INFO,
   PARTNER_CODE,
   PROMO_CODE,
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
+import { updateEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
+import { useAppDispatch } from '@/redux/store';
 
 export const useRequestLoginMaid = (
   productType: ProductTypeWeb,
@@ -53,9 +54,10 @@ export const usePostUserInfoMaid = ({
   payload: UserInfoPayload;
   productType: ProductTypeWeb;
 }) => {
+  const dispatch = useAppDispatch();
   const postUserInfoMaid = async () => {
     const res = await auth.postUserInfoMaid({ payload, productType });
-    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(res.data.data) });
+    dispatch(updateEcicsUserInfo(res.data.data));
     saveToSessionStorage({
       [DATA_FROM_SINGPASS]: JSON.stringify(res.data.data),
     });
