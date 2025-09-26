@@ -1,9 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { MaidQuote } from '@/libs/types/maidQuote';
-
 interface EcicsUserInfoState {
-  userInfo: MaidQuote | null;
+  userInfo: string | null;
 }
 
 const initialState: EcicsUserInfoState = {
@@ -14,11 +12,8 @@ const ecicsUserInfoSlice = createSlice({
   name: 'ecicsUserInfo',
   initialState,
   reducers: {
-    updateEcicsUserInfo(state, action: PayloadAction<Partial<MaidQuote>>) {
-      state.userInfo = {
-        ...(state.userInfo ?? {}),
-        ...action.payload,
-      } as MaidQuote;
+    updateEcicsUserInfo(state, action: PayloadAction<string>) {
+      state.userInfo = action.payload;
     },
   },
 });

@@ -12,6 +12,7 @@ import auth from '@/api/singpass-maid-service/auth';
 import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
   DATA_FROM_SINGPASS,
+  ECICS_USER_INFO,
   PARTNER_CODE,
   PROMO_CODE,
 } from '@/constants/general.constant';
@@ -57,7 +58,7 @@ export const usePostUserInfoMaid = ({
   const dispatch = useAppDispatch();
   const postUserInfoMaid = async () => {
     const res = await auth.postUserInfoMaid({ payload, productType });
-    dispatch(updateEcicsUserInfo(res.data.data));
+    dispatch(updateEcicsUserInfo(JSON.stringify(res.data.data)));
     saveToSessionStorage({
       [DATA_FROM_SINGPASS]: JSON.stringify(res.data.data),
     });

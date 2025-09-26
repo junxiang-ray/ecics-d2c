@@ -65,10 +65,7 @@ export const ReviewInfoDetailMaid = () => {
   }
   const [isShowModalAge, setIsShowModalAge] = useState(false);
 
-  const maidUserInfoo = useAppSelector(
-    (state) => state.ecicsUserInfo?.userInfo,
-  );
-  const maidUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
+  const maidUserInfo = useAppSelector((state) => state.ecicsUserInfo?.userInfo);
   const personalInfo = maidUserInfo ? JSON.parse(maidUserInfo) : null;
 
   const initialValues = {
