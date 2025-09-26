@@ -20,7 +20,6 @@ import {
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 import { MAID_QUOTE } from '@/constants';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfoMaid } from '@/hook/auth/login-maid';

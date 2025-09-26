@@ -12,7 +12,6 @@ import auth from '@/api/singpass-maid-service/auth';
 import { ProductTypeWeb } from '@/app/api/constants/product';
 import {
   DATA_FROM_SINGPASS,
-  ECICS_USER_INFO,
   PARTNER_CODE,
   PROMO_CODE,
 } from '@/constants/general.constant';
