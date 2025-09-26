@@ -57,20 +57,20 @@ const LoginPage = () => {
     productType === ProductType.MAID
       ? '/maid_bg_top.svg'
       : productType === ProductType.MOTORCYCLE
-        ? '/motorcycle.jpg'
+        ? '/motorcycle_bg2.jpg'
         : '/login_bg_top.svg';
   const bgMobile =
     productType === ProductType.MAID
       ? '/login_bg_singpass_maid.png'
       : productType === ProductType.MOTORCYCLE
-        ? '/motorcycle.jpg'
+        ? '/motorcycle_bg2.jpg'
         : '/login_bg_top.svg';
 
   if (isMobile) {
     return (
       <div className='relative min-h-[100svh]'>
         <img
-          className={`h-full w-full object-contain ${isMobile ? 'pb-4' : ''}`}
+          className={`h-full w-full object-cover ${isMobile ? 'pb-4' : ''}`}
           src={bgMobile}
           alt='Background Image'
         />
@@ -116,11 +116,7 @@ const LoginPage = () => {
   return (
     <div className='relative flex h-screen w-full flex-row bg-white'>
       <div className='flex w-2/3 bg-white'>
-        <img
-          className='h-auto w-full object-cover object-top'
-          src={bgTop}
-          alt='Top BG'
-        />
+        <img className='h-auto w-full object-cover' src={bgTop} alt='Top BG' />
       </div>
       <div className='relative z-10 flex w-1/3'>
         <div className='absolute bottom-0 w-full'></div>
