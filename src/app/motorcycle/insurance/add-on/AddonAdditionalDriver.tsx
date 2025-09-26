@@ -54,7 +54,6 @@ function AddonAdditionalDriver({
   policyStartDate: string;
   isPending: boolean;
 }) {
-  console.log('rendering Additional Driver with addon', JSON.stringify(addon));
   const [isShowAdditionDriver, setIsShowAdditionDriver] = useState(false);
   const [editingDriver, setEditingDriver] = useState<AddNamedDriverInfo | null>(
     null,

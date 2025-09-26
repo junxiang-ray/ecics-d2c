@@ -49,7 +49,6 @@ function PlanDetail({
     isPending: isSaving,
     isSuccess,
   } = useSaveQuote();
-  console.log(`quote info plan detail`, JSON.stringify(quoteInfo?.data?.plans));
   const plans = quoteInfo?.data?.plans ?? [];
 
   useEffect(() => {

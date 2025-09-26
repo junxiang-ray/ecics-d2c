@@ -23,7 +23,6 @@ function PlanCardDesktop({
   setSelectedPlan: (plan: FormatPlan | null) => void;
   isSaving: boolean;
 }) {
-  console.log('here');
   return (
     <div className='flex w-full justify-evenly gap-6 lg:gap-5'>
       {plans?.map((plan, index) => {

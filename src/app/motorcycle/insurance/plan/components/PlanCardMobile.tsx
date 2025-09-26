@@ -22,7 +22,6 @@ function PlanCardMobile({
   setSelectedPlan: (plan: FormatPlan | null) => void;
   isSaving: boolean;
 }) {
-  console.log('plan build here ', JSON.stringify(plans));
   const { isMobile } = useDeviceDetection();
 
   return (

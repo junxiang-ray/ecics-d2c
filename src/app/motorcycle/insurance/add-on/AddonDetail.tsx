@@ -212,22 +212,18 @@ function AddOnDetail({
   const { mutateAsync: saveQuote, isPending } = useSaveQuote();
 
   const plan = useMemo(() => {
-    console.log('quoteInfo in AddonDetail', JSON.stringify(quoteInfo));
     return quoteInfo?.data?.plans?.find(
       (plan: any) => quoteInfo.data?.selected_plan === plan.title,
     );
   }, [quoteInfo]);
 
   const addonAdditionalDriver = useMemo(() => {
-    console.log('plan in addonAdditionalDriver', JSON.stringify(plan));
     return plan?.addons.find((addon: any) =>
       ADDON_MOTORCYCLE_AND.includes(addon.code),
     );
   }, [plan]);
 
   const normalAddons = useMemo(() => {
-    console.log('plan in normalAddons', JSON.stringify(plan));
-
     return (
       plan?.addons.filter((addon: any) =>
         ADDON_MOTORCYCLE.includes(addon.code),
@@ -279,19 +275,13 @@ function AddOnDetail({
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
   const addonsFormatted: AddOnFormat[] = normalAddons.map((addon: any) => {
-    console.log('addon', JSON.stringify(addon));
     // map the icon to the addon
     const iconMatched = mapIconToTypeAddOn.find(
       (item) => item.code === addon.code,
     );
 
-    // For feeAdded use the "addonsAdded" defaults
-    console.log('addonsAdded', JSON.stringify(addonsAdded));
-    console.log('addon.code', addon.code);
-
     /** checks if value has been added or not */
     const initValueForAdded = addonsAdded?.[addon.code] ?? null;
-    console.log('initValueForAdded', JSON.stringify(initValueForAdded));
 
     const selectedOptionForAdded = addon.options.find(
       (option: any) => option.value === initValueForAdded,
@@ -312,8 +302,6 @@ function AddOnDetail({
       : 0;
     // const feeSelected =
     //   initValueForAdded === 'YES' ? (addon.premium_with_gst ?? 0) : 0;
-
-    console.log(`fee added = ${feeAdded} and feeSelected = ${feeSelected}`);
 
     return {
       ...addon,
@@ -373,8 +361,6 @@ function AddOnDetail({
 
   const totalAddonNormalFee = addonsFormatted.reduce((acc, addon) => {
     const fee = addon.feeAdded ?? 0;
-    console.log('Calculating totalAddonNormalFee', JSON.stringify(addon));
-    console.log('acc = ', acc, 'fee = ', fee);
     return acc + fee;
   }, 0);
   const baseFeeAdditionalDriver =
@@ -384,7 +370,6 @@ function AddOnDetail({
     : 0;
   const totalAddonFee = additionalDriverFee + totalAddonNormalFee;
   const premiumWithGst = plan?.premium_with_gst ?? 0;
-  console.log('addonAdditionalDriver', JSON.stringify(addonAdditionalDriver));
   const baseFee = addonAdditionalDriver?.options?.[0].premium_with_gst ?? 0;
   const totalFeeDriver = drivers.length ? baseFee * (drivers.length - 1) : 0;
   const discountRate = quoteInfo?.promo_code?.discount || 0;

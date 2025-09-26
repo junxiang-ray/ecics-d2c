@@ -446,7 +446,6 @@ const AddOnBonusDetailManualForm = (props: Props) => {
                   value={choice}
                   onChange={(e) => {
                     setChoice(e.target.value);
-                    console.log(`radio checked:${e.target.value}`);
                   }}
                 />
               </Form.Item>
