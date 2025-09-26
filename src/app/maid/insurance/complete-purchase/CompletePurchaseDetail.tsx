@@ -502,7 +502,7 @@ export default function CompletePurchaseDetail({
       const isSafe = isSafePaymentUrl(savedUrl);
 
       if (savedUrl && isSafe) {
-        window.location.href = savedUrl;
+        router.push(savedUrl);
       }
       return;
     }
