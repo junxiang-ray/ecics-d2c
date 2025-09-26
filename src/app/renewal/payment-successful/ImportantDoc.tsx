@@ -5,6 +5,7 @@ import {
   PolicyDetailsIcon,
   ShieldIcon,
 } from '@/components/icons/renewal-icons';
+
 import { VALUE_TITLE_DOC } from '@/constants/general.constant';
 
 interface ImportantDocProps {
@@ -24,7 +25,7 @@ const ImportantDoc: React.FC<ImportantDocProps> = ({ title, url }) => {
     }
     return (
       <PolicyDetailsIcon
-        className='h-8 w-8 rounded-lg bg-[#DCFCE7] text-[#155DFC]'
+        className='h-8 w-8 rounded-lg bg-[#D9E9FE] text-[#155DFC]'
         size={18}
       />
     );

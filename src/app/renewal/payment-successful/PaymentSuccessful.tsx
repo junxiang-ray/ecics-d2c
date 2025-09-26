@@ -227,7 +227,7 @@ const PaymentSuccessful = () => {
                 className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#BEDBFF] bg-blue-50 p-4'
               >
                 <PhoneIcon
-                  className='mb-2 h-10 w-10 rounded-full bg-[#DCFCE7] text-[#155DFC]'
+                  className='mb-2 h-10 w-10 rounded-full bg-[#D9E9FE] text-[#155DFC]'
                   size={18}
                 />
                 <span className='font-medium'>Call Us</span>
