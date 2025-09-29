@@ -15,9 +15,11 @@ const ecicsUserInfoSlice = createSlice({
     updateEcicsUserInfo(state, action: PayloadAction<string>) {
       state.userInfo = action.payload;
     },
+    resetEcicsUserInfo: () => initialState,
   },
 });
 
-export const { updateEcicsUserInfo } = ecicsUserInfoSlice.actions;
+export const { updateEcicsUserInfo, resetEcicsUserInfo } =
+  ecicsUserInfoSlice.actions;
 
 export default ecicsUserInfoSlice.reducer;
