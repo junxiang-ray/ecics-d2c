@@ -12,11 +12,14 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
+import { useAppDispatch } from '@/redux/store';
 
 const LoginPage = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
 
   const productType: ProductType = pathname.startsWith('/maid')
     ? ProductType.MAID
@@ -26,6 +29,7 @@ const LoginPage = () => {
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
 
   useEffect(() => {
+    dispatch(resetEcicsUserInfo());
     sessionStorage.clear();
     localStorage.clear();
   }, []);
