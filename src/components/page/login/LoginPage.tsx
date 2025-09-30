@@ -14,6 +14,7 @@ import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
 import { useAppDispatch } from '@/redux/store';
+import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
 
 const LoginPage = () => {
   const { isMobile } = useDeviceDetection();
@@ -30,6 +31,8 @@ const LoginPage = () => {
 
   useEffect(() => {
     dispatch(resetEcicsUserInfo());
+    dispatch(clearQuote());
+    dispatch(clearMatchedMakeModel());
     sessionStorage.clear();
     localStorage.clear();
   }, []);
