@@ -50,6 +50,7 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+import { saveMatchedMakeModel } from '@/redux/slices/quote.slice';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -225,6 +226,9 @@ const SingpassPolicyDetailForm = ({
   }, [quoteInfo, dispatch]);
 
   const userInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+  const matchedMakeModel = useAppSelector(
+    (state) => state.quote?.matchedMakeModel,
+  );
 
   const userInfoCarSingPass = userInfo.data_from_singpass;
   const vehicles = userInfoCarSingPass?.vehicles ?? [];
@@ -317,8 +321,8 @@ const SingpassPolicyDetailForm = ({
       const value = methods.getValues();
       const vehicle_info_selected = {
         vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
-        vehicle_make: userInfo?.vehicle_selected?.make.value,
-        vehicle_model: userInfo?.vehicle_selected?.model.value,
+        vehicle_make: matchedMakeModel?.make,
+        vehicle_model: matchedMakeModel?.model,
         first_registered_year: missingFields.reg_yyyy
           ? (value[MOTOR_QUOTE.reg_yyyy] as string)
           : extractYear(
@@ -422,8 +426,8 @@ const SingpassPolicyDetailForm = ({
   const handleSubmit = (value: FormData) => {
     const vehicle_info_selected = {
       vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
-      vehicle_make: userInfo?.vehicle_selected?.make.value,
-      vehicle_model: userInfo?.vehicle_selected?.model.value,
+      vehicle_make: matchedMakeModel?.make,
+      vehicle_model: matchedMakeModel?.model,
       first_registered_year: missingFields.reg_yyyy
         ? (value[MOTOR_QUOTE.reg_yyyy] as string)
         : extractYear(userInfo?.vehicle_selected?.firstregistrationdate.value),
@@ -638,9 +642,14 @@ const SingpassPolicyDetailForm = ({
                   vehicle_type: ProductType.CAR,
                 })
                   .then((res) => {
-                    const shouldShowUnMatch =
-                      res.similarity < 0.85 && !!res.vehicle_make_id;
-                    setShowUnMatchModal(shouldShowUnMatch);
+                    const { similarity, vehicle_make_id, make, model } = res;
+
+                    const isUnMatch = similarity < 0.85 && !!vehicle_make_id;
+                    setShowUnMatchModal(isUnMatch);
+
+                    if (similarity > 0.85) {
+                      dispatch(saveMatchedMakeModel({ make, model }));
+                    }
                   })
                   .catch((err) => {
                     console.error('AI check failed', err);

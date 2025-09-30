@@ -217,11 +217,11 @@ export interface Benefit {
   order: number;
 }
 export interface Vehicle {
-  vehicle_make: string;
-  chasis_number: string;
-  vehicle_model: string;
-  first_registered_year: string;
-  vehicle_number: string;
+  vehicle_make?: string;
+  chasis_number?: string;
+  vehicle_model?: string;
+  first_registered_year?: string;
+  vehicle_number?: string;
   chassis_no?: string;
   engine_no?: string;
   engine_number?: string;
