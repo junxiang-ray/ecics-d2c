@@ -321,8 +321,10 @@ const SingpassPolicyDetailForm = ({
       const value = methods.getValues();
       const vehicle_info_selected = {
         vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
-        vehicle_make: matchedMakeModel?.make,
-        vehicle_model: matchedMakeModel?.model,
+        vehicle_make:
+          matchedMakeModel?.make ?? userInfo?.vehicle_selected?.make.value,
+        vehicle_model:
+          matchedMakeModel?.model ?? userInfo?.vehicle_selected?.model.value,
         first_registered_year: missingFields.reg_yyyy
           ? (value[MOTOR_QUOTE.reg_yyyy] as string)
           : extractYear(
@@ -426,8 +428,10 @@ const SingpassPolicyDetailForm = ({
   const handleSubmit = (value: FormData) => {
     const vehicle_info_selected = {
       vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
-      vehicle_make: matchedMakeModel?.make,
-      vehicle_model: matchedMakeModel?.model,
+      vehicle_make:
+        matchedMakeModel?.make ?? userInfo?.vehicle_selected?.make.value,
+      vehicle_model:
+        matchedMakeModel?.model ?? userInfo?.vehicle_selected?.model.value,
       first_registered_year: missingFields.reg_yyyy
         ? (value[MOTOR_QUOTE.reg_yyyy] as string)
         : extractYear(userInfo?.vehicle_selected?.firstregistrationdate.value),
