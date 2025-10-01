@@ -650,22 +650,27 @@ const SingpassPolicyDetailForm = ({
                   vehicle_type: ProductType.CAR,
                 })
                   .then((res) => {
-                    const { similarity, vehicle_make_id, make, model } = res;
-                    const selectedInfo = carQuote?.data.vehicle_info_selected;
-                    const hasSelectedVehicle =
-                      selectedInfo &&
-                      selectedInfo.vehicle_model &&
-                      selectedInfo.vehicle_make &&
-                      selectedInfo.vehicle_make === make;
+                    if (
+                      vehicleNumber ===
+                      userInfo?.vehicle_selected?.vehicleno.value
+                    ) {
+                      const { similarity, vehicle_make_id, make, model } = res;
+                      const selectedInfo = carQuote?.data.vehicle_info_selected;
+                      const hasSelectedVehicle =
+                        selectedInfo &&
+                        selectedInfo.vehicle_model &&
+                        selectedInfo.vehicle_make &&
+                        selectedInfo.vehicle_make === make;
 
-                    const isUnMatch =
-                      similarity < 0.85 &&
-                      !!vehicle_make_id &&
-                      !hasSelectedVehicle;
-                    setShowUnMatchModal(isUnMatch);
+                      const isUnMatch =
+                        similarity < 0.85 &&
+                        !!vehicle_make_id &&
+                        !hasSelectedVehicle;
+                      setShowUnMatchModal(isUnMatch);
 
-                    if (similarity > 0.85) {
-                      dispatch(saveMatchedMakeModel({ make, model }));
+                      if (similarity > 0.85) {
+                        dispatch(saveMatchedMakeModel({ make, model }));
+                      }
                     }
                   })
                   .catch((err) => {
