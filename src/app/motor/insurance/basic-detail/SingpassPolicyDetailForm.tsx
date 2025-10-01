@@ -38,7 +38,10 @@ import { ROUTES } from '@/constants/routes';
 import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { saveMatchedMakeModel } from '@/redux/slices/quote.slice';
+import {
+  clearMatchedMakeModel,
+  saveMatchedMakeModel,
+} from '@/redux/slices/quote.slice';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -605,6 +608,7 @@ const SingpassPolicyDetailForm = ({
                 capacity,
                 regDateStr,
               ) => {
+                dispatch(clearMatchedMakeModel());
                 setVehicleNumber(vehicleNumber);
                 setVehicleMake(make);
                 // Check vehicle age first
