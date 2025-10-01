@@ -38,6 +38,7 @@ import { ROUTES } from '@/constants/routes';
 import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { saveMatchedMakeModel } from '@/redux/slices/quote.slice';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -50,7 +51,6 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
-import { saveMatchedMakeModel } from '@/redux/slices/quote.slice';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -203,7 +203,7 @@ const SingpassPolicyDetailForm = ({
   const [isMaskClosable, setIsMaskClosable] = useState(false);
 
   const { data: quoteInfo } = useGetQuote(key);
-
+  const carQuote = useAppSelector((state) => state.quote?.quote);
   useEffect(() => {
     const carUserInfo = quoteInfo?.data;
 
@@ -647,8 +647,17 @@ const SingpassPolicyDetailForm = ({
                 })
                   .then((res) => {
                     const { similarity, vehicle_make_id, make, model } = res;
+                    const selectedInfo = carQuote?.data.vehicle_info_selected;
+                    const hasSelectedVehicle =
+                      selectedInfo &&
+                      selectedInfo.vehicle_model &&
+                      selectedInfo.vehicle_make &&
+                      selectedInfo.vehicle_make === make;
 
-                    const isUnMatch = similarity < 0.85 && !!vehicle_make_id;
+                    const isUnMatch =
+                      similarity < 0.85 &&
+                      !!vehicle_make_id &&
+                      !hasSelectedVehicle;
                     setShowUnMatchModal(isUnMatch);
 
                     if (similarity > 0.85) {

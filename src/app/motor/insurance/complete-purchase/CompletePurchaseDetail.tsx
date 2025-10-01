@@ -8,6 +8,7 @@ import {
   formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
+  getMatchedVehicleModel,
   getPlanGroupPrefix,
 } from '@/libs/utils/utils';
 
@@ -74,6 +75,9 @@ export default function CompletePurchaseDetail({
   const key = searchParams.get('key') || '';
   const quote = useAppSelector((state) => state.quote?.quote);
   const vehicleSelected = quote?.data?.vehicle_info_selected;
+  const vehicles = quote?.data?.vehicles;
+  const vehicleModelMatched = getMatchedVehicleModel(vehicleSelected, vehicles);
+
   const drivers = quote?.data?.add_named_driver_info ?? [];
   const selectedAddons = quote?.data?.selected_addons;
   const selectedPlan = quote?.data?.selected_plan;
@@ -303,7 +307,7 @@ export default function CompletePurchaseDetail({
             },
             {
               title: 'Vehicle Model',
-              value: vehicleSelected?.vehicle_model || 'N/A',
+              value: vehicleModelMatched || 'N/A',
             },
             {
               title: 'First Registration Date',

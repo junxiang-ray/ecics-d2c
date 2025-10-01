@@ -3,6 +3,8 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { v4 as uuid } from 'uuid';
 
+import { Vehicle } from '@/libs/types/quote';
+
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
@@ -245,3 +247,16 @@ export const buildRenewalPayload = (renewalQuote: any) => {
     finalize_renewal: false,
   };
 };
+
+export function getMatchedVehicleModel(
+  vehicleSelected?: Vehicle,
+  vehicles: Vehicle[] = [],
+): string | null {
+  if (!vehicleSelected?.vehicle_number) return null;
+
+  const matched = vehicles.find(
+    (v) => v.vehicle_number === vehicleSelected.vehicle_number,
+  );
+
+  return matched?.vehicle_model ?? null;
+}
