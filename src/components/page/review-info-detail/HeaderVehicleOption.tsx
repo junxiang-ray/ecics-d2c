@@ -17,6 +17,7 @@ import { ROUTES } from '@/constants/routes';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { on } from 'events';
 
 interface MissingFields {
   engine_number?: boolean;
@@ -76,7 +77,6 @@ const HeaderVehicleOption: React.FC<Props> = ({
     () => sourceVehicles?.filter((v) => v.status?.desc === 'LIVE') || [],
     [sourceVehicles],
   );
-
   const [selectedIndex, setSelectedIndex] = useState<number | null>(
     liveVehicles.length === 1 ? 0 : null,
   );
@@ -122,7 +122,6 @@ const HeaderVehicleOption: React.FC<Props> = ({
       const vehicleno = liveVehicles[index]?.vehicleno?.value ?? 'unknown';
 
       if (query.isError) {
-        console.error('AI check failed', query.error);
         results[vehicleno] = true; // Mark as invalid on error
       } else if (query.data) {
         const isInvalid =
@@ -130,7 +129,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
         results[vehicleno] = isInvalid;
       } else {
         // Still loading or no data
-        results[vehicleno] = false;
+        results[vehicleno] = true;
       }
     });
 
@@ -143,7 +142,6 @@ const HeaderVehicleOption: React.FC<Props> = ({
       (query) => query.data || query.isError,
     );
     if (!queriesCompleted || !liveVehicles.length) return;
-
     const allInvalid = Object.values(aiCheckResults).every(
       (val) => val === true,
     );
@@ -154,18 +152,14 @@ const HeaderVehicleOption: React.FC<Props> = ({
   }, [
     aiCheckResults,
     aiCheckQueries,
-    liveVehicles.length,
+    liveVehicles,
     setIsShowUnMatchMake,
     setIsMaskClosable,
   ]);
 
   useEffect(() => {
     if (selectedIndex !== null) return;
-
-    if (liveVehicles.length === 1) {
-      setSelectedIndex(0);
-      chooseVehicle(liveVehicles[0]);
-    } else if (listAfterSelectedVehicle?.length > 0) {
+    if (listAfterSelectedVehicle?.length > 0) {
       const selectedNo = carUserInfo?.vehicle_selected?.vehicleno?.value;
       const index = liveVehicles.findIndex(
         (v) => v.vehicleno?.value === selectedNo,
@@ -175,7 +169,14 @@ const HeaderVehicleOption: React.FC<Props> = ({
         chooseVehicle(liveVehicles[index]);
       }
     }
-  }, [liveVehicles, listAfterSelectedVehicle]);
+  }, [liveVehicles.length, listAfterSelectedVehicle]);
+
+  useEffect(() => {
+    if (liveVehicles.length === 1) {
+      setSelectedIndex(0);
+      chooseVehicle(liveVehicles[0]);
+    }
+  }, [liveVehicles.length]);
 
   const chooseVehicle = (vehicle: VehicleSingPassResponse) => {
     const missing = {
