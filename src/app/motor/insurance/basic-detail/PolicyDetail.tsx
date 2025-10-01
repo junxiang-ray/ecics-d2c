@@ -131,27 +131,7 @@ export const PolicyDetail = ({
     generateQuote(payload)
       .then((res) => {
         if (res) {
-          const selectedVehicleNo =
-            res.data?.vehicle_info_selected?.vehicle_number;
-
-          // Find the right vehicle in the vehicles array
-          const matchedVehicle = res.data?.vehicles?.find(
-            (v: any) => v.vehicle_number === selectedVehicleNo,
-          );
-          if (!matchedVehicle) return;
-          // override only 2 fields make + model
-          const updatedRes = {
-            ...res,
-            data: {
-              ...res.data,
-              vehicle_info_selected: {
-                ...res.data.vehicle_info_selected,
-                vehicle_make: matchedVehicle?.vehicle_make,
-                vehicle_model: matchedVehicle?.vehicle_model,
-              },
-            },
-          };
-          dispatch(updateQuote(updatedRes));
+          dispatch(updateQuote(res));
           router.push(ROUTES.INSURANCE.PLAN);
         }
       })

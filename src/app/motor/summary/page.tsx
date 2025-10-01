@@ -10,6 +10,7 @@ import {
   formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
+  getMatchedVehicleModel,
 } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
@@ -38,6 +39,9 @@ export default function Summary() {
   );
 
   const { data: quote, isLoading } = useGetQuote(key);
+  const vehicleSelected = quote?.data?.vehicle_info_selected;
+  const vehicles = quote?.data?.vehicles;
+  const vehicleModelMatched = getMatchedVehicleModel(vehicleSelected, vehicles);
 
   const drivers = quote?.data?.add_named_driver_info ?? [];
 
@@ -418,8 +422,7 @@ export default function Summary() {
                 },
                 {
                   label: 'Vehicle Model',
-                  value:
-                    quote?.data?.vehicle_info_selected?.vehicle_model || 'N/A',
+                  value: vehicleModelMatched || 'N/A',
                 },
                 {
                   label: 'First Registration Date',
