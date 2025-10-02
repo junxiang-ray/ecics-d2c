@@ -13,11 +13,16 @@ import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import NoSingpassLoginSection from './NoSingpassLoginSection';
+import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
+import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
+import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
+import { useAppDispatch } from '@/redux/store';
 
 const LoginPage = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
 
   const productType: ProductType = pathname.startsWith('/maid')
     ? ProductType.MAID
@@ -29,6 +34,10 @@ const LoginPage = () => {
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
 
   useEffect(() => {
+    dispatch(resetEcicsUserInfo());
+    dispatch(clearQuote());
+    dispatch(clearMatchedMakeModel());
+    dispatch(clearUserInfoCar());
     sessionStorage.clear();
     localStorage.clear();
   }, []);

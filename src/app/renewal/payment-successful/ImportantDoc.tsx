@@ -3,7 +3,10 @@ import React from 'react';
 import {
   DownloadIcon,
   PolicyDetailsIcon,
+  ShieldIcon,
 } from '@/components/icons/renewal-icons';
+
+import { VALUE_TITLE_DOC } from '@/constants/general.constant';
 
 interface ImportantDocProps {
   title: string;
@@ -11,13 +14,31 @@ interface ImportantDocProps {
 }
 
 const ImportantDoc: React.FC<ImportantDocProps> = ({ title, url }) => {
-  return (
-    <div className='flex cursor-pointer items-center justify-between rounded-lg border border-[#BEDBFF] bg-[#EFF6FF] p-3'>
-      <div className='flex items-center gap-2'>
-        <PolicyDetailsIcon
-          className='h-8 w-8 rounded-lg bg-[#D1FAE5] text-[#155DFC]'
-          size={18}
+  const renderIcon = () => {
+    if (title === VALUE_TITLE_DOC) {
+      return (
+        <ShieldIcon
+          className='h-8 w-8 rounded-lg bg-[#DCFCE7] text-[#00A63E]'
+          size={20}
         />
+      );
+    }
+    return (
+      <PolicyDetailsIcon
+        className='h-8 w-8 rounded-lg bg-[#D9E9FE] text-[#155DFC]'
+        size={18}
+      />
+    );
+  };
+  return (
+    <div
+      className='flex cursor-pointer items-center justify-between rounded-lg border border-[#BEDBFF] bg-[#EFF6FF] p-3'
+      onClick={() => {
+        window.open(url, '_blank');
+      }}
+    >
+      <div className='flex items-center gap-2'>
+        {renderIcon()}
         <div>
           <div className='text-sm font-medium'>{title}</div>
           <div className='text-xs font-normal'>
@@ -25,12 +46,7 @@ const ImportantDoc: React.FC<ImportantDocProps> = ({ title, url }) => {
           </div>
         </div>
       </div>
-      <DownloadIcon
-        className='h-4 w-4 text-gray-500'
-        onClick={() => {
-          window.open(url, '_blank');
-        }}
-      />
+      <DownloadIcon className='h-5 w-5 text-gray-500' />
     </div>
   );
 };

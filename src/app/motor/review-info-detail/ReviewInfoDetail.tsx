@@ -17,6 +17,7 @@ import {
 import {
   calculateDrivingExperienceFromLicences,
   convertDateToDDMMYYYY,
+  extractYear,
 } from '@/libs/utils/date-utils';
 import {
   calculateAge,
@@ -294,6 +295,19 @@ const ReviewInfoDetail = () => {
       if (vehicleAge != null && vehicleAge > 15) {
         descriptions.push(
           'The vehicle is more than 15 years old based on its registration year.',
+        );
+      }
+
+      // Check brand new car Lexus or Suzuki
+      const currentYear = dayjs().year();
+      const make = vehicle?.make?.value?.toLowerCase();
+
+      if (
+        (make === 'lexus' || make === 'suzuki') &&
+        Number(extractYear(regDateStr)) === currentYear
+      ) {
+        descriptions.push(
+          'We are unable to provide a quotation for this brand new car.',
         );
       }
     }

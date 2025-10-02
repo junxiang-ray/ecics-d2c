@@ -38,7 +38,7 @@ export default function Summary() {
   );
 
   const { data: quote, isLoading } = useGetQuote(key);
-
+  const userInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
   const drivers = quote?.data?.add_named_driver_info ?? [];
 
   const plan = quote?.data?.plans?.find(
@@ -413,13 +413,11 @@ export default function Summary() {
                 },
                 {
                   label: 'Vehicle Make',
-                  value:
-                    quote?.data?.vehicle_info_selected?.vehicle_make || 'N/A',
+                  value: userInfo?.vehicle_selected?.make.value || 'N/A',
                 },
                 {
                   label: 'Vehicle Model',
-                  value:
-                    quote?.data?.vehicle_info_selected?.vehicle_model || 'N/A',
+                  value: userInfo?.vehicle_selected?.model.value || 'N/A',
                 },
                 {
                   label: 'First Registration Date',
@@ -451,9 +449,10 @@ export default function Summary() {
                   ? [
                       {
                         label: 'Engine Capacity',
-                        value:
-                          quote?.data?.vehicle_info_selected?.engine_capacity ||
-                          'N/A',
+                        value: quote?.data?.vehicle_info_selected
+                          ?.engine_capacity
+                          ? `${quote.data.vehicle_info_selected.engine_capacity} CC`
+                          : 'N/A',
                       },
                       {
                         label: 'Power Rate',

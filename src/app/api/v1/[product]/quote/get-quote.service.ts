@@ -386,14 +386,16 @@ export async function getQuouteForMaid(data: generateQuoteForMaidDTO) {
             key: data.key,
           },
         }),
-        prisma.promocode.findFirst({
-          where: {
-            code: data.promo_code,
-            products: {
-              has: PRODUCT_NAME.MAID,
-            },
-          },
-        }),
+        data.promo_code
+          ? prisma.promocode.findFirst({
+              where: {
+                code: data.promo_code,
+                products: {
+                  has: PRODUCT_NAME.MAID,
+                },
+              },
+            })
+          : null,
       ]);
 
       logger.info(`Product info: ${JSON.stringify(productType)}`);

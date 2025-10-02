@@ -113,7 +113,7 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='mb-2 flex w-full flex-col sm:px-4 md:mb-16 md:px-6 lg:px-0'
+          className='mb-2 flex w-full flex-col md:mb-16 md:px-6 lg:px-0'
         >
           <div className='mx-auto'>
             <InfoCard
@@ -133,6 +133,7 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
             >
               <RenewalPeriodContent
                 errors={errors}
+                renewalQuote={renewalQuote}
                 renewalStartDate={
                   initialValues.renewal_start_date
                     ? dayjs(initialValues.renewal_start_date)
@@ -141,14 +142,18 @@ const RenewalDetailForm = forwardRef<RenewalFormRef, RenewalDetailProps>(
               />
             </InfoCard>
 
-            <InfoCard
-              icon={<ExcessIcon className='text-sky-500' size={20} />}
-              title='Excess'
-              subtitle='Excess amounts applicable to your policy'
-              isPolicyRenewalScreen
-            >
-              <ExcessContent renewal={renewal} />
-            </InfoCard>
+            {renewal?.renewal_excess &&
+              (renewal.renewal_excess.policy_excess?.length > 0 ||
+                renewal.renewal_excess.additional_excess?.length > 0) && (
+                <InfoCard
+                  icon={<ExcessIcon className='text-sky-500' size={20} />}
+                  title='Excess'
+                  subtitle='Excess amounts applicable to your policy'
+                  isPolicyRenewalScreen
+                >
+                  <ExcessContent renewal={renewal} />
+                </InfoCard>
+              )}
 
             <InfoCard
               icon={<PrivateMotorCarIcon className='text-sky-500' size={20} />}

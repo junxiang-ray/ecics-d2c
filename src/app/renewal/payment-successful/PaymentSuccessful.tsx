@@ -20,11 +20,12 @@ import {
   TickIcon,
 } from '@/components/icons/renewal-icons';
 
-import { ROUTES } from '@/constants/routes';
 import { useGetRenewalPaymentSuccess } from '@/hook/insurance/renewal';
 import { useAppSelector } from '@/redux/store';
 
 import ImportantDoc from './ImportantDoc';
+import { PrimaryButton } from '@/components/ui/buttons';
+import { ECICS_URL } from '@/constants/general.constant';
 
 const StepItem = ({
   number,
@@ -47,7 +48,7 @@ const PaymentSuccessful = () => {
   const { data, isLoading } = useGetRenewalPaymentSuccess(renewalKey ?? '');
 
   const handleBackToHome = () => {
-    router.push(ROUTES.RENEWAL.RENEWAL_DASHBOARD);
+    router.push(ECICS_URL);
   };
 
   if (isLoading) {
@@ -226,7 +227,7 @@ const PaymentSuccessful = () => {
                 className='flex cursor-pointer flex-col items-center justify-center rounded-xl border border-[#BEDBFF] bg-blue-50 p-4'
               >
                 <PhoneIcon
-                  className='mb-2 h-10 w-10 rounded-full bg-[#DCFCE7] text-[#155DFC]'
+                  className='mb-2 h-10 w-10 rounded-full bg-[#D9E9FE] text-[#155DFC]'
                   size={18}
                 />
                 <span className='font-medium'>Call Us</span>
@@ -267,18 +268,18 @@ const PaymentSuccessful = () => {
           </div>
         </div>
       </div>
-      {/*<div className='fixed bottom-0 left-0 w-full border-t border-[#F7F7F9] bg-[#FFFEFF]'>*/}
-      {/*  <div className='flex justify-center py-4'>*/}
-      {/*    <div className='w-full px-6 md:w-2/3'>*/}
-      {/*      <PrimaryButton*/}
-      {/*        onClick={handleBackToHome}*/}
-      {/*        className='w-full rounded-xl bg-[linear-gradient(90deg,#00A63E_0%,#008236_100%)] text-base font-normal'*/}
-      {/*      >*/}
-      {/*        Back to Home*/}
-      {/*      </PrimaryButton>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
+      <div className='w-full border-t border-[#F7F7F9] bg-[#FFFEFF]'>
+        <div className='flex justify-center py-4'>
+          <div className='w-full px-6 md:w-1/3'>
+            <PrimaryButton
+              onClick={handleBackToHome}
+              className='w-full rounded-xl bg-[linear-gradient(90deg,#00A63E_0%,#008236_100%)] text-base font-normal'
+            >
+              Back to Home
+            </PrimaryButton>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

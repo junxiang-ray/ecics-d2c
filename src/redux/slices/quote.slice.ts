@@ -3,12 +3,19 @@ import { useSelector } from 'react-redux';
 
 import { Quote } from '@/libs/types/quote';
 
+interface MatchedMakeModel {
+  make: string;
+  model: string;
+}
+
 interface AppState {
   quote: Quote;
+  matchedMakeModel?: MatchedMakeModel;
 }
 
 const initialState: AppState = {
   quote: {} as Quote,
+  matchedMakeModel: undefined,
 };
 
 const appSlice = createSlice({
@@ -21,10 +28,21 @@ const appSlice = createSlice({
     clearQuote(state) {
       state.quote = {} as Quote;
     },
+    saveMatchedMakeModel(state, action: PayloadAction<MatchedMakeModel>) {
+      state.matchedMakeModel = action.payload;
+    },
+    clearMatchedMakeModel(state) {
+      state.matchedMakeModel = undefined;
+    },
   },
 });
 
-export const { updateQuote, clearQuote } = appSlice.actions;
+export const {
+  updateQuote,
+  clearQuote,
+  saveMatchedMakeModel,
+  clearMatchedMakeModel,
+} = appSlice.actions;
 
 export const useAddNamedDriverInfo = () => {
   return useSelector(

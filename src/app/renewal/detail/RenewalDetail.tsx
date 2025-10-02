@@ -3,11 +3,15 @@
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { SelectedAddon } from '@/libs/types/renewalQuote';
 import { formatToDDMMYYYY, parseDMYToDate } from '@/libs/utils/date-utils';
-import { capitalizeWords, createPassphrase } from '@/libs/utils/utils';
+import {
+  buildRenewalPayload,
+  capitalizeWords,
+  createPassphrase,
+} from '@/libs/utils/utils';
 
 import { BackIcon, WarningNoticeIcon } from '@/components/icons/renewal-icons';
 
@@ -37,15 +41,24 @@ const RenewalDetail = () => {
   const renewalQuote = useAppSelector(
     (state) => state.renewalQuote?.renewalQuote,
   );
+
   const policy = renewalQuote?.renewal_info?.policy_details;
   const renewal = renewalQuote?.renewal_info;
   const dob = renewal?.insured_info?.dob || '';
 
   const { data: renewalContent } = useGetRenewalContent();
-  const { mutate: postEditRenewal, isPending } = usePostEditRenewal();
+  const { mutate: postEditRenewal, isPending } =
+    usePostEditRenewal('withOptionals');
 
   const [isShowPopupPremium, setIsShowPopupPremium] = useState(false);
   const [selectedAddons, setSelectedAddons] = useState<SelectedAddon[]>([]);
+
+  useEffect(() => {
+    const payload = buildRenewalPayload(renewalQuote);
+    if (!payload) return;
+
+    postEditRenewal({ productType: PRODUCT_NAME.MOTOR, payload });
+  }, [postEditRenewal]);
 
   const initialValues: any = {
     // Policy details
