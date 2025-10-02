@@ -35,7 +35,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['app', 'general', 'renewalQuote', 'ecicsUserInfo'],
+  whitelist: ['app', 'general', 'renewalQuote', 'ecicsUserInfo', 'userInfoCar'],
 };
 
 // Persisted reducer

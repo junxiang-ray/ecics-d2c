@@ -1,3 +1,4 @@
+import { useQueries } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -8,14 +9,15 @@ import { capitalizeWords } from '@/libs/utils/utils';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
 
+import verify from '@/api/base-service/verify';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
-import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { on } from 'events';
 
 interface MissingFields {
   engine_number?: boolean;
@@ -75,7 +77,6 @@ const HeaderVehicleOption: React.FC<Props> = ({
     () => sourceVehicles?.filter((v) => v.status?.desc === 'LIVE') || [],
     [sourceVehicles],
   );
-
   const [selectedIndex, setSelectedIndex] = useState<number | null>(
     liveVehicles.length === 1 ? 0 : null,
   );
@@ -83,63 +84,82 @@ const HeaderVehicleOption: React.FC<Props> = ({
   const [isVehicleNumberInvalidModal, setIsVehicleNumberInvalidModal] =
     useState(false);
 
-  const { mutateAsync: checkAIMakeModel } = useCheckAIMakeModel();
-  const [aiCheckResults, setAiCheckResults] = useState<{
-    [vehicleno: string]: boolean;
-  }>({});
-
   const { mutate: requestLog } = useRequestLog(PRODUCT_NAME.CAR);
 
-  useEffect(() => {
-    if (!liveVehicles.length) return;
+  // Use React Query's useQueries to handle multiple AI checks
+  const aiCheckQueries = useQueries({
+    queries: liveVehicles.map((vehicle) => ({
+      queryKey: [
+        'check-ai-make-model',
+        vehicle.make?.value,
+        vehicle.model?.value,
+        vehicle.enginecapacity?.value || vehicle.powerrate?.value,
+        ProductType.CAR,
+      ],
+      queryFn: async () => {
+        const res = await verify.getCheckAIMakeModel({
+          vehicle_make: vehicle.make?.value,
+          vehicle_model: vehicle.model?.value,
+          vehicle_capacity:
+            vehicle.enginecapacity?.value || vehicle.powerrate?.value,
+          vehicle_type: ProductType.CAR,
+        });
+        return res.data.data;
+      },
+      enabled:
+        !!vehicle.make?.value &&
+        !!vehicle.model?.value &&
+        !!liveVehicles.length,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    })),
+  });
 
-    const runChecks = async () => {
-      const results: { [vehicleno: string]: boolean } = {};
+  // Compute AI check results from queries
+  const aiCheckResults = useMemo(() => {
+    const results: { [vehicleno: string]: boolean } = {};
 
-      const settledResults = await Promise.allSettled(
-        liveVehicles.map((vehicle) =>
-          checkAIMakeModel({
-            vehicle_make: vehicle.make?.value,
-            vehicle_model: vehicle.model?.value,
-            vehicle_capacity:
-              vehicle.enginecapacity?.value || vehicle.powerrate?.value,
-            vehicle_type: ProductType.CAR,
-          }),
-        ),
-      );
+    aiCheckQueries.forEach((query, index) => {
+      const vehicleno = liveVehicles[index]?.vehicleno?.value ?? 'unknown';
 
-      settledResults.forEach((res, index) => {
-        const vehicleno = liveVehicles[index].vehicleno?.value ?? 'unknown';
-
-        if (res.status === 'fulfilled') {
-          const data = res.value;
-          const isInvalid = data.similarity < 0.85 && !data.vehicle_make_id;
-          results[vehicleno] = isInvalid;
-        } else {
-          console.error('AI check failed', res.reason);
-          results[vehicleno] = true;
-        }
-      });
-
-      setAiCheckResults(results);
-
-      const allInvalid = Object.values(results).every((val) => val === true);
-      if (allInvalid) {
-        setIsShowUnMatchMake(true);
-        setIsMaskClosable(false);
+      if (query.isError) {
+        results[vehicleno] = true; // Mark as invalid on error
+      } else if (query.data) {
+        const isInvalid =
+          query.data.similarity < 0.85 && !query.data.vehicle_make_id;
+        results[vehicleno] = isInvalid;
+      } else {
+        // Still loading or no data
+        results[vehicleno] = true;
       }
-    };
+    });
 
-    runChecks();
-  }, [liveVehicles, setIsShowUnMatchMake, setIsMaskClosable]);
+    return results;
+  }, [aiCheckQueries, liveVehicles]);
+
+  // Handle showing unmatch modal when all vehicles are invalid
+  useEffect(() => {
+    const queriesCompleted = aiCheckQueries.every(
+      (query) => query.data || query.isError,
+    );
+    if (!queriesCompleted || !liveVehicles.length) return;
+    const allInvalid = Object.values(aiCheckResults).every(
+      (val) => val === true,
+    );
+    if (allInvalid) {
+      setIsShowUnMatchMake(true);
+      setIsMaskClosable(false);
+    }
+  }, [
+    aiCheckResults,
+    aiCheckQueries,
+    liveVehicles,
+    setIsShowUnMatchMake,
+    setIsMaskClosable,
+  ]);
 
   useEffect(() => {
     if (selectedIndex !== null) return;
-
-    if (liveVehicles.length === 1) {
-      setSelectedIndex(0);
-      chooseVehicle(liveVehicles[0]);
-    } else if (listAfterSelectedVehicle?.length > 0) {
+    if (listAfterSelectedVehicle?.length > 0) {
       const selectedNo = carUserInfo?.vehicle_selected?.vehicleno?.value;
       const index = liveVehicles.findIndex(
         (v) => v.vehicleno?.value === selectedNo,
@@ -149,7 +169,14 @@ const HeaderVehicleOption: React.FC<Props> = ({
         chooseVehicle(liveVehicles[index]);
       }
     }
-  }, [liveVehicles, listAfterSelectedVehicle]);
+  }, [liveVehicles.length, listAfterSelectedVehicle]);
+
+  useEffect(() => {
+    if (liveVehicles.length === 1) {
+      setSelectedIndex(0);
+      chooseVehicle(liveVehicles[0]);
+    }
+  }, [liveVehicles.length]);
 
   const chooseVehicle = (vehicle: VehicleSingPassResponse) => {
     const missing = {

@@ -13,8 +13,9 @@ import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
-import { useAppDispatch } from '@/redux/store';
 import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
+import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
+import { useAppDispatch } from '@/redux/store';
 
 const LoginPage = () => {
   const { isMobile } = useDeviceDetection();
@@ -33,6 +34,7 @@ const LoginPage = () => {
     dispatch(resetEcicsUserInfo());
     dispatch(clearQuote());
     dispatch(clearMatchedMakeModel());
+    dispatch(clearUserInfoCar());
     sessionStorage.clear();
     localStorage.clear();
   }, []);

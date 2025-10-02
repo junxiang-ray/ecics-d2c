@@ -38,7 +38,10 @@ import { ROUTES } from '@/constants/routes';
 import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { saveMatchedMakeModel } from '@/redux/slices/quote.slice';
+import {
+  clearMatchedMakeModel,
+  saveMatchedMakeModel,
+} from '@/redux/slices/quote.slice';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -253,10 +256,25 @@ const SingpassPolicyDetailForm = ({
     chassis_number?: boolean;
     reg_yyyy?: boolean;
   }>({});
+  const [currentVehicleParams, setCurrentVehicleParams] = useState<{
+    vehicle_make: string;
+    vehicle_model: string;
+    vehicle_capacity: number;
+    vehicle_type: string;
+  } | null>(null);
 
   const schema = useMemo(() => createSchema(missingFields), [missingFields]);
 
-  const { mutateAsync: checkAIMakeModel } = useCheckAIMakeModel();
+  // Use query-based AI check
+  const aiCheckQuery = useCheckAIMakeModel(
+    currentVehicleParams || {
+      vehicle_make: '',
+      vehicle_model: '',
+      vehicle_capacity: 0,
+      vehicle_type: ProductType.CAR,
+    },
+    !!currentVehicleParams,
+  );
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -314,6 +332,36 @@ const SingpassPolicyDetailForm = ({
       });
     }
   }, [no_claim]);
+
+  // Handle AI check query results
+  useEffect(() => {
+    if (aiCheckQuery.data && currentVehicleParams) {
+      const { similarity, vehicle_make_id, make, model } = aiCheckQuery.data;
+      const selectedInfo = carQuote?.data?.vehicle_info_selected;
+      const hasSelectedVehicle =
+        selectedInfo &&
+        selectedInfo?.vehicle_model &&
+        selectedInfo?.vehicle_make &&
+        selectedInfo?.vehicle_make === make;
+
+      const isUnMatch =
+        similarity < 0.85 && !!vehicle_make_id && !hasSelectedVehicle;
+      setShowUnMatchModal(isUnMatch);
+
+      if (similarity > 0.85) {
+        dispatch(saveMatchedMakeModel({ make, model }));
+      }
+    } else if (aiCheckQuery.isError && currentVehicleParams) {
+      console.error('AI check failed', aiCheckQuery.error);
+    }
+  }, [
+    aiCheckQuery.data,
+    aiCheckQuery.isError,
+    aiCheckQuery.error,
+    currentVehicleParams,
+    carQuote?.data?.vehicle_info_selected,
+    dispatch,
+  ]);
 
   // Register onSave callback to collect current form values
   useEffect(() => {
@@ -573,6 +621,56 @@ const SingpassPolicyDetailForm = ({
   };
   const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
 
+  const handleSelectVehicle = (
+    missing: any,
+    vehicleAge: number | null,
+    vehicleNumber: string,
+    make: string,
+    model: string,
+    capacity: number,
+    regDateStr: string,
+  ) => {
+    dispatch(clearMatchedMakeModel());
+    setVehicleNumber(vehicleNumber);
+    setVehicleMake(make);
+    // Check vehicle age first
+    if (vehicleAge != null && vehicleAge > 15) {
+      setIsMoreThan15YearsModal(true);
+      return;
+    }
+    // Check missing fields
+    setMissingFields(missing);
+    // Show UnMatchVehicleModal if missing make or model
+    if (missing?.make || missing?.model) {
+      setShowUnMatchModal(true);
+    } else {
+      setShowUnMatchModal(false);
+    }
+    // Check blocked by make (Lexus, Suzuki) + currentYear
+    const currentYear = dayjs().year();
+    if (
+      (make.toLowerCase() === 'lexus' || make.toLowerCase() === 'suzuki') &&
+      Number(extractYear(regDateStr)) === currentYear
+    ) {
+      setIsBlockedByMakeYear(true);
+      setShowCSModal({
+        visible: true,
+        description:
+          'We are unable to provide a quotation for this brand new car.',
+      });
+      return;
+    } else {
+      setIsBlockedByMakeYear(false);
+    }
+
+    // Trigger AI check by setting vehicle parameters
+    setCurrentVehicleParams({
+      vehicle_make: make,
+      vehicle_model: model,
+      vehicle_capacity: capacity,
+      vehicle_type: ProductType.CAR,
+    });
+  };
   return (
     <>
       <FormProvider {...methods}>
@@ -596,78 +694,7 @@ const SingpassPolicyDetailForm = ({
               isMobile={isMobile}
               getVehicleTopRow={getVehicleTopRow}
               getVehicleBottomRow={getVehicleBottomRow}
-              onVehicleSelect={(
-                missing,
-                vehicleAge,
-                vehicleNumber,
-                make,
-                model,
-                capacity,
-                regDateStr,
-              ) => {
-                setVehicleNumber(vehicleNumber);
-                setVehicleMake(make);
-                // Check vehicle age first
-                if (vehicleAge != null && vehicleAge > 15) {
-                  setIsMoreThan15YearsModal(true);
-                  return;
-                }
-                // Check missing fields
-                setMissingFields(missing);
-                // Show UnMatchVehicleModal if missing make or model
-                if (missing?.make || missing?.model) {
-                  setShowUnMatchModal(true);
-                } else {
-                  setShowUnMatchModal(false);
-                }
-                // Check blocked by make (Lexus, Suzuki) + currentYear
-                const currentYear = dayjs().year();
-                if (
-                  (make.toLowerCase() === 'lexus' ||
-                    make.toLowerCase() === 'suzuki') &&
-                  Number(extractYear(regDateStr)) === currentYear
-                ) {
-                  setIsBlockedByMakeYear(true);
-                  setShowCSModal({
-                    visible: true,
-                    description:
-                      'We are unable to provide a quotation for this brand new car.',
-                  });
-                  return;
-                } else {
-                  setIsBlockedByMakeYear(false);
-                }
-
-                // Check Vehicle (make,model)
-                checkAIMakeModel({
-                  vehicle_make: make,
-                  vehicle_model: model,
-                  vehicle_capacity: capacity,
-                  vehicle_type: ProductType.CAR,
-                })
-                  .then((res) => {
-                    const { similarity, vehicle_make_id, make, model } = res;
-                    const selectedInfo = carQuote?.data.vehicle_info_selected;
-                    const hasSelectedVehicle =
-                      selectedInfo &&
-                      selectedInfo.vehicle_model &&
-                      selectedInfo.vehicle_make &&
-                      selectedInfo.vehicle_make === make;
-
-                    const isUnMatch =
-                      similarity < 0.85 &&
-                      !!vehicle_make_id &&
-                      !hasSelectedVehicle;
-                    setShowUnMatchModal(isUnMatch);
-
-                    if (similarity > 0.85) {
-                      dispatch(saveMatchedMakeModel({ make, model }));
-                    }
-                  })
-                  .catch((err) => {
-                    console.error('AI check failed', err);
-                  });
-              }}
+              onVehicleSelect={handleSelectVehicle}
               setIsShowUnMatchMake={setIsShowUnMatchMake}
               setIsMaskClosable={setIsMaskClosable}
             />

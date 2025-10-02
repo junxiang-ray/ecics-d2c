@@ -101,16 +101,26 @@ export const useGetNationality = (group_name: string) => {
   });
 };
 
-export const useCheckAIMakeModel = () => {
-  const fetchCheckAIVehicle = async (
-    params: CheckVehicleParams,
-  ): Promise<CheckAIMakeModelResponse> => {
+export const useCheckAIMakeModel = (
+  params: CheckVehicleParams,
+  enabled = true,
+) => {
+  const fetchCheckAIVehicle = async (): Promise<CheckAIMakeModelResponse> => {
     const res = await verify.getCheckAIMakeModel(params);
     return res.data.data;
   };
 
-  return useMutation({
-    mutationFn: fetchCheckAIVehicle,
-    mutationKey: ['check-ai-make-model'],
+  return useQuery({
+    queryFn: fetchCheckAIVehicle,
+    queryKey: [
+      'check-ai-make-model',
+      params.vehicle_make,
+      params.vehicle_model,
+      params.vehicle_capacity,
+      params.vehicle_type,
+    ],
+    enabled: enabled && !!params.vehicle_make && !!params.vehicle_model,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1,
   });
 };

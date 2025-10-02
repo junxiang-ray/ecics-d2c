@@ -10,6 +10,7 @@ type Props = {
     label: string;
     value:
       | string
+      | number
       | {
           title: string;
           value: string;
