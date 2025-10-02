@@ -48,6 +48,7 @@ interface Props {
   ) => void;
   setIsShowUnMatchMake: (val: boolean) => void;
   setIsMaskClosable: (val: boolean) => void;
+  isLoading?: boolean;
 }
 
 const HeaderVehicleOption: React.FC<Props> = ({
@@ -59,6 +60,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
   onVehicleSelect,
   setIsShowUnMatchMake,
   setIsMaskClosable,
+  isLoading,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -274,7 +276,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
           const isOver15y = isVehicleOver15YearsOld(vehicle);
           const isInvalidAI =
             aiCheckResults[vehicle.vehicleno?.value ?? 'unknown'];
-          const isDisabled = isOver15y || isInvalidAI;
+          const isDisabled = isOver15y || isInvalidAI || isLoading;
 
           const topRow = getVehicleTopRow(vehicle);
           const bottomRow = getVehicleBottomRow(vehicle);
