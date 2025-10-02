@@ -53,8 +53,6 @@ const NoSingpassLoginSection = ({
   );
 
   const handleLogin = () => {
-    console.log('continue with myinfo login');
-
     setIsUserActive(true);
     {
       isMaid ? requestLoginMaid() : requestLogin();
@@ -63,7 +61,6 @@ const NoSingpassLoginSection = ({
   };
 
   const handleContinueWithoutMyinfo = () => {
-    console.log('continue without myinfo login');
     setIsUserActive(true);
     requestLog();
 

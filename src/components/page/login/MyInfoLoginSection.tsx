@@ -53,8 +53,6 @@ const MyInfoLoginSection = ({
   );
 
   const handleLogin = () => {
-    console.log('continue with myinfo login');
-
     setIsUserActive(true);
     {
       isMaid ? requestLoginMaid() : requestLogin();
@@ -63,7 +61,6 @@ const MyInfoLoginSection = ({
   };
 
   const handleContinueWithoutMyinfo = () => {
-    console.log('continue without myinfo login');
     setIsUserActive(true);
     requestLog();
 

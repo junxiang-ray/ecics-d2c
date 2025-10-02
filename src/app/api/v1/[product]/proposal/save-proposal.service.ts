@@ -442,12 +442,8 @@ export async function saveProposalForMotorcycle(
   if (!quoteInfo) {
     return ErrNotFound('Quote not found');
   }
-  // console.log('quoteInfo', JSON.stringify(quoteInfo));
-  // console.log('selectedplan', JSON.stringify(selected_plan));
-  // console.log('datahere', JSON.stringify(currData));
 
   const { quote_id, proposal_id } = quoteInfo;
-  // console.log('quotedatahere', JSON.stringify(data));
 
   const payload: any = {
     quoteId: quote_id,
@@ -462,46 +458,6 @@ export async function saveProposalForMotorcycle(
       finalize: true,
     },
   };
-
-  // const payload: any = {
-  //   quoteId: 'Q000000040664',
-  //   proposalId: 'PR000000036101',
-  //   selected: {
-  //     planId: 'COMP',
-  //     optionalBenefits: ['lou', 'rsa'],
-  //     personalDetails: {
-  //       fullName: 'David',
-  //       dateOfBirth: '1993-12-29',
-  //       NRIC: 'S1234567D',
-  //       gender: 'M',
-  //       maritalStatus: 'S',
-  //       addressLine1: 'Jurong West Street 100',
-  //       addressLine2: 'BLK 69 # 001-100',
-  //       addressLine3: 'Singapore',
-  //       postalCode: '555666',
-  //       mobile: '88889999',
-  //       email: 'abc@gmail.com',
-  //     },
-  //     vehicle: {
-  //       vehRegNumber: 'SBA123A',
-  //       engineNumber: 'ABC12345',
-  //       chassisNumber: 'ABC12345',
-  //     },
-  //     additionalDriver: {
-  //       hasAdditionalDriver: true,
-  //       driverDetails: {
-  //         driverFullName: 'Carl',
-  //         driverNRIC: 'S5872997C',
-  //         driverDob: '2000-12-25',
-  //         driverGender: 'M',
-  //         driverMaritalStatus: 'S',
-  //         driverDrivingExp: 5,
-  //       },
-  //     },
-  //     hirePurchaseCompany: 'DBS BANK LTD',
-  //     finalize: true,
-  //   },
-  // };
 
   logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
 
@@ -519,7 +475,6 @@ export async function saveProposalForMotorcycle(
 
   // Update the quote in the database
   const quoteData = quoteInfo.data;
-  console.log('quoteData', JSON.stringify(quoteData));
 
   await prisma.quote.update({
     where: {

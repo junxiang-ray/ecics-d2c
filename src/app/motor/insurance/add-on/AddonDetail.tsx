@@ -231,8 +231,6 @@ function AddOnDetail({
   }, [defaultAddonsAdded, defaultAddonsSelected]);
 
   const addonsFormatted: AddOnFormat[] = normalAddons.map((addon) => {
-    console.log('addon', JSON.stringify(addon));
-
     // map the icon to the addon
     const iconMatched = mapIconToTypeAddOn.find(
       (item) => item.code === addon.code,

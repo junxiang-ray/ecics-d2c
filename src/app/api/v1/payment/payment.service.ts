@@ -74,8 +74,6 @@ export async function handleMotorcyclePayment(data: paymentDTO) {
       return ErrNotFound('Quote not found');
     }
 
-    console.log('Motorcycle quoteInfo', quoteInfo);
-
     const payloadData = {
       quoteId: quoteInfo.quote_id,
       proposalId: quoteInfo.proposal_id,

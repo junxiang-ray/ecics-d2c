@@ -25,7 +25,6 @@ export async function POST(
     case PRODUCT_NAME.MAID:
       return getQuouteForMaid(body);
     case PRODUCT_NAME.MOTORCYCLE:
-      console.log('Generating motorcycle quote with body:', body);
       return getQuoteForMotorcycle(body);
     default:
       return NextResponse.json(
