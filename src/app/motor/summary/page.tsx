@@ -10,7 +10,6 @@ import {
   formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
-  getMatchedVehicleModel,
 } from '@/libs/utils/utils';
 
 import CheckCircle from '@/components/icons/CheckCircle';
@@ -450,9 +449,10 @@ export default function Summary() {
                   ? [
                       {
                         label: 'Engine Capacity',
-                        value:
-                          quote?.data?.vehicle_info_selected?.engine_capacity ||
-                          'N/A',
+                        value: quote?.data?.vehicle_info_selected
+                          ?.engine_capacity
+                          ? `${quote.data.vehicle_info_selected.engine_capacity} CC`
+                          : 'N/A',
                       },
                       {
                         label: 'Power Rate',

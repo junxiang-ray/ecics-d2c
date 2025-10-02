@@ -691,6 +691,7 @@ const SingpassPolicyDetailForm = ({
               listAfterSelectedVehicle={
                 userInfo?.list_after_selected_vehicle ?? []
               }
+              isLoading={isLoading}
               isMobile={isMobile}
               getVehicleTopRow={getVehicleTopRow}
               getVehicleBottomRow={getVehicleBottomRow}
