@@ -198,6 +198,7 @@ const SingpassPolicyDetailForm = ({
 
   const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
   const [isMoreThan15YearsModal, setIsMoreThan15YearsModal] = useState(false);
+  const [isMaskClosable, setIsMaskClosable] = useState(false);
 
   const { data: quoteInfo } = useGetQuote(key);
 
@@ -239,6 +240,7 @@ const SingpassPolicyDetailForm = ({
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+  const [isShowUnMatchMake, setIsShowUnMatchMake] = useState(false);
 
   const [vehicleNumber, setVehicleNumber] = useState<string>('');
   const [missingFields, setMissingFields] = useState<{
@@ -564,6 +566,8 @@ const SingpassPolicyDetailForm = ({
               isMobile={isMobile}
               getVehicleTopRow={getVehicleTopRow}
               getVehicleBottomRow={getVehicleBottomRow}
+              setIsShowUnMatchMake={setIsShowUnMatchMake}
+              setIsMaskClosable={setIsMaskClosable}
               onVehicleSelect={(
                 missing,
                 vehicleAge,
