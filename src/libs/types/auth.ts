@@ -13,9 +13,9 @@ export interface LoginResponse {
 }
 
 export interface UserInfoPayload {
-  nonce: string;
+  nonce?: string;
   code_verifier: string;
-  state: string;
+  state?: string;
   code?: string;
 }
 
@@ -103,6 +103,17 @@ export interface VehicleCheckResponse {
   };
 }
 
+export interface CheckAIMakeModelResponse {
+  make: string;
+  model: string;
+  capacity: string;
+  similarity: number;
+  index: number;
+  createdAt: string;
+  vehicle_make_id: number;
+  vehicle_model_id: number;
+}
+
 export interface DocumentItem {
   id: number;
   url: string;
@@ -112,4 +123,11 @@ export interface PaymentDocument {
   id: number;
   text: string;
   document: DocumentItem[];
+}
+
+export interface CheckVehicleParams {
+  vehicle_make: string;
+  vehicle_model: string;
+  vehicle_capacity: number;
+  vehicle_type: string;
 }

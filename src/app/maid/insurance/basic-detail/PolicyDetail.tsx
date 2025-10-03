@@ -16,6 +16,7 @@ import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PolicyDetailForm from './PolicyDetailForm';
+import { HelperTypeValue } from './options';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;
@@ -48,7 +49,8 @@ export const PolicyDetail = ({
   const initialValues = {
     [MAID_QUOTE.email]: userInfo?.email ?? '',
     [MAID_QUOTE.mobile]: userInfo?.phone ?? '',
-    [MAID_QUOTE.maid_type]: insuranceInfo?.maid_type ?? '',
+    [MAID_QUOTE.maid_type]:
+      insuranceInfo?.maid_type ?? HelperTypeValue.NEW_MAID,
     [MAID_QUOTE.plan_period]:
       planPeriodMap[insuranceInfo?.plan_period] ??
       insuranceInfo?.plan_period ??

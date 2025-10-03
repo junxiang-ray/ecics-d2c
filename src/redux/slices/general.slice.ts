@@ -4,12 +4,14 @@ interface AppState {
   promoCodeError: { message: string } | null;
   isLoadingStep?: boolean;
   isSingpassFlow: boolean;
+  isSingpassFlowRenewal: boolean;
 }
 
 const initialState: AppState = {
   promoCodeError: null,
   isLoadingStep: false,
   isSingpassFlow: false,
+  isSingpassFlowRenewal: false,
 };
 
 const appSlice = createSlice({
@@ -28,10 +30,17 @@ const appSlice = createSlice({
     setIsSingpassFlow(state, action: PayloadAction<boolean>) {
       state.isSingpassFlow = action.payload;
     },
+    setIsSingpassFlowRenewal(state, action: PayloadAction<boolean>) {
+      state.isSingpassFlowRenewal = action.payload;
+    },
   },
 });
 
-export const { setPromoCodeError, setIsLoadingStep, setIsSingpassFlow } =
-  appSlice.actions;
+export const {
+  setPromoCodeError,
+  setIsLoadingStep,
+  setIsSingpassFlow,
+  setIsSingpassFlowRenewal,
+} = appSlice.actions;
 
 export default appSlice.reducer;

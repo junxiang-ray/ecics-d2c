@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Form } from 'antd';
+import { Button, Card, Form } from 'antd';
 import { FormProps } from 'antd/es/form';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -20,7 +20,7 @@ import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
-import { PrimaryButton } from '@/components/ui/buttons';
+import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
@@ -43,6 +43,9 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { SelectField } from '@/components/ui/form/selectfield';
+import { RadioCardField } from '@/components/ui/form/radiocardfield';
+import { HELPER_TYPE_CARD_OPTIONS, HELPER_VALUE_INFO } from './options';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -424,113 +427,150 @@ const PolicyDetailForm = ({
                   <div className='text-base font-bold underline decoration-gray-400'>
                     {isSingpassFlow
                       ? 'Helper’s Information'
-                      : 'Basic Information'}
+                      : 'Helper’s Basic Information'}
                   </div>
-                  <div className='grid grid-cols-1 gap-6 gap-y-4 md:grid-cols-3'>
-                    <Form.Item
-                      name={MAID_QUOTE.maid_type}
-                      validateStatus={
-                        errors[MAID_QUOTE.maid_type] ? 'error' : ''
-                      }
-                    >
-                      <RadioField
+
+                  <div>
+                    <div className=' mb-4 w-full'>
+                      <Form.Item
                         name={MAID_QUOTE.maid_type}
-                        label='Helper Type'
-                        options={HELPER_TYPE_OPTIONS}
-                        className='flex w-full !flex-col'
-                        isRequired={true}
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      name={MAID_QUOTE.plan_period}
-                      validateStatus={
-                        errors[MAID_QUOTE.plan_period] ? 'error' : ''
-                      }
-                    >
-                      <RadioField
-                        name={MAID_QUOTE.plan_period}
-                        label='Policy Duration'
-                        options={
-                          helperType === HelperTypeValue.NEW_MAID
-                            ? POLICY_DURATION_OPTIONS.filter(
-                                (opt) =>
-                                  opt.value === PolicyDurationValue.TWENTY_SIX,
-                              )
-                            : POLICY_DURATION_OPTIONS
+                        validateStatus={
+                          errors[MAID_QUOTE.maid_type] ? 'error' : ''
                         }
-                        isRequired={true}
-                        disabled={isLoading}
-                      />
-                    </Form.Item>
+                      >
+                        <RadioCardField
+                          name={MAID_QUOTE.maid_type}
+                          label='You are purchasing a maid insurance for?'
+                          options={HELPER_TYPE_CARD_OPTIONS}
+                          className=' w-full'
+                          isRequired={true}
+                          defaultChecked={true}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className='flex w-full flex-col space-y-4 py-4 md:flex-row md:space-x-4 md:space-y-0'>
+                      {/* Left Card */}
+                      <Card className='w-full bg-blue-100 md:w-2/3'>
+                        <div className='flex w-full flex-col space-y-4 md:flex-row md:items-center md:space-x-4 md:space-y-0'>
+                          {/* Left: Info Card */}
+                          <div className='w-full flex-shrink-0 px-3 md:w-1/2'>
+                            <strong className='text-base md:text-lg'>
+                              {
+                                HELPER_VALUE_INFO[helperType as HelperTypeValue]
+                                  ?.title
+                              }
+                            </strong>
+                            <p className='mt-1 text-pretty text-sm md:text-base'>
+                              {
+                                HELPER_VALUE_INFO[helperType as HelperTypeValue]
+                                  ?.description
+                              }
+                            </p>
+                          </div>
 
-                    <Form.Item
-                      name={MAID_QUOTE.start_date}
-                      validateStatus={
-                        errors[MAID_QUOTE.start_date] ? 'error' : ''
-                      }
-                    >
-                      <DatePickerComponent
-                        name={MAID_QUOTE.start_date}
-                        label='Policy Start Date'
-                        minDate={minPolicyStartDate}
-                        maxDate={maxPolicyStartDate}
-                        onChange={handleChangeStartDate}
-                        isRequired={true}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name={MAID_QUOTE.end_date}
-                      validateStatus={
-                        errors[MAID_QUOTE.end_date] ? 'error' : ''
-                      }
-                    >
-                      <DatePickerComponent
-                        label='Policy End Date'
+                          {/* Right: DatePicker */}
+                          <div className='w-full flex-shrink-0 px-3 md:w-1/2'>
+                            <Form.Item
+                              name={MAID_QUOTE.start_date}
+                              validateStatus={
+                                errors[MAID_QUOTE.start_date] ? 'error' : ''
+                              }
+                              className='mb-0'
+                            >
+                              <DatePickerComponent
+                                name={MAID_QUOTE.start_date}
+                                label='Policy Start Date'
+                                minDate={minPolicyStartDate}
+                                maxDate={maxPolicyStartDate}
+                                onChange={handleChangeStartDate}
+                                isRequired={true}
+                              />
+                            </Form.Item>
+                          </div>
+                        </div>
+                      </Card>
+
+                      {/* Right: Plan Duration */}
+                      <div className='w-full px-4 md:w-1/3'>
+                        <Form.Item
+                          name={MAID_QUOTE.plan_period}
+                          validateStatus={
+                            errors[MAID_QUOTE.plan_period] ? 'error' : ''
+                          }
+                        >
+                          <RadioField
+                            name={MAID_QUOTE.plan_period}
+                            label='Policy Duration'
+                            options={
+                              helperType === HelperTypeValue.NEW_MAID
+                                ? POLICY_DURATION_OPTIONS.filter(
+                                    (opt) =>
+                                      opt.value ===
+                                      PolicyDurationValue.TWENTY_SIX,
+                                  )
+                                : POLICY_DURATION_OPTIONS
+                            }
+                            isRequired={true}
+                            disabled={isLoading}
+                          />
+                        </Form.Item>
+                      </div>
+                    </div>
+
+                    <div className='mb-4 grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6'>
+                      <Form.Item
                         name={MAID_QUOTE.end_date}
-                        disabled
-                        isRequired={true}
-                      />
-                    </Form.Item>
+                        validateStatus={
+                          errors[MAID_QUOTE.end_date] ? 'error' : ''
+                        }
+                      >
+                        <DatePickerComponent
+                          label='Policy End Date'
+                          name={MAID_QUOTE.end_date}
+                          disabled
+                          isRequired={true}
+                        />
+                      </Form.Item>
 
-                    <Form.Item
-                      name={MAID_QUOTE.nationality}
-                      validateStatus={
-                        errors[MAID_QUOTE.nationality] ? 'error' : ''
-                      }
-                    >
-                      <LongOptionDropdownField
+                      <Form.Item
                         name={MAID_QUOTE.nationality}
-                        label='Nationality'
-                        placeholder='Select Helpers Nationality'
-                        disabled={isLoading}
-                        options={nationalOptionsFormatted}
-                        onChange={() => {
-                          // Reset model when make changes
-                          methods.setValue(
-                            MAID_QUOTE.vehicle_model,
-                            null as any,
-                          );
-                        }}
-                        showSearch
-                        isRequired={true}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name={MAID_QUOTE.maid_dob}
-                      validateStatus={
-                        errors[MAID_QUOTE.maid_dob] ? 'error' : ''
-                      }
-                    >
-                      <DatePickerComponent
+                        validateStatus={
+                          errors[MAID_QUOTE.nationality] ? 'error' : ''
+                        }
+                      >
+                        <LongOptionDropdownField
+                          name={MAID_QUOTE.nationality}
+                          label='Helper’s Nationality'
+                          placeholder='Select Helpers Nationality'
+                          disabled={isLoading}
+                          options={nationalOptionsFormatted}
+                          onChange={() => {
+                            // Reset model when make changes
+                            methods.setValue(
+                              MAID_QUOTE.vehicle_model,
+                              null as any,
+                            );
+                          }}
+                          showSearch
+                          isRequired={true}
+                        />
+                      </Form.Item>
+                      <Form.Item
                         name={MAID_QUOTE.maid_dob}
-                        label='Date of birth'
-                        isRequired={true}
-                        minDate={minDob}
-                        maxDate={maxDob}
-                        defaultPickerValue={dayjs().subtract(40, 'year')}
-                      />
-                    </Form.Item>
+                        validateStatus={
+                          errors[MAID_QUOTE.maid_dob] ? 'error' : ''
+                        }
+                      >
+                        <DatePickerComponent
+                          name={MAID_QUOTE.maid_dob}
+                          label='Helper’s Date of birth'
+                          isRequired={true}
+                          minDate={minDob}
+                          maxDate={maxDob}
+                          defaultPickerValue={dayjs().subtract(40, 'year')}
+                        />
+                      </Form.Item>
+                    </div>
                   </div>
                 </div>
               </div>

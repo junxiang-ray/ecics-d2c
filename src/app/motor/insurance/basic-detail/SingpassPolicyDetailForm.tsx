@@ -35,9 +35,13 @@ import { InputField } from '@/components/ui/form/inputfield';
 
 import { MOTOR_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
-import { usePostCheckVehicle } from '@/hook/insurance/common';
+import { useCheckAIMakeModel } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import {
+  clearMatchedMakeModel,
+  saveMatchedMakeModel,
+} from '@/redux/slices/quote.slice';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
@@ -198,9 +202,11 @@ const SingpassPolicyDetailForm = ({
 
   const [isQuoteModalVisible, setIsQuoteModalVisible] = useState(false);
   const [isMoreThan15YearsModal, setIsMoreThan15YearsModal] = useState(false);
+  const [isBlockedByMakeYear, setIsBlockedByMakeYear] = useState(false);
+  const [isMaskClosable, setIsMaskClosable] = useState(false);
 
   const { data: quoteInfo } = useGetQuote(key);
-
+  const carQuote = useAppSelector((state) => state.quote?.quote);
   useEffect(() => {
     const carUserInfo = quoteInfo?.data;
 
@@ -223,6 +229,9 @@ const SingpassPolicyDetailForm = ({
   }, [quoteInfo, dispatch]);
 
   const userInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
+  const matchedMakeModel = useAppSelector(
+    (state) => state.quote?.matchedMakeModel,
+  );
 
   const userInfoCarSingPass = userInfo.data_from_singpass;
   const vehicles = userInfoCarSingPass?.vehicles ?? [];
@@ -238,19 +247,34 @@ const SingpassPolicyDetailForm = ({
   });
   const [applyPromoCode, setApplyPromoCode] = useState(initPromoCode);
   const [showUnMatchModal, setShowUnMatchModal] = useState(false);
+  const [isShowUnMatchMake, setIsShowUnMatchMake] = useState(false);
 
   const [vehicleNumber, setVehicleNumber] = useState<string>('');
+  const [vehicleMake, setVehicleMake] = useState<string>('');
   const [missingFields, setMissingFields] = useState<{
     engine_number?: boolean;
     chassis_number?: boolean;
     reg_yyyy?: boolean;
   }>({});
+  const [currentVehicleParams, setCurrentVehicleParams] = useState<{
+    vehicle_make: string;
+    vehicle_model: string;
+    vehicle_capacity: number;
+    vehicle_type: string;
+  } | null>(null);
 
   const schema = useMemo(() => createSchema(missingFields), [missingFields]);
 
-  const { mutate: postCheckVehicle } = usePostCheckVehicle(() => {
-    setShowUnMatchModal(true);
-  });
+  // Use query-based AI check
+  const aiCheckQuery = useCheckAIMakeModel(
+    currentVehicleParams || {
+      vehicle_make: '',
+      vehicle_model: '',
+      vehicle_capacity: 0,
+      vehicle_type: ProductType.CAR,
+    },
+    !!currentVehicleParams,
+  );
 
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -309,14 +333,46 @@ const SingpassPolicyDetailForm = ({
     }
   }, [no_claim]);
 
+  // Handle AI check query results
+  useEffect(() => {
+    if (aiCheckQuery.data && currentVehicleParams) {
+      const { similarity, vehicle_make_id, make, model } = aiCheckQuery.data;
+      const selectedInfo = carQuote?.data?.vehicle_info_selected;
+      const hasSelectedVehicle =
+        selectedInfo &&
+        selectedInfo?.vehicle_model &&
+        selectedInfo?.vehicle_make &&
+        selectedInfo?.vehicle_make === make;
+
+      const isUnMatch =
+        similarity < 0.85 && !!vehicle_make_id && !hasSelectedVehicle;
+      setShowUnMatchModal(isUnMatch);
+
+      if (similarity > 0.85) {
+        dispatch(saveMatchedMakeModel({ make, model }));
+      }
+    } else if (aiCheckQuery.isError && currentVehicleParams) {
+      console.error('AI check failed', aiCheckQuery.error);
+    }
+  }, [
+    aiCheckQuery.data,
+    aiCheckQuery.isError,
+    aiCheckQuery.error,
+    currentVehicleParams,
+    carQuote?.data?.vehicle_info_selected,
+    dispatch,
+  ]);
+
   // Register onSave callback to collect current form values
   useEffect(() => {
     onSaveRegister(() => {
       const value = methods.getValues();
       const vehicle_info_selected = {
         vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
-        vehicle_make: userInfo?.vehicle_selected?.make.value,
-        vehicle_model: userInfo?.vehicle_selected?.model.value,
+        vehicle_make:
+          matchedMakeModel?.make ?? userInfo?.vehicle_selected?.make.value,
+        vehicle_model:
+          matchedMakeModel?.model ?? userInfo?.vehicle_selected?.model.value,
         first_registered_year: missingFields.reg_yyyy
           ? (value[MOTOR_QUOTE.reg_yyyy] as string)
           : extractYear(
@@ -420,8 +476,10 @@ const SingpassPolicyDetailForm = ({
   const handleSubmit = (value: FormData) => {
     const vehicle_info_selected = {
       vehicle_number: userInfo?.vehicle_selected?.vehicleno.value,
-      vehicle_make: userInfo?.vehicle_selected?.make.value,
-      vehicle_model: userInfo?.vehicle_selected?.model.value,
+      vehicle_make:
+        matchedMakeModel?.make ?? userInfo?.vehicle_selected?.make.value,
+      vehicle_model:
+        matchedMakeModel?.model ?? userInfo?.vehicle_selected?.model.value,
       first_registered_year: missingFields.reg_yyyy
         ? (value[MOTOR_QUOTE.reg_yyyy] as string)
         : extractYear(userInfo?.vehicle_selected?.firstregistrationdate.value),
@@ -563,6 +621,56 @@ const SingpassPolicyDetailForm = ({
   };
   const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
 
+  const handleSelectVehicle = (
+    missing: any,
+    vehicleAge: number | null,
+    vehicleNumber: string,
+    make: string,
+    model: string,
+    capacity: number,
+    regDateStr: string,
+  ) => {
+    dispatch(clearMatchedMakeModel());
+    setVehicleNumber(vehicleNumber);
+    setVehicleMake(make);
+    // Check vehicle age first
+    if (vehicleAge != null && vehicleAge > 15) {
+      setIsMoreThan15YearsModal(true);
+      return;
+    }
+    // Check missing fields
+    setMissingFields(missing);
+    // Show UnMatchVehicleModal if missing make or model
+    if (missing?.make || missing?.model) {
+      setShowUnMatchModal(true);
+    } else {
+      setShowUnMatchModal(false);
+    }
+    // Check blocked by make (Lexus, Suzuki) + currentYear
+    const currentYear = dayjs().year();
+    if (
+      (make.toLowerCase() === 'lexus' || make.toLowerCase() === 'suzuki') &&
+      Number(extractYear(regDateStr)) === currentYear
+    ) {
+      setIsBlockedByMakeYear(true);
+      setShowCSModal({
+        visible: true,
+        description:
+          'We are unable to provide a quotation for this brand new car.',
+      });
+      return;
+    } else {
+      setIsBlockedByMakeYear(false);
+    }
+
+    // Trigger AI check by setting vehicle parameters
+    setCurrentVehicleParams({
+      vehicle_make: make,
+      vehicle_model: model,
+      vehicle_capacity: capacity,
+      vehicle_type: ProductType.CAR,
+    });
+  };
   return (
     <>
       <FormProvider {...methods}>
@@ -583,36 +691,13 @@ const SingpassPolicyDetailForm = ({
               listAfterSelectedVehicle={
                 userInfo?.list_after_selected_vehicle ?? []
               }
+              isLoading={isLoading}
               isMobile={isMobile}
               getVehicleTopRow={getVehicleTopRow}
               getVehicleBottomRow={getVehicleBottomRow}
-              onVehicleSelect={(
-                missing,
-                vehicleAge,
-                vehicleNumber,
-                make,
-                model,
-              ) => {
-                setVehicleNumber(vehicleNumber);
-                // Check vehicle age first
-                if (vehicleAge != null && vehicleAge > 15) {
-                  setIsMoreThan15YearsModal(true);
-                  return;
-                }
-                // Check missing fields
-                setMissingFields(missing);
-                // Show UnMatchVehicleModal if missing make or model
-                if (missing?.make || missing?.model) {
-                  setShowUnMatchModal(true);
-                } else {
-                  setShowUnMatchModal(false);
-                }
-                // Check Vehicle (make,model)
-                postCheckVehicle({
-                  vehicle_make: make,
-                  vehicle_model: model,
-                });
-              }}
+              onVehicleSelect={handleSelectVehicle}
+              setIsShowUnMatchMake={setIsShowUnMatchMake}
+              setIsMaskClosable={setIsMaskClosable}
             />
 
             {['engine_number', 'chassis_number', 'reg_yyyy'].some(
@@ -760,6 +845,7 @@ const SingpassPolicyDetailForm = ({
             form.submit();
           }}
           productType={ProductType.CAR}
+          disabled={isBlockedByMakeYear}
         />
       </div>
       <QuoteModal
@@ -773,6 +859,13 @@ const SingpassPolicyDetailForm = ({
         description='The vehicle is more than 15 years old based on its registration year.'
         isShowOnlyCloseButton={isShowOnlyCloseButton(vehicles)}
       />
+      <QuoteModal
+        onClick={() => setIsShowUnMatchMake(false)}
+        visible={isShowUnMatchMake}
+        description="We're sorry, but we’re unable to provide an online quote for your vehicle’s make and model at this time."
+        isUnMatchMake={true}
+        isMaskClosable={isMaskClosable}
+      />
       <ModalImportant
         isShowPopupImportant={isQuoteModalVisible}
         setIsShowPopupImportant={setIsQuoteModalVisible}
@@ -781,6 +874,7 @@ const SingpassPolicyDetailForm = ({
         }}
       />
       <UnMatchVehicleModal
+        vehicleMake={vehicleMake}
         vehicleNumber={vehicleNumber}
         onClose={() => setShowUnMatchModal(false)}
         visible={showUnMatchModal}

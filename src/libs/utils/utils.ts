@@ -1,13 +1,15 @@
-import { v4 as uuid } from 'uuid';
-
-import { DropdownOption } from '@/components/ui/form/dropdownfield';
-
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
-import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { v4 as uuid } from 'uuid';
+
+import { Vehicle } from '@/libs/types/quote';
+
+import { DropdownOption } from '@/components/ui/form/dropdownfield';
+
+import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { ECICS_USER_INFO } from '@/constants/general.constant';
 
 export const removeFromLocalStorage = (keys: string[]) => {
   keys.forEach((key) => {
@@ -194,6 +196,11 @@ export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
 
+export const createPassphrase = (dob: string, nric: string): string => {
+  const last5 = nric.slice(-5);
+  return `${dob}${last5}`;
+};
+
 const ALLOWED_EXTERNAL_ORIGINS =
   process.env.NEXT_PUBLIC_ALLOWED_REDIRECT_HOSTS?.split(',').map((h) =>
     h.trim(),
@@ -210,4 +217,46 @@ export function isSafePaymentUrl(savedUrl: string | null): boolean {
     console.warn('Invalid redirect URL:', savedUrl, err);
     return false;
   }
+}
+
+export const normalizeName = (s?: string) =>
+  (s || '').toString().trim().toLowerCase();
+
+export const buildRenewalPayload = (renewalQuote: any) => {
+  if (!renewalQuote) return null;
+
+  const policyId = renewalQuote?.policy_id ?? '';
+  const proposalId = renewalQuote?.proposal_id ?? '';
+  const vehRegNo =
+    renewalQuote?.renewal_info.policy_details.vehicle_details?.reg_no ?? '';
+  const nric = renewalQuote?.renewal_info?.insured_info?.nric || '';
+  const dob = renewalQuote?.renewal_info?.insured_info?.dob || '';
+  const renewalEndDate = renewalQuote?.renewal_info?.renewal_end_date ?? '';
+  const selectedAddons = renewalQuote?.selected_add_on_optional_benefits ?? [];
+  const passphrase = createPassphrase(dob, nric);
+
+  return {
+    policy_id: policyId,
+    proposal_id: proposalId,
+    veh_reg_no: vehRegNo,
+    passphrase,
+    renewal_end_date: renewalEndDate,
+    email_address: '',
+    contact_no: '',
+    selected_add_on_optional_benefits: selectedAddons,
+    finalize_renewal: false,
+  };
+};
+
+export function getMatchedVehicleModel(
+  vehicleSelected?: Vehicle,
+  vehicles: Vehicle[] = [],
+): string | null {
+  if (!vehicleSelected?.vehicle_number) return null;
+
+  const matched = vehicles.find(
+    (v) => v.vehicle_number === vehicleSelected.vehicle_number,
+  );
+
+  return matched?.vehicle_model ?? null;
 }
