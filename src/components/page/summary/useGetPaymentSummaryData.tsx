@@ -7,5 +7,6 @@ export const usePaymentSummaryFromQuote = (
   isElectricModel?: boolean,
 ) => {
   const paymentType = getPaymentType(productTypeName, isElectricModel);
+  console.log(`paymentType = ${JSON.stringify(paymentType)}`);
   return useGetPaymentSummaryData(paymentType ?? '');
 };

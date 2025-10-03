@@ -190,6 +190,7 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
 /**Gets quote for motorcycle from ISP and formats it to the format that the front end requires*/
 export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
   try {
+    console.log(`data at getQuote = ${JSON.stringify(data)}`);
     /** promocode data */
     let promoCodeData = null;
 
@@ -211,6 +212,20 @@ export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
     const productType = await prisma.productType.findFirst({
       where: { name: 'motorcycle' },
     });
+
+    let redirectUrl = '';
+    let returnBaseUrl = '';
+    if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE) {
+      redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE}?key=${data.key}`;
+    } else {
+      redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/motorcycle/summary?key=${data.key}`;
+    }
+
+    if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+      returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+    } else {
+      returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+    }
     /** payload data to send */
     const payloadData = {
       vehicle: {
@@ -231,6 +246,8 @@ export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
         endDate: convertDateDash(data.insurance_additional_info.end_date),
       },
       promoCode: data.promo_code || '',
+      redirect_url: redirectUrl,
+      return_baseurl: returnBaseUrl,
     };
 
     logger.info(`Payload for generate quote: ${JSON.stringify(payloadData)}`);

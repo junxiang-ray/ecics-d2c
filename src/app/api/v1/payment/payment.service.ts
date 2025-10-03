@@ -91,6 +91,7 @@ export async function handleMotorcyclePayment(data: paymentDTO) {
       proposalId: quoteInfo.proposal_id,
       paymentId: quoteInfo.payment_id,
     };
+    logger.info(`Calling payment with payload: ${JSON.stringify(payloadData)}`);
 
     const resPayment = await handleApiCallToISP(
       `/${MOTORCYCLE_INSURANCE.PREFIX_ENDPOINT}/payment`,

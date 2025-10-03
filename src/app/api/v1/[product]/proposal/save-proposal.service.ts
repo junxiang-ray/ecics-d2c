@@ -316,6 +316,7 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
 export async function saveProposalForMotorcycle(
   currData: saveQuoteProposalDTO,
 ) {
+  console.log(`currData at saveProposal = ${JSON.stringify(currData)}`);
   const { key, selected_plan, selected_addons, add_named_driver_info } =
     currData;
 
@@ -340,6 +341,20 @@ export async function saveProposalForMotorcycle(
 
   const { quote_id, proposal_id } = quoteInfo;
 
+  let redirectUrl = '';
+  let returnBaseUrl = '';
+  if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE) {
+    redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE}?key=${key}`;
+  } else {
+    redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/motorcycle/summary?key=${key}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+    returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+  } else {
+    returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+  }
+
   const payload: any = {
     quoteId: quote_id,
     proposalId: proposal_id,
@@ -352,6 +367,8 @@ export async function saveProposalForMotorcycle(
       hirePurchaseCompany: quoteInfo.company?.name || '',
       finalize: true,
     },
+    redirect_url: redirectUrl,
+    return_baseurl: returnBaseUrl,
   };
 
   logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);

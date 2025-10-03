@@ -165,6 +165,9 @@ export const getPaymentType = (
   if (productType === ProductType.CAR) {
     return isElectric ? ProductType.EVCAR : ProductType.CAR;
   }
+  if (productType === ProductType.MOTORCYCLE) {
+    return ProductType.MOTORCYCLE;
+  }
   return undefined;
 };
 
