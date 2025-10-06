@@ -58,7 +58,6 @@ export interface ReviewInfo {
 export interface QuoteData {
   key?: string;
   plans?: Plan[];
-  // plan?: Plan[] | null;
   current_step: number;
   vehicles?: Vehicle[];
   personal_info?: PersonalInfo;
