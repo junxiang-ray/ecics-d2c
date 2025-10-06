@@ -9,11 +9,9 @@ export enum ProductType {
 
 export enum NumberClaim {
   NEVER = '0',
-  ONE_CLAIM_LESS_THAN_10K = '1 claim ≤$10k',
-  ONE_CLAIM_LESS_THAN_20K = '1 claim ≤$20k',
-  TWO_CLAIM_LESS_THAN_10K = '2 claims ≤$10k',
-  TWO_CLAIM_LESS_THAN_20K = '2 claims ≤$20k',
-  TWO_MANY_CLAIMS = 'to_many_claims',
+  ONE_CLAIM_LESS_THAN_10K = '1',
+  TWO_CLAIM_LESS_THAN_10K = '2',
+  TWO_MANY_CLAIMS = '3',
 }
 export enum NumberDriverExperience {
   LESS_THAN_2_YEARS = 2,
@@ -131,13 +129,11 @@ export const NCD_OPTIONS_MOTORCYCLE: DropdownOption[] = [
 
 export const NO_CLAIM_OPTIONS: DropdownOption[] = [
   { value: NumberClaim.NEVER, text: '0' },
-  { value: NumberClaim.ONE_CLAIM_LESS_THAN_10K, text: '1 claim ≤ SGD 10k' },
-  { value: NumberClaim.ONE_CLAIM_LESS_THAN_20K, text: '1 claim ≤ SGD 20k' },
-  { value: NumberClaim.TWO_CLAIM_LESS_THAN_10K, text: '2 claims ≤ SGD 10k' },
-  { value: NumberClaim.TWO_CLAIM_LESS_THAN_20K, text: '2 claims ≤ SGD 20k' },
+  { value: NumberClaim.ONE_CLAIM_LESS_THAN_10K, text: '1' },
+  { value: NumberClaim.TWO_CLAIM_LESS_THAN_10K, text: '2' },
   {
     value: NumberClaim.TWO_MANY_CLAIMS,
-    text: 'More than 2 claims or SGD 20k',
+    text: 'More than 2',
   },
 ];
 

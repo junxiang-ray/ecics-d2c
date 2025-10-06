@@ -397,10 +397,19 @@ function findMotorcyclePlanData(quoteData: any, id: string): any {
   return quoteData?.plan.find((plan: any) => plan.id === id) || null;
 }
 
+function stringToNumber(value: string): number | null {
+  if (!value) return null;
+  // remove commas
+  const cleaned = value.replace(/,/g, '');
+  const num = Number(cleaned);
+  return isNaN(num) ? null : num;
+}
+
 /**Finds plan premium by ID*/
 function findMotorcyclePlanPremium(quoteData: any, id: string): number {
   const planData = findMotorcyclePlanData(quoteData, id);
-  return Number(planData?.premium) ?? 0;
+
+  return stringToNumber(planData?.premium) ?? 0;
 }
 
 /**Find motorcycle add on data by ID

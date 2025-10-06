@@ -604,7 +604,7 @@ const PolicyDetailForm = ({
                         <DatePickerField
                           name={MOTORCYCLE_QUOTE.owner_dob}
                           label='Date of birth'
-                          format='YYYY-MM-DD'
+                          format='DD/MM/YYYY'
                           minDate={minDob}
                           maxDate={maxDob}
                           isRequired
@@ -737,7 +737,7 @@ const PolicyDetailForm = ({
                 >
                   <DatePickerField
                     name={MOTORCYCLE_QUOTE.start_date}
-                    format='YYYY-MM-DD'
+                    format='DD/MM/YYYY'
                     label='Policy Start Date'
                     isRequired
                     minDate={minPolicyStartDate}
@@ -762,7 +762,7 @@ const PolicyDetailForm = ({
                     minDate={minPolicyEndDate}
                     maxDate={maxPolicyEndDate}
                     disabled={!start_date || isLoading}
-                    format='YYYY-MM-DD'
+                    format='DD/MM/YYYY'
                   />
                 </Form.Item>
                 {isSingpassFlow ? hire_purchase_section : null}
