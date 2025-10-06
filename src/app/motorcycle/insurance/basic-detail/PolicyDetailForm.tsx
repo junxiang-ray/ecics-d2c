@@ -545,7 +545,7 @@ const PolicyDetailForm = ({
           className=' mb-16 flex w-full flex-col items-center px-4'
           {...props}
         >
-          <div className='max-w-[1200px]'>
+          <div className='max-w-[1200px] pb-10'>
             {!isSingpassFlow && (
               <>
                 <div className='relative w-full' style={{ zIndex: '99' }}>
