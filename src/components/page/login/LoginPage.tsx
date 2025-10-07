@@ -64,16 +64,16 @@ const LoginPage = () => {
 
   const bgTop =
     productType === ProductType.MAID
-      ? '/maid_bg_top.svg'
+      ? '/maid_bg.jpg'
       : productType === ProductType.MOTORCYCLE
         ? '/motorcycle_bg2.jpg'
-        : '/login_bg_top.svg';
+        : '/bg_car.jpg';
   const bgMobile =
     productType === ProductType.MAID
-      ? '/login_bg_singpass_maid.png'
+      ? '/maid_bg.jpg'
       : productType === ProductType.MOTORCYCLE
         ? '/motorcycle_bg2.jpg'
-        : '/login_bg_top.svg';
+        : '/bg_car.jpg';
 
   if (isMobile) {
     return (
