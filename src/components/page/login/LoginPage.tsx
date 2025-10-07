@@ -143,7 +143,7 @@ const LoginPage = () => {
               </span>
             )}
           </div>
-          {productType === ProductType.MOTORCYCLE ? null : (
+          {productType !== ProductType.MOTORCYCLE && (
             <div className='mt-4 text-center text-sm'>
               Save time by securely retrieving your personal info directly from
               Myinfo
