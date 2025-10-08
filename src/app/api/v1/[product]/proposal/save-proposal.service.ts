@@ -8,18 +8,31 @@ import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
-import { convertDate } from '@/app/api/utils/date.helper';
+import { convertDate, convertDateDash } from '@/app/api/utils/date.helper';
 import {
   applyAddlDriverLogic,
   applyLouAndCcLogic,
   mappingAddonByPlan,
   mappingAddonForMaid,
+  mappingMotorcycleAddonByPlan,
 } from '@/app/api/utils/quote.helpers';
 
 import {
   saveQuoteProposalDTO,
   saveQuoteProposalForMaidDTO,
 } from './save-proposal.dto';
+import {
+  MOTORCYCLE_INSURANCE,
+  MOTORCYCLE_PLAN_ADDON_CONFIG,
+} from '@/app/api/constants/motorcycle.insurance';
+
+import {
+  getAdditionalDriverInfo,
+  getOptionalBenefitCodes,
+  getPersonalInfo,
+  getPlanIdfromTitle,
+  getVehicleInfo,
+} from '@/app/api/utils/motorcycle.quote.util';
 
 export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;
@@ -290,6 +303,104 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
       is_finalized: true,
       payment_id: resSaveProposal.data?.payment_id || '',
       company_id: companyInfo?.id || null,
+    },
+  });
+
+  return successRes({
+    message: 'Proposal saved successfully',
+    data: resSaveProposal.data,
+  });
+}
+
+/// save proposal for motorcycle
+export async function saveProposalForMotorcycle(
+  currData: saveQuoteProposalDTO,
+) {
+  console.log(`currData at saveProposal = ${JSON.stringify(currData)}`);
+  const { key, selected_plan, selected_addons, add_named_driver_info } =
+    currData;
+
+  const quoteInfo = await prisma.quote.findFirst({
+    where: {
+      key: key,
+    },
+    select: {
+      quote_id: true,
+      proposal_id: true,
+      policy_id: true,
+      data: true,
+      id: true,
+      company: true,
+      company_name_other: true,
+    },
+  });
+
+  if (!quoteInfo) {
+    return ErrNotFound('Quote not found');
+  }
+
+  const { quote_id, proposal_id } = quoteInfo;
+
+  let redirectUrl = '';
+  let returnBaseUrl = '';
+  if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE) {
+    redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE}?key=${key}`;
+  } else {
+    redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/motorcycle/summary?key=${key}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+    returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+  } else {
+    returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+  }
+
+  const payload: any = {
+    quoteId: quote_id,
+    proposalId: proposal_id,
+    selected: {
+      planId: getPlanIdfromTitle(quoteInfo, selected_plan),
+      optionalBenefits: getOptionalBenefitCodes(selected_addons),
+      personalDetails: getPersonalInfo(quoteInfo),
+      vehicle: getVehicleInfo(quoteInfo),
+      additionalDriver: getAdditionalDriverInfo(quoteInfo),
+      hirePurchaseCompany: quoteInfo.company?.name || '',
+      finalize: true,
+    },
+    redirect_url: redirectUrl,
+    return_baseurl: returnBaseUrl,
+  };
+
+  logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
+
+  const resSaveProposal = await handleApiCallToISP(
+    `/${MOTORCYCLE_INSURANCE.PREFIX_ENDPOINT}/proposal`,
+    payload,
+  );
+  logger.info(
+    `Response from save proposal: ${JSON.stringify(resSaveProposal)}`,
+  );
+
+  if (resSaveProposal.status !== 0) {
+    return ErrFromISPRes('Failed to save proposal');
+  }
+
+  // Update the quote in the database
+  const quoteData = quoteInfo.data;
+
+  await prisma.quote.update({
+    where: {
+      id: quoteInfo.id,
+    },
+    data: {
+      data: {
+        ...(quoteData && typeof quoteData === 'object' ? quoteData : {}),
+        selected_addons: selected_addons,
+        add_named_driver_info: add_named_driver_info,
+      },
+      quote_finalize_from_ISP: resSaveProposal,
+      is_finalized: true,
+      payment_id: resSaveProposal.data?.paymentId || '',
     },
   });
 

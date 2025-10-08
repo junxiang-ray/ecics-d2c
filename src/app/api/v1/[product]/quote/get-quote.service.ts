@@ -6,12 +6,15 @@ import { ErrBadRequest, ErrFromISPRes } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
-import { convertDate } from '@/app/api/utils/date.helper';
+import { convertDate, convertDateDash } from '@/app/api/utils/date.helper';
 
 import { formatCarQuoteInfo } from './format-car-quote-data';
+import { formatMotorCycleQuoteInfo } from './format-motorcycle-quote-data';
 import { formatMaidQuoteInfo } from './format-maid-quote.data';
 import { generateQuoteDTO, generateQuoteForMaidDTO } from './get-quote.dto';
-
+import { start } from 'repl';
+import { MOTORCYCLE_INSURANCE } from '@/app/api/constants/motorcycle.insurance';
+///ADD NEW PRODUCTS HERE
 export async function getQuoteForCar(data: generateQuoteDTO) {
   try {
     logger.info(`Generating quote for car with data: ${JSON.stringify(data)}`);
@@ -171,6 +174,171 @@ export async function getQuoteForCar(data: generateQuoteDTO) {
           },
         });
       }
+
+      return successRes({
+        data: quoteInfo,
+        message: 'Quote generated successfully',
+      });
+    }
+
+    return ErrFromISPRes(response?.data?.txt || 'Error generating quote');
+  } catch (error) {
+    logger.error(`Error generate quote: ${error}`);
+    throw new Error('Error generate quote');
+  }
+}
+/**Gets quote for motorcycle from ISP and formats it to the format that the front end requires*/
+export async function getQuoteForMotorcycle(data: generateQuoteDTO) {
+  try {
+    console.log(`data at getQuote = ${JSON.stringify(data)}`);
+    /** promocode data */
+    let promoCodeData = null;
+
+    /** checks if promo code exists and checks if it exist in the db*/
+    if (data.promo_code) {
+      promoCodeData = await prisma.promocode.findFirst({
+        where: {
+          code: data.promo_code,
+          products: {
+            has: PRODUCT_NAME.MOTORCYCLE,
+          },
+        },
+      });
+      if (!promoCodeData) {
+        return ErrBadRequest('Promo code not found');
+      }
+    }
+
+    const productType = await prisma.productType.findFirst({
+      where: { name: 'motorcycle' },
+    });
+
+    let redirectUrl = '';
+    let returnBaseUrl = '';
+    if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE) {
+      redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE}?key=${data.key}`;
+    } else {
+      redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/motorcycle/summary?key=${data.key}`;
+    }
+
+    if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+      returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+    } else {
+      returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+    }
+    /** payload data to send */
+    const payloadData = {
+      vehicle: {
+        make: data.vehicle_info_selected.vehicle_make,
+        model: data.vehicle_info_selected.vehicle_model,
+        registrationYear: data.vehicle_info_selected.first_registered_year,
+      },
+      policyholder: {
+        dateOfBirth: convertDateDash(data.personal_info.date_of_birth),
+        drivingExp: data.personal_info.driving_experience,
+        ncd: data.insurance_additional_info.no_claim_discount,
+        noOfClaims: data.insurance_additional_info.no_of_claim,
+        email: data.personal_info.email,
+        contactNo: data.personal_info.phone,
+      },
+      policy: {
+        startDate: convertDateDash(data.insurance_additional_info.start_date),
+        endDate: convertDateDash(data.insurance_additional_info.end_date),
+      },
+      promoCode: data.promo_code || '',
+      redirect_url: redirectUrl,
+      return_baseurl: returnBaseUrl,
+    };
+
+    logger.info(`Payload for generate quote: ${JSON.stringify(payloadData)}`);
+
+    /// Call the API to generate quote
+    const response = await apiServer.post(
+      `${MOTORCYCLE_INSURANCE.PREFIX_ENDPOINT}/quote`,
+      payloadData,
+    );
+    logger.info(
+      `Response from generate quote: ${JSON.stringify(response.data)}`,
+    );
+
+    if (response.data.status === 0) {
+      const quoteResInfo = response.data.data;
+
+      const planData = await formatMotorCycleQuoteInfo(quoteResInfo, data);
+
+      logger.info(`Formatted quote data: ${JSON.stringify(planData)}`);
+
+      const quoteFound = await prisma.quote.findFirst({
+        where: {
+          key: data.key,
+        },
+      });
+
+      let quoteInfo = null;
+      const quoteData = {
+        quote_id: quoteResInfo.quoteId,
+        quote_no: quoteResInfo.quote_no || '',
+        policy_id: quoteResInfo.policy_id || '',
+        product_id: quoteResInfo.product_id || '',
+        proposal_id: quoteResInfo.proposalId,
+        phone: data.personal_info.phone || '',
+        email: data.personal_info.email || '',
+        name: data.personal_info.name || '',
+        quote_res_from_ISP: quoteResInfo || '',
+        data: {
+          ...(quoteFound?.data && typeof quoteFound.data === 'object'
+            ? quoteFound.data
+            : {}),
+          plans: planData,
+          personal_info: {
+            ...(typeof quoteFound?.data === 'object' &&
+            quoteFound?.data !== null &&
+            'personal_info' in quoteFound.data
+              ? (quoteFound.data as { personal_info?: any }).personal_info
+              : {}),
+            ...data.personal_info,
+          },
+          vehicle_info_selected: data.vehicle_info_selected,
+          insurance_additional_info: data.insurance_additional_info,
+        },
+        partner_code: data?.partner_code || '',
+        expiration_date: new Date(),
+        key: data.key,
+        promo_code_id: promoCodeData?.id || null,
+        company_id: data?.company_id || null,
+        company_name_other: data?.company_name_other || null,
+        is_electric_model: quoteResInfo?.ev_model === 'YES' ? true : false,
+        product_type_id: productType?.id || null,
+        is_finalized: false,
+      };
+      quoteInfo = await prisma.quote.upsert({
+        create: quoteData,
+        update: quoteData,
+        where: { id: quoteFound?.id ?? 0 },
+        omit: {
+          quote_res_from_ISP: true,
+          quote_finalize_from_ISP: true,
+        },
+        include: {
+          promo_code: {
+            select: {
+              code: true,
+              discount: true,
+              start_time: true,
+              end_time: true,
+              description: true,
+              products: true,
+              is_public: true,
+              is_show_count_down: true,
+            },
+          },
+          company: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
 
       return successRes({
         data: quoteInfo,

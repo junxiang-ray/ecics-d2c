@@ -51,7 +51,7 @@ export const InputField = ({
                 className={`${
                   isRenewalFlow
                     ? 'pb-[10px] text-xs font-light text-gray-800'
-                    : ''
+                    : 'text-base font-semibold'
                 }`}
               >
                 {label}

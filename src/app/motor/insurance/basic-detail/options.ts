@@ -4,6 +4,7 @@ export enum ProductType {
   MAID = 'maid',
   CAR = 'car',
   EVCAR = 'ev_car',
+  MOTORCYCLE = 'motorcycle',
 }
 
 export enum NumberClaim {
@@ -120,6 +121,13 @@ export const NCD_OPTIONS: DropdownOption[] = [
   { value: 30, text: '30%' },
   { value: 40, text: '40%' },
   { value: 50, text: '50%' },
+];
+
+export const NCD_OPTIONS_MOTORCYCLE: DropdownOption[] = [
+  { value: 0, text: '0%' },
+  { value: 10, text: '10%' },
+  { value: 15, text: '15%' },
+  { value: 20, text: '20%' },
 ];
 
 export const NO_CLAIM_OPTIONS: DropdownOption[] = [

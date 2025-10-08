@@ -165,6 +165,9 @@ export const getPaymentType = (
   if (productType === ProductType.CAR) {
     return isElectric ? ProductType.EVCAR : ProductType.CAR;
   }
+  if (productType === ProductType.MOTORCYCLE) {
+    return ProductType.MOTORCYCLE;
+  }
   return undefined;
 };
 
@@ -183,6 +186,12 @@ export const getPlanGroupPrefix = (
       { keyword: 'Classic', prefix: 'CLASS' },
       { keyword: 'Exclusive', prefix: 'EXCLU' },
       { keyword: 'Deluxe', prefix: 'DELU' },
+    ],
+    [PRODUCT_NAME.MOTORCYCLE]: [
+      { keyword: 'Comprehensive', prefix: 'COMP' },
+      { keyword: 'Third Party, Fire & Theft', prefix: 'TPFT' },
+      { keyword: 'Third Party, Fire and Theft', prefix: 'TPFT' },
+      { keyword: 'Third Party Only', prefix: 'TPO' },
     ],
   };
 

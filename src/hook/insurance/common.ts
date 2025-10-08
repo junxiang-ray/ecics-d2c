@@ -43,9 +43,9 @@ export const useVerifyPromoCode = (product_type: string) => {
   });
 };
 
-export const useGetVehicleMakes = () => {
+export const useGetVehicleMakes = (product_type?: string) => {
   const fetchVehicleMakes = async () => {
-    const res = await verify.getVehicleMakes();
+    const res = await verify.getVehicleMakes(product_type);
     return res.data.data;
   };
 
@@ -55,9 +55,9 @@ export const useGetVehicleMakes = () => {
   });
 };
 
-export const useGetVehicleModels = (id: string) => {
+export const useGetVehicleModels = (id: string, product_type?: string) => {
   const fetchVehicleModels = async () => {
-    const res = await verify.getVehicleModels(id);
+    const res = await verify.getVehicleModels(id, product_type);
     return res.data.data;
   };
 

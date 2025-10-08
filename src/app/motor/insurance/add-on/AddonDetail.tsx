@@ -172,23 +172,24 @@ function AddOnDetail({
 
   const plan = useMemo(() => {
     return quoteInfo?.data?.plans?.find(
-      (plan) => quoteInfo.data?.selected_plan === plan.title,
+      (plan: any) => quoteInfo.data?.selected_plan === plan.title,
     );
   }, [quoteInfo]);
 
   const addonAdditionalDriver = useMemo(() => {
-    return plan?.addons.find((addon) => ADDON_CARS.includes(addon.code));
+    return plan?.addons.find((addon: any) => ADDON_CARS.includes(addon.code));
   }, [plan]);
 
   const normalAddons = useMemo(() => {
     return (
-      plan?.addons.filter((addon) => !ADDON_CARS.includes(addon.code)) ?? []
+      plan?.addons.filter((addon: any) => !ADDON_CARS.includes(addon.code)) ??
+      []
     );
   }, [plan]);
 
   const defaultAddonsAdded = useMemo(() => {
     if (!normalAddons.length) return {};
-    const addonCodes = normalAddons.map((addon) => addon.code);
+    const addonCodes = normalAddons.map((addon: any) => addon.code);
     return Object.fromEntries(
       addonCodes.map((code) => [
         code,
@@ -441,7 +442,7 @@ function AddOnDetail({
                   isPending={isPending}
                 />
               )}
-              {plan?.add_ons_included_in_this_plan?.map((addon) => (
+              {plan?.add_ons_included_in_this_plan?.map((addon: any) => (
                 <AddOnRow
                   key={addon.add_on_id}
                   title={addon.add_on_name}

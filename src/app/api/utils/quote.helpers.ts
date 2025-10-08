@@ -1,4 +1,5 @@
 import { ADD_ON_VALUES, CAR_INSURANCE } from '../constants/car.insurance';
+import { MOTORCYCLE_INSURANCE } from '../constants/motorcycle.insurance';
 
 export function mappedPlanPremiums(quoteData: any): Record<string, number> {
   return {
@@ -6,6 +7,7 @@ export function mappedPlanPremiums(quoteData: any): Record<string, number> {
     TPFT: quoteData?.tpft_plan?.plan_premium_with_gst ?? 0,
     TPO: quoteData?.tpo_plan?.plan_premium_with_gst ?? 0,
     FNCD: quoteData?.comp_fncd_plan?.plan_premium_with_gst ?? 0,
+    // COMP: quoteData?.comp_plan?.plan_premium_with_gst ?? 0,
   };
 }
 
@@ -270,9 +272,20 @@ export const addonForCarMapCOM: Record<string, string> = {
   CAR_COM_MDE: 'quick_proposal_me',
   CAR_COM_KRC: 'quick_proposal_krc',
 };
+export const addonForMotorcycleMapCOMP: Record<string, string> = {
+  MOTORCYCLE_COMP_BUN: 'quick_proposal_bun',
+  MOTORCYCLE_COMP_RSA: 'quick_proposal_rsa',
+  MOTORCYCLE_COMP_PAC: 'quick_proposal_pa',
+  MOTORCYCLE_COMP_MDE: 'quick_proposal_me',
+  MOTORCYCLE_COMP_KRC: 'quick_proposal_krc',
+};
 
 export const addonForCarMapTPFT: Record<string, string> = {
   CAR_TPFT_BUN: 'quick_proposal_bun',
+};
+
+export const addonForMotorcycleMapTPFT: Record<string, string> = {
+  MOTORCYCLE_TPFT_BUN: 'quick_proposal_bun',
 };
 
 export const addonForCarMapTPO: Record<string, string> = {
@@ -302,6 +315,17 @@ export function mappingAddonByPlan(
       return addonForCarMapTPO;
     case CAR_INSURANCE.PLAN_NAME.FNCD:
       return addonForCarMapFNCD;
+    default:
+      return {};
+  }
+}
+
+export function mappingMotorcycleAddonByPlan(
+  selected_plan: string,
+): Record<string, string> {
+  switch (selected_plan) {
+    case MOTORCYCLE_INSURANCE.PLAN_NAME.COMP:
+      return addonForMotorcycleMapCOMP;
     default:
       return {};
   }
@@ -364,3 +388,163 @@ export const mappingAddonForMaid = {
   MAID_EXCLU_OME: 'quote_opt_op',
   MAID_EXCLU_WOCP: 'quote_opt_co_payment',
 };
+
+/// MOTORCYCLE TRANSLATIONS
+
+///CONVERTERS/ HELPERS
+///finds plan data by id
+function findMotorcyclePlanData(quoteData: any, id: string): any {
+  return quoteData?.plan.find((plan: any) => plan.id === id) || null;
+}
+
+function stringToNumber(value: string): number | null {
+  if (!value) return null;
+  // remove commas
+  const cleaned = value.replace(/,/g, '');
+  const num = Number(cleaned);
+  return isNaN(num) ? null : num;
+}
+
+/**Finds plan premium by ID*/
+function findMotorcyclePlanPremium(quoteData: any, id: string): number {
+  const planData = findMotorcyclePlanData(quoteData, id);
+
+  return stringToNumber(planData?.premium) ?? 0;
+}
+
+/**Find motorcycle add on data by ID
+ * @param quoteData - The quote data object containing available addon benefits.
+ * @param id - ID of the addon to find.
+ * @returns the addon data object if found, else returns null.
+ *
+ */
+function findMotorcycleAddOnData(
+  quoteData: any,
+  planId: string,
+  id: string,
+): any {
+  return (
+    findMotorcyclePlanData(quoteData, planId)?.availableOptionalBenefit?.find(
+      (availableOptionalBenefit: any) => availableOptionalBenefit.id === id,
+    ) || null
+  );
+}
+
+/**Find Motorcycle Addon premium by ID
+ * @param quoteData - The quote data object containing available addon benefits.
+ * @param id - ID of the addon to find.
+ * @returns the addon premium if found, else returns 0.
+ */
+function findMotorcycleAddOnPremium(
+  quoteData: any,
+  planId: string,
+  id: string,
+): number {
+  const planData = findMotorcycleAddOnData(quoteData, planId, id);
+  return (Number(planData?.basePremium) ?? 0) * 1.09; // GST of 9%
+}
+
+function findMotorcyclePolicyExcess(quoteData: any, planId: string): string {
+  const planData = findMotorcyclePlanData(quoteData, planId);
+  const coverages = planData?.coverages || [];
+  const policyExcessCoverage = coverages.find((coverage: any) =>
+    coverage.name.includes('Policy Excess:'),
+  );
+  return policyExcessCoverage.name || '';
+}
+///
+
+export function mappedMotorcyclePlanPremiums(
+  quoteData: any,
+): Record<string, number> {
+  return {
+    // COM: quoteData?.comp_plan?.plan_premium_with_gst ?? 0,
+    COMP: findMotorcyclePlanPremium(quoteData, 'COMP'),
+    TPFT: findMotorcyclePlanPremium(quoteData, 'TPFT'),
+    TPO: findMotorcyclePlanPremium(quoteData, 'TPO'),
+    FNCD: findMotorcyclePlanPremium(quoteData, 'FNCD'),
+  };
+}
+
+export function mappedMotorcycleAddonPremiums(
+  quoteData: any,
+): Record<string, number> {
+  return {
+    loss_of_use_if_selected_comp: findMotorcycleAddOnPremium(
+      quoteData,
+      'COMP',
+      'lou',
+    ),
+    roadside_assistance_if_selected_comp: findMotorcycleAddOnPremium(
+      quoteData,
+      'COMP',
+      'rsa',
+    ),
+    key_replacement_cover_if_selected_comp: findMotorcycleAddOnPremium(
+      quoteData,
+      'COMP',
+      'krc',
+    ),
+    personal_asssistance_cover_if_selected_comp: findMotorcycleAddOnPremium(
+      quoteData,
+      'COMP',
+      'pa',
+    ),
+    medical_expenses_if_selected_comp: findMotorcycleAddOnPremium(
+      quoteData,
+      'COMP',
+      'me',
+    ),
+    new_for_old_comp: findMotorcycleAddOnPremium(quoteData, 'COMP', 'nfor'),
+    buy_up_ncd_comp: findMotorcycleAddOnPremium(quoteData, 'COMP', 'bun'),
+    buy_up_ncd_tpft: findMotorcycleAddOnPremium(quoteData, 'TPFT', 'bun'),
+    buy_up_ncd_tpo: findMotorcycleAddOnPremium(quoteData, 'TPO', 'bun'),
+  };
+}
+
+export function mappedMotocycleAddOnIncludePlan(
+  quoteData: any,
+): Record<string, any> {
+  return {
+    COMP: [],
+    TPFT: [],
+    TPO: [],
+  };
+}
+
+export function mappedMotorcyclePolicyExcess(
+  quoteData: any,
+): Record<string, string> {
+  return {
+    COMP: findMotorcyclePolicyExcess(quoteData, 'COMP'),
+    TPFT: findMotorcyclePolicyExcess(quoteData, 'TPFT'),
+    TPO: findMotorcyclePolicyExcess(quoteData, 'TPO'),
+  };
+}
+
+export function mappedMotorcycleAddonEligibility(
+  quoteData: any,
+): Record<string, boolean> {
+  return {
+    MOTORCYCLE_COMP_LOU:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'lou') !== null ? true : false,
+    MOTORCYCLE_COMP_RSA:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'rsa') !== null ? true : false,
+    MOTORCYCLE_COMP_KRC:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'krc') !== null ? true : false,
+    MOTORCYCLE_COMP_PA:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'pa') !== null ? true : false,
+    MOTORCYCLE_COMP_ME:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'me') !== null ? true : false,
+    MOTORCYCLE_COMP_NFOR:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'nfor') !== null
+        ? true
+        : false,
+    MOTORCYCLE_COMP_BUN:
+      findMotorcycleAddOnData(quoteData, 'COMP', 'bun') !== null ? true : false,
+    MOTORCYCLE_TPFT_BUN:
+      findMotorcycleAddOnData(quoteData, 'TPFT', 'bun') !== null ? true : false,
+    MOTORCYCLE_TPO_BUN:
+      findMotorcycleAddOnData(quoteData, 'TPO', 'bun') !== null ? true : false,
+  };
+}

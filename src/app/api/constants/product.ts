@@ -2,6 +2,7 @@ export const PRODUCT_NAME = {
   CAR: 'car',
   MAID: 'maid',
   MOTOR: 'motor',
+  MOTORCYCLE: 'b2c_motorcycle2',
   RENEWAL: 'renewal',
 } as const;
 
