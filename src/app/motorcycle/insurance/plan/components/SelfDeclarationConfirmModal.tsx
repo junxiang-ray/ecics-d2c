@@ -40,16 +40,18 @@ function SelfDeclarationConfirmModal({
               Influence) or DWI (Driving While Intoxicated);
             </li>
             <li>You are holding a valid Singapore driving license;</li>
-            <li>Your car is not used for any rental purposes;</li>
-            <li>Your car is in roadworthy condition within LTA guidelines;</li>
+            <li>Your motorcycle is not used for any rental purposes;</li>
             <li>
-              Your car is a private car used for the purpose of
-              leisure/commuting only, and is not used to deliver goods or
-              passengers as part of your job or in exchange for financial
-              rewards;
+              Your motorcycle is in roadworthy condition within LTA guidelines;
             </li>
             <li>
-              You have not had 3 or more claims made against your car insurance.
+              Your motorcycle is used for the purpose of leisure/commuting only,
+              and is not used to deliver goods or carry passengers as part of
+              your job or in exchange for financial rewards;
+            </li>
+            <li>
+              You have not had 3 or more claims made against your motorcycle
+              insurance.
             </li>
           </ul>
           <div className='mt-[4px] text-justify font-semibold'>
