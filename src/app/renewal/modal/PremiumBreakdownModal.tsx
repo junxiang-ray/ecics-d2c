@@ -12,7 +12,6 @@ export interface PremiumBreakdownRenewalContentProps {
   subtotal: number;
   renewalQuote?: RenewalQuote | null;
   onClose?: () => void;
-  hasAddonsPlus: boolean;
   total: number;
   selectedAddons?: SelectedAddon[];
 }
@@ -23,7 +22,6 @@ const PremiumBreakdownRenewalContent = ({
   subtotalFeeAfter,
   renewalQuote,
   onClose,
-  hasAddonsPlus,
   total,
   selectedAddons = [],
 }: PremiumBreakdownRenewalContentProps) => {
@@ -126,19 +124,13 @@ const PremiumBreakdownRenewalContent = ({
           <hr className='border-t border-gray-200' />
           <div className='mt-2 flex flex-row justify-between text-sm font-bold text-gray-700'>
             <p className='text-sm text-gray-700'>Subtotal</p>
-            <p>
-              {hasAddonsPlus
-                ? formatCurrency(subtotalFeeAfter)
-                : formatCurrency(subtotal)}
-            </p>
+            <p>{formatCurrency(subtotalFeeAfter)}</p>
           </div>
           <div className='flex flex-row justify-between text-sm font-normal text-gray-700'>
             <p>GST (9%)</p>
             <p className='font-semibold'>
               {' '}
-              {hasAddonsPlus
-                ? formatCurrency(Number(gstAmount))
-                : formatCurrency(Number(gst))}
+              {formatCurrency(Number(gstAmount))}
             </p>
           </div>
           <hr className='mt-4 border-t border-gray-200' />
