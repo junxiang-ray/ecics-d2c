@@ -218,6 +218,7 @@ const RenewalDetail = () => {
       },
     );
   };
+
   const gst = parseFloat(String(renewal?.renewalgst ?? 0));
   const subtotal = parseFloat(String(renewal?.renewalpremb4gst ?? 0));
   const planFee = parseFloat(String(renewal?.renewalplanprem ?? 0));
@@ -246,9 +247,8 @@ const RenewalDetail = () => {
   const subtotalFeeAfter =
     planFee + addonsIncludedTotal + addonsSelectedTotal + nameDriversTotalFee;
 
-  const hasAddonsPlus = addonsSelectedTotal > 0;
   const gstAmount = subtotalFeeAfter * GST_RATE;
-  const total = hasAddonsPlus ? subtotalFeeAfter + gstAmount : subtotal + gst;
+  const total = subtotalFeeAfter + gstAmount;
 
   return (
     <>
@@ -314,7 +314,6 @@ const RenewalDetail = () => {
         gst={gst}
         subtotal={subtotal}
         total={total}
-        hasAddonsPlus={hasAddonsPlus}
       />
     </>
   );
