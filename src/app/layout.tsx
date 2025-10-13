@@ -36,7 +36,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <head>
+      <body className={openSans.className}>
         {/* Google Tag Manager */}
         <Script id='gtm-script' strategy='afterInteractive'>
           {`
@@ -45,11 +45,11 @@ export default function RootLayout({
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-N8LJ9XZP');
-    `}
+  `}
         </Script>
         {/* End Google Tag Manager */}
-      </head>
-      <body className={openSans.className}>
+
+        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src='https://www.googletagmanager.com/ns.html?id=GTM-N8LJ9XZP'
@@ -58,19 +58,7 @@ export default function RootLayout({
             style={{ display: 'none', visibility: 'hidden' }}
           ></iframe>
         </noscript>
-        {/* Google Analytics */}
-        <Script
-          src='https://www.googletagmanager.com/gtag/js?id=G-HYWYT61GW5'
-          strategy='afterInteractive'
-        />
-        <Script id='ga' strategy='afterInteractive'>
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-HYWYT61GW5');
-            `}
-        </Script>
+        {/* End Google Tag Manager (noscript) */}
 
         {/* Microsoft Clarity */}
         <Script id='clarity' strategy='afterInteractive'>
