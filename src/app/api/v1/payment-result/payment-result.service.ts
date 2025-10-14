@@ -65,10 +65,15 @@ export async function handlePaymentResult(data: paymentDTO) {
       (quoteInfo.promo_code?.code === 'BONUS6ME' ||
         quoteInfo.promo_code?.code === 'STAFFBONUS6ME')
     ) {
+      let subject =
+        'You’re Eligible for the 6-Month Medical Examination (6ME) Redemption';
+      if (quoteInfo.promo_code?.code === 'STAFFBONUS6ME') {
+        subject =
+          'You’re Eligible for the Staff 6-Month Medical Examination (6ME) Redemption';
+      }
       await sendMail({
         to: quoteInfo.email,
-        subject:
-          ' You’re Eligible for the Staff 6-Month Medical Examination (6ME) Redemption',
+        subject: subject,
         html: maid6MeEmail(quoteInfo.email, quoteInfo.name),
       });
       logger.info(
