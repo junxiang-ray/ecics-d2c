@@ -1,5 +1,5 @@
-import LoginPage from '@/components/page/login/LoginPage';
+import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
 
 export default function HomeContentPage() {
-  return <LoginPage />;
+  return <QuoteDetail />;
 }

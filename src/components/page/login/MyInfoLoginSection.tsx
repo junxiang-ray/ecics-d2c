@@ -68,7 +68,7 @@ const MyInfoLoginSection = ({
     requestLog();
 
     const basePath = isMaid
-      ? ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL // CHANGE THIS BACK TO  ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL
+      ? ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL
       : isMotorcycle
         ? ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL_MANUAL
         : isHomeContents
