@@ -48,9 +48,9 @@ const MaidItem: React.FC<MaidItemProps> = ({
               {discount}% OFF ECICS Maid Insurance + 6ME check-ups
             </span>{' '}
             (worth up to S$132) from 22 Oct – 22 Dec 2025.{' '}
-            <span className='font-bold'>
+            {/* <span className='font-bold'>
               Protect your helper and your wallet today.
-            </span>
+            </span> */}
           </div>
         );
       case 'STAFFBONUS6ME':
@@ -58,13 +58,13 @@ const MaidItem: React.FC<MaidItemProps> = ({
           <div className='text-justify text-sm'>
             Enjoy{' '}
             <span className='font-bold'>
-              {discount}% OFF ECICS Maid Insurance + free 6ME check-ups and Bond
+              {discount}% OFF ECICS Maid Insurance + 6ME check-ups and Bond
               Waiver
             </span>{' '}
-            (worth up to S$132) from 22 Oct – 22 Dec 2025.{' '}
-            <span className='font-bold'>
+            (worth up to S$186.50) from 22 Oct – 22 Dec 2025.{' '}
+            {/* <span className='font-bold'>
               Exclusive for staff – care smarter and save more.
-            </span>
+            </span> */}
           </div>
         );
       default:
