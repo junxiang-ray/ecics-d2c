@@ -48,9 +48,11 @@ const MyInfoLoginSection = ({
   const { mutate: requestLog } = useRequestLog(
     isMaid
       ? PRODUCT_NAME.MAID
-      : isHomeContents
-        ? PRODUCT_NAME.MAID
-        : PRODUCT_NAME.CAR,
+      : isMotorcycle
+        ? PRODUCT_NAME.MOTORCYCLE
+        : isHomeContents
+          ? PRODUCT_NAME.MAID /// NEED TO CHANGE THIS LATER
+          : PRODUCT_NAME.CAR,
   );
 
   const handleLogin = () => {

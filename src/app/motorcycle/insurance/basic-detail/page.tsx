@@ -3,7 +3,7 @@
 import { useAppSelector } from '@/redux/store';
 
 import { PolicyDetail } from './PolicyDetail';
-import MotorInsuranceLayout from '../MotorcycleInsuranceLayout';
+import MotorcycleInsuranceLayout from '../MotorcycleInsuranceLayout';
 
 export default function BasicDetailPage() {
   const isSingPassFlow = useAppSelector(
@@ -11,10 +11,10 @@ export default function BasicDetailPage() {
   );
 
   return (
-    <MotorInsuranceLayout>
+    <MotorcycleInsuranceLayout>
       {({ onSave }) => (
         <PolicyDetail onSaveRegister={onSave} isSingPassFlow={isSingPassFlow} />
       )}
-    </MotorInsuranceLayout>
+    </MotorcycleInsuranceLayout>
   );
 }

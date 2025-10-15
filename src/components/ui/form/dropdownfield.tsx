@@ -15,6 +15,7 @@ interface DropdownFieldProps extends SelectProps {
   renderOption?: (option: DropdownOption) => React.ReactNode;
   notFoundContent?: React.ReactNode;
   isRequired?: boolean;
+  isRenewalFlow?: boolean;
 }
 
 export interface DropdownOption {
@@ -41,6 +42,7 @@ export const DropdownField = ({
   disabled,
   className,
   renderOption,
+  isRenewalFlow,
   isRequired,
   ...props
 }: DropdownFieldProps) => {
@@ -54,7 +56,13 @@ export const DropdownField = ({
         render={({ field, fieldState }) => (
           <>
             {label && (
-              <span className='text-base font-semibold'>
+              <span
+                className={
+                  isRenewalFlow
+                    ? 'text-xs font-normal text-gray-800'
+                    : 'text-base font-semibold'
+                }
+              >
                 {label}
                 {isRequired && (
                   <span className='font-semibold text-[#C80F1E]'>*</span>
@@ -72,7 +80,7 @@ export const DropdownField = ({
               disabled={disabled}
               optionFilterProp='children'
               status={fieldState.invalid ? 'error' : ''}
-              className={`custom-select h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
+              className={`${isRenewalFlow ? 'custom-select-renewal' : ''} custom-select h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''}`}
               suffixIcon={
                 <ArrowDownIcon
                   size={20}

@@ -15,8 +15,11 @@ const appSlice = createSlice({
     setUserInfoCar(state, action: PayloadAction<Record<string, any>>) {
       state.userInfoCar = action.payload;
     },
+    clearUserInfoCar(state) {
+      state.userInfoCar = {};
+    },
   },
 });
 
-export const { setUserInfoCar } = appSlice.actions;
+export const { setUserInfoCar, clearUserInfoCar } = appSlice.actions;
 export default appSlice.reducer;

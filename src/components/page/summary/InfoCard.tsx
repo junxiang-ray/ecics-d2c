@@ -10,6 +10,7 @@ type Props = {
     label: string;
     value:
       | string
+      | number
       | {
           title: string;
           value: string;
@@ -59,7 +60,9 @@ const InfoCard = (props: Props) => {
               <div key={index} className='flex flex-col'>
                 <p className='text-sm text-gray-600'>{item.label}</p>
                 <p className='whitespace-pre-wrap break-words text-base font-semibold'>
-                  {typeof item.value === 'string' && item.value}
+                  {(typeof item.value === 'string' ||
+                    typeof item.value === 'number') &&
+                    item.value}
                 </p>
               </div>
             ))}

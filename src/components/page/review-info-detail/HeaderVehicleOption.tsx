@@ -1,6 +1,7 @@
+import { useQueries } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { VehicleSingPassResponse } from '@/libs/types/auth';
 import { capitalizeWords } from '@/libs/utils/utils';
@@ -8,12 +9,15 @@ import { capitalizeWords } from '@/libs/utils/utils';
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { NoInfoModal } from '@/components/page/review-info-detail/modal/NoInfoModal';
 
+import verify from '@/api/base-service/verify';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { on } from 'events';
 
 interface MissingFields {
   engine_number?: boolean;
@@ -39,7 +43,12 @@ interface Props {
     vehicleNumber: string,
     make: string,
     model: string,
+    capacity: number,
+    regDateStr: string,
   ) => void;
+  setIsShowUnMatchMake: (val: boolean) => void;
+  setIsMaskClosable: (val: boolean) => void;
+  isLoading?: boolean;
 }
 
 const HeaderVehicleOption: React.FC<Props> = ({
@@ -48,21 +57,28 @@ const HeaderVehicleOption: React.FC<Props> = ({
   isMobile,
   getVehicleTopRow,
   getVehicleBottomRow,
-  onVehicleSelect: onVehicleSelect,
+  onVehicleSelect,
+  setIsShowUnMatchMake,
+  setIsMaskClosable,
+  isLoading,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const partner_code = localStorage.getItem(PARTNER_CODE);
-  const promo_code = localStorage.getItem(PROMO_CODE);
+  const partner_code =
+    typeof window !== 'undefined' ? localStorage.getItem(PARTNER_CODE) : null;
+  const promo_code =
+    typeof window !== 'undefined' ? localStorage.getItem(PROMO_CODE) : null;
 
   const carUserInfo = useAppSelector((state) => state.userInfoCar?.userInfoCar);
 
   const sourceVehicles =
     listAfterSelectedVehicle?.length > 0 ? listAfterSelectedVehicle : vehicles;
-  const liveVehicles =
-    sourceVehicles?.filter((v) => v.status?.desc === 'LIVE') || [];
 
+  const liveVehicles = useMemo(
+    () => sourceVehicles?.filter((v) => v.status?.desc === 'LIVE') || [],
+    [sourceVehicles],
+  );
   const [selectedIndex, setSelectedIndex] = useState<number | null>(
     liveVehicles.length === 1 ? 0 : null,
   );
@@ -72,13 +88,80 @@ const HeaderVehicleOption: React.FC<Props> = ({
 
   const { mutate: requestLog } = useRequestLog(PRODUCT_NAME.CAR);
 
+  // Use React Query's useQueries to handle multiple AI checks
+  const aiCheckQueries = useQueries({
+    queries: liveVehicles.map((vehicle) => ({
+      queryKey: [
+        'check-ai-make-model',
+        vehicle.make?.value,
+        vehicle.model?.value,
+        vehicle.enginecapacity?.value || vehicle.powerrate?.value,
+        ProductType.CAR,
+      ],
+      queryFn: async () => {
+        const res = await verify.getCheckAIMakeModel({
+          vehicle_make: vehicle.make?.value,
+          vehicle_model: vehicle.model?.value,
+          vehicle_capacity:
+            vehicle.enginecapacity?.value || vehicle.powerrate?.value,
+          vehicle_type: ProductType.CAR,
+        });
+        return res.data.data;
+      },
+      enabled:
+        !!vehicle.make?.value &&
+        !!vehicle.model?.value &&
+        !!liveVehicles.length,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    })),
+  });
+
+  // Compute AI check results from queries
+  const aiCheckResults = useMemo(() => {
+    const results: { [vehicleno: string]: boolean } = {};
+
+    aiCheckQueries.forEach((query, index) => {
+      const vehicleno = liveVehicles[index]?.vehicleno?.value ?? 'unknown';
+
+      if (query.isError) {
+        results[vehicleno] = true; // Mark as invalid on error
+      } else if (query.data) {
+        const isInvalid =
+          query.data.similarity < 0.85 && !query.data.vehicle_make_id;
+        results[vehicleno] = isInvalid;
+      } else {
+        // Still loading or no data
+        results[vehicleno] = true;
+      }
+    });
+
+    return results;
+  }, [aiCheckQueries, liveVehicles]);
+
+  // Handle showing unmatch modal when all vehicles are invalid
+  useEffect(() => {
+    const queriesCompleted = aiCheckQueries.every(
+      (query) => query.data || query.isError,
+    );
+    if (!queriesCompleted || !liveVehicles.length) return;
+    const allInvalid = Object.values(aiCheckResults).every(
+      (val) => val === true,
+    );
+    if (allInvalid) {
+      setIsShowUnMatchMake(true);
+      setIsMaskClosable(false);
+    }
+  }, [
+    aiCheckResults,
+    aiCheckQueries,
+    liveVehicles,
+    setIsShowUnMatchMake,
+    setIsMaskClosable,
+  ]);
+
   useEffect(() => {
     if (selectedIndex !== null) return;
-
-    if (liveVehicles.length === 1) {
-      setSelectedIndex(0);
-      chooseVehicle(liveVehicles[0]);
-    } else if (listAfterSelectedVehicle?.length > 0) {
+    if (listAfterSelectedVehicle?.length > 0) {
       const selectedNo = carUserInfo?.vehicle_selected?.vehicleno?.value;
       const index = liveVehicles.findIndex(
         (v) => v.vehicleno?.value === selectedNo,
@@ -88,7 +171,14 @@ const HeaderVehicleOption: React.FC<Props> = ({
         chooseVehicle(liveVehicles[index]);
       }
     }
-  }, [liveVehicles, listAfterSelectedVehicle]);
+  }, [liveVehicles.length, listAfterSelectedVehicle]);
+
+  useEffect(() => {
+    if (liveVehicles.length === 1) {
+      setSelectedIndex(0);
+      chooseVehicle(liveVehicles[0]);
+    }
+  }, [liveVehicles.length]);
 
   const chooseVehicle = (vehicle: VehicleSingPassResponse) => {
     const missing = {
@@ -108,13 +198,24 @@ const HeaderVehicleOption: React.FC<Props> = ({
     const make = vehicle.make?.value;
     const model = vehicle.model?.value;
 
+    // get engineCapacity, if null then use powerRate (EV car)
+    const capacity = vehicle.enginecapacity?.value || vehicle.powerrate?.value;
+
     const updatedUserInfoCar = {
       ...carUserInfo,
       vehicle_selected: vehicle,
     };
     dispatch(setUserInfoCar(updatedUserInfoCar));
 
-    onVehicleSelect?.(missing, vehicleAge, vehicleNumber, make, model);
+    onVehicleSelect?.(
+      missing,
+      vehicleAge,
+      vehicleNumber,
+      make,
+      model,
+      capacity,
+      regDateStr,
+    );
   };
 
   const handleExit = () => {
@@ -173,6 +274,9 @@ const HeaderVehicleOption: React.FC<Props> = ({
           const isSelected = selectedIndex === index;
           const isExpanded = expandedIndex === index;
           const isOver15y = isVehicleOver15YearsOld(vehicle);
+          const isInvalidAI =
+            aiCheckResults[vehicle.vehicleno?.value ?? 'unknown'];
+          const isDisabled = isOver15y || isInvalidAI || isLoading;
 
           const topRow = getVehicleTopRow(vehicle);
           const bottomRow = getVehicleBottomRow(vehicle);
@@ -186,7 +290,7 @@ const HeaderVehicleOption: React.FC<Props> = ({
             <div
               key={index}
               className={`rounded-md border shadow-sm ${
-                isOver15y
+                isDisabled
                   ? 'cursor-not-allowed border-gray-300 bg-gray-100 opacity-60'
                   : isSelected
                     ? 'border-[#00ADEF] bg-white'
@@ -205,19 +309,19 @@ const HeaderVehicleOption: React.FC<Props> = ({
 
                 <button
                   type='button'
-                  disabled={isOver15y}
+                  disabled={isDisabled}
                   className={`flex h-8 w-8 items-center justify-center rounded-full border-[2px] ${
-                    isOver15y
+                    isDisabled
                       ? 'border-gray-400 bg-gray-200'
                       : 'border-[#00ADEF] bg-white'
                   }`}
                   onClick={() => {
-                    if (isOver15y) return;
+                    if (isDisabled) return;
                     setSelectedIndex(index);
                     chooseVehicle(vehicle);
                   }}
                 >
-                  {isSelected && !isOver15y && (
+                  {isSelected && !isDisabled && (
                     <div className='h-6 w-6 rounded-full bg-[#00ADEF]' />
                   )}
                 </button>

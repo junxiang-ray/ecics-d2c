@@ -6,11 +6,13 @@ import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 
 import { saveToSessionStorage } from '@/libs/utils/utils';
 
 import { PrimaryButton } from '@/components/ui/buttons';
+import { DropdownField } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import {
@@ -18,16 +20,14 @@ import {
   ProductType,
 } from '@/app/motor/insurance/basic-detail/options';
 import { MAID_QUOTE } from '@/constants';
-import { ECICS_USER_INFO } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { usePostPersonalInfoMaid } from '@/hook/auth/login-maid';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 import { ModalAge } from './ModalAge';
-import { v4 as uuid } from 'uuid';
-import { DropdownField } from '@/components/ui/form/dropdownfield';
 
 const schema = z.object({
   [MAID_QUOTE.email]: z
@@ -64,7 +64,7 @@ export const ReviewInfoDetailMaid = () => {
   }
   const [isShowModalAge, setIsShowModalAge] = useState(false);
 
-  const maidUserInfo = sessionStorage.getItem(ECICS_USER_INFO);
+  const maidUserInfo = useAppSelector((state) => state.ecicsUserInfo?.userInfo);
   const personalInfo = maidUserInfo ? JSON.parse(maidUserInfo) : null;
 
   const initialValues = {
@@ -146,8 +146,8 @@ export const ReviewInfoDetailMaid = () => {
         post_code: personalInfo?.regadd?.postal?.value ?? '',
         email: values[MAID_QUOTE.email],
         phone: values[MAID_QUOTE.mobile],
-        gender: personalInfo?.sex?.desc,
-        marital_status: values[MAID_QUOTE.marital_status],
+        // gender: personalInfo?.sex?.desc,
+        // marital_status: values[MAID_QUOTE.marital_status],
       },
       data_from_singpass: personalInfo,
     };
@@ -163,10 +163,10 @@ export const ReviewInfoDetailMaid = () => {
       label: 'Name as per NRIC',
       value: personalInfo?.name?.value,
     },
-    {
-      label: 'Gender',
-      value: personalInfo?.sex?.desc,
-    },
+    // {
+    //   label: 'Gender',
+    //   value: personalInfo?.sex?.desc,
+    // },
     {
       label: 'Date of Birth',
       value: dayjs(personalInfo?.dob?.value).format('DD/MM/YYYY'),
@@ -175,10 +175,10 @@ export const ReviewInfoDetailMaid = () => {
       label: 'NRIC / FIN',
       value: personalInfo?.uinfin?.value,
     },
-    {
-      label: 'Marital Status',
-      value: personalInfo?.marital?.desc,
-    },
+    // {
+    //   label: 'Marital Status',
+    //   value: personalInfo?.marital?.desc,
+    // },
     {
       label: 'Address Line 1',
       value:

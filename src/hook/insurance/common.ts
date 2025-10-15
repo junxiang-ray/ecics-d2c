@@ -1,9 +1,13 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { VehicleCheckResponse } from '@/libs/types/auth';
+import {
+  CheckAIMakeModelResponse,
+  CheckVehicleParams,
+  VehicleCheckResponse,
+} from '@/libs/types/auth';
+import { formatPromoCode } from '@/libs/utils/utils';
 
 import verify from '@/api/base-service/verify';
-import { formatPromoCode } from '@/libs/utils/utils';
 
 interface CheckVehiclePayload {
   vehicle_make: string;
@@ -94,5 +98,29 @@ export const useGetNationality = (group_name: string) => {
   return useQuery({
     queryFn: fetchNational,
     queryKey: ['nationalities', group_name],
+  });
+};
+
+export const useCheckAIMakeModel = (
+  params: CheckVehicleParams,
+  enabled = true,
+) => {
+  const fetchCheckAIVehicle = async (): Promise<CheckAIMakeModelResponse> => {
+    const res = await verify.getCheckAIMakeModel(params);
+    return res.data.data;
+  };
+
+  return useQuery({
+    queryFn: fetchCheckAIVehicle,
+    queryKey: [
+      'check-ai-make-model',
+      params.vehicle_make,
+      params.vehicle_model,
+      params.vehicle_capacity,
+      params.vehicle_type,
+    ],
+    enabled: enabled && !!params.vehicle_make && !!params.vehicle_model,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1,
   });
 };

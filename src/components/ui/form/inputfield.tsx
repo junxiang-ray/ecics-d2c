@@ -1,16 +1,40 @@
 import { Input, InputProps } from 'antd';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import MailIcon from '@/components/icons/MailIcon';
+import PhoneIcon from '@/components/icons/PhoneIcon';
+import {
+  EyeCloseIcon,
+  EyeOpenIcon,
+  LockIcon,
+} from '@/components/icons/renewal-icons';
+
 interface InputFieldProps extends InputProps {
   name: string;
   label?: string;
   isRequired?: boolean;
+  isRenewalFlow?: boolean;
+}
+
+interface InputFieldWithIconProps extends InputProps {
+  name: string;
+  label?: string;
+  isRequired?: boolean;
+  type?: 'text' | 'email' | 'password' | 'tel';
+  helperText?: string;
+}
+
+interface CustomInputAntdProps extends InputProps {
+  label?: string;
+  isRequired?: boolean;
+  helperText?: string;
 }
 
 export const InputField = ({
   name,
   label,
   isRequired,
+  isRenewalFlow,
   ...props
 }: InputFieldProps) => {
   const { control, setValue } = useFormContext();
@@ -22,14 +46,18 @@ export const InputField = ({
         control={control}
         render={({ field, fieldState }) => (
           <>
-            <span className='text-base font-semibold'>
-              {label && (
-                <label className='text-base font-semibold'>
-                  {label}
-                  {isRequired && <span className='text-red-500'>*</span>}
-                </label>
-              )}
-            </span>
+            {label && (
+              <label
+                className={`${
+                  isRenewalFlow
+                    ? 'pb-[10px] text-xs font-light text-gray-800'
+                    : 'text-base font-semibold'
+                }`}
+              >
+                {label}
+                {isRequired && <span className='text-red-500'>*</span>}
+              </label>
+            )}
             <Input
               {...props}
               {...field}
@@ -38,9 +66,7 @@ export const InputField = ({
                 props.onChange?.(e);
               }}
               status={fieldState.invalid ? 'error' : undefined}
-              className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''} ${
-                props.disabled ? 'bg-gray-200' : ''
-              }`}
+              className={`h-10 w-full ${isRenewalFlow ? 'font-semibold' : ''} ${fieldState.invalid ? '!border-red-500' : ''} ${props.disabled ? 'bg-gray-150' : ''}`}
               onBlur={() => {
                 const trimmed = field.value?.trim();
                 setValue(name, trimmed, { shouldValidate: true });
@@ -67,3 +93,130 @@ export const InputField = ({
     </>
   );
 };
+
+export const InputFieldWithIcon = ({
+  name,
+  label,
+  isRequired,
+  type = 'text',
+  helperText,
+  ...props
+}: InputFieldWithIconProps) => {
+  const { control, setValue } = useFormContext();
+
+  const getIcon = () => {
+    switch (type) {
+      case 'email':
+        return <MailIcon className='text-gray-400' size={18} />;
+      case 'tel':
+        return <PhoneIcon className='text-gray-400' size={18} />;
+      case 'password':
+        return <LockIcon className='text-gray-400' size={18} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => (
+        <div className='mb-4 flex w-full flex-col'>
+          {label && (
+            <label className='text-sm'>
+              {label}
+              {isRequired && <span className='ml-1 text-red-500'>*</span>}
+            </label>
+          )}
+          {type === 'password' ? (
+            <Input.Password
+              {...props}
+              {...field}
+              prefix={getIcon()}
+              iconRender={(visible) =>
+                visible ? (
+                  <EyeOpenIcon className='text-[#99A1AF]' />
+                ) : (
+                  <EyeCloseIcon className='text-[#99A1AF]' />
+                )
+              }
+              status={fieldState.invalid ? 'error' : undefined}
+              className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''} ${
+                props.disabled ? 'bg-gray-200' : ''
+              }`}
+              onBlur={() => {
+                const trimmed = field.value?.trim();
+                setValue(name, trimmed, { shouldValidate: true });
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const pastedText = e.clipboardData.getData('text').trim();
+                setValue(name, pastedText, { shouldValidate: true });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === ' ' && field.value === '') e.preventDefault();
+              }}
+            />
+          ) : (
+            <Input
+              {...props}
+              {...field}
+              type={type}
+              prefix={getIcon()}
+              status={fieldState.invalid ? 'error' : undefined}
+              className={`h-10 w-full ${fieldState.invalid ? '!border-red-500' : ''} ${
+                props.disabled ? 'bg-gray-200' : ''
+              }`}
+              onBlur={() => {
+                const trimmed = field.value?.trim();
+                setValue(name, trimmed, { shouldValidate: true });
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const pastedText = e.clipboardData.getData('text').trim();
+                setValue(name, pastedText, { shouldValidate: true });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === ' ' && field.value === '') e.preventDefault();
+              }}
+            />
+          )}
+          {helperText && !fieldState.error && (
+            <span className='mt-1 text-sm text-gray-500'>{helperText}</span>
+          )}
+          {fieldState.error && (
+            <span className='block text-sm text-red-500'>
+              {fieldState.error.message}
+            </span>
+          )}
+        </div>
+      )}
+    />
+  );
+};
+
+export function CustomInputAntd({
+  label,
+  isRequired,
+  helperText,
+  ...props
+}: CustomInputAntdProps) {
+  return (
+    <div className='flex w-full flex-col'>
+      {label && (
+        <label className='text-xs font-medium text-gray-800'>
+          {label}
+          {isRequired && <span className='ml-1 text-red-500'>*</span>}
+        </label>
+      )}
+      <Input
+        {...props}
+        className={`h-10 w-full font-semibold ${props.disabled ? 'bg-gray-150' : ''}`}
+      />
+      {helperText && (
+        <span className='mt-1 text-xs text-gray-500'>{helperText}</span>
+      )}
+    </div>
+  );
+}

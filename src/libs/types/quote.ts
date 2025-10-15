@@ -65,6 +65,7 @@ export interface QuoteData {
   vehicle_info_selected?: Vehicle;
   insurance_additional_info?: InsuranceAdditionalInfo;
   selected_plan?: string;
+  selected_plan_code?: string;
   selected_addons?: Record<string, string>;
   add_named_driver_info?: AddNamedDriverInfo[];
   review_info_premium?: ReviewInfo;
@@ -216,11 +217,11 @@ export interface Benefit {
   order: number;
 }
 export interface Vehicle {
-  vehicle_make: string;
-  chasis_number: string;
-  vehicle_model: string;
-  first_registered_year: string;
-  vehicle_number: string;
+  vehicle_make?: string;
+  chasis_number?: string;
+  vehicle_model?: string;
+  first_registered_year?: string;
+  vehicle_number?: string;
   chassis_no?: string;
   engine_no?: string;
   engine_number?: string;

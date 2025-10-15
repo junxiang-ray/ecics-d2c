@@ -1,0 +1,127 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
+import { SingpassDownModal } from '@/components/page/login/SingpassDownModal';
+import { LinkButton } from '@/components/ui/buttons';
+
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { ROUTES } from '@/constants/routes';
+import { useRequestLogin } from '@/hook/auth/login';
+import { useRequestLoginMaid } from '@/hook/auth/login-maid';
+import { useRequestLog } from '@/hook/insurance/quote';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
+interface NoSingpassLoginSectionProps {
+  promoCode?: string;
+  partnerCode?: string;
+  productType: ProductType;
+}
+
+const NoSingpassLoginSection = ({
+  promoCode,
+  partnerCode,
+  productType,
+}: NoSingpassLoginSectionProps) => {
+  const router = useRouter();
+  const { isMobile } = useDeviceDetection();
+  const [isUserActive, setIsUserActive] = useState(false);
+  const isMaid = productType === ProductType.MAID;
+  const isMotorcycle = productType === ProductType.MOTORCYCLE;
+  const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
+
+  const { mutate: requestLogin } = useRequestLogin(PRODUCT_NAME.CAR, {
+    onError: () => {
+      setIsShowSingpassDownModal(true);
+    },
+  });
+
+  const { mutate: requestLoginMaid } = useRequestLoginMaid(PRODUCT_NAME.MAID, {
+    onError: () => {
+      setIsShowSingpassDownModal(true);
+    },
+  });
+
+  const { mutate: requestLog } = useRequestLog(
+    isMaid
+      ? PRODUCT_NAME.MAID
+      : isMotorcycle
+        ? PRODUCT_NAME.MOTORCYCLE
+        : PRODUCT_NAME.CAR,
+  );
+
+  const handleLogin = () => {
+    setIsUserActive(true);
+    {
+      isMaid ? requestLoginMaid() : requestLogin();
+    }
+    requestLog();
+  };
+
+  const handleContinueWithoutMyinfo = () => {
+    setIsUserActive(true);
+    requestLog();
+
+    const basePath = isMaid
+      ? ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL
+      : isMotorcycle
+        ? ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL_MANUAL
+        : ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
+
+    const queryParams = new URLSearchParams();
+    if (promoCode) queryParams.append('promo_code', promoCode);
+    if (partnerCode) queryParams.append('partner_code', partnerCode);
+
+    const queryString = queryParams.toString();
+
+    router.push(`${basePath}${queryString ? `&${queryString}` : ''}`);
+  };
+
+  return (
+    <div className='relative z-10 mx-auto mt-[2px] max-w-md px-4 py-4'>
+      <button
+        className='mx-auto flex w-full items-center justify-center gap-2 rounded-lg bg-brand-blue px-4 py-3 shadow-lg shadow-black/20 transition-all duration-200 ease-in-out
+             hover:scale-105 hover:bg-brand-blue/90'
+        onClick={handleContinueWithoutMyinfo}
+      >
+        <p className='text-center text-xl font-semibold text-white'>
+          {' '}
+          Continue{' '}
+        </p>
+      </button>
+      <div
+        className={`mt-4 flex flex-wrap items-center justify-center gap-1 text-center ${isMobile ? 'text-xs font-normal' : 'text-xs'}`}
+      >
+        <span>
+          By continuing, you agree to our <br className='block md:hidden' />
+          <LinkButton
+            type='link'
+            className='h-0 text-wrap px-0 text-xs'
+            href='https://www.ecics.com/documents/website-use-terms-and-conditions.pdf'
+            target='_blank'
+          >
+            Terms of Use
+          </LinkButton>
+          {' and '}
+          <LinkButton
+            type='link'
+            className='h-0 text-wrap px-0 text-xs'
+            href='https://www.ecics.com/privacy-policy'
+            target='_blank'
+          >
+            Privacy Policy
+          </LinkButton>
+        </span>
+      </div>
+      <SingpassDownModal
+        visible={isShowSingpassDownModal}
+        onExit={() => setIsShowSingpassDownModal(false)}
+        onContinue={handleContinueWithoutMyinfo}
+      />
+    </div>
+  );
+};
+
+export default NoSingpassLoginSection;

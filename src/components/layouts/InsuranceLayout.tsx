@@ -270,9 +270,11 @@ function InsuranceLayout({
                 const targetUrl =
                   productType === ProductType.MAID
                     ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
-                    : productType === ProductType.HOMECONTENTS ///Change Here
-                      ? `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`
-                      : `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`;
+                    : productType === ProductType.CAR
+                      ? `${ROUTES.MOTOR.REVIEW_INFO_DETAIL}?${query}`
+                      : productType === ProductType.MOTORCYCLE
+                        ? `${ROUTES.MOTORCYCLE.REVIEW_INFO_DETAIL}?${query}`
+                        : `${ROUTES.MAID.REVIEW_INFO_DETAIL}?${query}`;
 
                 router.push(targetUrl, { preserveQuery: false });
                 setIsShowPopupSingPass(false);
@@ -280,9 +282,11 @@ function InsuranceLayout({
                 const targetUrl =
                   productType === ProductType.MAID
                     ? ROUTES.INSURANCE_MAID.BASIC_DETAIL
-                    : isHomeContents
-                      ? ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL
-                      : ROUTES.INSURANCE.BASIC_DETAIL;
+                    : productType === ProductType.MOTORCYCLE
+                      ? ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL
+                      : productType === ProductType.HOMECONTENTS
+                        ? ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL
+                        : ROUTES.INSURANCE.BASIC_DETAIL;
 
                 router.push(targetUrl);
                 setIsShowPopupImportant(false);

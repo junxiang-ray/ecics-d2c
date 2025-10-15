@@ -29,3 +29,9 @@ export function convertDate(input: string): [string, string, string] {
 
   return [day, monthAbbrev, year];
 }
+
+export function convertDateDash(input: string): string {
+  const [day, month, year] = input.split('/');
+
+  return `${year}-${month}-${day}`;
+}

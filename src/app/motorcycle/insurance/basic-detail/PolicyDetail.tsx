@@ -10,18 +10,18 @@ import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { MOTOR_QUOTE } from '@/constants';
+import { MOTOR_QUOTE, MOTORCYCLE_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
-import {
-  useGenerateQuote,
-  useGetHirePurchaseList,
-} from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PolicyDetailForm from './PolicyDetailForm';
+import {
+  useGenerateMotorcycleQuote,
+  useMotorcycleGetHirePurchaseList,
+} from '@/hook/insurance/motorcycle';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;
@@ -41,9 +41,13 @@ export const PolicyDetail = ({
 
   const [key, setKey] = useState(initKey);
 
-  const { data: hirePurchaseList } = useGetHirePurchaseList(PRODUCT_NAME.CAR);
+  ///GET CAR HIRE PURCHASE LIST here change to MOTORCYCLE
+  const { data: hirePurchaseList } = useMotorcycleGetHirePurchaseList(
+    PRODUCT_NAME.CAR,
+  );
   const quoteInfo = useAppSelector((state) => state.quote?.quote);
-  const { mutateAsync: generateQuote, isPending } = useGenerateQuote();
+  const { mutateAsync: generateQuote, isPending } =
+    useGenerateMotorcycleQuote();
 
   const userInfo = quoteInfo?.data?.personal_info;
   const insuranceInfo = quoteInfo?.data?.insurance_additional_info;
@@ -61,22 +65,25 @@ export const PolicyDetail = ({
     : undefined;
 
   const initialValues = {
-    [MOTOR_QUOTE.promo_code]: savedPromoCode?.code ?? promo_code ?? '',
-    [MOTOR_QUOTE.start_date]: startData,
-    [MOTOR_QUOTE.end_date]: endDate,
-    [MOTOR_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? undefined,
-    [MOTOR_QUOTE.owner_no_of_claims]: insuranceInfo?.no_of_claim ?? undefined,
+    [MOTORCYCLE_QUOTE.promo_code]: savedPromoCode?.code ?? promo_code ?? '',
+    [MOTORCYCLE_QUOTE.start_date]: startData,
+    [MOTORCYCLE_QUOTE.end_date]: endDate,
+    [MOTORCYCLE_QUOTE.owner_ncd]: insuranceInfo?.no_claim_discount ?? undefined,
+    [MOTORCYCLE_QUOTE.owner_no_of_claims]:
+      insuranceInfo?.no_of_claim ?? undefined,
 
-    [MOTOR_QUOTE.email]: userInfo?.email ?? '',
-    [MOTOR_QUOTE.mobile]: userInfo?.phone ?? '',
-    [MOTOR_QUOTE.owner_dob]: dateOfBirth,
-    [MOTOR_QUOTE.owner_drv_exp]: userInfo?.driving_experience ?? undefined,
+    [MOTORCYCLE_QUOTE.email]: userInfo?.email ?? '',
+    [MOTORCYCLE_QUOTE.mobile]: userInfo?.phone ?? '',
+    [MOTORCYCLE_QUOTE.owner_dob]: dateOfBirth,
+    [MOTORCYCLE_QUOTE.owner_drv_exp]: userInfo?.driving_experience ?? undefined,
 
-    [MOTOR_QUOTE.vehicle_make]: selectedVehicle?.vehicle_make ?? undefined,
-    [MOTOR_QUOTE.vehicle_model]: selectedVehicle?.vehicle_model ?? undefined,
-    [MOTOR_QUOTE.reg_yyyy]: selectedVehicle?.first_registered_year ?? undefined,
-    [MOTOR_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
-    [MOTOR_QUOTE.other_hire_purchase]:
+    [MOTORCYCLE_QUOTE.vehicle_make]: selectedVehicle?.vehicle_make ?? undefined,
+    [MOTORCYCLE_QUOTE.vehicle_model]:
+      selectedVehicle?.vehicle_model ?? undefined,
+    [MOTORCYCLE_QUOTE.reg_yyyy]:
+      selectedVehicle?.first_registered_year ?? undefined,
+    [MOTORCYCLE_QUOTE.hire_purchase]: quoteInfo?.company_id ?? undefined,
+    [MOTORCYCLE_QUOTE.other_hire_purchase]:
       quoteInfo?.company_name_other ?? undefined,
   };
 
@@ -94,7 +101,7 @@ export const PolicyDetail = ({
     const keyQuote = generateKeyAndAttachToUrl(initKey);
     setKey(keyQuote);
   }, []);
-
+  //Form Submit here to call API
   const onSubmit: SubmitHandler<FormData> = async (data: any) => {
     dispatch(setPromoCodeError(null));
     let payload: any;
@@ -128,7 +135,7 @@ export const PolicyDetail = ({
       .then((res) => {
         if (res) {
           dispatch(updateQuote(res));
-          router.push(ROUTES.INSURANCE.PLAN);
+          router.push(ROUTES.INSURANCE_MOTORCYCLE.PLAN);
         }
       })
       .catch((err) => {

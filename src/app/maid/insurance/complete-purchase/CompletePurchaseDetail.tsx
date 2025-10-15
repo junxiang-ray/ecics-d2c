@@ -9,10 +9,14 @@ import { useSelector } from 'react-redux';
 import { z } from 'zod';
 
 import {
+  decryptValue,
+  encryptValue,
+  isSafeUrl,
+} from '@/libs/utils/secureStorage-utils';
+import {
   formatCurrency,
   formatCurrencyString,
   getPlanGroupPrefix,
-  isSafePaymentUrl,
   saveToLocalStorage,
 } from '@/libs/utils/utils';
 import { finValidator } from '@/libs/utils/validation-utils';
@@ -191,6 +195,9 @@ export default function CompletePurchaseDetail({
   const isFinalized = useSelector(
     (state: any) => state.maidQuote.maidQuote?.is_finalized,
   );
+  const PASSPHRASE = process.env.NEXT_PUBLIC_PAYMENT_PASSPHRASE || '';
+  const ALLOWED =
+    process.env.NEXT_PUBLIC_ALLOWED_REDIRECT_HOSTS?.split(',') || [];
 
   const hirePurchaseListFormatted: DropdownOption[] = [
     ...(Array.isArray(hirePurchaseList)
@@ -322,10 +329,10 @@ export default function CompletePurchaseDetail({
   }));
 
   const selectedPlanTitle = maidQuote?.data?.selected_plan || 'N/A';
+  const selectedPlanCode = maidQuote?.data?.selected_plan_code;
   const plans = maidQuote?.data?.plans || [];
-  const matchedPlan = plans.find(
-    (plan) => plan.title && plan.title.includes(selectedPlanTitle),
-  );
+  const matchedPlan = plans.find((plan: any) => plan.code === selectedPlanCode);
+
   const addonsTitles = matchedPlan?.benefits || [];
 
   const sharedDataMap: {
@@ -498,11 +505,14 @@ export default function CompletePurchaseDetail({
 
   const onPay = async () => {
     if (isFinalized) {
-      const savedUrl = localStorage.getItem(MAID_PAYMENT_URL);
-      const isSafe = isSafePaymentUrl(savedUrl);
-
-      if (savedUrl && isSafe) {
-        window.location.href = savedUrl;
+      const savedEnc = localStorage.getItem(MAID_PAYMENT_URL);
+      if (savedEnc) {
+        const url = await decryptValue(savedEnc, PASSPHRASE);
+        if (isSafeUrl(url, ALLOWED)) {
+          router.push(url!);
+        } else {
+          console.warn('Blocked unsafe redirect:', url);
+        }
       }
       return;
     }
@@ -521,7 +531,8 @@ export default function CompletePurchaseDetail({
         productType: PRODUCT_NAME.MAID,
       });
       if (res?.payment_url) {
-        saveToLocalStorage({ [MAID_PAYMENT_URL]: res.payment_url });
+        const encrypted = await encryptValue(res.payment_url, PASSPHRASE);
+        saveToLocalStorage({ [MAID_PAYMENT_URL]: encrypted });
       }
       if (!res?.final_premium) return;
       dispatch(updateMaidQuote({ is_finalized: true }));

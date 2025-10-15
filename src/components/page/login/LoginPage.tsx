@@ -12,11 +12,17 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import NoSingpassLoginSection from './NoSingpassLoginSection';
+import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
+import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
+import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
+import { useAppDispatch } from '@/redux/store';
 
 const LoginPage = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
 
   const productType: ProductType = pathname.startsWith('/maid')
     ? ProductType.MAID
@@ -30,6 +36,10 @@ const LoginPage = () => {
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
 
   useEffect(() => {
+    dispatch(resetEcicsUserInfo());
+    dispatch(clearQuote());
+    dispatch(clearMatchedMakeModel());
+    dispatch(clearUserInfoCar());
     sessionStorage.clear();
     localStorage.clear();
   }, []);
@@ -56,32 +66,48 @@ const LoginPage = () => {
 
   const bgTop =
     productType === ProductType.MAID
-      ? '/maid_bg_top.svg'
+      ? '/maid_bg.jpg'
       : productType === ProductType.MOTORCYCLE
-        ? '/motorcycle.jpg'
-        : '/login_bg_top.svg';
+        ? '/motorcycle_bg2.jpg'
+        : '/bg_car.jpg';
   const bgMobile =
     productType === ProductType.MAID
-      ? '/login_bg_singpass_maid.png'
-      : '/login_bg_singpass.png';
+      ? '/maid_bg.jpg'
+      : productType === ProductType.MOTORCYCLE
+        ? '/motorcycle_bg2.jpg'
+        : '/bg_car.jpg';
 
   if (isMobile) {
     return (
       <div className='relative min-h-[100svh]'>
         <img
-          className='h-full w-full object-cover'
+          className={`h-full w-full object-cover ${isMobile ? 'pb-4' : ''}`}
           src={bgMobile}
           alt='Background Image'
         />
         <div className='text-center text-[18px] font-semibold leading-[100%] text-brand-blue'>
           Get an instant quote with{' '}
-          <span className='text-red-logo'>Myinfo</span> login
+          {productType === ProductType.MOTORCYCLE ? (
+            <span className='text-red-logo'>Personal Details</span>
+          ) : (
+            <span>
+              <span className='text-red-logo'>Myinfo</span> login
+            </span>
+          )}
         </div>
-        <MyInfoLoginSection
-          promoCode={promoCodeDefault}
-          partnerCode={partnerCode}
-          productType={productType}
-        />
+        {productType === ProductType.MOTORCYCLE ? (
+          <NoSingpassLoginSection
+            promoCode={promoCodeDefault}
+            partnerCode={partnerCode}
+            productType={productType}
+          />
+        ) : (
+          <MyInfoLoginSection
+            promoCode={promoCodeDefault}
+            partnerCode={partnerCode}
+            productType={productType}
+          />
+        )}
         {showPromo && (
           <LimitedPeriodOffer
             promoCode={promoCodeDefault}
@@ -110,18 +136,39 @@ const LoginPage = () => {
             <img src='ecics.svg' alt='Logo' />
           </div>
           <div className='mt-4 text-center text-2xl font-semibold text-brand-blue'>
-            Get an instant quote with <br />
-            <span className='text-red-logo'>Myinfo</span> login
+            Get an instant quote with{' '}
+            {productType === ProductType.MOTORCYCLE ? (
+              <span className='text-red-logo'>Personal Details</span>
+            ) : (
+              <span>
+                <span className='text-red-logo'>Myinfo</span> login
+              </span>
+            )}
           </div>
-          <div className='mt-4 text-center text-sm'>
-            Save time by securely retrieving your personal info directly from
-            Myinfo
-          </div>
-          <MyInfoLoginSection
+          {productType !== ProductType.MOTORCYCLE && (
+            <div className='mt-4 text-center text-sm'>
+              Save time by securely retrieving your personal info directly from
+              Myinfo
+            </div>
+          )}
+          {productType === ProductType.MOTORCYCLE ? (
+            <NoSingpassLoginSection
+              promoCode={promoCodeDefault}
+              partnerCode={partnerCode}
+              productType={productType}
+            />
+          ) : (
+            <MyInfoLoginSection
+              promoCode={promoCodeDefault}
+              partnerCode={partnerCode}
+              productType={productType}
+            />
+          )}
+          {/* <MyInfoLoginSection
             promoCode={promoCodeDefault}
             partnerCode={partnerCode}
             productType={productType}
-          />
+          /> */}
           {showPromo && (
             <LimitedPeriodOffer
               promoCode={promoCodeDefault}
