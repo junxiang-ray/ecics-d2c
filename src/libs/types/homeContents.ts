@@ -99,7 +99,7 @@ export interface StepIndicatorProps {
   currentStep: number;
   visitedSteps: Set<number>;
   selectedPlan: string;
-  onStepClick?: (step: number) => void;
+  onStepClick: (step: number) => void;
 }
 
 // Age limits

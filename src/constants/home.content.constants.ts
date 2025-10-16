@@ -5,7 +5,7 @@ import {
   HomeType,
   UnitType,
   CoverageOption,
-} from '../types/types';
+} from '../libs/types/homeContents';
 
 // Basic constants - loaded immediately
 export const OWNERSHIP_TYPES: OwnershipType[] = [
