@@ -29,14 +29,11 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { RenewalModal } from '../basic-detail/modal/RenewalModal';
 import { UnableQuote } from '../basic-detail/modal/UnableQuote';
 import {
-  ADDITIONAL_DRIVER_OPTIONS,
   AdditionalDriverValue,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
   ProductType,
 } from '../basic-detail/options';
-import { MOTORCYCLE_QUOTE } from '@/constants';
-import { DatePickerField } from '@/components/ui/form/datepicker';
 
 const createSchema = (listNric: any[] | undefined) =>
   z.object({

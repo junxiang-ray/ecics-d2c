@@ -1,4 +1,5 @@
 ///Change relevant car to motorcycle
+
 import { SavePersonalInfoPayload } from '@/libs/types/auth';
 import {
   ProposalPayload,
@@ -18,8 +19,6 @@ import {
 } from '@/constants/api.constant';
 
 import baseClient from './api.config';
-import axios from 'axios';
-import apiClient from '@/config/api.config';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {

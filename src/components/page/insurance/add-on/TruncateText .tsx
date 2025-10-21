@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-
 interface TruncateTextProps {
   text: string | null;
   lines?: number;

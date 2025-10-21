@@ -1,7 +1,11 @@
 // Base types for form data
 export interface QuoteForm {
-  ownership: 'owner-living-in' | 'landlord-renting-out' | 'tenant';
-  homeType: 'landed' | 'hdb' | 'condo';
+  ownership:
+    | 'owner-living-in'
+    | 'landlord-renting-out'
+    | 'tenant'
+    | 'Ownership of your home is required';
+  homeType: 'landed' | 'hdb' | 'condo' | 'Home type is required';
   unitType: string;
   policyStartDate: string;
   promoCode: string;

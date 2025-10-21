@@ -10,18 +10,18 @@ import { formatPromoCode, generateKeyAndAttachToUrl } from '@/libs/utils/utils';
 import { DropdownOption } from '@/components/ui/form/dropdownfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { MOTOR_QUOTE, MOTORCYCLE_QUOTE } from '@/constants';
+import { MOTORCYCLE_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
+import {
+  useGenerateMotorcycleQuote,
+  useMotorcycleGetHirePurchaseList,
+} from '@/hook/insurance/motorcycle';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import PolicyDetailForm from './PolicyDetailForm';
-import {
-  useGenerateMotorcycleQuote,
-  useMotorcycleGetHirePurchaseList,
-} from '@/hook/insurance/motorcycle';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;

@@ -1,10 +1,10 @@
 import { paymentDTO } from './payment.dto';
 import { handleApiCallToISP } from '../../configs/api.config';
 import { CAR_INSURANCE } from '../../constants/car.insurance';
+import { MOTORCYCLE_INSURANCE } from '../../constants/motorcycle.insurance';
 import { ErrFromISPRes, ErrNotFound } from '../../core/error.response';
 import logger from '../../libs/logger';
 import { prisma } from '../../libs/prisma';
-import { MOTORCYCLE_INSURANCE } from '../../constants/motorcycle.insurance';
 
 export async function handlePayment(data: paymentDTO) {
   try {

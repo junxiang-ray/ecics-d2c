@@ -1,8 +1,3 @@
-import { Button } from 'antd';
-
-import ArrowBackIcon from '@/components/icons/ArrowBackIcon';
-import { SecondaryButton } from '@/components/ui/buttons';
-
 interface BusinessPartnerBarProps {
   businessName?: string;
   companyName?: string;

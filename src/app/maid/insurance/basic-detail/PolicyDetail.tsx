@@ -15,8 +15,8 @@ import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { updateMaidQuote } from '@/redux/slices/maidQuote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
-import PolicyDetailForm from './PolicyDetailForm';
 import { HelperTypeValue } from './options';
+import PolicyDetailForm from './PolicyDetailForm';
 
 interface PolicyDetailProps {
   onSaveRegister: (fn: () => any) => void;

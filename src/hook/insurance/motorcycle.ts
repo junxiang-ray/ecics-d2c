@@ -7,9 +7,9 @@ import {
 
 import { ProposalPayload, QuoteCreationPayload } from '@/libs/types/quote';
 
+import motorcycle from '@/api/base-service/motorcycle';
 // import insurance from '@/api/base-service/insurance';
 import { ProductTypeWeb } from '@/app/api/constants/product';
-import motorcycle from '@/api/base-service/motorcycle';
 
 export const useGetQuote = (key: string) => {
   const fetchQuote = async () => {

@@ -17,7 +17,6 @@ import { ROUTES } from '@/constants/routes';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { setUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { on } from 'events';
 
 interface MissingFields {
   engine_number?: boolean;

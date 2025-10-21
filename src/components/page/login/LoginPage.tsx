@@ -12,11 +12,12 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import NoSingpassLoginSection from './NoSingpassLoginSection';
 import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
 import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
 import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch } from '@/redux/store';
+
+import NoSingpassLoginSection from './NoSingpassLoginSection';
 
 const LoginPage = () => {
   const { isMobile } = useDeviceDetection();

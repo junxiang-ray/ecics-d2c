@@ -4,28 +4,12 @@ import {
   PLAN_ADDON_CONFIG,
 } from '@/app/api/constants/car.insurance';
 import { MAID_INSURANCE } from '@/app/api/constants/maid.insurance';
+import { MOTORCYCLE_INSURANCE } from '@/app/api/constants/motorcycle.insurance';
 import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
-import { convertDate, convertDateDash } from '@/app/api/utils/date.helper';
-import {
-  applyAddlDriverLogic,
-  applyLouAndCcLogic,
-  mappingAddonByPlan,
-  mappingAddonForMaid,
-  mappingMotorcycleAddonByPlan,
-} from '@/app/api/utils/quote.helpers';
-
-import {
-  saveQuoteProposalDTO,
-  saveQuoteProposalForMaidDTO,
-} from './save-proposal.dto';
-import {
-  MOTORCYCLE_INSURANCE,
-  MOTORCYCLE_PLAN_ADDON_CONFIG,
-} from '@/app/api/constants/motorcycle.insurance';
-
+import { convertDate } from '@/app/api/utils/date.helper';
 import {
   getAdditionalDriverInfo,
   getOptionalBenefitCodes,
@@ -33,6 +17,17 @@ import {
   getPlanIdfromTitle,
   getVehicleInfo,
 } from '@/app/api/utils/motorcycle.quote.util';
+import {
+  applyAddlDriverLogic,
+  applyLouAndCcLogic,
+  mappingAddonByPlan,
+  mappingAddonForMaid,
+} from '@/app/api/utils/quote.helpers';
+
+import {
+  saveQuoteProposalDTO,
+  saveQuoteProposalForMaidDTO,
+} from './save-proposal.dto';
 
 export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;

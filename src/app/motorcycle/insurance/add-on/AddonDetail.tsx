@@ -32,13 +32,11 @@ import { updateQuote } from '@/redux/slices/quote.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 import AddonAdditionalDriver, {
-  ADDON_CARS,
   ADDON_MOTORCYCLE,
   ADDON_MOTORCYCLE_AND,
 } from './AddonAdditionalDriver';
 import { RequiredModal } from '../basic-detail/modal/RequireModal';
 import { ProductType } from '../basic-detail/options';
-import logger from '@/app/api/libs/logger';
 
 export const mapIconToTypeAddOn = [
   {

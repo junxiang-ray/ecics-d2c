@@ -1,9 +1,10 @@
-import { saveQuoteDTO } from './quote.dto';
 import logger from '@/app/api/libs/logger';
-import { generateQuoteEmail } from '@/app/api/libs/mailer/templates';
 import { sendMail } from '@/app/api/libs/mailer';
-import { capitalizeFirstLetter } from '@/app/api/utils/text.helpers';
+import { generateQuoteEmail } from '@/app/api/libs/mailer/templates';
 import { prisma } from '@/app/api/libs/prisma';
+import { capitalizeFirstLetter } from '@/app/api/utils/text.helpers';
+
+import { saveQuoteDTO } from './quote.dto';
 
 export async function saveQuote(data: saveQuoteDTO) {
   const existingQuote = await prisma.quote.findFirst({

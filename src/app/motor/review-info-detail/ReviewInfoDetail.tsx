@@ -35,7 +35,6 @@ import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal'
 import { RenewalModal } from '@/app/motor/insurance/basic-detail/modal/RenewalModal';
 import { UnableQuote } from '@/app/motor/insurance/basic-detail/modal/UnableQuote';
 import { MARITAL_STATUS_OPTIONS } from '@/app/motor/insurance/basic-detail/options';
-import ConfirmInfoModalWrapper from '@/app/motor/review-info-detail/modal/ConfirmInfoModalWrapper';
 import {
   ECICS_USER_INFO,
   PARTNER_CODE,

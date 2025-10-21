@@ -118,7 +118,7 @@ export default function ProfileRenewalPage() {
                       Read only
                     </span>
                   }
-                  defaultValue={'John Doe'}
+                  defaultValue='John Doe'
                 />
               </Form.Item>
 

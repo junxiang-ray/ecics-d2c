@@ -1,9 +1,11 @@
 'use client';
 
 import { Drawer, Modal } from 'antd';
-import { PrimaryButton } from '@/components/ui/buttons';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import CloseCircleIcon from '@/components/icons/CloseCircleIcon';
+import { PrimaryButton } from '@/components/ui/buttons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 function PaymentGatewayModal({
   visible,

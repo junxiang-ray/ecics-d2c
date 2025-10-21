@@ -1,11 +1,11 @@
 import { NextRequest } from 'next/server';
 
+import { ErrBadRequest } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import { requestHandler } from '@/app/api/middleware/requestHandler';
 
 import { saveQuoteDTOSchema } from './quote.dto';
 import { saveQuote } from './quote.service';
-import { ErrBadRequest } from '@/app/api/core/error.response';
 
 export const POST = requestHandler(async (req: NextRequest) => {
   const body = await req.json();

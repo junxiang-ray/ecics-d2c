@@ -24,18 +24,8 @@ import {
 import { InputField } from '@/components/ui/form/inputfield';
 import { InputNumberField } from '@/components/ui/form/inputnumberfield';
 
-import { MOTOR_QUOTE, MOTORCYCLE_QUOTE } from '@/constants';
-import { ROUTES } from '@/constants/routes';
-import { emailRegex, phoneRegex } from '@/constants/validation.constant';
-import {
-  useGetVehicleMakes,
-  useGetVehicleModels,
-} from '@/hook/insurance/common';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-
 // import { QuoteModal } from './modal/QuoteModal'; // old
 import { QuoteModal } from '@/app/motorcycle/insurance/basic-detail/modal/QuoteModal';
-
 import {
   NCD_OPTIONS_MOTORCYCLE,
   NO_CLAIM_OPTIONS,
@@ -46,6 +36,14 @@ import {
 } from '@/app/motorcycle/insurance/basic-detail/options';
 // import { PromoCodeField } from '../components/PromoCode'; // old
 import { PromoCodeField } from '@/app/motorcycle/insurance/components/PromoCode';
+import { MOTORCYCLE_QUOTE } from '@/constants';
+import { ROUTES } from '@/constants/routes';
+import { emailRegex, phoneRegex } from '@/constants/validation.constant';
+import {
+  useGetVehicleMakes,
+  useGetVehicleModels,
+} from '@/hook/insurance/common';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);

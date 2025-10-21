@@ -557,7 +557,7 @@ const PolicyDetailForm = ({
       </div>
 
       <div
-        className={`fixed bottom-0 w-full border-[1px] border-gray-100 bg-white px-2 shadow-md shadow-gray-200`}
+        className='fixed bottom-0 w-full border-[1px] border-gray-100 bg-white px-2 shadow-md shadow-gray-200'
         style={{ zIndex: 100 }}
       >
         <div className='mx-auto w-full max-w-[1200px]'>

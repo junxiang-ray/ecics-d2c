@@ -7,12 +7,11 @@ import { StepProcessBar } from '@/libs/enums/processBarEnums';
 
 import InsuranceLayout from '@/components/layouts/InsuranceLayout';
 
+// import { ProductType } from './basic-detail/options';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { setIsSingpassFlow } from '@/redux/slices/general.slice';
 import { useAppDispatch } from '@/redux/store';
-
-// import { ProductType } from './basic-detail/options';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 
 // set steps here for home content
 const homeSteps = {

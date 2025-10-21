@@ -12,12 +12,12 @@ import {
 } from 'redux-persist';
 
 import appReducer from '@/redux/slices/app.slice';
+import ecicsUserInfoReducer from '@/redux/slices/ecicsUserInfo.slice';
 import generalReducer from '@/redux/slices/general.slice';
 import maidQuoteReducer from '@/redux/slices/maidQuote.slice';
 import quoteReducer from '@/redux/slices/quote.slice';
 import renewalQuoteReducer from '@/redux/slices/renewalQuote.slice';
 import userInfoCarReducer from '@/redux/slices/userInfoCar.slice';
-import ecicsUserInfoReducer from '@/redux/slices/ecicsUserInfo.slice';
 import storage from '@/redux/store/storage';
 
 // Root reducer

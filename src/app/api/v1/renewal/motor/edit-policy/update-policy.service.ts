@@ -1,9 +1,10 @@
-import { MOTOR_RENEWAL } from '@/app/api/constants/motor.renewal';
-import { updatePolicyDTO } from './update-policy.dto';
 import { handleApiCallToISP } from '@/app/api/configs/api.config';
-import logger from '@/app/api/libs/logger';
+import { MOTOR_RENEWAL } from '@/app/api/constants/motor.renewal';
 import { ErrFromISPRes } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
+import logger from '@/app/api/libs/logger';
+
+import { updatePolicyDTO } from './update-policy.dto';
 
 export async function updatePoliciesFromISP(data: updatePolicyDTO) {
   try {
