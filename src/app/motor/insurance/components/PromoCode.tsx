@@ -85,11 +85,17 @@ export const PromoCodeField = ({
 
   const removePromoCode = () => {
     setPromoInfoSelected(null);
-    product_type === ProductType.MAID
-      ? setValue(MAID_QUOTE.promo_code, '')
-      : product_type === ProductType.CAR
-        ? setValue(MOTOR_QUOTE.promo_code, '')
-        : setValue(MOTORCYCLE_QUOTE.promo_code, '');
+    switch (product_type) {
+      case ProductType.MAID:
+        setValue(MAID_QUOTE.promo_code, '');
+        break;
+      case ProductType.CAR:
+        setValue(MOTOR_QUOTE.promo_code, '');
+        break;
+      case ProductType.MOTORCYCLE:
+        setValue(MOTORCYCLE_QUOTE.promo_code, '');
+        break;
+    }
     setApplyPromoCode('');
   };
 
