@@ -83,12 +83,25 @@ export const quoteReminderHTML = (
 };
 
 export const teslaFractionalEmail = (email: string, name: string) => {
+  const safeName = name.replace(/[&<>"']/g, (char) => {
+    const entities: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    };
+    return entities[char];
+  });
+  const paragraphStyle = `
+    margin-bottom: 8pt;
+  `;
   return `
     <div style="font-size: 13px; font-family: Aptos; color: #000000">
-    <p style="margin-bottom: 8pt">
+    <p style="${paragraphStyle}">
       <span> Dear ${name}, </span>
     </p>
-    <p style="margin-bottom: 8pt">
+    <p style="${paragraphStyle}">
       <span>
         Thank you for choosing ECICS as your preferred motor insurer.
       </span>
@@ -239,30 +252,44 @@ export const teslaFractionalEmail = (email: string, name: string) => {
 };
 
 export const maid6MeEmail = (email: string, name: string) => {
+  const safeName = name.replace(/[&<>"']/g, (char) => {
+    const entities: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    };
+    return entities[char];
+  });
+  const paragraphStyle = `
+    margin-bottom: 8pt;
+  `;
+
   return `
 <div style="font-size: 13px; font-family: Aptos; color: #000000">
-<p style="margin-bottom: 8pt"><span>Hi ${name},</span></p>
+<p style="${paragraphStyle}"><span>Hi ${safeName},</span></p>
 
 
-<p style="margin-bottom: 8pt"><span>Thank you for your recent purchase of <strong>ECICS Enhanced MaidAssure Policy</strong>.</span></p>
+<p style="${paragraphStyle}"><span>Thank you for your recent purchase of <strong>ECICS Enhanced MaidAssure Policy</strong>.</span></p>
 
 
-<p style="margin-bottom: 8pt"><span>We're pleased to inform you that you are eligible for the <strong>6-Month Medical Examination (6ME) redemption</strong>, provided in partnership with <strong>Minmed Group Pte Ltd.</strong></span></p>
+<p style="${paragraphStyle}"><span>We're pleased to inform you that you are eligible for the <strong>6-Month Medical Examination (6ME) redemption</strong>, provided in partnership with <strong>Minmed Group Pte Ltd.</strong></span></p>
 
 
-<p style="margin-bottom: 8pt"><span>The <strong>redemption instructions</strong> will be sent to your registered email <strong>90 days after your policy start date</strong>, once your policy has been in force for that period.</span></p>
+<p style="${paragraphStyle}"><span>The <strong>redemption instructions</strong> will be sent to your registered email <strong>90 days after your policy start date</strong>, once your policy has been in force for that period.</span></p>
 
 
-<p style="margin-bottom: 8pt"><span>For assistance with your <strong>policy or campaign eligibility</strong>, please contact <strong>ECICS Customer Service at <a href="mailto:customerservice@ecics.com.sg">customerservice@ecics.com.sg</a></strong> or <strong>call <a href="tel:+6562065588">6206 5588</a></strong>, available <strong>Mon–Fri (excluding Public Holidays), 08:30–18:00 hrs.</strong></span></p>
+<p style="${paragraphStyle}"><span>For assistance with your <strong>policy or campaign eligibility</strong>, please contact <strong>ECICS Customer Service at <a href="mailto:customerservice@ecics.com.sg">customerservice@ecics.com.sg</a></strong> or <strong>call <a href="tel:+6562065588">6206 5588</a></strong>, available <strong>Mon–Fri (excluding Public Holidays), 08:30–18:00 hrs.</strong></span></p>
 
 
-<p style="margin-bottom: 8pt"><span>For assistance with <strong>6ME service or redemption matters on the Minmed platform</strong>, please contact <strong>Minmed’s Customer Service Unit at <a href="mailto:ask@minmed.sg">ask@minmed.sg</a></strong> or <strong>WhatsApp <a href="tel:+6592300123">9230 0123</a></strong>. Live chat support is available <strong>Mon–Fri (excluding Public Holidays), 09:00–18:00 hrs.</strong></span></p>
+<p style="${paragraphStyle}"><span>For assistance with <strong>6ME service or redemption matters on the Minmed platform</strong>, please contact <strong>Minmed’s Customer Service Unit at <a href="mailto:ask@minmed.sg">ask@minmed.sg</a></strong> or <strong>WhatsApp <a href="tel:+6592300123">9230 0123</a></strong>. Live chat support is available <strong>Mon–Fri (excluding Public Holidays), 09:00–18:00 hrs.</strong></span></p>
 
 
-<p style="margin-bottom: 8pt"><span>Eligibility and redemption are subject to the campaign’s Terms and Conditions as stated on the official promotion page or email communication.</span></p>
+<p style="${paragraphStyle}"><span>Eligibility and redemption are subject to the campaign’s Terms and Conditions as stated on the official promotion page or email communication.</span></p>
 
 
-<p style="margin-bottom: 8pt"><span>We appreciate your trust and look forward to serving you.</span></p>
+<p style="${paragraphStyle}"><span>We appreciate your trust and look forward to serving you.</span></p>
 
 
 <div style="margin-top: 20px;">
