@@ -10,8 +10,9 @@ import {
 } from '@/libs/types/homeContents';
 import { calculateCoveragePremium } from '@/libs/utils/calculations';
 
+import { ADD_ONS } from '@/constants/home.content.addon.constants';
+
 import {
-  ADD_ONS,
   BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,
   HOME_TYPES,

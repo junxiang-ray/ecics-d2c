@@ -37,7 +37,6 @@ import { PremiumSummary } from '@/components/ui/premiumSummary';
 import { Select } from '@/components/ui/select';
 
 import {
-  ADD_ONS,
   BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,
   HOME_TYPES,
@@ -46,6 +45,8 @@ import {
   RENOVATION_COVERAGE_OPTIONS,
   UNIT_TYPES,
 } from '@/constants/home.content.constants';
+
+import { ADD_ONS } from '@/constants/home.content.addon.constants';
 
 import { Button } from '../../../ui/button';
 
