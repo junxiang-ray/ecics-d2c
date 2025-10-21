@@ -95,6 +95,9 @@ export const PromoCodeField = ({
       case ProductType.MOTORCYCLE:
         setValue(MOTORCYCLE_QUOTE.promo_code, '');
         break;
+      default:
+        setValue(MOTOR_QUOTE.promo_code, '');
+        break;
     }
     setApplyPromoCode('');
   };
