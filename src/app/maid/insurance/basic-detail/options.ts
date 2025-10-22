@@ -22,7 +22,7 @@ const HELPER_DATA: Record<HelperTypeValue, HelperTypeInfo> = {
   [HelperTypeValue.RENEWAL_MAID]: {
     title: 'Start Date Should Match Current Work Permit Expiry',
     description:
-      'Set the Policy Start Date as the current work permit’s expiry date',
+      'Set the Policy Start Date as one day after the current work permit’s expiry date',
     cardDescription: 'Extending your current helper’s work permit with you',
   },
   [HelperTypeValue.TRANSFER_MAID]: {

@@ -1,7 +1,10 @@
 import { paymentDTO } from './payment-result.dto';
 import logger from '../../libs/logger';
 import { sendMail } from '../../libs/mailer';
-import { teslaFractionalEmail } from '../../libs/mailer/templates';
+import {
+  maid6MeEmail,
+  teslaFractionalEmail,
+} from '../../libs/mailer/templates';
 import { prisma } from '../../libs/prisma';
 
 export async function handlePaymentResult(data: paymentDTO) {
@@ -25,6 +28,7 @@ export async function handlePaymentResult(data: paymentDTO) {
         is_electric_model: true,
         email: true,
         name: true,
+        promo_code: true,
       },
     });
 
@@ -52,6 +56,28 @@ export async function handlePaymentResult(data: paymentDTO) {
       });
       logger.info(
         `Tesla promo email sent to: ${quoteInfo.email}, name: ${quoteInfo.name}`,
+      );
+    }
+
+    if (
+      quoteInfo.email &&
+      quoteInfo.name &&
+      (quoteInfo.promo_code?.code === 'BONUS6ME' ||
+        quoteInfo.promo_code?.code === 'STAFFBONUS6ME')
+    ) {
+      let subject =
+        'You’re Eligible for the 6-Month Medical Examination (6ME) Redemption';
+      if (quoteInfo.promo_code?.code === 'STAFFBONUS6ME') {
+        subject =
+          'You’re Eligible for the Staff 6-Month Medical Examination (6ME) Redemption';
+      }
+      await sendMail({
+        to: quoteInfo.email,
+        subject: subject,
+        html: maid6MeEmail(quoteInfo.email, quoteInfo.name),
+      });
+      logger.info(
+        `maid promo email sent to: ${quoteInfo.email}, name: ${quoteInfo.name}`,
       );
     }
 
