@@ -3,6 +3,7 @@ import { memo, useCallback } from 'react';
 
 import { StepIndicatorProps } from '../../libs/types/homeContents';
 import { cn } from '../../libs/utils/utils';
+import { CheckCircle } from 'lucide-react';
 
 interface StepItemProps {
   step: number;
@@ -73,7 +74,7 @@ const StepItem = memo<StepItemProps>(
               )}
             >
               {isCompleted ? (
-                <CheckCircleFilled className='h-6 w-6' />
+                <CheckCircle className='h-6 w-6' />
               ) : (
                 <span className='text-lg font-bold'>{step}</span>
               )}
@@ -118,7 +119,7 @@ const StepItem = memo<StepItemProps>(
               )}
             >
               {isCompleted ? (
-                <CheckCircleFilled className='h-5 w-5' />
+                <CheckCircle className='h-6 w-6' />
               ) : (
                 <span className='text-sm font-bold'>{step}</span>
               )}

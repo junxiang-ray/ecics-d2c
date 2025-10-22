@@ -105,7 +105,7 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
 
     return (
       <>
-        <div className='premium-summary-backdrop fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200'>
+        <div className='premium-summary-backdrop fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white'>
           <div className='mx-auto max-w-7xl'>
             {/* Mobile Optimized Layout - ONLY SHOW ON MOBILE */}
             <div className='block px-3 py-3 sm:hidden'>

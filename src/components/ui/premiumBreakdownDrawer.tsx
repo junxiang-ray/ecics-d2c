@@ -16,7 +16,7 @@ import {
   BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,
   HOME_TYPES,
-  OWNERSHIP_TYPES,
+  HOME_OWNERSHIP_TYPES,
   RENOVATION_COVERAGE_OPTIONS,
   UNIT_TYPES,
 } from '@/constants/home.content.constants';
@@ -83,7 +83,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
 
   // Get display labels for form data
   const ownershipLabel =
-    OWNERSHIP_TYPES.find((o) => o.value === formData.ownership)?.label ||
+    HOME_OWNERSHIP_TYPES.find((o) => o.value === formData.ownership)?.label ||
     formData.ownership;
   const homeTypeLabel =
     HOME_TYPES.find((h) => h.value === formData.homeType)?.label ||

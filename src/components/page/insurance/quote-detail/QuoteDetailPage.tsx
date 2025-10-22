@@ -24,6 +24,7 @@ import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import { PLANS } from '@/constants/home.content.constants';
 
 import Step1QuoteForm from './Step1QuoteForm';
+import Step2PersonalInfo from './Step2PersonalInfo';
 
 // import { TOMORROW_DATE} from
 const TOMORROW_DATE = new Date(Date.now() + 86400000)
@@ -508,46 +509,62 @@ const QuoteDetail = () => {
   return (
     <>
       <AppBar />
-      <div className='mx-2 flex-1 text-center sm:mx-4'>
-        <h1 className='m-0 py-10 text-base font-bold leading-tight text-gray-800 sm:text-[2rem]'>
-          Home Content Insurance Quotation
-        </h1>
-      </div>
-      <div className='px-[15%]'>
+      <div className='mx-2 flex-1 text-center sm:mx-4'></div>
+      <div className='mx-auto max-w-7xl px-3 py-4 pb-24 sm:px-4 sm:py-6 sm:pb-32 lg:px-6 lg:py-8'>
         {/* <CardUi className='m-4 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-blue-50/50 p-4'>
           <StepsCard />
         </CardUi> */}
         <ProgressStepper
-          currentStep={1}
+          currentStep={currentStep}
           onStepClick={handleStepClick}
           visitedSteps={visitedStepsSet}
           selectedPlan=''
         />
-        <Step1QuoteForm
-          formData={formData}
-          updateFormData={updateFormData}
-          errors={errors}
-          promoStatus={promoStatus}
-          setPromoStatus={setPromoStatus}
-          showPlans={showPlans}
-          showCustomization={showCustomization}
-          showAddOns={showAddOns}
-          selectedPlan={selectedPlan}
-          selectedAddOns={selectedAddOns}
-          customizationData={customizationData}
-          updateCustomizationData={updateCustomizationData}
-          isLoading={isLoading}
-          onCalculateQuote={handleCalculateQuote}
-          onPlanSelect={handlePlanSelect}
-          onCustomizationComplete={handleCustomizationComplete}
-          onAddOnToggle={handleAddOnToggle}
-          onAddOnOptionChange={handleAddOnOptionChange}
-          onNext={handleNext}
-          onBack={handleBack}
-          currentStep={currentStep}
-          hasViewedCustomization={hasViewedCustomization}
-          setHasViewedCustomization={setHasViewedCustomization}
-        />
+        {currentStep === 1 && (
+          <Step1QuoteForm
+            formData={formData}
+            updateFormData={updateFormData}
+            errors={errors}
+            promoStatus={promoStatus}
+            setPromoStatus={setPromoStatus}
+            showPlans={showPlans}
+            showCustomization={showCustomization}
+            showAddOns={showAddOns}
+            selectedPlan={selectedPlan}
+            selectedAddOns={selectedAddOns}
+            customizationData={customizationData}
+            updateCustomizationData={updateCustomizationData}
+            isLoading={isLoading}
+            onCalculateQuote={handleCalculateQuote}
+            onPlanSelect={handlePlanSelect}
+            onCustomizationComplete={handleCustomizationComplete}
+            onAddOnToggle={handleAddOnToggle}
+            onAddOnOptionChange={handleAddOnOptionChange}
+            onNext={handleNext}
+            onBack={handleBack}
+            currentStep={currentStep}
+            hasViewedCustomization={hasViewedCustomization}
+            setHasViewedCustomization={setHasViewedCustomization}
+          />
+        )}
+        {currentStep === 2 && (
+          <Step2PersonalInfo
+            personalInfoData={personalInfoData}
+            updatePersonalInfoData={updatePersonalInfoData}
+            personalInfoErrors={personalInfoErrors}
+            myInfoData={myInfoData}
+            onRetrieveMyInfo={handleRetrieveMyInfo}
+            onNext={handleNext}
+            onBack={handleBack}
+            selectedPlan={currentPlan}
+            selectedAddOns={selectedAddOns}
+            totalPremium={totalPremium}
+            promoStatus={promoStatus}
+            currentStep={currentStep}
+            formData={formData}
+            customizationData={customizationData}
+          />
+        )}
       </div>
     </>
   );

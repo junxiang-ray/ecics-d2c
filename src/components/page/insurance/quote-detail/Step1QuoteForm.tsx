@@ -39,8 +39,8 @@ import { Select } from '@/components/ui/select';
 import {
   BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,
+  HOME_OWNERSHIP_TYPES,
   HOME_TYPES,
-  OWNERSHIP_TYPES,
   PLANS,
   RENOVATION_COVERAGE_OPTIONS,
   UNIT_TYPES,
@@ -49,6 +49,7 @@ import {
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
 
 import { Button } from '../../../ui/button';
+import { OptionSelector } from '@/components/ui/optionSelector';
 
 interface Step1Props {
   formData: QuoteForm;
@@ -184,8 +185,8 @@ const Step1QuoteForm = memo<Step1Props>(
       !Array.isArray(PLANS) ||
       !ADD_ONS ||
       !Array.isArray(ADD_ONS) ||
-      !OWNERSHIP_TYPES ||
-      !Array.isArray(OWNERSHIP_TYPES)
+      !HOME_OWNERSHIP_TYPES ||
+      !Array.isArray(HOME_OWNERSHIP_TYPES)
     ) {
       return (
         <div className='flex items-center justify-center py-12'>
@@ -222,120 +223,27 @@ const Step1QuoteForm = memo<Step1Props>(
           <CardContent className='p-8 sm:p-10'>
             <div className='grid grid-cols-1 gap-8 sm:gap-10 lg:grid-cols-2'>
               {/* Ownership of your home - Full Width Row */}
-              <div className='col-span-1 space-y-4 lg:col-span-2'>
-                <Label className='flex items-center gap-3 text-lg font-semibold text-gray-700'>
-                  <Building className='size-5 text-[#02ADEF]' />
-                  Ownership of your home <span className='text-red-500'>*</span>
-                </Label>
-                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                  {OWNERSHIP_TYPES.map((type) => {
-                    // Extract main label and sub-text
-                    const getDisplayText = (label: string) => {
-                      switch (type.value) {
-                        case 'owner-living-in':
-                          return { main: 'Owner', sub: 'Living in' };
-                        case 'landlord-renting-out':
-                          return {
-                            main: 'Landlord',
-                            sub: 'Renting out partially/fully',
-                          };
-                        case 'tenant':
-                          return {
-                            main: 'Tenant',
-                            sub: 'Renting from landlord',
-                          };
-                        default:
-                          return { main: label, sub: '' };
-                      }
-                    };
-
-                    const { main, sub } = getDisplayText(type.label);
-
-                    return (
-                      <button
-                        key={type.value}
-                        type='button'
-                        onClick={() => updateFormData('ownership', type.value)}
-                        className={cn(
-                          'rounded-xl border-2 px-6 py-4 text-center shadow-sm transition-all duration-300',
-                          'hover:scale-105 hover:shadow-md',
-                          formData.ownership === type.value
-                            ? 'scale-105 border-[#02ADEF] bg-[#02ADEF] text-white shadow-lg'
-                            : 'border-gray-200 bg-white text-gray-700 hover:border-[#02ADEF]/50',
-                        )}
-                      >
-                        <div className='flex flex-col items-center gap-1'>
-                          <span className='text-lg font-semibold'>{main}</span>
-                          <span
-                            className={cn(
-                              'text-sm',
-                              formData.ownership === type.value
-                                ? 'text-blue-100'
-                                : 'text-gray-500',
-                            )}
-                          >
-                            {sub}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-                {errors.ownership && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {errors.ownership}
-                  </p>
-                )}
-              </div>
-
+              <OptionSelector
+                labelIcon={<Building className='size-5 text-[#02ADEF]' />}
+                required={true}
+                label='Ownership of your home'
+                selected={formData.ownership}
+                options={HOME_OWNERSHIP_TYPES}
+                error={errors.ownership}
+                onChange={(value) => updateFormData('ownership', value)}
+                className='col-span-1 space-y-4 lg:col-span-2'
+              ></OptionSelector>
               {/* Type of Home - Full Width Row */}
-              <div className='col-span-1 space-y-4 lg:col-span-2'>
-                <Label className='flex items-center gap-3 text-lg font-semibold text-gray-700'>
-                  <Home className='size-5 text-[#02ADEF]' />
-                  Type of Home <span className='text-red-500'>*</span>
-                </Label>
-                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                  {HOME_TYPES.map((type) => (
-                    <button
-                      key={type.value}
-                      type='button'
-                      onClick={() => updateFormData('homeType', type.value)}
-                      className={cn(
-                        'rounded-xl border-2 px-6 py-4 text-center text-lg font-semibold shadow-sm transition-all duration-300',
-                        'hover:scale-105 hover:shadow-md',
-                        formData.homeType === type.value
-                          ? 'scale-105 border-[#02ADEF] bg-[#02ADEF] text-white shadow-lg'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-[#02ADEF]/50',
-                      )}
-                    >
-                      <div>
-                        <p className='font-semibold'>{type.label}</p>
-                        <p
-                          className={cn(
-                            'mt-1 text-sm',
-                            formData.homeType === type.value
-                              ? 'text-blue-100'
-                              : 'text-gray-500',
-                          )}
-                        >
-                          {type.description}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                {errors.homeType && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {errors.homeType}
-                  </p>
-                )}
-              </div>
+              <OptionSelector
+                labelIcon={<Home className='size-5 text-[#02ADEF]' />}
+                label='Type of Home'
+                options={HOME_TYPES}
+                className='col-span-1 space-y-4 lg:col-span-2'
+                onChange={(value) => updateFormData('homeType', value)}
+                error={errors.homeType}
+                required={true}
+                selected={formData.homeType}
+              ></OptionSelector>
 
               {/* Unit Type - Only show for non-landed properties */}
               {formData.homeType !== 'landed' && (
@@ -362,7 +270,7 @@ const Step1QuoteForm = memo<Step1Props>(
                       }
                     }}
                     options={availableUnitTypes.map((unit) => unit.label)}
-                    className='h-14 px-6 text-lg'
+                    className=''
                   />
 
                   {errors.unitType && (
@@ -513,12 +421,12 @@ const Step1QuoteForm = memo<Step1Props>(
         </Card>
 
         {/* Calculate Quote Button */}
-        <div className='mb-12 text-center'>
+        <div className='mb-12 flex justify-center text-center'>
           <Button
             onClick={onCalculateQuote}
             disabled={isCalculateQuoteDisabled}
             className={cn(
-              'h-16 min-w-[250px] px-12 py-6 text-lg font-bold shadow-xl transition-all duration-300',
+              'flex h-16 min-w-[250px] items-center justify-center rounded-md px-12 py-6 text-lg font-bold shadow-xl transition-all duration-300',
               isCalculateQuoteDisabled
                 ? 'cursor-not-allowed bg-gray-400 text-gray-600 hover:bg-gray-400'
                 : 'bg-[#52c41a] text-white hover:scale-105 hover:bg-[#45a615] hover:shadow-2xl',
@@ -586,9 +494,9 @@ const Step1QuoteForm = memo<Step1Props>(
                       </span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className='px-6 pb-6 pt-4'>
-                    <div className='overflow-x-auto'>
-                      <table className='w-full table-fixed border-collapse'>
+                  <AccordionContent className='overflow-x-auto overflow-y-auto px-6 pb-6 pt-4'>
+                    <div className='w-full overflow-x-auto'>
+                      <table className='w-full min-w-[600px] border-collapse'>
                         <thead>
                           <tr className='border-b-2 border-gray-200'>
                             <th className='w-1/4 px-2 py-3 text-left font-semibold text-gray-800'>
@@ -815,7 +723,7 @@ const Step1QuoteForm = memo<Step1Props>(
                             : 'outline'
                         }
                         className={cn(
-                          'h-11 px-2.5 text-xs font-semibold leading-tight transition-all duration-200 sm:h-12 sm:px-3 sm:text-sm lg:h-14 lg:px-4 lg:text-lg',
+                          'flex h-11 items-center justify-center rounded-lg px-2.5 text-xs font-semibold leading-tight transition-all duration-200 sm:h-12 sm:px-3 sm:text-sm lg:h-14 lg:px-4 lg:text-lg',
                           'touch-target min-h-[44px]', // Ensure 44px touch target for accessibility
                           customizationData.hdbFireInsurance === 'yes'
                             ? 'border-[#52c41a] bg-[#52c41a] text-white shadow-lg hover:bg-[#52c41a]/90'
@@ -846,7 +754,7 @@ const Step1QuoteForm = memo<Step1Props>(
                             : 'outline'
                         }
                         className={cn(
-                          'h-11 px-2.5 text-xs font-semibold leading-tight transition-all duration-200 sm:h-12 sm:px-3 sm:text-sm lg:h-14 lg:px-4 lg:text-lg',
+                          'flex h-11 items-center justify-center rounded-lg px-2.5 text-xs font-semibold leading-tight transition-all duration-200 sm:h-12 sm:px-3 sm:text-sm lg:h-14 lg:px-4 lg:text-lg',
                           'touch-target min-h-[44px]', // Ensure 44px touch target for accessibility
                           customizationData.hdbFireInsurance === 'no'
                             ? 'border-[#52c41a] bg-[#52c41a] text-white shadow-lg hover:bg-[#52c41a]/90'
@@ -961,7 +869,7 @@ const Step1QuoteForm = memo<Step1Props>(
                             selected.value,
                           );
                       }}
-                      className='h-14 px-6 text-lg'
+                      className='h-14 text-lg'
                       disabled={!customizationData.hdbFireInsurance}
                     />
                   </div>
@@ -993,7 +901,7 @@ const Step1QuoteForm = memo<Step1Props>(
                         if (selected)
                           updateCustomizationData('renovation', selected.value);
                       }}
-                      className='h-14 px-6 text-lg'
+                      className='h-14 text-lg'
                       disabled={!customizationData.hdbFireInsurance}
                     />
                   </div>
@@ -1042,6 +950,7 @@ const Step1QuoteForm = memo<Step1Props>(
                 );
               })}
             </div>
+            <br />
           </div>
         )}
 

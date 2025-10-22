@@ -7,13 +7,14 @@ import {
 } from '../libs/types/homeContents';
 
 // Basic constants - loaded immediately
-export const OWNERSHIP_TYPES: OwnershipType[] = [
-  { value: 'owner-living-in', label: 'Owner (Living In)' },
+export const HOME_OWNERSHIP_TYPES: OwnershipType[] = [
+  { value: 'owner-living-in', label: 'Owner', description: 'Living In' },
   {
     value: 'landlord-renting-out',
-    label: 'Landlord (Renting out partially/fully)',
+    label: 'Landlord',
+    description: 'Renting out partially/fully',
   },
-  { value: 'tenant', label: 'Tenant' },
+  { value: 'tenant', label: 'Tenant', description: 'Renting from landlord' },
 ];
 
 export const HOME_TYPES: HomeType[] = [
@@ -146,6 +147,7 @@ export const INSURER_OPTIONS = [
   'Other',
 ] as const;
 
+///fetch from API in future
 export const NATIONALITIES = [
   'Singaporean',
   'Malaysian',
