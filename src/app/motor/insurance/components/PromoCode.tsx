@@ -8,10 +8,11 @@ import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
 import { SecondaryButton } from '@/components/ui/buttons';
 
 import { PromoCodeResponse } from '@/api/base-service/verify';
-import { MOTOR_QUOTE } from '@/constants';
+import { MAID_QUOTE, MOTOR_QUOTE, MOTORCYCLE_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { ProductType } from '../basic-detail/options';
 
 interface InputFieldProps extends InputProps {
   isDisablePromoCode: boolean;
@@ -84,7 +85,20 @@ export const PromoCodeField = ({
 
   const removePromoCode = () => {
     setPromoInfoSelected(null);
-    setValue(MOTOR_QUOTE.promo_code, '');
+    switch (product_type) {
+      case ProductType.MAID:
+        setValue(MAID_QUOTE.promo_code, '');
+        break;
+      case ProductType.CAR:
+        setValue(MOTOR_QUOTE.promo_code, '');
+        break;
+      case ProductType.MOTORCYCLE:
+        setValue(MOTORCYCLE_QUOTE.promo_code, '');
+        break;
+      default:
+        setValue(MOTOR_QUOTE.promo_code, '');
+        break;
+    }
     setApplyPromoCode('');
   };
 

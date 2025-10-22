@@ -318,10 +318,6 @@ const PolicyDetailForm = ({
   };
 
   const handleSubmit = (value: FormData) => {
-    if (!isDirty) {
-      router.push(ROUTES.INSURANCE_MAID.PLAN);
-      return;
-    }
     let personal_info;
     const planPeriodText =
       POLICY_DURATION_OPTIONS.find((opt) => opt.value === policyDuration)
