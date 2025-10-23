@@ -355,7 +355,6 @@ const Step3Summary = memo<Step3Props>(
           icon={<User className='size-5 text-[#02ADEF]' />}
           showEdit={true}
           onEdit={handleEditPolicyHolderInfo}
-          myInfoTag={isPolicyHolderInfoFromMyInfo}
         >
           <div className='space-y-6'>
             {/* Personal Information - 2 Column Grid */}

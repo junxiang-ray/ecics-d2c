@@ -1,5 +1,6 @@
 'use client';
-import { useCallback, useMemo, useState } from 'react';
+//#region Imports
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   CustomizationData,
@@ -25,12 +26,21 @@ import { PLANS } from '@/constants/home.content.constants';
 
 import Step1QuoteForm from './Step1QuoteForm';
 import Step2PersonalInfo from './Step2PersonalInfo';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
+import { useAppDispatch } from '@/redux/store';
+import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
+import { clearQuote, clearMatchedMakeModel } from '@/redux/slices/quote.slice';
+import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 
-// import { TOMORROW_DATE} from
+//#endregion
+
 const TOMORROW_DATE = new Date(Date.now() + 86400000)
   .toISOString()
   .split('T')[0];
 
+//#region Initial Form Data
 // Pre-computed initial state objects to prevent recreation
 const INITIAL_FORM_DATA: QuoteForm = {
   ownership: 'owner-living-in',
@@ -74,8 +84,10 @@ const INITIAL_CUSTOMIZATION_DATA: CustomizationData = {
   homeContent: '30000', // Default $30,000 (smallest option)
   renovation: '10000', // Default $10,000 (smallest option)
 };
+//#endregion
 
 const QuoteDetail = () => {
+  //#region State Management
   // State management - using pre-computed initial objects
   const [currentStep, setCurrentStep] = useState(1);
   const [visitedSteps, setVisitedSteps] = useState([1]);
@@ -120,6 +132,41 @@ const QuoteDetail = () => {
   const [eligibilityPopupOpen, setEligibilityPopupOpen] = useState(false);
   const [termsPopupOpen, setTermsPopupOpen] = useState(false);
   const [privacyPopupOpen, setPrivacyPopupOpen] = useState(false);
+  //#endregion
+
+  ///Check product type here
+  const pathname = usePathname();
+
+  function getProductTypeFromPathname(pathname: string): ProductType {
+    switch (true) {
+      case pathname.startsWith('/maid'):
+        return ProductType.MAID;
+      case pathname.startsWith('/motorcycle'):
+        return ProductType.MOTORCYCLE;
+      case pathname.startsWith('/home-contents'):
+        return ProductType.HOMECONTENTS;
+      default:
+        return ProductType.CAR;
+    }
+  }
+
+  const productType: ProductType = getProductTypeFromPathname(pathname);
+  ///get partner code and promo code
+  const searchParams = useSearchParams();
+  const partnerCode = searchParams.get('partner_code') || '';
+  const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
+
+  ///Reset all stored info
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(resetEcicsUserInfo());
+    dispatch(clearQuote());
+    dispatch(clearMatchedMakeModel());
+    dispatch(clearUserInfoCar());
+    sessionStorage.clear();
+    localStorage.clear();
+  }, []);
 
   // Memoized computed values with early returns
   const currentPlan = useMemo(() => {
@@ -509,11 +556,7 @@ const QuoteDetail = () => {
   return (
     <>
       <AppBar />
-      <div className='mx-2 flex-1 text-center sm:mx-4'></div>
       <div className='mx-auto max-w-7xl px-3 py-4 pb-24 sm:px-4 sm:py-6 sm:pb-32 lg:px-6 lg:py-8'>
-        {/* <CardUi className='m-4 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-blue-50/50 p-4'>
-          <StepsCard />
-        </CardUi> */}
         <ProgressStepper
           currentStep={currentStep}
           onStepClick={handleStepClick}

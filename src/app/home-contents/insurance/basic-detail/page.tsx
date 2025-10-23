@@ -5,6 +5,7 @@ import { useAppSelector } from '@/redux/store';
 
 import { PolicyDetail } from './PolicyDetail';
 import HomeContentInsuranceLayout from '../HomeContentInsuranceLayout';
+import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
 
 export default function BasicDetailPage() {
   const isSingPassFlow = useAppSelector(
@@ -12,10 +13,11 @@ export default function BasicDetailPage() {
   );
 
   return (
-    <HomeContentInsuranceLayout>
-      {({ onSave }) => (
-        <PolicyDetail onSaveRegister={onSave} isSingPassFlow={isSingPassFlow} />
-      )}
-    </HomeContentInsuranceLayout>
+    // <HomeContentInsuranceLayout>
+    //   {({ onSave }) => (
+    //     <PolicyDetail onSaveRegister={onSave} isSingPassFlow={isSingPassFlow} />
+    //   )}
+    // </HomeContentInsuranceLayout>
+    <QuoteDetail />
   );
 }
