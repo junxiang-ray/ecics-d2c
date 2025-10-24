@@ -1,3 +1,6 @@
+///This file contains all the route constants used in the application.
+
+///this function creates the steps for insurance purchase process
 const createInsuranceRoutes = (basePath: string) => ({
   BASIC_DETAIL: `${basePath}/basic-detail`,
   BASIC_DETAIL_SINGPASS: `${basePath}/basic-detail?manual=false`,
@@ -7,8 +10,10 @@ const createInsuranceRoutes = (basePath: string) => ({
   PERSONAL_DETAIL: `${basePath}/personal-detail`,
   COMPLETE_PURCHASE: `${basePath}/complete-purchase`,
   HELPER_DETAIL: `${basePath}/helpers-detail`,
+  QUOTE_DETAILS: `${basePath}/quote-detail`,
 });
 
+///Base Routes
 export const ROUTES = {
   INSURANCE: createInsuranceRoutes('/motor/insurance'),
   INSURANCE_MAID: createInsuranceRoutes('/maid/insurance'),
@@ -39,7 +44,7 @@ export const ROUTES = {
     RENEWAL_ACCOUNT_SETUP: '/renewal/account-setup',
   },
   HOMECONTENT: {
-    LOGIN: '/home-contents',
+    LOGIN: '/home-contents/insurance/',
     REVIEW_INFO_DETAIL: '/home-contents/review-info-detail',
   },
 };

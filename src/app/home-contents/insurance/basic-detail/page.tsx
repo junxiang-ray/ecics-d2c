@@ -1,4 +1,3 @@
-//PlaceHolders
 'use client';
 
 import { useAppSelector } from '@/redux/store';
