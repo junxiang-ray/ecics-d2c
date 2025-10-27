@@ -1,10 +1,10 @@
 'use client';
 
-import { Select as AntdSelect } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
-import { cn } from '@/libs/utils/utils';
-import { twMerge } from 'tailwind-merge';
+import { Select as AntdSelect } from 'antd';
 import clsx from 'clsx';
+import { ChevronDown } from 'lucide-react';
+import { twMerge } from 'tailwind-merge';
 
 const { Option } = AntdSelect;
 
@@ -33,16 +33,17 @@ export function Select({
         clsx(
           'h-14 w-full rounded-xl border-2 text-base transition-all duration-200',
           'bg-white hover:border-[#02ADEF]/60 hover:shadow-sm',
-          'focus:border-[#02ADEF] focus:outline-none focus:ring-0', // remove ant design focus outline/ring
+          'focus:border-[#02ADEF] focus:outline-none focus:ring-0',
           'placeholder:text-gray-500',
           disabled && 'pointer-events-none cursor-not-allowed opacity-50',
           'appearance-none',
           className,
         ),
       )}
-      suffixIcon={<CheckOutlined />}
+      suffixIcon={<ChevronDown className='size-4 text-gray-500' />}
+      menuItemSelectedIcon={<CheckOutlined style={{ color: '#02ADEF' }} />}
       optionLabelProp='label'
-      size='large' // matches h-14
+      size='large'
       variant='borderless'
     >
       {options.map((opt) => (
