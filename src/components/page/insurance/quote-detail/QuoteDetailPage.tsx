@@ -7,6 +7,7 @@ import {
   MyInfoData,
   PersonalInfoForm,
   PromoCodeStatus,
+  QUOTE_FORM_KEYS,
   QuoteForm,
   SelectedAddOn,
 } from '@/libs/types/homeContents';
@@ -100,7 +101,24 @@ const QuoteDetail = () => {
   const [visitedSteps, setVisitedSteps] = useState([1]);
 
   // Form data with memory-efficient initial values
-  const [formData, setFormData] = useState<QuoteForm>(INITIAL_FORM_DATA);
+  const [formData, setFormData] = useState<QuoteForm>(() => {
+    if (typeof window !== 'undefined') {
+      const savedForm = { ...INITIAL_FORM_DATA }; // Start with defaults
+
+      (Object.keys(INITIAL_FORM_DATA) as (keyof QuoteForm)[]).forEach((key) => {
+        const storedValue = localStorage.getItem(key);
+        if (storedValue !== null) {
+          // Force cast safely — localStorage only stores strings
+          savedForm[key] = storedValue as QuoteForm[typeof key];
+        }
+      });
+
+      return savedForm;
+    }
+
+    return INITIAL_FORM_DATA;
+  });
+
   const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
     INITIAL_PERSONAL_INFO,
   );
@@ -229,7 +247,9 @@ const QuoteDetail = () => {
             newData.unitType = '3-room';
           }
         }
+        // console.log(`formData = ${JSON.stringify(newData)}`);
 
+        saveToLocalStorage(newData);
         return newData;
       });
 

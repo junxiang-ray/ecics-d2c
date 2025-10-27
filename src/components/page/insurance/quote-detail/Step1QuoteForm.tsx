@@ -463,7 +463,10 @@ const Step1QuoteForm = memo<Step1Props>(
                   <PlanCard
                     key={plan.id}
                     plan={plan}
-                    onSelect={() => onPlanSelect(plan.id)}
+                    onSelect={() => {
+                      console.log(plan);
+                      onPlanSelect(plan.id);
+                    }}
                     isSelected={selectedPlan === plan.id}
                     promoStatus={promoStatus}
                     customizationData={customizationData}

@@ -7,7 +7,7 @@ import { cn } from '@/libs/utils/utils';
 
 interface AccordionProps {
   children: React.ReactNode;
-  type?: 'single' | 'multiple'; // For future use if needed
+  type?: 'single' | 'multiple';
   collapsible?: boolean;
   className?: string;
 }
@@ -32,8 +32,15 @@ interface AccordionContentProps {
   isOpen?: boolean;
 }
 
-export const Accordion: React.FC<AccordionProps> = ({ children }) => {
-  return <div data-slot='accordion'>{children}</div>;
+export const Accordion: React.FC<AccordionProps> = ({
+  children,
+  className,
+}) => {
+  return (
+    <div data-slot='accordion' className={className}>
+      {children}
+    </div>
+  );
 };
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({
@@ -45,10 +52,17 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
 
   const clonedChildren = React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) return child;
-    return React.cloneElement(child, {
-      isOpen,
-      onClick: () => setIsOpen(!isOpen),
-    });
+
+    // Detect if the child is a DOM element
+    const isDomElement = typeof child.type === 'string';
+
+    // Only add isOpen to non-DOM elements
+    const propsToAdd = {
+      onClick: () => setIsOpen((prev) => !prev),
+      ...(isDomElement ? {} : { isOpen }),
+    };
+
+    return React.cloneElement(child, propsToAdd);
   });
 
   return (

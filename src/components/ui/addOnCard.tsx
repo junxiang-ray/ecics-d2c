@@ -134,7 +134,7 @@ export const AddOnCard = memo<AddOnCardProps>(
               <Button
                 onClick={onToggle}
                 className={cn(
-                  'h-10 w-full font-semibold transition-all duration-300',
+                  'h-10 w-full rounded-lg font-semibold transition-all duration-300',
                   isSelected
                     ? 'bg-[#52c41a] text-white hover:bg-[#45a615]'
                     : 'bg-[#02ADEF] text-white hover:bg-[#0198d4]',

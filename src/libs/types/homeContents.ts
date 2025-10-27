@@ -1,15 +1,21 @@
 // Base types for form data
 export interface QuoteForm {
-  ownership:
-    | 'owner-living-in'
-    | 'landlord-renting-out'
-    | 'tenant'
-    | 'Ownership of your home is required';
-  homeType: 'landed' | 'hdb' | 'condo' | 'Home type is required';
+  ownership: string;
+  homeType: string;
   unitType: string;
   policyStartDate: string;
   promoCode: string;
+  // selectedPlan?: string;
 }
+
+export const QUOTE_FORM_KEYS: (keyof QuoteForm)[] = [
+  'ownership',
+  'homeType',
+  'unitType',
+  'policyStartDate',
+  'promoCode',
+  // 'selectedPlan',
+];
 
 export interface PersonalInfoForm {
   policyHolderFullName: string;
