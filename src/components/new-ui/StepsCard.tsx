@@ -215,7 +215,7 @@ export const ProgressStepper = memo<StepIndicatorProps>(
         </div>
 
         {/* Main Step Indicator */}
-        <div className='rounded-2xl border border-white/60 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-blue-50/50 p-3 shadow-sm backdrop-blur-sm sm:p-6'>
+        <div className='rounded-2xl border border-white/60 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-blue-50/50 p-3 shadow-md backdrop-blur-sm sm:p-6'>
           {/* Desktop/Tablet Horizontal Layout */}
           <div className='hidden items-center justify-center gap-8 sm:flex'>
             {steps.map((stepInfo, index) => (

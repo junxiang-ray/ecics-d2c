@@ -85,7 +85,7 @@ export const AddOnCard = memo<AddOnCardProps>(
 
             {/* Description */}
             <div className='mb-3 flex-1'>
-              <p className='mb-2 line-clamp-2 text-sm leading-relaxed text-gray-600'>
+              <p className='mb-2 line-clamp-2 text-xs leading-relaxed text-gray-600'>
                 {addOn.description}
               </p>
 
@@ -109,9 +109,9 @@ export const AddOnCard = memo<AddOnCardProps>(
                         key={option.value}
                         onClick={() => onOptionChange?.(option.value)}
                         className={cn(
-                          'border border-gray-300 px-3 py-2 transition-all duration-200',
-                          'text-sm font-medium',
-                          'touch-target min-h-[44px]',
+                          'border border-gray-300  transition-all duration-200',
+                          'text-xs font-medium',
+                          'touch-target min-h-[36px]',
                           'flex items-center justify-center rounded-md',
                           'flex-1', // Equal width distribution
                           selectedOption === option.value
@@ -130,29 +130,27 @@ export const AddOnCard = memo<AddOnCardProps>(
             </div>
 
             {/* Action Button */}
-            <div className='mt-auto'>
+            <div className='mt-auto flex flex-auto items-center justify-center'>
               <Button
                 onClick={onToggle}
                 className={cn(
-                  'h-10 w-full rounded-lg font-semibold transition-all duration-300',
+                  'flex h-8 w-full items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-300',
                   isSelected
                     ? 'bg-[#52c41a] text-white hover:bg-[#45a615]'
                     : 'bg-[#02ADEF] text-white hover:bg-[#0198d4]',
                 )}
               >
-                <span className='flex items-center justify-center gap-2'>
-                  {isSelected ? (
-                    <>
-                      <CheckCircle className='size-4' />
-                      Added
-                    </>
-                  ) : (
-                    <>
-                      <Plus className='size-4' />
-                      Add to Plan
-                    </>
-                  )}
-                </span>
+                {isSelected ? (
+                  <>
+                    <CheckCircle className='size-4' />
+                    <span>Added</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className='size-4' />
+                    <span>Add to Plan</span>
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>

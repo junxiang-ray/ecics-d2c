@@ -581,9 +581,9 @@ const QuoteDetail = () => {
     return () => clearTimeout(timeoutId);
   }, [scrollToElement]);
   return (
-    <>
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/50'>
       <AppBar />
-      <div className='mx-auto max-w-7xl px-3 py-4 pb-24 sm:px-4 sm:py-6 sm:pb-32 lg:px-6 lg:py-8'>
+      <div className='mx-auto max-w-6xl px-3 py-4 pb-24 sm:px-4 sm:py-6 sm:pb-32 lg:px-6 lg:py-8'>
         <ProgressStepper
           currentStep={currentStep}
           onStepClick={handleStepClick}
@@ -1009,7 +1009,7 @@ const QuoteDetail = () => {
         {/* Bottom spacing */}
         <div className='h-20 sm:h-32' />
       </div>
-    </>
+    </div>
   );
 };
 
