@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { User, Home, Shield, CheckCircle } from 'lucide-react';
+import { User, Shield, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/cardNew';
 import { Input } from '@/components/ui/input';
@@ -16,10 +16,7 @@ import {
   QuoteForm,
   CustomizationData,
 } from '@/libs/types/homeContents';
-import {
-  NATIONALITIES,
-  INSURER_OPTIONS,
-} from '@/constants/home.content.constants';
+import { NATIONALITIES } from '@/constants/home.content.constants';
 import { PremiumSummary } from '@/components/ui/premiumSummary';
 
 interface Step2PersonalInfoProps {

@@ -48,7 +48,7 @@ import {
 
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
 
-import { Button } from '../../../ui/button';
+import { Button } from '../../../../components/ui/button';
 import { OptionSelector } from '@/components/ui/optionSelector';
 
 interface Step1Props {
@@ -209,7 +209,7 @@ const Step1QuoteForm = memo<Step1Props>(
                 <Home className='size-6 text-[#02ADEF]' />
               </div>
               <div>
-                <h2 className='m-0 mb-1 text-[28px] font-bold text-gray-800'>
+                <h2 className='m-0 mb-1 text-3xl font-bold text-gray-800'>
                   Calculate Your Quote
                 </h2>
                 <p className='m-0 text-base text-gray-600'>

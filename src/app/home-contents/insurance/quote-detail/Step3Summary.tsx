@@ -1,12 +1,6 @@
+//#region Imports
 import { memo } from 'react';
-import {
-  Shield,
-  User,
-  Home,
-  DollarSign,
-  ChevronLeft,
-  Edit,
-} from 'lucide-react';
+import { Shield, User, DollarSign, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/cardNew';
 import { Label } from '@/components/ui/label';
@@ -32,6 +26,7 @@ import {
 } from '@/libs/utils/calculations';
 import { PremiumSummary } from '@/components/ui/premiumSummary';
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
+//#endregion
 
 interface SummarySection {
   title: string;
