@@ -172,7 +172,16 @@ export const DatePickerFieldWheel = ({
 
   useEffect(() => {
     if (selectedYear) {
-      setMonthOptions(createMonthOptions(selectedYear, minDate, maxDate));
+      const months = createMonthOptions(selectedYear, minDate, maxDate);
+      setMonthOptions(months);
+
+      const isCurrentMonthValid = months.some((m) => m.value === selectedMonth);
+
+      if (!isCurrentMonthValid && months.length > 0) {
+        const fallbackMonth = months[0].value;
+        setSelectedMonth(fallbackMonth);
+        handleDateChange(selectedYear, fallbackMonth, selectedDay);
+      }
     } else {
       setMonthOptions([]);
     }
@@ -286,7 +295,7 @@ export const DatePickerFieldWheel = ({
                       setSelectedMonth(value);
                       handleDateChange(selectedYear, value, selectedDay);
                     }}
-                    infinite
+                    infinite={monthOptions.length >= 12}
                   />
                   <WheelPicker
                     options={dayOptions}
