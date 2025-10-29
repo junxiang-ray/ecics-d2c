@@ -47,7 +47,7 @@ export function Select({
       variant='borderless'
     >
       {options.map((opt) => (
-        <Option key={opt} value={opt} label={opt} className='p-3 text-xl'>
+        <Option key={opt} value={opt} label={opt} className='p-3 text-sm'>
           {opt}
         </Option>
       ))}
