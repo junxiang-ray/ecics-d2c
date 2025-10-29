@@ -49,6 +49,7 @@ export const generateQuoteSchema = z.object({
 
 export type generateQuoteDTO = z.infer<typeof generateQuoteSchema>;
 
+//#region maidQuote schema gen
 export const generateQuoteForMaidSchema = z.object({
   key: z.string().min(5, 'Key must be at least 5 characters long'),
   maid_type: z.string(),
@@ -64,6 +65,9 @@ export const generateQuoteForMaidSchema = z.object({
 export type generateQuoteForMaidDTO = z.infer<
   typeof generateQuoteForMaidSchema
 >;
+//#endregion
+
+//#region motorcycleQuote schema gen
 
 export const generateQuoteForMotorcycleSchema = z.object({
   key: z.string().min(5, 'Key must be at least 5 characters long'),
@@ -109,3 +113,18 @@ export const generateQuoteForMotorcycleSchema = z.object({
     vehicle_finance_by: z.number(),
   }),
 });
+//#endregion
+
+//#region HomeContentQuote gen
+export const generateQuoteForHomeContentSchema = z.object({
+  key: z.string().min(5, 'Key must be at least 5 characters long'),
+  maid_type: z.string(),
+  plan_period: z.string(),
+  start_date: z.string().regex(REGEX_VALUES.DATE_OF_BIRTH),
+  end_date: z.string().regex(REGEX_VALUES.DATE_OF_BIRTH),
+  promo_code: z.string().optional(),
+  partner_code: z.string().optional(),
+  personal_info: z.any().optional(),
+  maid_info: z.any().optional(),
+});
+//#endregion

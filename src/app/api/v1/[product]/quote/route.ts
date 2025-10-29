@@ -5,6 +5,7 @@ import logger from '@/app/api/libs/logger';
 
 import {
   getQuoteForCar,
+  getQuoteForHomeContent,
   getQuoteForMotorcycle,
   getQuouteForMaid,
 } from './get-quote.service';
@@ -26,6 +27,8 @@ export async function POST(
       return getQuouteForMaid(body);
     case PRODUCT_NAME.MOTORCYCLE:
       return getQuoteForMotorcycle(body);
+    case PRODUCT_NAME.HOME_CONTENT:
+      return getQuoteForHomeContent(body);
     default:
       return NextResponse.json(
         { error: 'Unsupported product' },

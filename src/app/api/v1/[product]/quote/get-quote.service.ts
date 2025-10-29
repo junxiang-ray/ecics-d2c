@@ -517,3 +517,7 @@ export async function getQuouteForMaid(data: generateQuoteForMaidDTO) {
     throw new Error('Error generate quote for maid');
   }
 }
+
+export async function getQuoteForHomeContent(data: generateQuoteDTO) {
+  //TO DO:
+}
