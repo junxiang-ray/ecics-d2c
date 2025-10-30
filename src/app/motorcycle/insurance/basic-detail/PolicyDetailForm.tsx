@@ -46,6 +46,7 @@ import {
 } from '@/app/motorcycle/insurance/basic-detail/options';
 // import { PromoCodeField } from '../components/PromoCode'; // old
 import { PromoCodeField } from '@/app/motorcycle/insurance/components/PromoCode';
+import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -531,6 +532,8 @@ const PolicyDetailForm = ({
     }
   }, [start_date, date_of_birth]);
 
+  const DatePickerComponent = isMobile ? DatePickerFieldWheel : DatePickerField;
+
   return (
     <>
       <FormProvider {...methods}>
@@ -601,7 +604,7 @@ const PolicyDetailForm = ({
                           errors[MOTORCYCLE_QUOTE.owner_dob] ? 'error' : ''
                         }
                       >
-                        <DatePickerField
+                        <DatePickerComponent
                           name={MOTORCYCLE_QUOTE.owner_dob}
                           label='Date of birth'
                           format='DD/MM/YYYY'
@@ -735,7 +738,7 @@ const PolicyDetailForm = ({
                     errors[MOTORCYCLE_QUOTE.start_date] ? 'error' : ''
                   }
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     name={MOTORCYCLE_QUOTE.start_date}
                     format='DD/MM/YYYY'
                     label='Policy Start Date'
@@ -755,7 +758,7 @@ const PolicyDetailForm = ({
                     errors[MOTORCYCLE_QUOTE.end_date] ? 'error' : ''
                   }
                 >
-                  <DatePickerField
+                  <DatePickerComponent
                     label='Policy End Date'
                     name={MOTORCYCLE_QUOTE.end_date}
                     isRequired
