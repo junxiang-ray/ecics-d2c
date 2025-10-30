@@ -168,99 +168,95 @@ export const DatePickerFieldWheel = ({
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState }) => {
-        return (
-          <div className='relative w-full' ref={wrapperRef}>
-            {label && (
-              <span className='text-base font-semibold'>
-                {label}
-                {isRequired && <span className='text-[#C80F1E]'> *</span>}
-              </span>
-            )}
-            <div className='relative'>
-              <Input
-                {...field}
-                readOnly
-                disabled={disabled}
-                placeholder={placeholder || 'Select date'}
-                value={
-                  field.value ? dayjs(field.value).format('DD/MM/YYYY') : ''
+      render={({ field, fieldState }) => (
+        <div className='relative w-full' ref={wrapperRef}>
+          {label && (
+            <span className='text-base font-semibold'>
+              {label}
+              {isRequired && <span className='text-[#C80F1E]'> *</span>}
+            </span>
+          )}
+          <div className='relative'>
+            <Input
+              {...field}
+              readOnly
+              disabled={disabled}
+              placeholder={placeholder || 'Select date'}
+              value={field.value ? dayjs(field.value).format('DD/MM/YYYY') : ''}
+              status={fieldState.invalid ? 'error' : undefined}
+              onClick={() => {
+                if (disabled) return;
+                setIsOpen((prev) => !prev);
+                if (!isOpen) {
+                  handlePosition();
+                  initializePicker();
                 }
-                status={fieldState.invalid ? 'error' : undefined}
-                onClick={() => {
-                  if (disabled) return;
-                  setIsOpen((prev) => !prev);
-                  if (!isOpen) {
-                    handlePosition();
-                    initializePicker();
-                  }
-                }}
-                className={`h-10 w-full rounded border py-2 pl-3 pr-10 text-left ${fieldState.invalid ? 'border-red-500' : 'border-gray-300'} ${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-400' : ''}`}
+              }}
+              className={`h-10 w-full rounded border py-2 pl-3 pr-10 text-left ${fieldState.invalid ? 'border-red-500' : 'border-gray-300'} ${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-400' : ''}`}
+            />
+            <div className='pointer-events-none absolute inset-y-0 right-3 flex items-center'>
+              <CalendarIcon
+                size={24}
+                className={
+                  disabled
+                    ? 'text-[rgba(0,0,0,0.25)]'
+                    : 'text-[rgba(0,0,0,0.85)]'
+                }
               />
-              <div className='pointer-events-none absolute inset-y-0 right-3 flex items-center'>
-                <CalendarIcon
-                  size={24}
-                  className={
-                    disabled
-                      ? 'text-[rgba(0,0,0,0.25)]'
-                      : 'text-[rgba(0,0,0,0.85)]'
-                  }
-                />
-              </div>
             </div>
-
-            {isOpen &&
-              yearOptions.length &&
-              monthOptions.length &&
-              dayOptions.length && (
-                <div
-                  className='absolute z-50 w-full rounded border bg-white shadow-lg'
-                  style={{
-                    top: dropdownDirection === 'down' ? '100%' : undefined,
-                    bottom: dropdownDirection === 'up' ? '100%' : undefined,
-                    transform:
-                      dropdownDirection === 'up'
-                        ? 'translateY(-4px)'
-                        : 'translateY(4px)',
-                  }}
-                >
-                  <WheelPickerWrapper className='flex min-h-[150px] w-full gap-2'>
-                    <WheelPicker
-                      options={monthOptions}
-                      value={selectedMonth}
-                      onValueChange={(value) =>
-                        updateDate(selectedYear, value, selectedDay)
-                      }
-                      infinite={monthOptions.length > 12}
-                    />
-                    <WheelPicker
-                      options={dayOptions}
-                      value={selectedDay}
-                      onValueChange={(value) =>
-                        updateDate(selectedYear, selectedMonth, value)
-                      }
-                      infinite={dayOptions.length > 7}
-                    />
-                    <WheelPicker
-                      options={yearOptions}
-                      value={selectedYear}
-                      onValueChange={(value) =>
-                        updateDate(value, selectedMonth, selectedDay)
-                      }
-                      infinite={false}
-                    />
-                  </WheelPickerWrapper>
-                </div>
-              )}
-
-            {fieldState.error && (
-              <span className='mt-1 block text-sm text-red-500'>
-                {fieldState.error.message}
-              </span>
-            )}
           </div>
-        );
-      }}
+
+          {isOpen &&
+            yearOptions.length &&
+            monthOptions.length &&
+            dayOptions.length && (
+              <div
+                className='absolute z-50 w-full rounded border bg-white shadow-lg'
+                style={{
+                  top: dropdownDirection === 'down' ? '100%' : undefined,
+                  bottom: dropdownDirection === 'up' ? '100%' : undefined,
+                  transform:
+                    dropdownDirection === 'up'
+                      ? 'translateY(-4px)'
+                      : 'translateY(4px)',
+                }}
+              >
+                <WheelPickerWrapper className='flex min-h-[150px] w-full gap-2'>
+                  <WheelPicker
+                    options={monthOptions}
+                    value={selectedMonth}
+                    onValueChange={(value) =>
+                      updateDate(selectedYear, value, selectedDay)
+                    }
+                    infinite={monthOptions.length > 12}
+                  />
+                  <WheelPicker
+                    options={dayOptions}
+                    value={selectedDay}
+                    onValueChange={(value) =>
+                      updateDate(selectedYear, selectedMonth, value)
+                    }
+                    infinite={dayOptions.length > 7}
+                  />
+                  <WheelPicker
+                    options={yearOptions}
+                    value={selectedYear}
+                    onValueChange={(value) =>
+                      updateDate(value, selectedMonth, selectedDay)
+                    }
+                    infinite={false}
+                  />
+                </WheelPickerWrapper>
+              </div>
+            )}
+
+          {fieldState.error && (
+            <span className='mt-1 block text-sm text-red-500'>
+              {fieldState.error.message}
+            </span>
+          )}
+        </div>
+      )}
     />
   );
 };
