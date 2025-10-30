@@ -228,7 +228,7 @@ export const DatePickerFieldWheel = ({
                     onValueChange={(value) =>
                       updateDate(selectedYear, value, selectedDay)
                     }
-                    infinite={monthOptions.length > 12}
+                    infinite={monthOptions.length >= 12}
                   />
                   <WheelPicker
                     options={dayOptions}
@@ -236,7 +236,7 @@ export const DatePickerFieldWheel = ({
                     onValueChange={(value) =>
                       updateDate(selectedYear, selectedMonth, value)
                     }
-                    infinite={dayOptions.length > 7}
+                    infinite={dayOptions.length >= 7}
                   />
                   <WheelPicker
                     options={yearOptions}
