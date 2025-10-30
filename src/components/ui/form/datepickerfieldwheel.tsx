@@ -1,6 +1,6 @@
 import { Input } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import CalendarIcon from '@/components/icons/CalendarIcon';
@@ -39,33 +39,20 @@ const createYearOptions = (
   });
 };
 
-const createMonthOptions = (
-  selectedYear: string,
-  minDate?: Dayjs,
-  maxDate?: Dayjs,
-): WheelPickerOption[] => {
-  const options: (WheelPickerOption | null)[] = Array.from(
-    { length: 12 },
-    (_, i) => {
-      const month = i + 1;
-      const date = dayjs(
-        `${selectedYear}-${month.toString().padStart(2, '0')}-01`,
-      );
-      if (
-        (minDate && date.endOf('month').isBefore(minDate, 'day')) ||
-        (maxDate && date.startOf('month').isAfter(maxDate, 'day'))
-      ) {
-        return null;
-      }
+const createMonthOptions = (year: string, minDate?: Dayjs, maxDate?: Dayjs) => {
+  const options: WheelPickerOption[] = [];
+  for (let i = 1; i <= 12; i++) {
+    const monthStr = i.toString().padStart(2, '0');
+    const date = dayjs(`${year}-${monthStr}-01`);
+    if (
+      (minDate && date.endOf('month').isBefore(minDate, 'day')) ||
+      (maxDate && date.startOf('month').isAfter(maxDate, 'day'))
+    )
+      continue;
 
-      return {
-        label: date.format('MMMM'),
-        value: month.toString().padStart(2, '0'),
-      };
-    },
-  );
-
-  return options.filter((o): o is WheelPickerOption => o !== null);
+    options.push({ label: date.format('MMMM'), value: monthStr });
+  }
+  return options;
 };
 
 const createDayOptions = (
@@ -73,30 +60,21 @@ const createDayOptions = (
   month: string,
   minDate?: Dayjs,
   maxDate?: Dayjs,
-): WheelPickerOption[] => {
-  const options: (WheelPickerOption | null)[] = Array.from(
-    { length: dayjs(`${year}-${month}-01`).daysInMonth() },
-    (_, i) => {
-      const day = (i + 1).toString().padStart(2, '0');
-      const date = dayjs(`${year}-${month}-${day}`);
+) => {
+  const daysInMonth = dayjs(`${year}-${month}-01`).daysInMonth();
+  const options: WheelPickerOption[] = [];
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dayStr = i.toString().padStart(2, '0');
+    const date = dayjs(`${year}-${month}-${dayStr}`);
+    if (
+      (minDate && date.isBefore(minDate, 'day')) ||
+      (maxDate && date.isAfter(maxDate, 'day'))
+    )
+      continue;
 
-      if (
-        (minDate && date.isBefore(minDate, 'day')) ||
-        (maxDate && date.isAfter(maxDate, 'day'))
-      ) {
-        return null;
-      }
-
-      return {
-        label: day,
-        value: day,
-      };
-    },
-  );
-
-  return options.filter(
-    (option): option is WheelPickerOption => option !== null,
-  );
+    options.push({ label: dayStr, value: dayStr });
+  }
+  return options;
 };
 
 export const DatePickerFieldWheel = ({
@@ -112,87 +90,71 @@ export const DatePickerFieldWheel = ({
 }: DatePickerFieldWheelProps) => {
   const { control, getValues, setValue } = useFormContext();
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const rawValue = getValues(name);
-
-  const initial = useMemo(() => {
-    if (rawValue) return dayjs(rawValue);
-    return null;
-  }, [rawValue]);
-
-  const initialYear = initial?.format('YYYY') ?? '';
-  const initialMonth = initial?.format('MM') ?? '';
-  const initialDay = initial?.format('DD') ?? '';
-
-  const [selectedYear, setSelectedYear] = useState(initialYear);
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
-  const [selectedDay, setSelectedDay] = useState(initialDay);
-
-  const [dayOptions, setDayOptions] = useState<WheelPickerOption[]>([]);
-  const [monthOptions, setMonthOptions] = useState<WheelPickerOption[]>([]);
-  const [yearOptions, setYearOptions] = useState<WheelPickerOption[]>([]);
-
   const [isOpen, setIsOpen] = useState(false);
   const { dropdownDirection, handlePosition } = useHandlePosition(
     isOpen,
     wrapperRef,
   );
 
-  const formValue = getValues(name);
-  const formattedValue = formValue ? dayjs(formValue).format('DD/MM/YYYY') : '';
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedDay, setSelectedDay] = useState('');
+  const [yearOptions, setYearOptions] = useState<WheelPickerOption[]>([]);
+  const [monthOptions, setMonthOptions] = useState<WheelPickerOption[]>([]);
+  const [dayOptions, setDayOptions] = useState<WheelPickerOption[]>([]);
 
-  useEffect(() => {
-    if (isOpen) {
-      const current = dayjs(
-        getValues(name) || defaultPickerValue || minDate || new Date(),
-      );
-
-      const validDate = (() => {
-        if (minDate && current.isBefore(minDate, 'day')) return minDate;
-        if (maxDate && current.isAfter(maxDate, 'day')) return maxDate;
-        return current;
-      })();
-
-      setSelectedYear(validDate.format('YYYY'));
-      setSelectedMonth(validDate.format('MM'));
-      setSelectedDay(validDate.format('DD'));
-    }
-  }, [isOpen]);
-
-  useHandleClickOutside(wrapperRef, () => setIsOpen(false));
-
-  useEffect(() => {
-    if (selectedYear && selectedMonth) {
-      setDayOptions(
-        createDayOptions(selectedYear, selectedMonth, minDate, maxDate),
-      );
-    } else {
-      setDayOptions([]);
-    }
-  }, [selectedMonth, selectedYear, minDate, maxDate]);
-
-  useEffect(() => {
-    if (selectedYear) {
-      const months = createMonthOptions(selectedYear, minDate, maxDate);
-      setMonthOptions(months);
-
-      const isCurrentMonthValid = months.some((m) => m.value === selectedMonth);
-
-      if (!isCurrentMonthValid && months.length > 0) {
-        const fallbackMonth = months[0].value;
-        setSelectedMonth(fallbackMonth);
-        handleDateChange(selectedYear, fallbackMonth, selectedDay);
-      }
-    } else {
-      setMonthOptions([]);
-    }
-  }, [selectedYear, minDate, maxDate]);
-
+  // Initialize yearOptions
   useEffect(() => {
     setYearOptions(createYearOptions(minDate, maxDate));
   }, [minDate, maxDate]);
 
-  const handleDateChange = (year: string, month: string, day: string) => {
-    const newDate = dayjs(`${year}-${month}-${day}`, 'YYYY-MM-DD');
+  // Close when disabled
+  useEffect(() => {
+    if (disabled) setIsOpen(false);
+  }, [disabled]);
+
+  // Click outside to close
+  useHandleClickOutside(wrapperRef, () => setIsOpen(false));
+
+  // Initialize picker values when opening
+  const initializePicker = () => {
+    const rawValue = getValues(name);
+    const current = dayjs(
+      rawValue || defaultPickerValue || minDate || new Date(),
+    );
+
+    const validDate = (() => {
+      if (minDate && current.isBefore(minDate, 'day')) return minDate;
+      if (maxDate && current.isAfter(maxDate, 'day')) return maxDate;
+      return current;
+    })();
+
+    updateDate(
+      validDate.format('YYYY'),
+      validDate.format('MM'),
+      validDate.format('DD'),
+    );
+  };
+
+  const updateDate = (year: string, month: string, day: string) => {
+    const yOptions = createYearOptions(minDate, maxDate);
+    const mOptions = createMonthOptions(year, minDate, maxDate);
+    const validMonth = mOptions.some((m) => m.value === month)
+      ? month
+      : mOptions[0]?.value || '';
+    const dOptions = createDayOptions(year, validMonth, minDate, maxDate);
+    const validDay = dOptions.some((d) => d.value === day)
+      ? day
+      : dOptions[dOptions.length - 1]?.value || '';
+
+    setYearOptions(yOptions);
+    setMonthOptions(mOptions);
+    setDayOptions(dOptions);
+    setSelectedYear(year);
+    setSelectedMonth(validMonth);
+    setSelectedDay(validDay);
+
+    const newDate = dayjs(`${year}-${validMonth}-${validDay}`, 'YYYY-MM-DD');
     if (newDate.isValid()) {
       setValue(name, newDate.toDate(), {
         shouldValidate: true,
@@ -201,35 +163,6 @@ export const DatePickerFieldWheel = ({
       onChange?.(newDate);
     }
   };
-
-  useEffect(() => {
-    if (disabled) {
-      setIsOpen(false);
-    }
-  }, [disabled]);
-
-  useEffect(() => {
-    if (selectedYear && selectedMonth) {
-      const days = createDayOptions(
-        selectedYear,
-        selectedMonth,
-        minDate,
-        maxDate,
-      );
-      setDayOptions(days);
-
-      // Check if current day is valid
-      const isCurrentDayValid = days.some((d) => d.value === selectedDay);
-
-      if (!isCurrentDayValid) {
-        const fallbackDay = days[days.length - 1]?.value || '';
-        if (fallbackDay && fallbackDay !== selectedDay) {
-          setSelectedDay(fallbackDay);
-          handleDateChange(selectedYear, selectedMonth, fallbackDay);
-        }
-      }
-    }
-  }, [selectedMonth, selectedYear, minDate, maxDate]);
 
   return (
     <Controller
@@ -246,20 +179,20 @@ export const DatePickerFieldWheel = ({
           <div className='relative'>
             <Input
               {...field}
-              status={fieldState.invalid ? 'error' : undefined}
               readOnly
               disabled={disabled}
               placeholder={placeholder || 'Select date'}
-              value={formattedValue}
+              value={field.value ? dayjs(field.value).format('DD/MM/YYYY') : ''}
+              status={fieldState.invalid ? 'error' : undefined}
               onClick={() => {
-                if (!disabled) {
-                  setIsOpen(true);
+                if (disabled) return;
+                setIsOpen((prev) => !prev);
+                if (!isOpen) {
                   handlePosition();
+                  initializePicker();
                 }
               }}
-              className={`h-10 w-full rounded border py-2 pl-3 pr-10 text-left ${
-                fieldState.invalid ? 'border-red-500' : 'border-gray-300'
-              } ${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-400' : ''}`}
+              className={`h-10 w-full rounded border py-2 pl-3 pr-10 text-left ${fieldState.invalid ? 'border-red-500' : 'border-gray-300'} ${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-400' : ''}`}
             />
             <div className='pointer-events-none absolute inset-y-0 right-3 flex items-center'>
               <CalendarIcon
@@ -272,10 +205,11 @@ export const DatePickerFieldWheel = ({
               />
             </div>
           </div>
+
           {isOpen &&
-            yearOptions.length > 0 &&
-            monthOptions.length > 0 &&
-            dayOptions.length > 0 && (
+            yearOptions.length &&
+            monthOptions.length &&
+            dayOptions.length && (
               <div
                 className='absolute z-50 w-full rounded border bg-white shadow-lg'
                 style={{
@@ -291,33 +225,31 @@ export const DatePickerFieldWheel = ({
                   <WheelPicker
                     options={monthOptions}
                     value={selectedMonth}
-                    onValueChange={(value) => {
-                      setSelectedMonth(value);
-                      handleDateChange(selectedYear, value, selectedDay);
-                    }}
+                    onValueChange={(value) =>
+                      updateDate(selectedYear, value, selectedDay)
+                    }
                     infinite={monthOptions.length >= 12}
                   />
                   <WheelPicker
                     options={dayOptions}
                     value={selectedDay}
-                    onValueChange={(value) => {
-                      setSelectedDay(value);
-                      handleDateChange(selectedYear, selectedMonth, value);
-                    }}
-                    infinite={dayOptions.length > 7}
+                    onValueChange={(value) =>
+                      updateDate(selectedYear, selectedMonth, value)
+                    }
+                    infinite={dayOptions.length >= 7}
                   />
                   <WheelPicker
                     options={yearOptions}
                     value={selectedYear}
-                    onValueChange={(value) => {
-                      setSelectedYear(value);
-                      handleDateChange(value, selectedMonth, selectedDay);
-                    }}
+                    onValueChange={(value) =>
+                      updateDate(value, selectedMonth, selectedDay)
+                    }
                     infinite={false}
                   />
                 </WheelPickerWrapper>
               </div>
             )}
+
           {fieldState.error && (
             <span className='mt-1 block text-sm text-red-500'>
               {fieldState.error.message}
