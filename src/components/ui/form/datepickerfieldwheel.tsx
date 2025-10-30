@@ -169,9 +169,6 @@ export const DatePickerFieldWheel = ({
       name={name}
       control={control}
       render={({ field, fieldState }) => {
-        const formattedValue = field.value
-          ? dayjs(field.value).format('DD/MM/YYYY')
-          : '';
         return (
           <div className='relative w-full' ref={wrapperRef}>
             {label && (
@@ -186,7 +183,9 @@ export const DatePickerFieldWheel = ({
                 readOnly
                 disabled={disabled}
                 placeholder={placeholder || 'Select date'}
-                value={formattedValue}
+                value={
+                  field.value ? dayjs(field.value).format('DD/MM/YYYY') : ''
+                }
                 status={fieldState.invalid ? 'error' : undefined}
                 onClick={() => {
                   if (disabled) return;
