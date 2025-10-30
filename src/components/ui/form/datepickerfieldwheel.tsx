@@ -96,7 +96,6 @@ export const DatePickerFieldWheel = ({
     wrapperRef,
   );
 
-  // State picker
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedDay, setSelectedDay] = useState('');
@@ -137,7 +136,6 @@ export const DatePickerFieldWheel = ({
     );
   };
 
-  // Unified date update function
   const updateDate = (year: string, month: string, day: string) => {
     const yOptions = createYearOptions(minDate, maxDate);
     const mOptions = createMonthOptions(year, minDate, maxDate);
