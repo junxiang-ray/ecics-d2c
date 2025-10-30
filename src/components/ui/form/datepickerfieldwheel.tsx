@@ -1,15 +1,12 @@
 import { Input } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import CalendarIcon from '@/components/icons/CalendarIcon';
-import {
-  WheelPicker,
-  WheelPickerOption,
-  WheelPickerWrapper,
-} from '@/components/wheel-picker';
+import { WheelPicker, WheelPickerWrapper } from '@/components/wheel-picker';
 
+import { useDatePickerLogic } from '@/hook/useDatePickerLogic';
 import { useHandleClickOutside } from '@/hook/useHandleClickOutside';
 import { useHandlePosition } from '@/hook/useHandlePosition';
 
@@ -25,80 +22,6 @@ interface DatePickerFieldWheelProps {
   placeholder?: string;
 }
 
-const createYearOptions = (
-  minDate?: Dayjs,
-  maxDate?: Dayjs,
-): WheelPickerOption[] => {
-  const currentYear = new Date().getFullYear();
-  const startYear = minDate ? minDate.year() : currentYear - 50;
-  const endYear = maxDate ? maxDate.year() : currentYear + 50;
-
-  return Array.from({ length: endYear - startYear + 1 }, (_, i) => {
-    const year = startYear + i;
-    return { label: year.toString(), value: year.toString() };
-  });
-};
-
-const createMonthOptions = (
-  selectedYear: string,
-  minDate?: Dayjs,
-  maxDate?: Dayjs,
-): WheelPickerOption[] => {
-  const options: (WheelPickerOption | null)[] = Array.from(
-    { length: 12 },
-    (_, i) => {
-      const month = i + 1;
-      const date = dayjs(
-        `${selectedYear}-${month.toString().padStart(2, '0')}-01`,
-      );
-      if (
-        (minDate && date.endOf('month').isBefore(minDate, 'day')) ||
-        (maxDate && date.startOf('month').isAfter(maxDate, 'day'))
-      ) {
-        return null;
-      }
-
-      return {
-        label: date.format('MMMM'),
-        value: month.toString().padStart(2, '0'),
-      };
-    },
-  );
-
-  return options.filter((o): o is WheelPickerOption => o !== null);
-};
-
-const createDayOptions = (
-  year: string,
-  month: string,
-  minDate?: Dayjs,
-  maxDate?: Dayjs,
-): WheelPickerOption[] => {
-  const options: (WheelPickerOption | null)[] = Array.from(
-    { length: dayjs(`${year}-${month}-01`).daysInMonth() },
-    (_, i) => {
-      const day = (i + 1).toString().padStart(2, '0');
-      const date = dayjs(`${year}-${month}-${day}`);
-
-      if (
-        (minDate && date.isBefore(minDate, 'day')) ||
-        (maxDate && date.isAfter(maxDate, 'day'))
-      ) {
-        return null;
-      }
-
-      return {
-        label: day,
-        value: day,
-      };
-    },
-  );
-
-  return options.filter(
-    (option): option is WheelPickerOption => option !== null,
-  );
-};
-
 export const DatePickerFieldWheel = ({
   name,
   label,
@@ -110,126 +33,46 @@ export const DatePickerFieldWheel = ({
   defaultPickerValue,
   placeholder,
 }: DatePickerFieldWheelProps) => {
-  const { control, getValues, setValue } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const rawValue = getValues(name);
-
-  const initial = useMemo(() => {
-    if (rawValue) return dayjs(rawValue);
-    return null;
-  }, [rawValue]);
-
-  const initialYear = initial?.format('YYYY') ?? '';
-  const initialMonth = initial?.format('MM') ?? '';
-  const initialDay = initial?.format('DD') ?? '';
-
-  const [selectedYear, setSelectedYear] = useState(initialYear);
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
-  const [selectedDay, setSelectedDay] = useState(initialDay);
-
-  const [dayOptions, setDayOptions] = useState<WheelPickerOption[]>([]);
-  const [monthOptions, setMonthOptions] = useState<WheelPickerOption[]>([]);
-  const [yearOptions, setYearOptions] = useState<WheelPickerOption[]>([]);
-
   const [isOpen, setIsOpen] = useState(false);
+
   const { dropdownDirection, handlePosition } = useHandlePosition(
     isOpen,
     wrapperRef,
   );
-
-  const formValue = getValues(name);
-  const formattedValue = formValue ? dayjs(formValue).format('DD/MM/YYYY') : '';
-
-  useEffect(() => {
-    if (isOpen) {
-      const current = dayjs(
-        getValues(name) || defaultPickerValue || minDate || new Date(),
-      );
-
-      const validDate = (() => {
-        if (minDate && current.isBefore(minDate, 'day')) return minDate;
-        if (maxDate && current.isAfter(maxDate, 'day')) return maxDate;
-        return current;
-      })();
-
-      setSelectedYear(validDate.format('YYYY'));
-      setSelectedMonth(validDate.format('MM'));
-      setSelectedDay(validDate.format('DD'));
-    }
-  }, [isOpen]);
-
   useHandleClickOutside(wrapperRef, () => setIsOpen(false));
 
-  useEffect(() => {
-    if (selectedYear && selectedMonth) {
-      setDayOptions(
-        createDayOptions(selectedYear, selectedMonth, minDate, maxDate),
-      );
-    } else {
-      setDayOptions([]);
-    }
-  }, [selectedMonth, selectedYear, minDate, maxDate]);
+  const rawValue = getValues(name);
+  const initialValue = rawValue
+    ? dayjs(rawValue)
+    : (defaultPickerValue ?? minDate ?? dayjs());
 
-  useEffect(() => {
-    if (selectedYear) {
-      const months = createMonthOptions(selectedYear, minDate, maxDate);
-      setMonthOptions(months);
-
-      const isCurrentMonthValid = months.some((m) => m.value === selectedMonth);
-
-      if (!isCurrentMonthValid && months.length > 0) {
-        const fallbackMonth = months[0].value;
-        setSelectedMonth(fallbackMonth);
-        handleDateChange(selectedYear, fallbackMonth, selectedDay);
-      }
-    } else {
-      setMonthOptions([]);
-    }
-  }, [selectedYear, minDate, maxDate]);
-
-  useEffect(() => {
-    setYearOptions(createYearOptions(minDate, maxDate));
-  }, [minDate, maxDate]);
-
-  const handleDateChange = (year: string, month: string, day: string) => {
-    const newDate = dayjs(`${year}-${month}-${day}`, 'YYYY-MM-DD');
-    if (newDate.isValid()) {
+  const {
+    selectedYear,
+    selectedMonth,
+    selectedDay,
+    setSelectedYear,
+    setSelectedMonth,
+    setSelectedDay,
+    yearOptions,
+    monthOptions,
+    dayOptions,
+    handleDateChange,
+  } = useDatePickerLogic({
+    minDate,
+    maxDate,
+    defaultValue: initialValue,
+    onChange: (newDate) => {
       setValue(name, newDate.toDate(), {
         shouldValidate: true,
         shouldDirty: true,
       });
       onChange?.(newDate);
-    }
-  };
+    },
+  });
 
-  useEffect(() => {
-    if (disabled) {
-      setIsOpen(false);
-    }
-  }, [disabled]);
-
-  useEffect(() => {
-    if (selectedYear && selectedMonth) {
-      const days = createDayOptions(
-        selectedYear,
-        selectedMonth,
-        minDate,
-        maxDate,
-      );
-      setDayOptions(days);
-
-      // Check if current day is valid
-      const isCurrentDayValid = days.some((d) => d.value === selectedDay);
-
-      if (!isCurrentDayValid) {
-        const fallbackDay = days[days.length - 1]?.value || '';
-        if (fallbackDay && fallbackDay !== selectedDay) {
-          setSelectedDay(fallbackDay);
-          handleDateChange(selectedYear, selectedMonth, fallbackDay);
-        }
-      }
-    }
-  }, [selectedMonth, selectedYear, minDate, maxDate]);
+  const formattedValue = rawValue ? dayjs(rawValue).format('DD/MM/YYYY') : '';
 
   return (
     <Controller
@@ -243,14 +86,15 @@ export const DatePickerFieldWheel = ({
               {isRequired && <span className='text-[#C80F1E]'> *</span>}
             </span>
           )}
+
           <div className='relative'>
             <Input
               {...field}
-              status={fieldState.invalid ? 'error' : undefined}
               readOnly
               disabled={disabled}
               placeholder={placeholder || 'Select date'}
               value={formattedValue}
+              status={fieldState.invalid ? 'error' : undefined}
               onClick={() => {
                 if (!disabled) {
                   setIsOpen(true);
@@ -272,52 +116,51 @@ export const DatePickerFieldWheel = ({
               />
             </div>
           </div>
-          {isOpen &&
-            yearOptions.length > 0 &&
-            monthOptions.length > 0 &&
-            dayOptions.length > 0 && (
-              <div
-                className='absolute z-50 w-full rounded border bg-white shadow-lg'
-                style={{
-                  top: dropdownDirection === 'down' ? '100%' : undefined,
-                  bottom: dropdownDirection === 'up' ? '100%' : undefined,
-                  transform:
-                    dropdownDirection === 'up'
-                      ? 'translateY(-4px)'
-                      : 'translateY(4px)',
-                }}
-              >
-                <WheelPickerWrapper className='flex min-h-[150px] w-full gap-2'>
-                  <WheelPicker
-                    options={monthOptions}
-                    value={selectedMonth}
-                    onValueChange={(value) => {
-                      setSelectedMonth(value);
-                      handleDateChange(selectedYear, value, selectedDay);
-                    }}
-                    infinite={monthOptions.length >= 12}
-                  />
-                  <WheelPicker
-                    options={dayOptions}
-                    value={selectedDay}
-                    onValueChange={(value) => {
-                      setSelectedDay(value);
-                      handleDateChange(selectedYear, selectedMonth, value);
-                    }}
-                    infinite={dayOptions.length > 7}
-                  />
-                  <WheelPicker
-                    options={yearOptions}
-                    value={selectedYear}
-                    onValueChange={(value) => {
-                      setSelectedYear(value);
-                      handleDateChange(value, selectedMonth, selectedDay);
-                    }}
-                    infinite={false}
-                  />
-                </WheelPickerWrapper>
-              </div>
-            )}
+
+          {isOpen && (
+            <div
+              className='absolute z-50 w-full rounded border bg-white shadow-lg'
+              style={{
+                top: dropdownDirection === 'down' ? '100%' : undefined,
+                bottom: dropdownDirection === 'up' ? '100%' : undefined,
+                transform:
+                  dropdownDirection === 'up'
+                    ? 'translateY(-4px)'
+                    : 'translateY(4px)',
+              }}
+            >
+              <WheelPickerWrapper className='flex min-h-[150px] w-full gap-2'>
+                <WheelPicker
+                  options={monthOptions}
+                  value={selectedMonth}
+                  onValueChange={(value) => {
+                    setSelectedMonth(value);
+                    handleDateChange(selectedYear, value, selectedDay);
+                  }}
+                  infinite={monthOptions.length > 12}
+                />
+                <WheelPicker
+                  options={dayOptions}
+                  value={selectedDay}
+                  onValueChange={(value) => {
+                    setSelectedDay(value);
+                    handleDateChange(selectedYear, selectedMonth, value);
+                  }}
+                  infinite={dayOptions.length > 7}
+                />
+                <WheelPicker
+                  options={yearOptions}
+                  value={selectedYear}
+                  onValueChange={(value) => {
+                    setSelectedYear(value);
+                    handleDateChange(value, selectedMonth, selectedDay);
+                  }}
+                  infinite={false}
+                />
+              </WheelPickerWrapper>
+            </div>
+          )}
+
           {fieldState.error && (
             <span className='mt-1 block text-sm text-red-500'>
               {fieldState.error.message}
