@@ -189,8 +189,9 @@ export const DatePickerFieldWheel = ({
                 value={formattedValue}
                 status={fieldState.invalid ? 'error' : undefined}
                 onClick={() => {
-                  if (!disabled) {
-                    setIsOpen(true);
+                  if (disabled) return;
+                  setIsOpen((prev) => !prev);
+                  if (!isOpen) {
                     handlePosition();
                     initializePicker();
                   }
