@@ -1,9 +1,8 @@
-import { CheckCircleFilled, RightOutlined } from '@ant-design/icons';
-import { memo, useCallback } from 'react';
-
-import { StepIndicatorProps } from '../../libs/types/homeContents';
-import { cn } from '../../libs/utils/utils';
+import { RightOutlined } from '@ant-design/icons';
 import { CheckCircle } from 'lucide-react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+
+import { cn } from '../../libs/utils/utils';
 
 interface StepItemProps {
   step: number;
@@ -37,20 +36,20 @@ const StepItem = memo<StepItemProps>(
 
     const getStepStyles = () => {
       if (isCompleted) {
-        return 'bg-[#52c41a] text-white border-[#52c41a]';
+        return 'bg-brand-green text-white border-brand-green';
       }
       if (isActive) {
-        return 'bg-[#02ADEF] text-white border-[#02ADEF] ring-4 ring-[#02ADEF]/20';
+        return 'bg-brand-blue text-white border-brand-blue ring-4 ring-brand-blue/20';
       }
       if (isDisabled) {
         return 'bg-gray-100 text-gray-400 border-gray-200';
       }
-      return 'bg-white text-gray-600 border-gray-300 hover:border-[#02ADEF]/50';
+      return 'bg-white text-gray-600 border-gray-300 hover:border-brand-blue/50';
     };
 
     const getTextStyles = () => {
-      if (isActive) return 'text-[#02ADEF]';
-      if (isCompleted) return 'text-[#52c41a]';
+      if (isActive) return 'text-brand-blue';
+      if (isCompleted) return 'text-brand-green';
       if (isDisabled) return 'text-gray-400';
       return 'text-gray-600';
     };
@@ -81,7 +80,7 @@ const StepItem = memo<StepItemProps>(
             </div>
 
             {/* Step Content */}
-            <div className='max-w-[200px] text-center'>
+            <div className='max-w-48 text-center'>
               <h3
                 className={cn(
                   'mb-1 text-base font-bold transition-colors sm:text-lg',
@@ -106,8 +105,11 @@ const StepItem = memo<StepItemProps>(
         <div className='flex-shrink-0 sm:hidden'>
           <div
             className={cn(
-              'flex min-w-[100px] cursor-pointer flex-col items-center px-3 py-2 transition-all duration-300',
-              isClickable && !isDisabled ? 'active:scale-95' : '',
+              'flex min-w-32 origin-center transform-gpu flex-col items-center px-4 py-2 transition-all duration-300 will-change-transform',
+              // bring active/completed to front so scaling doesn't visually overlap neighbors
+              isActive || isCompleted ? 'z-10' : 'z-0',
+              // small active press scale — reduced so it doesn't break layout
+              isClickable && !isDisabled ? 'active:scale-[0.98]' : '',
             )}
             onClick={handleClick}
           >
@@ -148,25 +150,18 @@ const StepItem = memo<StepItemProps>(
 
 StepItem.displayName = 'StepItem';
 
-export const ProgressStepper = memo<StepIndicatorProps>(
-  ({ currentStep, visitedSteps, selectedPlan, onStepClick }) => {
-    const steps = [
-      {
-        step: 1,
-        title: 'Quote Details',
-        description: 'Home Info',
-      },
-      {
-        step: 2,
-        title: 'Personal Info',
-        description: "Policyholder's Detail",
-      },
-      {
-        step: 3,
-        title: 'Review & Pay',
-        description: 'Confirm & checkout',
-      },
-    ];
+interface ProgressStepperProps {
+  currentStep: number;
+  visitedSteps: Set<number>;
+  selectedPlan?: string;
+  onStepClick: (step: number) => void;
+  steps: { step: number; title: string; description: string }[];
+  title: string;
+}
+
+export const ProgressStepper = memo<ProgressStepperProps>(
+  ({ currentStep, visitedSteps, selectedPlan, onStepClick, steps, title }) => {
+    const renderedSteps = steps;
 
     const isStepCompleted = useCallback(
       (step: number): boolean => {
@@ -182,15 +177,25 @@ export const ProgressStepper = memo<StepIndicatorProps>(
       [visitedSteps, currentStep],
     );
 
+    // Generic disable rule:
+    // - step 1 always enabled
+    // - other steps require selectedPlan (insurance context) and the previous step visited
+    // If no selectedPlan prop is provided, ignore that rule
     const isStepDisabled = useCallback(
       (step: number): boolean => {
-        if (step === 2) {
-          return !selectedPlan || !visitedSteps.has(1);
+        // Step 1 is always enabled
+        if (step === 1) return false;
+
+        // If no 'selectedPlan' prop is passed at all -> ignore plan rule
+        const hasPlanDependency = typeof selectedPlan !== 'undefined';
+
+        if (hasPlanDependency && !selectedPlan) {
+          // if this flow actually depends on plan selection and none is chosen → disable
+          return true;
         }
-        if (step === 3) {
-          return !selectedPlan || !visitedSteps.has(2);
-        }
-        return false;
+
+        // otherwise, allow enabling if previous step is visited
+        return !visitedSteps.has(step);
       },
       [selectedPlan, visitedSteps],
     );
@@ -202,6 +207,35 @@ export const ProgressStepper = memo<StepIndicatorProps>(
       [onStepClick],
     );
 
+    const desktopScrollRef = useRef<HTMLDivElement | null>(null);
+    const mobileScrollRef = useRef<HTMLDivElement | null>(null);
+    const [desktopAlignStart, setDesktopAlignStart] = useState(false);
+    const [mobileAlignStart, setMobileAlignStart] = useState(false);
+
+    useEffect(() => {
+      const checkOverflowAndReset = (
+        el: HTMLDivElement | null,
+        setAlign: (v: boolean) => void,
+      ) => {
+        if (!el) return;
+        const overflowing = el.scrollWidth > el.clientWidth;
+        setAlign(overflowing);
+        if (overflowing) {
+          // ensure initial view is at the left (step 1)
+          el.scrollLeft = 0;
+        }
+      };
+
+      const checkAll = () => {
+        checkOverflowAndReset(desktopScrollRef.current, setDesktopAlignStart);
+        checkOverflowAndReset(mobileScrollRef.current, setMobileAlignStart);
+      };
+
+      checkAll();
+      window.addEventListener('resize', checkAll);
+      return () => window.removeEventListener('resize', checkAll);
+    }, [renderedSteps.length]);
+
     return (
       <div className='mb-6 w-full sm:mb-8'>
         {/* Page Title */}
@@ -210,84 +244,109 @@ export const ProgressStepper = memo<StepIndicatorProps>(
             className='text-xl font-bold text-gray-900 sm:text-2xl'
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
-            Home Content Insurance Quotation
+            {title}
           </span>
         </div>
 
         {/* Main Step Indicator */}
-        <div className='rounded-2xl border border-white/60 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-blue-50/50 p-3 shadow-md backdrop-blur-sm sm:p-6'>
-          {/* Desktop/Tablet Horizontal Layout */}
-          <div className='hidden items-center justify-center gap-8 sm:flex'>
-            {steps.map((stepInfo, index) => (
-              <div key={stepInfo.step} className='flex items-center'>
-                <StepItem
-                  step={stepInfo.step}
-                  title={stepInfo.title}
-                  description={stepInfo.description}
-                  isActive={stepInfo.step === currentStep}
-                  isCompleted={isStepCompleted(stepInfo.step)}
-                  isClickable={isStepClickable(stepInfo.step)}
-                  isDisabled={isStepDisabled(stepInfo.step)}
-                  isLast={true}
-                  onClick={handleStepClick}
-                />
-
-                {/* Connector Line */}
-                {index < steps.length - 1 && (
-                  <div className='mx-6'>
-                    <div className='relative h-0.5 w-16 overflow-hidden bg-gradient-to-r from-gray-300 to-gray-200'>
-                      <div
-                        className={cn(
-                          'h-full bg-gradient-to-r from-[#02ADEF] to-[#52c41a] transition-all duration-700',
-                          isStepCompleted(stepInfo.step) ? 'w-full' : 'w-0',
-                        )}
+        <div className='rounded-2xl border border-white/60 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-blue-50/50  shadow-md backdrop-blur-sm sm:p-6'>
+          <div className='hidden sm:block'>
+            {/* horizontal scroll container for wide step lists */}
+            <div
+              ref={desktopScrollRef}
+              className='scrollbar-hide overflow-x-auto'
+            >
+              {/* center when content fits, left-align when overflowing */}
+              <div
+                className={`flex p-3 ${desktopAlignStart ? 'justify-start' : 'justify-center'}`}
+              >
+                <div className='inline-flex items-center whitespace-nowrap px-3'>
+                  {renderedSteps.map((stepInfo, index) => (
+                    <div
+                      key={stepInfo.step}
+                      className='flex flex-shrink-0 items-center'
+                    >
+                      <StepItem
+                        step={stepInfo.step}
+                        title={stepInfo.title}
+                        description={stepInfo.description}
+                        isActive={stepInfo.step === currentStep}
+                        isCompleted={isStepCompleted(stepInfo.step)}
+                        isClickable={isStepClickable(stepInfo.step)}
+                        isDisabled={isStepDisabled(stepInfo.step)}
+                        isLast={index === renderedSteps.length - 1}
+                        onClick={handleStepClick}
                       />
+
+                      {/* Connector Line */}
+                      {index < renderedSteps.length - 1 && (
+                        <div className='mx-10'>
+                          <div className='relative h-0.5 w-16 overflow-hidden bg-gradient-to-r from-gray-300 to-gray-200'>
+                            <div
+                              className={cn(
+                                'h-full bg-gradient-to-r from-brand-blue to-brand-green transition-all duration-700',
+                                isStepCompleted(stepInfo.step)
+                                  ? 'w-full'
+                                  : 'w-0',
+                              )}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
-            ))}
+            </div>
           </div>
 
           {/* Mobile Horizontal Scrolling Layout */}
           <div className='sm:hidden'>
-            {/* Horizontal Scrolling Steps */}
-            <div className='scrollbar-hide overflow-x-auto'>
+            {/* Horizontal Scrolling Steps (center when few, scroll when many) */}
+            <div
+              ref={mobileScrollRef}
+              className='scrollbar-hide overflow-x-auto'
+            >
               <div
-                className='flex items-center gap-2 pb-2'
-                style={{ minWidth: 'fit-content' }}
+                className={`flex ${mobileAlignStart ? 'justify-start' : 'justify-center'}`}
               >
-                {steps.map((stepInfo, index) => (
-                  <div key={stepInfo.step} className='flex items-center'>
-                    <StepItem
-                      step={stepInfo.step}
-                      title={stepInfo.title}
-                      description={stepInfo.description}
-                      isActive={stepInfo.step === currentStep}
-                      isCompleted={isStepCompleted(stepInfo.step)}
-                      isClickable={isStepClickable(stepInfo.step)}
-                      isDisabled={isStepDisabled(stepInfo.step)}
-                      isLast={true} // No connector lines in mobile horizontal
-                      onClick={handleStepClick}
-                    />
+                {/* use gap on the container and w-max to ensure consistent spacing */}
+                <div className='inline-flex w-max items-center pb-2'>
+                  {renderedSteps.map((stepInfo, index) => (
+                    <div
+                      key={stepInfo.step}
+                      className='flex flex-shrink-0 items-center'
+                    >
+                      <StepItem
+                        step={stepInfo.step}
+                        title={stepInfo.title}
+                        description={stepInfo.description}
+                        isActive={stepInfo.step === currentStep}
+                        isCompleted={isStepCompleted(stepInfo.step)}
+                        isClickable={isStepClickable(stepInfo.step)}
+                        isDisabled={isStepDisabled(stepInfo.step)}
+                        isLast={index === renderedSteps.length - 1} // No connector lines in mobile horizontal
+                        onClick={handleStepClick}
+                      />
 
-                    {/* Horizontal Connector */}
-                    {index < steps.length - 1 && (
-                      <div className='mx-2 flex-shrink-0'>
-                        <RightOutlined
-                          className={cn(
-                            'h-4 w-4 transition-colors',
-                            isStepCompleted(stepInfo.step)
-                              ? 'text-[#52c41a]'
-                              : stepInfo.step === currentStep
-                                ? 'text-[#02ADEF]'
-                                : 'text-gray-300',
-                          )}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      {/* Horizontal Connector: fixed width, no extra margins, non-interactive */}
+                      {index < renderedSteps.length - 1 && (
+                        <div className='pointer-events-none z-0 mx-2 flex w-6 flex-shrink-0 items-center justify-center'>
+                          <RightOutlined
+                            className={cn(
+                              'h-4 w-4 transition-colors',
+                              isStepCompleted(stepInfo.step)
+                                ? 'text-brand-green'
+                                : stepInfo.step === currentStep
+                                  ? 'text-brand-blue'
+                                  : 'text-gray-300',
+                            )}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

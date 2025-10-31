@@ -92,6 +92,24 @@ const INITIAL_CUSTOMIZATION_DATA: CustomizationData = {
   homeContent: '30000', // Default $30,000 (smallest option)
   renovation: '10000', // Default $10,000 (smallest option)
 };
+
+const homeContentsInsuranceSteps = [
+  {
+    step: 1,
+    title: 'Quote Details',
+    description: 'Home Info',
+  },
+  {
+    step: 2,
+    title: 'Personal Info',
+    description: "Policyholder's Detail",
+  },
+  {
+    step: 3,
+    title: 'Review & Pay',
+    description: 'Confirm & checkout',
+  },
+];
 //#endregion
 
 const QuoteDetail = () => {
@@ -585,6 +603,8 @@ const QuoteDetail = () => {
       <AppBar />
       <div className='mx-auto max-w-6xl px-3 py-4 pb-24 sm:px-4 sm:py-6 sm:pb-32 lg:px-6 lg:py-8'>
         <ProgressStepper
+          steps={homeContentsInsuranceSteps}
+          title='Home Contents Insurance Quotation'
           currentStep={currentStep}
           onStepClick={handleStepClick}
           visitedSteps={visitedStepsSet}
