@@ -456,7 +456,7 @@ export default function QuoteDetailPage() {
       homeOwnership: 'owner',
       homeType: 'hdb',
       unitType: '4-room',
-      StartDate: '2025-10-25',
+      startDate: '2025-10-25',
       promoCode: '',
       redirectUrl: '',
       returnUrl: '',

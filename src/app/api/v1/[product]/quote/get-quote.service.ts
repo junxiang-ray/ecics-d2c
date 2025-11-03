@@ -536,8 +536,8 @@ export async function getQuoteForHomeContent(
       homeOwnership: data.homeOwnership,
       homeType: data.homeType,
       unitType: data.unitType,
-      StartDate: data.startDate,
-      promoCode: data.startDate,
+      startDate: data.startDate,
+      promoCode: data.promoCode,
       redirectUrl: '',
       returnUrl: '',
     };
@@ -579,28 +579,22 @@ export async function getQuoteForHomeContent(
       logger.info(`Product info: ${JSON.stringify(productType)}`);
       logger.info(`Quote info: ${JSON.stringify(quoteFound)}`);
       logger.info(`Promo code info: ${JSON.stringify(promoCodeInfo)}`);
+      logger.info(`quoteData: ${JSON.stringify(quoteInfoRes)}`);
 
       let quoteInfo = null;
       const quoteData = {
-        quote_id: quoteInfoRes.quote.quote_id,
-        quote_no: quoteInfoRes.quote.quote_no,
-        policy_id: quoteInfoRes.quote.policy_id,
-        product_id: quoteInfoRes.quote.product_id,
-        proposal_id: quoteInfoRes.quote.proposal_id,
-        // phone: data.personal_info.phone,
-        // email: data.personal_info.email,
-        // name: data.personal_info?.name || '',
+        quote_id: quoteInfoRes.quoteId,
+        proposal_id: quoteInfoRes.proposalId,
         quote_res_from_ISP: getQuoteRes,
         data: {
-          plans: quoteInfoRes.data.plan,
+          plans: quoteInfoRes.plan,
         },
-        // partner_code: data?.partner_code || '',
-        expiration_date: new Date(quoteInfoRes.quote.quote_expiry_date),
         key: data.key,
         promo_code_id: promoCodeInfo?.id || null,
         product_type_id: productType?.id || null,
         is_finalized: false,
       };
+      logger.info(`quoteData: ${JSON.stringify(quoteData)}`);
 
       if (quoteFound) {
         quoteInfo = await prisma.quote.update({

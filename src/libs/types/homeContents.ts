@@ -171,7 +171,7 @@ export interface HomeContentQuoteCreationPayload {
   homeType: string;
   homeOwnership: string;
   unitType: string;
-  StartDate: string;
+  startDate: string;
   promoCode: string;
   redirectUrl: string;
   returnUrl: string;

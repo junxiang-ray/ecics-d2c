@@ -7,6 +7,7 @@ import { capitalizeFirstLetter } from '@/app/api/utils/text.helpers';
 import { saveQuoteDTO } from './quote.dto';
 
 export async function saveQuote(data: saveQuoteDTO) {
+  console.log(`saving the quote here with ${JSON.stringify(data)}`);
   const existingQuote = await prisma.quote.findFirst({
     where: {
       key: data.key,
