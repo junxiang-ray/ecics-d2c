@@ -45,6 +45,7 @@ export const ROUTES = {
   },
   HOMECONTENT: {
     LOGIN: '/home-contents/insurance/',
+    QUOTE_DETAIL: '/home-contents/quote-detail',
     REVIEW_INFO_DETAIL: '/home-contents/review-info-detail',
   },
 };

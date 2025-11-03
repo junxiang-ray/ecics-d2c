@@ -30,6 +30,7 @@ const NoSingpassLoginSection = ({
   const [isUserActive, setIsUserActive] = useState(false);
   const isMaid = productType === ProductType.MAID;
   const isMotorcycle = productType === ProductType.MOTORCYCLE;
+  const isHomeContents = productType === ProductType.HOMECONTENTS;
   const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
 
   const { mutate: requestLogin } = useRequestLogin(PRODUCT_NAME.CAR, {
@@ -49,7 +50,9 @@ const NoSingpassLoginSection = ({
       ? PRODUCT_NAME.MAID
       : isMotorcycle
         ? PRODUCT_NAME.MOTORCYCLE
-        : PRODUCT_NAME.CAR,
+        : isHomeContents
+          ? PRODUCT_NAME.HOME_CONTENT
+          : PRODUCT_NAME.CAR,
   );
 
   const handleLogin = () => {

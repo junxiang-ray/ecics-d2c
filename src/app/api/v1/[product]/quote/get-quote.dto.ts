@@ -116,15 +116,18 @@ export const generateQuoteForMotorcycleSchema = z.object({
 //#endregion
 
 //#region HomeContentQuote gen
+
 export const generateQuoteForHomeContentSchema = z.object({
   key: z.string().min(5, 'Key must be at least 5 characters long'),
-  maid_type: z.string(),
-  plan_period: z.string(),
-  start_date: z.string().regex(REGEX_VALUES.DATE_OF_BIRTH),
-  end_date: z.string().regex(REGEX_VALUES.DATE_OF_BIRTH),
-  promo_code: z.string().optional(),
-  partner_code: z.string().optional(),
-  personal_info: z.any().optional(),
-  maid_info: z.any().optional(),
+  homeOwnership: z.string(),
+  homeType: z.string(),
+  startDate: z.string().regex(REGEX_VALUES.DATE_OF_BIRTH),
+  unitType: z.string().optional(),
+  promoCode: z.string().optional(),
 });
+
+export type generateHomeContentQuoteDTO = z.infer<
+  typeof generateQuoteForHomeContentSchema
+>;
+
 //#endregion

@@ -4,7 +4,7 @@ export const PRODUCT_NAME = {
   MOTOR: 'motor',
   MOTORCYCLE: 'b2c_motorcycle2',
   RENEWAL: 'renewal',
-  HOME_CONTENT: 'home-content', /// <- change this when API ready
+  HOME_CONTENT: 'b2c_hc', /// <- change this when API ready
 } as const;
 
 export type ProductTypeWeb = (typeof PRODUCT_NAME)[keyof typeof PRODUCT_NAME];

@@ -1,10 +1,8 @@
 'use client';
 
-import { useAppSelector } from '@/redux/store';
-
-import { PolicyDetail } from './PolicyDetail';
-import HomeContentInsuranceLayout from '../HomeContentInsuranceLayout';
 import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
+
+import { useAppSelector } from '@/redux/store';
 
 export default function BasicDetailPage() {
   const isSingPassFlow = useAppSelector(

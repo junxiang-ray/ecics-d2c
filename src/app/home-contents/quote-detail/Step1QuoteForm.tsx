@@ -29,13 +29,16 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { AddOnCard } from '@/components/ui/addOnCard';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/cardNew';
 import { DateInput } from '@/components/ui/dateInput';
 import { Label } from '@/components/ui/label';
+import { OptionSelector } from '@/components/ui/optionSelector';
 import { PlanCard } from '@/components/ui/planCard';
 import { PremiumSummary } from '@/components/ui/premiumSummary';
 import { Select } from '@/components/ui/select';
 
+import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import {
   BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,
@@ -45,11 +48,6 @@ import {
   RENOVATION_COVERAGE_OPTIONS,
   UNIT_TYPES,
 } from '@/constants/home.content.constants';
-
-import { ADD_ONS } from '@/constants/home.content.addon.constants';
-
-import { Button } from '../../../../components/ui/button';
-import { OptionSelector } from '@/components/ui/optionSelector';
 
 interface Step1Props {
   formData: QuoteForm;

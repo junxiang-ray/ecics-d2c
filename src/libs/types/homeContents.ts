@@ -120,7 +120,7 @@ export interface AgeLimit {
 
 // Ownership types
 export interface OwnershipType {
-  value: 'owner-living-in' | 'landlord-renting-out' | 'tenant';
+  value: 'owner' | 'landlord' | 'tenant';
   label: string;
   description?: string;
 }
@@ -158,4 +158,73 @@ export interface CustomizationData {
   building: string;
   homeContent: string;
   renovation: string;
+}
+
+///ENDPOINTS
+export interface HomeContentResponse {
+  message: string;
+  data: any;
+}
+
+export interface HomeContentQuoteCreationPayload {
+  key: string;
+  homeType: string;
+  homeOwnership: string;
+  unitType: string;
+  StartDate: string;
+  promoCode: string;
+  redirectUrl: string;
+  returnUrl: string;
+}
+
+export interface HomeContentQuote {
+  status: number;
+  txt: string;
+  data: HomeContentQuoteData;
+}
+
+export interface HomeContentQuoteData {
+  quoteId: string;
+  proposalId: string;
+  plan: HomeContentPlan[];
+  coverageOptions: HomeContentsCoverage[];
+  availableOptionalBenefit?: HomeContentAvailableOptionalBenefit[];
+}
+
+export interface HomeContentPlan {
+  id: string;
+  name: string;
+  premiumBeforeGst: number;
+}
+
+export interface HomeContentsCoverage {
+  id: string;
+  name: string;
+  applicableWhen?: HomeContentsApplicableWhen;
+  options: HomeContentsCoverageOptions[];
+}
+
+export interface HomeContentsApplicableWhen {
+  hasHDBFireInsurance: boolean;
+}
+
+export interface HomeContentsCoverageOptions {
+  amount: number;
+  label: string;
+  premium: number;
+}
+
+export interface HomeContentAvailableOptionalBenefit {
+  id: string;
+  name: string;
+  label: string;
+  sublabel: string;
+  subOptions?: HomeContentOptionalBenefitSubOptions[] | [];
+  prem?: number | null;
+}
+
+export interface HomeContentOptionalBenefitSubOptions {
+  amount: number;
+  label: string;
+  prem: number;
 }

@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Modal, Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { XIcon } from 'lucide-react';
+import React from 'react';
+
 import { cn } from '@/libs/utils/utils';
 
 interface DialogProps {

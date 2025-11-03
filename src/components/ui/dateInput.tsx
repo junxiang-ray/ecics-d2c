@@ -1,5 +1,4 @@
 import { clsx } from 'clsx';
-import { Calendar } from 'lucide-react';
 import { forwardRef, memo, useCallback } from 'react';
 import { twMerge } from 'tailwind-merge';
 

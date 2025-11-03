@@ -1,5 +1,6 @@
-import React from 'react';
 import { AlertCircle } from 'lucide-react';
+import React from 'react';
+
 import { cn } from '@/libs/utils/utils';
 
 type Variant = 'box' | 'inline';

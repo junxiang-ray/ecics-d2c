@@ -1,23 +1,26 @@
+import { CheckCircle, User } from 'lucide-react';
 import { memo } from 'react';
-import { User, Shield, CheckCircle } from 'lucide-react';
+
+import {
+  CustomizationData,
+  InsurancePlan,
+  MyInfoData,
+  PersonalInfoForm,
+  PromoCodeStatus,
+  QuoteForm,
+  SelectedAddOn,
+} from '@/libs/types/homeContents';
+import { cn } from '@/libs/utils/utils';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/cardNew';
+import { DateInput } from '@/components/ui/dateInput';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select';
-import { DateInput } from '@/components/ui/dateInput';
-import { cn } from '@/libs/utils/utils';
-import {
-  PersonalInfoForm,
-  InsurancePlan,
-  SelectedAddOn,
-  PromoCodeStatus,
-  MyInfoData,
-  QuoteForm,
-  CustomizationData,
-} from '@/libs/types/homeContents';
-import { NATIONALITIES } from '@/constants/home.content.constants';
 import { PremiumSummary } from '@/components/ui/premiumSummary';
+import { Select } from '@/components/ui/select';
+
+import { NATIONALITIES } from '@/constants/home.content.constants';
 
 interface Step2PersonalInfoProps {
   personalInfoData: PersonalInfoForm;
@@ -89,7 +92,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                   <Button
                     onClick={onRetrieveMyInfo}
                     disabled={myInfoData.isLoading}
-                    className='flex items-center gap-3 rounded-xl bg-red-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-red-700 hover:shadow-xl'
+                    className='font-semiboldshadow-lg flex items-center  bg-red-500 py-3 transition-all duration-300 hover:bg-red-500 hover:shadow-xl'
                   >
                     {myInfoData.isLoading ? (
                       <>
@@ -98,12 +101,12 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                       </>
                     ) : (
                       <>
-                        <Shield className='size-5 text-white' />
-                        <span>Retrieve MyInfo with</span>
+                        {/* <Shield className='size-5 text-white' /> */}
+                        {/* <span>Retrieve MyInfo with</span> */}
                         <img
-                          src='/singpass.svg'
+                          src='/singpass-white-inline.svg'
                           alt='Singpass'
-                          className='h-4 w-auto'
+                          className='h-8 '
                         />
                       </>
                     )}

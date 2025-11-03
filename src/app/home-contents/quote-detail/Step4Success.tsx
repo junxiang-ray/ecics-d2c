@@ -1,28 +1,27 @@
 //#region Imports
-import { memo } from 'react';
 import {
-  CheckCircle,
-  Star,
-  Shield,
-  Gift,
   Check,
+  CheckCircle,
   Download,
-  Phone,
+  FileText,
+  Gift,
   Mail,
   MapPin,
-  FileText,
+  Phone,
+  Shield,
+  Star,
 } from 'lucide-react';
+import { memo } from 'react';
 
 import {
-  QuoteForm,
-  PersonalInfoForm,
   InsurancePlan,
+  PersonalInfoForm,
+  QuoteForm,
   SelectedAddOn,
 } from '@/libs/types/homeContents';
-
 import {
-  formatDateForDisplay,
   calculateExpiryDate,
+  formatDateForDisplay,
   getSelectedAddOnDetails,
 } from '@/libs/utils/calculations';
 //#endregion
@@ -97,7 +96,7 @@ const Step4Success = memo<Step4Props>(
 
     const getOwnershipDisplay = () => {
       const ownershipMap = {
-        'owner-living-in': 'Owner Living in Property',
+        owner: 'Owner Living in Property',
         tenant: 'Tenant',
       };
       return (

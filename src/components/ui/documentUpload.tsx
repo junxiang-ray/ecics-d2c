@@ -1,7 +1,9 @@
+import { CheckCircle2, FileText, Upload, X } from 'lucide-react';
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+
 import { cn } from '@/libs/utils/utils';
-import { Upload, CheckCircle2, FileText, X } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 
 export interface DocumentUploadItem {
   id: string;

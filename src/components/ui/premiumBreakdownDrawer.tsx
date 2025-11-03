@@ -11,12 +11,11 @@ import {
 import { calculateCoveragePremium } from '@/libs/utils/calculations';
 
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
-
 import {
   BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,
-  HOME_TYPES,
   HOME_OWNERSHIP_TYPES,
+  HOME_TYPES,
   RENOVATION_COVERAGE_OPTIONS,
   UNIT_TYPES,
 } from '@/constants/home.content.constants';

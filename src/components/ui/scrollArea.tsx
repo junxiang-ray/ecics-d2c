@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { ConfigProvider } from 'antd';
+import React from 'react';
+
 import { cn } from '@/libs/utils/utils';
 
 interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {

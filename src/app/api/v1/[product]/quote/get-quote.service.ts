@@ -1,5 +1,6 @@
 import apiServer, { handleApiCallToISP } from '@/app/api/configs/api.config';
 import { CAR_INSURANCE } from '@/app/api/constants/car.insurance';
+import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
 import { MAID_INSURANCE } from '@/app/api/constants/maid.insurance';
 import { MOTORCYCLE_INSURANCE } from '@/app/api/constants/motorcycle.insurance';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
@@ -12,7 +13,11 @@ import { convertDate, convertDateDash } from '@/app/api/utils/date.helper';
 import { formatCarQuoteInfo } from './format-car-quote-data';
 import { formatMaidQuoteInfo } from './format-maid-quote.data';
 import { formatMotorCycleQuoteInfo } from './format-motorcycle-quote-data';
-import { generateQuoteDTO, generateQuoteForMaidDTO } from './get-quote.dto';
+import {
+  generateHomeContentQuoteDTO,
+  generateQuoteDTO,
+  generateQuoteForMaidDTO,
+} from './get-quote.dto';
 ///ADD NEW PRODUCTS HERE
 export async function getQuoteForCar(data: generateQuoteDTO) {
   try {
@@ -518,6 +523,144 @@ export async function getQuouteForMaid(data: generateQuoteForMaidDTO) {
   }
 }
 
-export async function getQuoteForHomeContent(data: generateQuoteDTO) {
-  //TO DO:
+export async function getQuoteForHomeContent(
+  data: generateHomeContentQuoteDTO,
+) {
+  try {
+    logger.info(
+      `Generating quote for home content with data: ${JSON.stringify(data)}`,
+    );
+
+    const payloadData = {
+      product_id: process.env.PRODUCT_HOMECONTENT_ID || '',
+      homeOwnership: data.homeOwnership,
+      homeType: data.homeType,
+      unitType: data.unitType,
+      StartDate: data.startDate,
+      promoCode: data.startDate,
+      redirectUrl: '',
+      returnUrl: '',
+    };
+
+    const getQuoteRes = await handleApiCallToISP(
+      `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/quote`,
+      payloadData,
+    );
+    logger.info(
+      `Response from generate quote for Home Contents: ${JSON.stringify(getQuoteRes)}`,
+    );
+
+    if (getQuoteRes.status === 0) {
+      const quoteInfoRes = getQuoteRes.data;
+      // const planMaidData = await formatMaidQuoteInfo(quoteInfoRes, data);
+      // logger.info(`Formatted quote data: ${JSON.stringify(planMaidData)}`);
+
+      const [productType, quoteFound, promoCodeInfo] = await Promise.all([
+        prisma.productType.findFirst({
+          where: { name: PRODUCT_NAME.HOME_CONTENT },
+        }),
+        prisma.quote.findFirst({
+          where: {
+            key: data.key,
+          },
+        }),
+        data.promoCode
+          ? prisma.promocode.findFirst({
+              where: {
+                code: data.promoCode,
+                products: {
+                  has: PRODUCT_NAME.MAID,
+                },
+              },
+            })
+          : null,
+      ]);
+
+      logger.info(`Product info: ${JSON.stringify(productType)}`);
+      logger.info(`Quote info: ${JSON.stringify(quoteFound)}`);
+      logger.info(`Promo code info: ${JSON.stringify(promoCodeInfo)}`);
+
+      let quoteInfo = null;
+      const quoteData = {
+        quote_id: quoteInfoRes.quote.quote_id,
+        quote_no: quoteInfoRes.quote.quote_no,
+        policy_id: quoteInfoRes.quote.policy_id,
+        product_id: quoteInfoRes.quote.product_id,
+        proposal_id: quoteInfoRes.quote.proposal_id,
+        // phone: data.personal_info.phone,
+        // email: data.personal_info.email,
+        // name: data.personal_info?.name || '',
+        quote_res_from_ISP: getQuoteRes,
+        data: {
+          plans: quoteInfoRes.data.plan,
+        },
+        // partner_code: data?.partner_code || '',
+        expiration_date: new Date(quoteInfoRes.quote.quote_expiry_date),
+        key: data.key,
+        promo_code_id: promoCodeInfo?.id || null,
+        product_type_id: productType?.id || null,
+        is_finalized: false,
+      };
+
+      if (quoteFound) {
+        quoteInfo = await prisma.quote.update({
+          where: { id: quoteFound.id },
+          data: quoteData,
+          omit: {
+            quote_res_from_ISP: true,
+            quote_finalize_from_ISP: true,
+          },
+          include: {
+            promo_code: {
+              select: {
+                code: true,
+                discount: true,
+                start_time: true,
+                end_time: true,
+                description: true,
+                products: true,
+                is_public: true,
+                is_show_count_down: true,
+              },
+            },
+          },
+        });
+      } else {
+        quoteInfo = await prisma.quote.create({
+          data: quoteData,
+          omit: {
+            quote_res_from_ISP: true,
+            quote_finalize_from_ISP: true,
+          },
+          include: {
+            promo_code: {
+              select: {
+                code: true,
+                discount: true,
+                start_time: true,
+                end_time: true,
+                description: true,
+                products: true,
+                is_public: true,
+                is_show_count_down: true,
+              },
+            },
+          },
+        });
+      }
+
+      logger.info(`Quote generated successfully: ${JSON.stringify(quoteInfo)}`);
+      return successRes({
+        data: quoteInfo,
+        message: 'Quote generated successfully',
+      });
+    }
+
+    return ErrFromISPRes(
+      getQuoteRes?.txt || 'Error generate quote for home content',
+    );
+  } catch (error) {
+    logger.error(`Error generate quote for home content: ${error}`);
+    throw new Error('Error generate quote for home content');
+  }
 }

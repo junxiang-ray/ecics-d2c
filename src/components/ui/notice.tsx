@@ -1,5 +1,6 @@
-import React from 'react';
 import { AlertTriangle, CheckCircle2, Info } from 'lucide-react';
+import React from 'react';
+
 import { cn } from '@/libs/utils/utils';
 
 type Tone = 'info' | 'warning' | 'success';

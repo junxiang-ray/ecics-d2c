@@ -1,29 +1,44 @@
 'use client';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
-import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
-import { ADD_ONS } from '@/constants/home.content.addon.constants';
-import { PLANS } from '@/constants/home.content.constants';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import {
-  QuoteForm,
-  PersonalInfoForm,
-  MyInfoData,
-  PromoCodeStatus,
   CustomizationData,
+  MyInfoData,
+  PersonalInfoForm,
+  PromoCodeStatus,
+  QuoteForm,
   SelectedAddOn,
 } from '@/libs/types/homeContents';
 import { calculateTotalPremium } from '@/libs/utils/calculations';
 import {
-  validateQuoteForm,
   isFormValid,
   validatePersonalInfoForm,
+  validateQuoteForm,
 } from '@/libs/utils/home-content';
-import { formatPromoCode, saveToLocalStorage } from '@/libs/utils/utils';
+import {
+  formatPromoCode,
+  generateKeyAndAttachToUrl,
+  saveToLocalStorage,
+} from '@/libs/utils/utils';
+
+import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
+
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { ADD_ONS } from '@/constants/home.content.addon.constants';
+import { PLANS } from '@/constants/home.content.constants';
+import { useGenerateHomeContentsQuote } from '@/hook/insurance/homeContentQuote';
+import { useRequestLog } from '@/hook/insurance/quote';
 import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
-import { clearQuote, clearMatchedMakeModel } from '@/redux/slices/quote.slice';
+import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
 import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch } from '@/redux/store';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+
+import Step1QuoteForm from './Step1QuoteForm';
+import Step2PersonalInfo from './Step2PersonalInfo';
+import Step3Summary from './Step3Summary';
+import Step4Success from './Step4Success';
 
 //#region Initial Form Data
 
@@ -33,7 +48,7 @@ const TOMORROW_DATE = new Date(Date.now() + 86400000)
 
 // Pre-computed initial state objects to prevent recreation
 const INITIAL_FORM_DATA: QuoteForm = {
-  ownership: 'owner-living-in',
+  ownership: 'owner',
   homeType: 'hdb',
   unitType: '4-room',
   policyStartDate: TOMORROW_DATE,
@@ -82,6 +97,10 @@ export default function QuoteDetailPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [visitedSteps, setVisitedSteps] = useState([1]);
 
+  //generate quote
+  const { mutateAsync: generateHomeContentQuote, isPending } =
+    useGenerateHomeContentsQuote();
+
   // Form data with memory-efficient initial values
   const [formData, setFormData] = useState<QuoteForm>(() => {
     if (typeof window !== 'undefined') {
@@ -100,6 +119,11 @@ export default function QuoteDetailPage() {
 
     return INITIAL_FORM_DATA;
   });
+
+  useEffect(() => {
+    const keyQuote = generateKeyAndAttachToUrl(initKey);
+    setKey(keyQuote);
+  }, []);
 
   const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
     INITIAL_PERSONAL_INFO,
@@ -141,6 +165,7 @@ export default function QuoteDetailPage() {
   const [privacyPopupOpen, setPrivacyPopupOpen] = useState(false);
   //#endregion
 
+  //#region Product type code
   ///Check product type here
   const pathname = usePathname();
 
@@ -173,7 +198,30 @@ export default function QuoteDetailPage() {
     dispatch(clearUserInfoCar());
     sessionStorage.clear();
     localStorage.clear();
+    requestLog();
   }, []);
+
+  function getProductName(): string {
+    switch (productType) {
+      case ProductType.HOMECONTENTS:
+        return PRODUCT_NAME.HOME_CONTENT;
+      case ProductType.CAR:
+        return PRODUCT_NAME.MOTOR;
+      case ProductType.MOTORCYCLE:
+        return PRODUCT_NAME.MOTORCYCLE;
+      case ProductType.MAID:
+        return PRODUCT_NAME.MAID;
+      default:
+        return PRODUCT_NAME.MOTOR;
+    }
+  }
+
+  const initKey = searchParams.get('key') || '';
+  const [key, setKey] = useState(initKey);
+
+  const { mutate: requestLog } = useRequestLog(getProductName());
+
+  //#endregion
 
   // Memoized computed values with early returns
   const currentPlan = useMemo(() => {
@@ -403,6 +451,28 @@ export default function QuoteDetailPage() {
 
     setIsLoading(true);
 
+    const payload = {
+      key: key,
+      homeOwnership: 'owner',
+      homeType: 'hdb',
+      unitType: '4-room',
+      StartDate: '2025-10-25',
+      promoCode: '',
+      redirectUrl: '',
+      returnUrl: '',
+    };
+    console.log(`formData = ${JSON.stringify(formData)}`);
+    console.log(`payload = ${JSON.stringify(formData)}`);
+
+    generateHomeContentQuote(payload)
+      .then((res) => {
+        setShowPlans(true);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log('ERROR');
+      });
+
     const timeoutId = setTimeout(() => {
       setShowPlans(true);
       setIsLoading(false);
@@ -562,5 +632,88 @@ export default function QuoteDetailPage() {
     }, 100);
     return () => clearTimeout(timeoutId);
   }, [scrollToElement]);
-  return <QuoteDetail />;
+
+  const steps = [
+    <Step1QuoteForm
+      key='Step 1'
+      formData={formData}
+      updateFormData={updateFormData}
+      errors={errors}
+      promoStatus={promoStatus}
+      setPromoStatus={setPromoStatus}
+      showPlans={showPlans}
+      showCustomization={showCustomization}
+      showAddOns={showAddOns}
+      selectedPlan={selectedPlan}
+      selectedAddOns={selectedAddOns}
+      customizationData={customizationData}
+      updateCustomizationData={updateCustomizationData}
+      isLoading={isLoading}
+      onCalculateQuote={handleCalculateQuote}
+      onPlanSelect={handlePlanSelect}
+      onCustomizationComplete={handleCustomizationComplete}
+      onAddOnToggle={handleAddOnToggle}
+      onAddOnOptionChange={handleAddOnOptionChange}
+      onNext={handleNext}
+      onBack={handleBack}
+      currentStep={currentStep}
+      hasViewedCustomization={hasViewedCustomization}
+      setHasViewedCustomization={setHasViewedCustomization}
+    />,
+    <Step2PersonalInfo
+      key='Step 2'
+      personalInfoData={personalInfoData}
+      updatePersonalInfoData={updatePersonalInfoData}
+      personalInfoErrors={personalInfoErrors}
+      myInfoData={myInfoData}
+      onRetrieveMyInfo={handleRetrieveMyInfo}
+      onNext={handleNext}
+      onBack={handleBack}
+      selectedPlan={currentPlan}
+      selectedAddOns={selectedAddOns}
+      totalPremium={totalPremium}
+      promoStatus={promoStatus}
+      currentStep={currentStep}
+      formData={formData}
+      customizationData={customizationData}
+    />,
+    <Step3Summary
+      key='Step 3'
+      formData={formData}
+      personalInfoData={personalInfoData}
+      selectedPlan={currentPlan}
+      selectedAddOns={selectedAddOns}
+      totalPremium={totalPremium}
+      promoStatus={promoStatus}
+      myInfoData={myInfoData}
+      onBack={handleBack}
+      onMakePayment={handleMakePayment}
+      onEditPolicyDetails={handleEditPolicyDetails}
+      onEditPolicyHolderInfo={handleEditPolicyHolderInfo}
+      onEditPropertyInfo={handleEditPropertyInfo}
+      currentStep={currentStep}
+      customizationData={customizationData}
+    />,
+    <Step4Success
+      key='Step 4'
+      selectedPlan={currentPlan}
+      selectedAddOns={selectedAddOns}
+      totalPremium={totalPremium}
+      formData={formData}
+      personalInfoData={personalInfoData}
+      policyDetailsOpen={policyDetailsOpen}
+      setPolicyDetailsOpen={setPolicyDetailsOpen}
+      helperDetailsOpen={helperDetailsOpen}
+      setHelperDetailsOpen={setHelperDetailsOpen}
+      insuredInfoOpen={insuredInfoOpen}
+      setInsuredInfoOpen={setInsuredInfoOpen}
+    />,
+  ];
+  return (
+    <QuoteDetail
+      steps={steps}
+      currentStep={currentStep}
+      onStepClick={handleStepClick}
+    />
+  );
 }

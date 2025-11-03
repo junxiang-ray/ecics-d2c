@@ -1,12 +1,13 @@
 'use client';
-import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
-import { ROUTES } from '@/constants/routes';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { ROUTES } from '@/constants/routes';
+
 export default function HomeContentPage() {
   const router = useRouter();
-  const basePath = ROUTES.INSURANCE_HOMECONTENTS.QUOTE_DETAILS;
+  // const basePath = ROUTES.INSURANCE_HOMECONTENTS.QUOTE_DETAILS;
+  const basePath = ROUTES.HOMECONTENT.QUOTE_DETAIL;
   const queryParams = new URLSearchParams();
 
   const searchParams = useSearchParams();
@@ -16,7 +17,7 @@ export default function HomeContentPage() {
   if (partnerCode) queryParams.append('partner_code', partnerCode);
 
   const queryString = queryParams.toString();
-
+  console.log(`${basePath}${queryString ? `?${queryString}` : ''}`);
   router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);
   return (
     <div className='flex h-screen w-full items-center justify-center'>

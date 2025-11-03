@@ -8,9 +8,9 @@ import {
 
 // Basic constants - loaded immediately
 export const HOME_OWNERSHIP_TYPES: OwnershipType[] = [
-  { value: 'owner-living-in', label: 'Owner', description: 'Living In' },
+  { value: 'owner', label: 'Owner', description: 'Living In' },
   {
-    value: 'landlord-renting-out',
+    value: 'landlord',
     label: 'Landlord',
     description: 'Renting out partially/fully',
   },

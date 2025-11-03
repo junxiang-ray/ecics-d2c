@@ -1,9 +1,11 @@
 'use client';
 
-import { ReactNode } from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import Error from '@/components/ui/error';
+import { ReactNode } from 'react';
+
 import { cn } from '@/libs/utils/utils';
+
+import Error from '@/components/ui/error';
 import { Label } from '@/components/ui/label';
 
 interface OptionSelectorOption {

@@ -1,31 +1,34 @@
 //#region Imports
+import { DollarSign, Edit, Shield, User } from 'lucide-react';
 import { memo } from 'react';
-import { Shield, User, DollarSign, Edit } from 'lucide-react';
+
+import {
+  CustomizationData,
+  InsurancePlan,
+  MyInfoData,
+  PersonalInfoForm,
+  PromoCodeStatus,
+  QuoteForm,
+  SelectedAddOn,
+} from '@/libs/types/homeContents';
+import {
+  calculateExpiryDate,
+  formatDateForDisplay,
+  getSelectedAddOnDetails,
+} from '@/libs/utils/calculations';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/cardNew';
 import { Label } from '@/components/ui/label';
+import { PremiumSummary } from '@/components/ui/premiumSummary';
 import { Separator } from '@/components/ui/separator';
-import {
-  QuoteForm,
-  PersonalInfoForm,
-  InsurancePlan,
-  SelectedAddOn,
-  PromoCodeStatus,
-  MyInfoData,
-  CustomizationData,
-} from '@/libs/types/homeContents';
+
+import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import {
   HOME_OWNERSHIP_TYPES,
   HOME_TYPES,
   UNIT_TYPES,
 } from '@/constants/home.content.constants';
-import {
-  formatDateForDisplay,
-  calculateExpiryDate,
-  getSelectedAddOnDetails,
-} from '@/libs/utils/calculations';
-import { PremiumSummary } from '@/components/ui/premiumSummary';
-import { ADD_ONS } from '@/constants/home.content.addon.constants';
 //#endregion
 
 interface SummarySection {
