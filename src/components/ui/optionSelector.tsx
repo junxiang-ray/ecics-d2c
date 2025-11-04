@@ -148,12 +148,11 @@ export function OptionSelector({
                       </p>
                       {isSelected && (
                         // keep this check for parity with category style (appears to the right of label)
-                        <CheckCircle2 className='size-4 flex-shrink-0 text-[#02ADEF]' />
+                        <CheckCircle2 className='size-4 flex-shrink-0 text-brand-blue' />
                       )}
                     </div>
-                    {/* For single-column subcategory-style we typically don't show a description.
-                        Keep description rendering for multi-column compact usage. */}
-                    {columns !== 1 && opt.description && (
+                    {/* Show description when provided, even in single-column compact variant */}
+                    {opt.description && (
                       <p className='m-0 mt-1 text-xs text-gray-500'>
                         {opt.description}
                       </p>
