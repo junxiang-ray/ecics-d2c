@@ -193,6 +193,10 @@ export const getPlanGroupPrefix = (
       { keyword: 'Third Party, Fire and Theft', prefix: 'TPFT' },
       { keyword: 'Third Party Only', prefix: 'TPO' },
     ],
+    [PRODUCT_NAME.HOME_CONTENT]: [
+      { keyword: '1 Year', prefix: '1YEAR' },
+      { keyword: '3 Year', prefix: '3YEAR' },
+    ],
   };
 
   const matched = mapping[planType]?.find((item) =>

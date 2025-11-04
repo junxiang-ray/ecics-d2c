@@ -8,5 +8,13 @@ export default function QuoteDetailPage() {
     (state) => state.general.isSingpassFlow,
   );
 
-  return <QuoteDetail />;
+  return (
+    <QuoteDetail
+      steps={[]}
+      currentStep={0}
+      onStepClick={function (targetStep: number): void {
+        return;
+      }}
+    />
+  );
 }

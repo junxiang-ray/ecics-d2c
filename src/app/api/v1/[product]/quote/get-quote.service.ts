@@ -569,17 +569,12 @@ export async function getQuoteForHomeContent(
               where: {
                 code: data.promoCode,
                 products: {
-                  has: PRODUCT_NAME.MAID,
+                  has: PRODUCT_NAME.HOME_CONTENT,
                 },
               },
             })
           : null,
       ]);
-
-      logger.info(`Product info: ${JSON.stringify(productType)}`);
-      logger.info(`Quote info: ${JSON.stringify(quoteFound)}`);
-      logger.info(`Promo code info: ${JSON.stringify(promoCodeInfo)}`);
-      logger.info(`quoteData: ${JSON.stringify(quoteInfoRes)}`);
 
       let quoteInfo = null;
       const quoteData = {
