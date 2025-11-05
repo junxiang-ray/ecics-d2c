@@ -39,6 +39,7 @@ import Step1QuoteForm from './Step1QuoteForm';
 import Step2PersonalInfo from './Step2PersonalInfo';
 import Step3Summary from './Step3Summary';
 import Step4Success from './Step4Success';
+import { ProgressStepper } from '@/components/new-ui/StepsCard';
 
 //#region Initial Form Data
 
@@ -220,6 +221,24 @@ export default function QuoteDetailPage() {
   const [key, setKey] = useState(initKey);
 
   const { mutate: requestLog } = useRequestLog(getProductName());
+
+  const homeContentsInsuranceSteps = [
+    {
+      step: 1,
+      title: 'Quote Details',
+      description: 'Home Info',
+    },
+    {
+      step: 2,
+      title: 'Personal Info',
+      description: "Policyholder's Detail",
+    },
+    {
+      step: 3,
+      title: 'Review & Pay',
+      description: 'Confirm & checkout',
+    },
+  ];
 
   //#endregion
 
@@ -711,9 +730,18 @@ export default function QuoteDetailPage() {
   ];
   return (
     <QuoteDetail
+      progressStepper={
+        <ProgressStepper
+          steps={homeContentsInsuranceSteps}
+          title='Home Contents Insurance Quotation'
+          currentStep={currentStep}
+          onStepClick={handleStepClick}
+          visitedSteps={visitedStepsSet}
+          selectedPlan=''
+        />
+      }
       steps={steps}
       currentStep={currentStep}
-      onStepClick={handleStepClick}
     />
   );
 }

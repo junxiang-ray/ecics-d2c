@@ -28,76 +28,19 @@ import { useAppDispatch } from '@/redux/store';
 
 //#endregion
 
-//#region Initial Form Data
-const TOMORROW_DATE = new Date(Date.now() + 86400000)
-  .toISOString()
-  .split('T')[0];
-
-// Pre-computed initial state objects to prevent recreation
-const INITIAL_FORM_DATA: QuoteForm = {
-  ownership: 'owner',
-  homeType: 'hdb',
-  unitType: '4-room',
-  policyStartDate: TOMORROW_DATE,
-  promoCode: '',
-};
-
-const INITIAL_PERSONAL_INFO: PersonalInfoForm = {
-  policyHolderFullName: '',
-  policyHolderNricFin: '',
-  policyHolderNationality: 'Singaporean',
-  policyHolderMobileNumber: '',
-  policyHolderEmail: '',
-  policyHolderDateOfBirth: '',
-  addressLine1: '',
-  addressLine2: '',
-  addressLine3: '',
-  postalCode: '',
-  mailingAddressDifferent: 'no',
-  mailingAddressLine1: '',
-  mailingAddressLine2: '',
-  mailingAddressLine3: '',
-  mailingPostalCode: '',
-  previousInsurerName: '',
-  otherInsurerName: '',
-};
-
-const INITIAL_CUSTOMIZATION_DATA: CustomizationData = {
-  hdbFireInsurance: 'yes', // Default to "Yes" - most common case
-  building: '100000', // Default $100,000 (smallest option)
-  homeContent: '30000', // Default $30,000 (smallest option)
-  renovation: '10000', // Default $10,000 (smallest option)
-};
-
-const homeContentsInsuranceSteps = [
-  {
-    step: 1,
-    title: 'Quote Details',
-    description: 'Home Info',
-  },
-  {
-    step: 2,
-    title: 'Personal Info',
-    description: "Policyholder's Detail",
-  },
-  {
-    step: 3,
-    title: 'Review & Pay',
-    description: 'Confirm & checkout',
-  },
-];
-//#endregion
-
 interface QuoteDetailProps {
+  progressStepper: React.ReactElement;
   steps: React.ReactElement[]; // array of React components with props already applied
   currentStep: number;
-  onStepClick: (targetStep: number) => void;
 }
 
-const QuoteDetail = ({ steps, currentStep, onStepClick }: QuoteDetailProps) => {
+const QuoteDetail = ({
+  progressStepper,
+  steps,
+  currentStep,
+}: QuoteDetailProps) => {
   //#region State Management
   // State management - using pre-computed initial objects
-  const [visitedSteps, setVisitedSteps] = useState([1]);
 
   // Legal document popup state
   const [eligibilityPopupOpen, setEligibilityPopupOpen] = useState(false);
@@ -157,21 +100,11 @@ const QuoteDetail = ({ steps, currentStep, onStepClick }: QuoteDetailProps) => {
 
   //#endregion
 
-  // Memoized visited steps set to prevent recreation
-  const visitedStepsSet = useMemo(() => new Set(visitedSteps), [visitedSteps]);
-
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/50'>
       <AppBar />
       <div className='mx-auto max-w-6xl px-3 py-4 pb-24 sm:px-4 sm:py-6 sm:pb-32 lg:px-6 lg:py-8'>
-        <ProgressStepper
-          steps={homeContentsInsuranceSteps}
-          title='Home Contents Insurance Quotation'
-          currentStep={currentStep}
-          onStepClick={onStepClick}
-          visitedSteps={visitedStepsSet}
-          selectedPlan=''
-        />
+        {currentStep < 4 && progressStepper}
         {currentStep === 1 && steps[0]}
         {currentStep === 2 && steps[1]}
         {currentStep === 3 && steps[2]}
