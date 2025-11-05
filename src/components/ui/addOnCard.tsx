@@ -56,14 +56,14 @@ export const AddOnCard = memo<AddOnCardProps>(
 
         <Card
           className={cn(
-            'relative shadow-md transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg sm:h-[280px]',
+            'relative shadow-md transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg sm:h-[320px]',
             'overflow-hidden border-2 bg-white',
             isSelected
               ? 'border-[#02ADEF] shadow-lg ring-2 ring-[#02ADEF]/20'
               : 'border-gray-200 hover:border-gray-300',
           )}
         >
-          <CardContent className='flex flex-col p-5 pb-8'>
+          <CardContent className='flex h-full flex-col p-5 pb-8'>
             {/* Header */}
             <div className='mb-3 flex items-start justify-between'>
               <div className='flex min-w-0 flex-1 items-center gap-3'>
@@ -97,40 +97,38 @@ export const AddOnCard = memo<AddOnCardProps>(
             </div>
 
             {/* Options Section */}
-            <div className='mb-6' style={{ minHeight: '50px' }}>
-              {addOn.hasOptions && addOn.options && isSelected ? (
-                <div className='space-y-2'>
-                  <Label className='text-xs font-semibold text-gray-700'>
-                    Select Coverage:
-                  </Label>
-                  <div className='flex gap-2'>
-                    {addOn.options.map((option, index) => (
-                      <button
-                        key={option.value}
-                        onClick={() => onOptionChange?.(option.value)}
-                        className={cn(
-                          'border border-gray-300  transition-all duration-200',
-                          'text-xs font-medium',
-                          'touch-target min-h-[36px]',
-                          'flex items-center justify-center rounded-md',
-                          'flex-1', // Equal width distribution
-                          selectedOption === option.value
-                            ? 'border-[#02ADEF] bg-[#02ADEF] font-semibold text-white shadow-md'
-                            : 'bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100',
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
+            {addOn.hasOptions && addOn.options && isSelected ? (
+              <div className='space-y-2'>
+                <Label className='text-xs font-semibold text-gray-700'>
+                  Select Coverage:
+                </Label>
+                <div className='flex gap-2'>
+                  {addOn.options.map((option, index) => (
+                    <button
+                      key={option.value}
+                      onClick={() => onOptionChange?.(option.value)}
+                      className={cn(
+                        'border border-gray-300  transition-all duration-200',
+                        'text-xs font-medium',
+                        'touch-target min-h-[36px]',
+                        'flex items-center justify-center rounded-md',
+                        'flex-1', // Equal width distribution
+                        selectedOption === option.value
+                          ? 'border-[#02ADEF] bg-[#02ADEF] font-semibold text-white shadow-md'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100',
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
                 </div>
-              ) : (
-                <div></div>
-              )}
-            </div>
-
+              </div>
+            ) : (
+              <div className='flex-grow'></div>
+            )}
+            {/* <div className='mb-3 flex-1'></div> */}
             {/* Action Button */}
-            <div className='mt-auto flex flex-auto items-center justify-center'>
+            <div className='mt-4 flex justify-center'>
               <Button
                 onClick={onToggle}
                 className={cn(
