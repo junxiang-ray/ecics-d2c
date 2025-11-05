@@ -796,7 +796,8 @@ const Step1QuoteForm = memo<Step1Props>(
 
                 <div
                   className={cn(
-                    'grid grid-cols-1 gap-8 transition-all duration-300',
+                    // grid ensures equal height when items-stretch is present
+                    'grid grid-cols-1 items-stretch gap-8 transition-all duration-300',
                     customizationData.hdbFireInsurance === 'yes'
                       ? 'lg:grid-cols-2'
                       : 'lg:grid-cols-3',
@@ -806,16 +807,18 @@ const Step1QuoteForm = memo<Step1Props>(
                 >
                   {/* Building Coverage - Hidden when HDB Fire Insurance is 'yes' */}
                   {customizationData.hdbFireInsurance !== 'yes' && (
-                    <div className='space-y-4'>
+                    <div className='flex w-full flex-col justify-between space-y-4 rounded-lg bg-white p-4'>
                       <Label className='flex items-center gap-3 text-lg font-semibold text-gray-700'>
                         <Home className='size-5 text-[#02ADEF]' />
                         Building Coverage{' '}
                         <span className='text-red-500'>*</span>
                       </Label>
+
                       <p className='mb-3 text-sm text-gray-600'>
                         Cover repair or reconstruction costs of any part of your
                         building damaged by unforeseen events
                       </p>
+
                       <Select
                         options={BUILDING_COVERAGE_OPTIONS.map(
                           (opt) => opt.label,
@@ -840,16 +843,18 @@ const Step1QuoteForm = memo<Step1Props>(
                   )}
 
                   {/* Home Content Coverage */}
-                  <div className='space-y-4'>
+                  <div className='flex w-full flex-col justify-between space-y-4 rounded-lg bg-white p-4'>
                     <Label className='flex items-center gap-3 text-lg font-semibold text-gray-700'>
                       <Shield className='size-5 text-[#02ADEF]' />
                       Home Content Coverage{' '}
                       <span className='text-red-500'>*</span>
                     </Label>
+
                     <p className='mb-3 text-sm text-gray-600'>
                       Cover loss or damage to your home contents including the
                       cost of removing debris
                     </p>
+
                     <Select
                       options={HOME_CONTENT_COVERAGE_OPTIONS.map(
                         (option) => option.label,
@@ -870,21 +875,23 @@ const Step1QuoteForm = memo<Step1Props>(
                             selected.value,
                           );
                       }}
-                      className='h-14 text-lg'
+                      className='h-14 w-full text-lg'
                       disabled={!customizationData.hdbFireInsurance}
                     />
                   </div>
 
                   {/* Renovation Coverage */}
-                  <div className='space-y-4'>
+                  <div className='flex w-full flex-col justify-between space-y-4 rounded-lg bg-white p-4'>
                     <Label className='flex items-center gap-3 text-lg font-semibold text-gray-700'>
                       <Briefcase className='size-5 text-[#02ADEF]' />
                       Renovation Coverage
                     </Label>
+
                     <p className='mb-3 text-sm text-gray-600'>
                       Cover repair costs of renovation in case of damage due to
                       insured perils
                     </p>
+
                     <Select
                       options={RENOVATION_COVERAGE_OPTIONS.map(
                         (option) => option.label,
@@ -902,7 +909,7 @@ const Step1QuoteForm = memo<Step1Props>(
                         if (selected)
                           updateCustomizationData('renovation', selected.value);
                       }}
-                      className='h-14 text-lg'
+                      className='h-14 w-full text-lg'
                       disabled={!customizationData.hdbFireInsurance}
                     />
                   </div>

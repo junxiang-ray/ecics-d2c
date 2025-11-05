@@ -270,7 +270,7 @@ export default function QuoteDetailPage() {
         if (field === 'homeType') {
           // Reset unit type when home type changes
           if (value === 'landed') {
-            newData.unitType = 'landed-single';
+            newData.unitType = '';
           } else if (value === 'hdb') {
             newData.unitType = '4-room';
           } else if (value === 'condo') {
@@ -453,16 +453,16 @@ export default function QuoteDetailPage() {
 
     const payload = {
       key: key,
-      homeOwnership: 'owner',
-      homeType: 'hdb',
-      unitType: '4-room',
-      startDate: '2025-10-25',
-      promoCode: '',
+      homeOwnership: formData.ownership,
+      homeType: formData.homeType,
+      unitType: formData.unitType,
+      startDate: formData.policyStartDate,
+      promoCode: formData.promoCode,
       redirectUrl: '',
       returnUrl: '',
     };
     console.log(`formData = ${JSON.stringify(formData)}`);
-    console.log(`payload = ${JSON.stringify(formData)}`);
+    console.log(`payload = ${JSON.stringify(payload)}`);
 
     generateHomeContentQuote(payload)
       .then((res) => {

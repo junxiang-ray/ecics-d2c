@@ -46,9 +46,9 @@ export const UNIT_TYPES: UnitType[] = [
     label: 'Executive/Multi-generation',
     homeTypes: ['hdb'],
   },
-  { value: 'landed-single', label: 'Single Story', homeTypes: ['landed'] },
-  { value: 'landed-double', label: 'Double Story', homeTypes: ['landed'] },
-  { value: 'landed-triple', label: 'Triple Story+', homeTypes: ['landed'] },
+  // { value: 'landed-single', label: 'Single Story', homeTypes: ['landed'] },
+  // { value: 'landed-double', label: 'Double Story', homeTypes: ['landed'] },
+  // { value: 'landed-triple', label: 'Triple Story+', homeTypes: ['landed'] },
 ];
 
 // Policy durations are now plan-based instead of form-based

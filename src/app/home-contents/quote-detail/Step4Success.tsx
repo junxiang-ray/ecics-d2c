@@ -84,9 +84,9 @@ const Step4Success = memo<Step4Props>(
         executive: 'Executive',
         '1-room': '1-Room',
         penthouse: 'Penthouse',
-        'landed-single': 'Single Storey',
-        'landed-double': 'Double Storey',
-        'landed-bungalow': 'Bungalow',
+        // 'landed-single': 'Single Storey',
+        // 'landed-double': 'Double Storey',
+        // 'landed-bungalow': 'Bungalow',
       };
       return (
         unitTypeMap[formData.unitType as keyof typeof unitTypeMap] ||
