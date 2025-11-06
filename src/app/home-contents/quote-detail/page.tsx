@@ -1,5 +1,5 @@
 'use client';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
@@ -17,23 +17,15 @@ import {
   validateQuoteForm,
 } from '@/libs/utils/home-content';
 import {
-  formatPromoCode,
   generateKeyAndAttachToUrl,
   saveToLocalStorage,
 } from '@/libs/utils/utils';
 
 import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import { PLANS } from '@/constants/home.content.constants';
 import { useGenerateHomeContentsQuote } from '@/hook/insurance/homeContentQuote';
-import { useRequestLog } from '@/hook/insurance/quote';
-import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
-import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
-import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
-import { useAppDispatch } from '@/redux/store';
 
 import Step1QuoteForm from './Step1QuoteForm';
 import Step2PersonalInfo from './Step2PersonalInfo';
@@ -160,67 +152,13 @@ export default function QuoteDetailPage() {
   const [helperDetailsOpen, setHelperDetailsOpen] = useState(false);
   const [insuredInfoOpen, setInsuredInfoOpen] = useState(false);
 
-  // Legal document popup state
-  const [eligibilityPopupOpen, setEligibilityPopupOpen] = useState(false);
-  const [termsPopupOpen, setTermsPopupOpen] = useState(false);
-  const [privacyPopupOpen, setPrivacyPopupOpen] = useState(false);
   //#endregion
 
   //#region Product type code
-  ///Check product type here
-  const pathname = usePathname();
-
-  function getProductTypeFromPathname(pathname: string): ProductType {
-    switch (true) {
-      case pathname.startsWith('/maid'):
-        return ProductType.MAID;
-      case pathname.startsWith('/motorcycle'):
-        return ProductType.MOTORCYCLE;
-      case pathname.startsWith('/home-contents'):
-        return ProductType.HOMECONTENTS;
-      default:
-        return ProductType.CAR;
-    }
-  }
-
-  const productType: ProductType = getProductTypeFromPathname(pathname);
-  ///get partner code and promo code
   const searchParams = useSearchParams();
-  const partnerCode = searchParams.get('partner_code') || '';
-  const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));
-
-  ///Reset all stored info
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(resetEcicsUserInfo());
-    dispatch(clearQuote());
-    dispatch(clearMatchedMakeModel());
-    dispatch(clearUserInfoCar());
-    sessionStorage.clear();
-    localStorage.clear();
-    requestLog();
-  }, []);
-
-  function getProductName(): string {
-    switch (productType) {
-      case ProductType.HOMECONTENTS:
-        return PRODUCT_NAME.HOME_CONTENT;
-      case ProductType.CAR:
-        return PRODUCT_NAME.MOTOR;
-      case ProductType.MOTORCYCLE:
-        return PRODUCT_NAME.MOTORCYCLE;
-      case ProductType.MAID:
-        return PRODUCT_NAME.MAID;
-      default:
-        return PRODUCT_NAME.MOTOR;
-    }
-  }
 
   const initKey = searchParams.get('key') || '';
   const [key, setKey] = useState(initKey);
-
-  const { mutate: requestLog } = useRequestLog(getProductName());
 
   const homeContentsInsuranceSteps = [
     {

@@ -35,6 +35,8 @@ export interface PersonalInfoForm {
   mailingPostalCode: string;
   previousInsurerName: string;
   otherInsurerName: string;
+  payNowAccountDifferent: 'yes' | 'no';
+  payNowAccount: string;
 }
 
 // MyInfo integration

@@ -132,6 +132,38 @@ export const PLANS: InsurancePlan[] = [
       'Most popular',
     ],
   },
+  {
+    id: '3-year',
+    name: '3 Year',
+    originalPrice: 675, // 3 years worth at $225/year (10% discount applied)
+    discountedPrice: 675,
+    discount: 10, // 10% discount already applied to the price
+    isPopular: true,
+    coverage: {
+      contents: 50000,
+      personalAccident: 30000,
+      personalLiability: 1000000,
+      alternativeAccommodation: 5000,
+      lossOfRent: 3000,
+      tenantLiability: 20000,
+    },
+    features: [
+      'Contents coverage up to $50,000',
+      'Personal accident protection up to $30,000',
+      'Personal liability coverage up to $1,000,000',
+      'Alternative accommodation up to $5,000',
+      'Loss of rent coverage up to $3,000',
+      'Priority customer support',
+      'Express claims processing',
+      'Worldwide coverage for personal belongings',
+    ],
+    highlights: [
+      'Best value',
+      'Save 10%',
+      'Long-term protection',
+      'Most popular',
+    ],
+  },
 ];
 
 export const INSURER_OPTIONS = [

@@ -68,16 +68,7 @@ const QuoteDetail = ({
   const productType: ProductType = getProductTypeFromPathname(pathname);
   ///get partner code and promo code
 
-  ///Reset all stored info
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
-    dispatch(resetEcicsUserInfo());
-    dispatch(clearQuote());
-    dispatch(clearMatchedMakeModel());
-    dispatch(clearUserInfoCar());
-    sessionStorage.clear();
-    localStorage.clear();
     requestLog();
   }, []);
 
