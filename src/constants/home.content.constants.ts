@@ -133,11 +133,11 @@ export const PLANS: InsurancePlan[] = [
     ],
   },
   {
-    id: '3-year',
-    name: '3 Year',
-    originalPrice: 675, // 3 years worth at $225/year (10% discount applied)
-    discountedPrice: 675,
-    discount: 10, // 10% discount already applied to the price
+    id: '5-year',
+    name: '5 Year',
+    originalPrice: 1000, // 3 years worth at $225/year (10% discount applied)
+    discountedPrice: 1000,
+    discount: 20, // 10% discount already applied to the price
     isPopular: true,
     coverage: {
       contents: 50000,

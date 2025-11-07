@@ -90,7 +90,7 @@ export default function QuoteDetailPage() {
   //#region State Management
   // State management - using pre-computed initial objects
   const [currentStep, setCurrentStep] = useState(1);
-  const [visitedSteps, setVisitedSteps] = useState([1]);
+  const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set([1]));
 
   //generate quote
   const { mutateAsync: generateHomeContentQuote, isPending } =
@@ -321,8 +321,9 @@ export default function QuoteDetailPage() {
   const handleStepClick = useCallback(
     (targetStep: number) => {
       if (targetStep === currentStep) return;
+      console.log(`visitedSteps = ${JSON.stringify(visitedSteps)}`);
 
-      if (visitedSteps.includes(targetStep)) {
+      if (visitedSteps.has(targetStep)) {
         setCurrentStep(targetStep);
         scrollToTop();
         return;
@@ -337,7 +338,7 @@ export default function QuoteDetailPage() {
           setErrors(newErrors);
           canProceed = isFormValid(newErrors);
         } else if (targetStep === 3) {
-          if (!selectedPlan || !visitedSteps.includes(2)) return;
+          if (!selectedPlan || !visitedSteps.has(2)) return;
           if (currentStep === 2) {
             const newErrors = validatePersonalInfoForm(personalInfoData);
             setPersonalInfoErrors(newErrors);
@@ -349,7 +350,7 @@ export default function QuoteDetailPage() {
 
         if (canProceed) {
           setCurrentStep(targetStep);
-          setVisitedSteps((prev) => [...prev, targetStep]);
+          setVisitedSteps((prev) => new Set(prev).add(targetStep));
           scrollToTop();
         }
       }
@@ -527,14 +528,14 @@ export default function QuoteDetailPage() {
       // If add-ons are shown, proceed to Step 2
       if (showAddOns) {
         setCurrentStep(2);
-        setVisitedSteps((prev) => (prev.includes(2) ? prev : [...prev, 2]));
+        setVisitedSteps((prev) => new Set(prev).add(2));
         scrollToTop();
         return;
       }
 
       // Fallback: if somehow neither condition is met, go to Step 2
       setCurrentStep(2);
-      setVisitedSteps((prev) => (prev.includes(2) ? prev : [...prev, 2]));
+      setVisitedSteps((prev) => new Set(prev).add(2));
       scrollToTop();
     } else if (currentStep === 2) {
       const newErrors = validatePersonalInfoForm(personalInfoData);
@@ -542,7 +543,7 @@ export default function QuoteDetailPage() {
 
       if (isFormValid(newErrors)) {
         setCurrentStep(3);
-        setVisitedSteps((prev) => (prev.includes(3) ? prev : [...prev, 3]));
+        setVisitedSteps((prev) => new Set(prev).add(3));
         scrollToTop();
       }
     }
@@ -668,18 +669,23 @@ export default function QuoteDetailPage() {
       setInsuredInfoOpen={setInsuredInfoOpen}
     />,
   ];
+
+  useEffect(() => {
+    console.log(
+      `I am changing visitedSteps: ${JSON.stringify(Array.from(visitedSteps))}`,
+    );
+  }, [visitedSteps]);
+
   return (
     <QuoteDetail
-      progressStepper={
-        <ProgressStepper
-          steps={homeContentsInsuranceSteps}
-          title='Home Contents Insurance Quotation'
-          currentStep={currentStep}
-          onStepClick={handleStepClick}
-          visitedSteps={visitedStepsSet}
-          selectedPlan=''
-        />
-      }
+      progressStepperData={{
+        steps: homeContentsInsuranceSteps,
+        title: 'Home Contents Insurance Quotation',
+        currentStep: currentStep,
+        onStepClick: handleStepClick,
+        visitedSteps: visitedSteps,
+        selectedPlan: selectedPlan,
+      }}
       steps={steps}
       currentStep={currentStep}
     />
