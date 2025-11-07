@@ -66,6 +66,8 @@ const INITIAL_PERSONAL_INFO: PersonalInfoForm = {
   mailingPostalCode: '',
   previousInsurerName: '',
   otherInsurerName: '',
+  payNowAccountDifferent: 'no',
+  payNowAccount: '',
 };
 
 const INITIAL_MYINFO_DATA: MyInfoData = {
