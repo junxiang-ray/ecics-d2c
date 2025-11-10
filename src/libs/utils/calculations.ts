@@ -77,15 +77,19 @@ export const calculateCoveragePremium = (
   }
 
   // Home content coverage (required)
-  if (customizationData.homeContent) {
-    const homeContentAmount = parseFloat(customizationData.homeContent);
+  if (customizationData.homeContentCoverageValue) {
+    const homeContentAmount = parseFloat(
+      customizationData.homeContentCoverageValue,
+    );
     coveragePremium +=
       (homeContentAmount / 1000) * COVERAGE_PRICING.HOME_CONTENT_RATE_PER_1000;
   }
 
   // Renovation coverage (optional)
-  if (customizationData.renovation) {
-    const renovationAmount = parseFloat(customizationData.renovation);
+  if (customizationData.renovationCoverageValue) {
+    const renovationAmount = parseFloat(
+      customizationData.renovationCoverageValue,
+    );
     coveragePremium +=
       (renovationAmount / 1000) * COVERAGE_PRICING.RENOVATION_RATE_PER_1000;
   }

@@ -62,7 +62,7 @@ export const PlanCard = memo<PlanCardProps>(
         data-plan-card
         className={twMerge(
           clsx(
-            'group relative cursor-pointer rounded-2xl border-2 bg-white p-6 transition-all duration-300 hover:shadow-lg',
+            'group relative cursor-pointer rounded-xl border-2 bg-white p-6 transition-all duration-300 hover:shadow-lg',
             isSelected
               ? 'border-[#02ADEF] shadow-lg ring-4 ring-[#02ADEF]/20'
               : 'border-gray-200 hover:border-[#02ADEF]/50',
@@ -163,7 +163,9 @@ export const PlanCard = memo<PlanCardProps>(
                 <span className='text-gray-600'>Home contents</span>
                 <span className='font-medium text-gray-900'>
                   {formatCurrency(
-                    parseFloat(customizationData.homeContent || '0'),
+                    parseFloat(
+                      customizationData.homeContentCoverageValue || '0',
+                    ),
                   )}
                 </span>
               </div>
@@ -171,7 +173,9 @@ export const PlanCard = memo<PlanCardProps>(
                 <span className='text-gray-600'>Renovations</span>
                 <span className='font-medium text-gray-900'>
                   {formatCurrency(
-                    parseFloat(customizationData.renovation || '0'),
+                    parseFloat(
+                      customizationData.renovationCoverageValue || '0',
+                    ),
                   )}
                 </span>
               </div>

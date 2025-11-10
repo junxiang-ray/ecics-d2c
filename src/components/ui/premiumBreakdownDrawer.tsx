@@ -141,20 +141,20 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
   };
 
   const getHomeContentCoverageLabel = () => {
-    if (!customizationData?.homeContent) return null;
+    if (!customizationData?.homeContentCoverageValue) return null;
     return (
       HOME_CONTENT_COVERAGE_OPTIONS.find(
-        (o) => o.value === customizationData.homeContent,
-      )?.label || customizationData.homeContent
+        (o) => o.value === customizationData.homeContentCoverageValue,
+      )?.label || customizationData.homeContentCoverageValue
     );
   };
 
   const getRenovationCoverageLabel = () => {
-    if (!customizationData?.renovation) return null;
+    if (!customizationData?.renovationCoverageValue) return null;
     return (
       RENOVATION_COVERAGE_OPTIONS.find(
-        (o) => o.value === customizationData.renovation,
-      )?.label || customizationData.renovation
+        (o) => o.value === customizationData.renovationCoverageValue,
+      )?.label || customizationData.renovationCoverageValue
     );
   };
 
@@ -288,7 +288,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                   )}
 
                 {/* Home Content Coverage */}
-                {customizationData?.homeContent && (
+                {customizationData?.homeContentCoverageValue && (
                   <div className='flex items-start justify-between'>
                     <div className='flex-1 pr-4'>
                       <div className='mb-1 text-sm leading-tight text-[#303030]'>
@@ -301,7 +301,10 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                     <span className='text-sm font-medium text-[#080808]'>
                       SGD{' '}
                       {(
-                        (parseFloat(customizationData.homeContent) / 1000) *
+                        (parseFloat(
+                          customizationData.homeContentCoverageValue,
+                        ) /
+                          1000) *
                         0.8
                       ).toFixed(2)}
                     </span>
@@ -309,7 +312,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                 )}
 
                 {/* Renovation Coverage */}
-                {customizationData?.renovation && (
+                {customizationData?.renovationCoverageValue && (
                   <div className='flex items-start justify-between'>
                     <div className='flex-1 pr-4'>
                       <div className='mb-1 text-sm leading-tight text-[#303030]'>
@@ -322,7 +325,8 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                     <span className='text-sm font-medium text-[#080808]'>
                       SGD{' '}
                       {(
-                        (parseFloat(customizationData.renovation) / 1000) *
+                        (parseFloat(customizationData.renovationCoverageValue) /
+                          1000) *
                         0.6
                       ).toFixed(2)}
                     </span>

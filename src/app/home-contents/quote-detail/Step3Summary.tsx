@@ -268,7 +268,7 @@ const Step3Summary = memo<Step3Props>(
                         <span className='font-medium text-gray-800'>
                           $
                           {parseInt(
-                            customizationData.homeContent,
+                            customizationData.homeContentCoverageValue,
                           ).toLocaleString()}
                         </span>
                       </div>
@@ -279,7 +279,7 @@ const Step3Summary = memo<Step3Props>(
                         <span className='font-medium text-gray-800'>
                           $
                           {parseInt(
-                            customizationData.renovation,
+                            customizationData.renovationCoverageValue,
                           ).toLocaleString()}
                         </span>
                       </div>
@@ -536,7 +536,9 @@ const Step3Summary = memo<Step3Props>(
                     </span>
                     <span className='flex-shrink-0 whitespace-nowrap text-sm font-medium text-[#303030]'>
                       $
-                      {parseInt(customizationData.homeContent).toLocaleString()}
+                      {parseInt(
+                        customizationData.homeContentCoverageValue,
+                      ).toLocaleString()}
                     </span>
                   </div>
                   <div className='flex items-start justify-between gap-3'>
@@ -544,7 +546,10 @@ const Step3Summary = memo<Step3Props>(
                       Renovation Coverage
                     </span>
                     <span className='flex-shrink-0 whitespace-nowrap text-sm font-medium text-[#303030]'>
-                      ${parseInt(customizationData.renovation).toLocaleString()}
+                      $
+                      {parseInt(
+                        customizationData.renovationCoverageValue,
+                      ).toLocaleString()}
                     </span>
                   </div>
                   <div className='flex items-start justify-between gap-3'>

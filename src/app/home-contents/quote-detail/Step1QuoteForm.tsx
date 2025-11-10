@@ -445,7 +445,7 @@ const Step1QuoteForm = memo<Step1Props>(
         {showPlans && (
           <div id='plans-section' className='animate-in fade-in duration-500'>
             <div className='mb-8 text-center'>
-              <h2 className='mb-6 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-[clamp(32px,5vw,48px)] font-bold text-gray-800 text-transparent'>
+              <h2 className='mt-6 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text py-3 text-[clamp(32px,5vw,48px)] font-bold text-gray-800 text-transparent'>
                 Choose Your Plan
               </h2>
               <p className='mx-auto max-w-[800px] text-xl leading-relaxed text-gray-600'>
@@ -456,13 +456,12 @@ const Step1QuoteForm = memo<Step1Props>(
             </div>
 
             <div className='mb-16 pt-4'>
-              <div className='mx-auto grid max-w-4xl grid-cols-1 items-start gap-8 md:grid-cols-2 md:gap-6 xl:gap-8'>
+              <div className='mx-auto grid max-w-4xl grid-cols-1 items-start gap-8 md:grid-cols-3 md:gap-6 xl:gap-4'>
                 {PLANS.map((plan) => (
                   <PlanCard
                     key={plan.id}
                     plan={plan}
                     onSelect={() => {
-                      console.log(plan);
                       onPlanSelect(plan.id);
                     }}
                     isSelected={selectedPlan === plan.id}
@@ -700,8 +699,8 @@ const Step1QuoteForm = memo<Step1Props>(
               </CardHeader>
 
               <CardContent className='p-8 sm:p-10'>
-                {/* HDB Fire Insurance Question */}
-                <div className='mb-6 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/50 p-3 sm:mb-8 sm:p-4 md:p-6 lg:mb-12'>
+                {/* HDB Fire Insurance Question HIDDEN FOR NOW */}
+                {/* <div className='mb-6 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/50 p-3 sm:mb-8 sm:p-4 md:p-6 lg:mb-12'>
                   <div className='mb-3 sm:mb-4 md:mb-6'>
                     <Label className='mb-2 flex items-start gap-2 text-sm font-semibold text-gray-700 sm:mb-3 sm:items-center sm:gap-3 sm:text-base lg:text-lg'>
                       <Shield className='mt-0.5 size-4 flex-shrink-0 text-[#02ADEF] sm:mt-0 sm:size-5' />
@@ -779,8 +778,7 @@ const Step1QuoteForm = memo<Step1Props>(
                       </Button>
                     </div>
                   </div>
-                </div>
-
+                </div>  */}
                 {/* Coverage Selection - disabled until HDB Fire insurance is answered */}
                 {!customizationData.hdbFireInsurance && (
                   <div className='mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4'>
@@ -793,7 +791,6 @@ const Step1QuoteForm = memo<Step1Props>(
                     </div>
                   </div>
                 )}
-
                 <div
                   className={cn(
                     // grid ensures equal height when items-stretch is present
@@ -862,7 +859,8 @@ const Step1QuoteForm = memo<Step1Props>(
                       defaultValue={
                         HOME_CONTENT_COVERAGE_OPTIONS.find(
                           (option) =>
-                            option.value === customizationData.homeContent,
+                            option.value ===
+                            customizationData.homeContentCoverageValue,
                         )?.label
                       }
                       onChange={(label) => {
@@ -871,7 +869,7 @@ const Step1QuoteForm = memo<Step1Props>(
                         );
                         if (selected)
                           updateCustomizationData(
-                            'homeContent',
+                            'homeContentCoverageValue',
                             selected.value,
                           );
                       }}
@@ -899,7 +897,8 @@ const Step1QuoteForm = memo<Step1Props>(
                       defaultValue={
                         RENOVATION_COVERAGE_OPTIONS.find(
                           (option) =>
-                            option.value === customizationData.renovation,
+                            option.value ===
+                            customizationData.renovationCoverageValue,
                         )?.label
                       }
                       onChange={(label) => {
@@ -907,7 +906,10 @@ const Step1QuoteForm = memo<Step1Props>(
                           (option) => option.label === label,
                         );
                         if (selected)
-                          updateCustomizationData('renovation', selected.value);
+                          updateCustomizationData(
+                            'renovationCoverageValue',
+                            selected.value,
+                          );
                       }}
                       className='h-14 w-full text-lg'
                       disabled={!customizationData.hdbFireInsurance}

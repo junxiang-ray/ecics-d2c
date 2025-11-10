@@ -172,15 +172,6 @@ export const ProgressStepper = memo<ProgressStepperProps>(
 
     const isStepClickable = useCallback(
       (step: number): boolean => {
-        console.log(
-          `visitedSteps in stepsCard = ${JSON.stringify(Array.from(visitedSteps))}`,
-        );
-        console.log(
-          `step = ${step}, currentStep = ${currentStep}, step === currentStep + 1: ${step === currentStep + 1}`,
-        );
-        console.log(
-          `returning: ${visitedSteps.has(step) || step === currentStep + 1}`,
-        );
         return visitedSteps.has(step) || step === currentStep + 1;
       },
       [visitedSteps, currentStep],
@@ -197,7 +188,6 @@ export const ProgressStepper = memo<ProgressStepperProps>(
 
         // If no 'selectedPlan' prop is passed at all -> ignore plan rule
         const hasPlanDependency = typeof selectedPlan !== 'undefined';
-        console.log(`hasPlanDependency = ${hasPlanDependency}`);
 
         if (hasPlanDependency && !selectedPlan) {
           // if this flow actually depends on plan selection and none is chosen → disable

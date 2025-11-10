@@ -1,21 +1,18 @@
 // Base types for form data
 export interface QuoteForm {
+  quoteStep: number;
   ownership: string;
   homeType: string;
   unitType: string;
   policyStartDate: string;
   promoCode: string;
-  // selectedPlan?: string;
+  //Selecting of plan
+  selectedPlan: string;
+  // Coverage
+  coverageOptions: CustomizationData;
+  // Addons
+  addons: SelectedAddOn[];
 }
-
-export const QUOTE_FORM_KEYS: (keyof QuoteForm)[] = [
-  'ownership',
-  'homeType',
-  'unitType',
-  'policyStartDate',
-  'promoCode',
-  // 'selectedPlan',
-];
 
 export interface PersonalInfoForm {
   policyHolderFullName: string;
@@ -158,8 +155,8 @@ export interface CoverageOption {
 export interface CustomizationData {
   hdbFireInsurance: 'yes' | 'no' | '';
   building: string;
-  homeContent: string;
-  renovation: string;
+  homeContentCoverageValue: string;
+  renovationCoverageValue: string;
 }
 
 ///ENDPOINTS
