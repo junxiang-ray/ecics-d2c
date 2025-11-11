@@ -1,6 +1,5 @@
 // Base types for form data
 export interface QuoteForm {
-  quoteStep: number;
   ownership: string;
   homeType: string;
   unitType: string;
@@ -12,6 +11,7 @@ export interface QuoteForm {
   coverageOptions: CustomizationData;
   // Addons
   addons: SelectedAddOn[];
+  quoteStep: number;
 }
 
 export interface PersonalInfoForm {

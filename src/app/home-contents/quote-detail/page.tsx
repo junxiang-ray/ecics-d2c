@@ -32,62 +32,12 @@ import Step2PersonalInfo from './Step2PersonalInfo';
 import Step3Summary from './Step3Summary';
 import Step4Success from './Step4Success';
 import { ProgressStepper } from '@/components/new-ui/StepsCard';
-
-//#region Initial Form Data
-
-const TOMORROW_DATE = new Date(Date.now() + 86400000)
-  .toISOString()
-  .split('T')[0];
-
-// Pre-computed initial state objects to prevent recreation
-const INITIAL_FORM_DATA: QuoteForm = {
-  quoteStep: 0,
-  ownership: 'owner',
-  homeType: 'hdb',
-  unitType: '4-room',
-  policyStartDate: TOMORROW_DATE,
-  promoCode: '',
-  selectedPlan: '',
-  coverageOptions: {
-    hdbFireInsurance: 'yes', // Default to "Yes" - most common case
-    building: '100000', // Default $100,000 (smallest option)
-    homeContentCoverageValue: '30000', // Default $30,000 (smallest option)
-    renovationCoverageValue: '10000', // Default $10,000 (smallest option)
-  },
-  addons: [],
-};
-
-const INITIAL_PERSONAL_INFO: PersonalInfoForm = {
-  policyHolderFullName: '',
-  policyHolderNricFin: '',
-  policyHolderNationality: 'Singaporean',
-  policyHolderMobileNumber: '',
-  policyHolderEmail: '',
-  policyHolderDateOfBirth: '',
-  addressLine1: '',
-  addressLine2: '',
-  addressLine3: '',
-  postalCode: '',
-  mailingAddressDifferent: 'no',
-  mailingAddressLine1: '',
-  mailingAddressLine2: '',
-  mailingAddressLine3: '',
-  mailingPostalCode: '',
-  previousInsurerName: '',
-  otherInsurerName: '',
-  payNowAccountDifferent: 'no',
-  payNowAccount: '',
-};
-
-const INITIAL_MYINFO_DATA: MyInfoData = {
-  isRetrieved: false,
-  isLoading: false,
-  data: undefined,
-};
-
-const INITIAL_PROMO_STATUS: PromoCodeStatus = { status: 'none' };
-
-//#endregion
+import {
+  INITIAL_PERSONAL_INFO,
+  INITIAL_PROMO_STATUS,
+  INITIAL_MYINFO_DATA,
+  INITIAL_FORM_DATA,
+} from './initialData';
 
 export default function QuoteDetailPage() {
   //#region State Management
@@ -99,37 +49,10 @@ export default function QuoteDetailPage() {
   const { mutateAsync: generateHomeContentQuote, isPending } =
     useGenerateHomeContentsQuote();
 
-  // Form data with memory-efficient initial values
-  const [formData, setFormData] = useState<QuoteForm>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedData = localStorage.getItem('quoteFormData');
-        if (storedData) {
-          const parsedData = JSON.parse(storedData);
-
-          // Merge safely with defaults
-          return { ...INITIAL_FORM_DATA, ...parsedData };
-        }
-      } catch (error) {
-        console.error('Failed to parse saved form data:', error);
-      }
-    }
-
-    return INITIAL_FORM_DATA;
-  });
-
   useEffect(() => {
     const keyQuote = generateKeyAndAttachToUrl(initKey);
     setKey(keyQuote);
   }, []);
-
-  useEffect(() => {
-    console.log(`formData changed: ${JSON.stringify(formData)}`);
-    if (formData.selectedPlan != '') {
-      setShowPlans(true);
-      handlePlanSelect(formData.selectedPlan);
-    }
-  }, [formData]);
 
   const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
     INITIAL_PERSONAL_INFO,
@@ -161,6 +84,50 @@ export default function QuoteDetailPage() {
   const [policyDetailsOpen, setPolicyDetailsOpen] = useState(false);
   const [helperDetailsOpen, setHelperDetailsOpen] = useState(false);
   const [insuredInfoOpen, setInsuredInfoOpen] = useState(false);
+
+  // Form data with memory-efficient initial values
+  const [formData, setFormData] = useState<QuoteForm>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const storedData = localStorage.getItem('quoteFormData');
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+
+          console.log('storedData =', parsedData);
+
+          setSelectedAddOns(parsedData.addons || INITIAL_FORM_DATA.addons);
+
+          return {
+            ...INITIAL_FORM_DATA,
+            ...parsedData,
+            coverageOptions: {
+              ...INITIAL_FORM_DATA.coverageOptions,
+              ...(parsedData.coverageOptions || {}),
+            },
+            addons: parsedData.addons || INITIAL_FORM_DATA.addons,
+          };
+        }
+      } catch (error) {
+        console.error('Failed to parse saved form data:', error);
+      }
+    }
+
+    return INITIAL_FORM_DATA;
+  });
+  useEffect(() => {
+    console.log(`formData changed: ${JSON.stringify(formData)}`);
+    localStorage.setItem('quoteFormData', JSON.stringify(formData));
+    if (formData.quoteStep >= 1) {
+      setShowPlans(true);
+    }
+    if (formData.quoteStep >= 2) {
+      setSelectedPlan(formData.selectedPlan);
+      setShowCustomization(true);
+    }
+    if (formData.quoteStep >= 3) {
+      setShowAddOns(true);
+    }
+  }, [formData]);
 
   //#endregion
 
@@ -208,73 +175,110 @@ export default function QuoteDetailPage() {
     );
   }, [currentPlan, selectedAddOns, promoStatus, formData]);
 
-  // Optimized handlers with useCallback to prevent child re-renders
   const updateFormData = useCallback(
-    (field: keyof QuoteForm, value: string) => {
+    (
+      field: keyof QuoteForm | keyof CustomizationData | 'addon',
+      value: string,
+      addOnId?: string,
+      remove?: boolean,
+    ) => {
       setFormData((prev) => {
-        // Early return if value hasn't changed (memory optimization)
-        if (prev[field] === value) return prev;
+        //Addon case
+        if (field === 'addon' && addOnId) {
+          console.log(`Updating add-on ${addOnId} with option ${value}`);
+          if (remove) {
+            const newData: QuoteForm = {
+              ...prev,
+              addons: prev.addons.filter((item) => item.id !== addOnId),
+            };
+            return newData;
+          }
 
-        const newData = { ...prev, [field]: value };
+          const exists = prev.addons.some((item) => item.id === addOnId);
 
-        // Business logic for ownership changes
-        if (field === 'ownership') {
-          // Reset unit type based on default for each ownership type
+          const newData: QuoteForm = {
+            ...prev,
+            addons: exists
+              ? prev.addons.map((item) =>
+                  item.id === addOnId
+                    ? { ...item, selectedOption: value }
+                    : item,
+                )
+              : [...prev.addons, { id: addOnId, selectedOption: value }],
+          };
+
+          return newData;
+        }
+
+        // coverage Options
+        if (field in prev.coverageOptions) {
+          const coverageField = field as keyof CustomizationData;
+          if (prev.coverageOptions[coverageField] === value) return prev;
+
+          const newData: QuoteForm = {
+            ...prev,
+            coverageOptions: {
+              ...prev.coverageOptions,
+              [coverageField]: value,
+            },
+          };
+          return newData;
+        }
+
+        // QuoteForm fields
+        const quoteField = field as keyof QuoteForm;
+        if (prev[quoteField] === value) return prev;
+
+        const newData: QuoteForm = { ...prev, [quoteField]: value };
+
+        // Ownership logic
+        if (quoteField === 'ownership') {
           if (value === 'tenant') {
-            // Tenants typically live in smaller units
-            if (newData.homeType === 'hdb') {
-              newData.unitType = '3-room';
-            } else if (newData.homeType === 'condo') {
-              newData.unitType = '2-room';
-            }
+            if (newData.homeType === 'hdb') newData.unitType = '3-room';
+            else if (newData.homeType === 'condo') newData.unitType = '2-room';
           }
         }
 
-        // Business logic for home type and unit type
-        if (field === 'homeType') {
-          // Reset unit type when home type changes
-          if (value === 'landed') {
-            newData.unitType = '';
-          } else if (value === 'hdb') {
-            newData.unitType = '4-room';
-          } else if (value === 'condo') {
-            newData.unitType = '3-room';
-          }
+        // Home type logic
+        if (quoteField === 'homeType') {
+          if (value === 'landed') newData.unitType = '';
+          else if (value === 'hdb') newData.unitType = '4-room';
+          else if (value === 'condo') newData.unitType = '3-room';
         }
 
-        if (field === 'selectedPlan') {
-          newData.selectedPlan = value;
-        }
-
-        if (field === 'coverageOptions') {
-          newData.coverageOptions = JSON.parse(value);
-        }
-
-        if (field === 'quoteStep') {
+        if (quoteField === 'quoteStep') {
           newData.quoteStep = parseInt(value);
         }
-        // console.log(`formData = ${JSON.stringify(newData)}`);
 
-        localStorage.setItem('quoteFormData', JSON.stringify(newData));
+        // Special cases
+        if (quoteField === 'coverageOptions')
+          newData.coverageOptions = JSON.parse(value);
+
         return newData;
       });
 
-      // Clear errors efficiently
-      if (errors[field]) {
+      // --- Clear errors only for top-level QuoteForm fields ---
+      if (
+        (Object.keys(INITIAL_FORM_DATA) as (keyof QuoteForm)[]).includes(
+          field as keyof QuoteForm,
+        )
+      ) {
+        const key = field as keyof QuoteForm;
         setErrors((prev) => {
-          const { [field]: _, ...rest } = prev;
+          const { [key]: _, ...rest } = prev;
           return rest;
         });
       }
 
-      // Reset promo status if promo code changes
+      // --- Reset promo if needed ---
       if (field === 'promoCode' && promoStatus.status !== 'none') {
         setPromoStatus(INITIAL_PROMO_STATUS);
       }
     },
-    [errors, promoStatus.status],
+    [promoStatus.status],
   );
 
+  //#region Personal Info Handler
   const updatePersonalInfoData = useCallback(
     (field: keyof PersonalInfoForm, value: string) => {
       setPersonalInfoData((prev) => {
@@ -309,25 +313,9 @@ export default function QuoteDetailPage() {
     },
     [personalInfoErrors],
   );
+  //#endregion
 
-  const updateCustomizationData = useCallback(
-    (field: keyof CustomizationData, value: string) => {
-      setFormData((prev) => {
-        // Early return if value hasn't changed
-        if (prev.coverageOptions[field] === value) return prev;
-        console.log('changing');
-        return {
-          ...prev,
-          coverageOptions: {
-            ...prev.coverageOptions,
-            [field]: value,
-          },
-        };
-      });
-    },
-    [],
-  );
-
+  //#region Scroll
   // Optimized scroll functions
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -339,6 +327,7 @@ export default function QuoteDetailPage() {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, []);
+  //#endregion
 
   // 🔒 PROTECTED - Step navigation logic with optimizations
   const handleStepClick = useCallback(
@@ -387,6 +376,7 @@ export default function QuoteDetailPage() {
     ],
   );
 
+  //#region Singpass Retrieve
   // 🔒 PROTECTED - MyInfo handler with memory cleanup
   const handleRetrieveMyInfo = useCallback(() => {
     setMyInfoData((prev) => ({ ...prev, isLoading: true }));
@@ -423,6 +413,7 @@ export default function QuoteDetailPage() {
     // Memory cleanup
     return () => clearTimeout(timeoutId);
   }, []);
+  //#endregion
 
   // 🔒 PROTECTED - Quote calculation with timeout management
   const handleCalculateQuote = useCallback(() => {
@@ -449,24 +440,18 @@ export default function QuoteDetailPage() {
         setShowPlans(true);
         setIsLoading(false);
         updateFormData('quoteStep', '1');
+
+        const timeoutId = setTimeout(() => {
+          const scrollTimeoutId = setTimeout(() => {
+            scrollToElement('#plans-section');
+          }, 10);
+          return () => clearTimeout(scrollTimeoutId);
+        }, 100);
+        return () => clearTimeout(timeoutId);
       })
       .catch((err) => {
-        console.log('ERROR');
+        console.log('ERROR GENERATING QUOTE:', err);
       });
-
-    const timeoutId = setTimeout(() => {
-      // setShowPlans(true);
-      // setIsLoading(false);
-      updateFormData('quoteStep', '1');
-
-      const scrollTimeoutId = setTimeout(() => {
-        scrollToElement('#plans-section');
-      }, 150);
-
-      return () => clearTimeout(scrollTimeoutId);
-    }, 1000);
-
-    return () => clearTimeout(timeoutId);
   }, [formData, scrollToElement]);
 
   // 🔒 PROTECTED - Plan selection with customization revelation
@@ -475,6 +460,7 @@ export default function QuoteDetailPage() {
       setSelectedPlan(planId);
       setShowCustomization(true);
       updateFormData('selectedPlan', planId);
+      updateFormData('quoteStep', '2');
 
       const timeoutId = setTimeout(() => {
         scrollToElement('#customization-section');
@@ -488,6 +474,7 @@ export default function QuoteDetailPage() {
   // Handler for continuing from customization to add-ons
   const handleCustomizationComplete = useCallback(() => {
     setShowAddOns(true);
+    updateFormData('quoteStep', '3');
     const timeoutId = setTimeout(() => {
       scrollToElement('#addons-section');
     }, 300);
@@ -500,6 +487,7 @@ export default function QuoteDetailPage() {
     setSelectedAddOns((prev) => {
       const existingIndex = prev.findIndex((item) => item.id === addOnId);
       if (existingIndex >= 0) {
+        updateFormData('addon', '', addOnId, true);
         return prev.filter((_, index) => index !== existingIndex);
       } else {
         const addOn = ADD_ONS.find((a) => a.id === addOnId);
@@ -512,6 +500,7 @@ export default function QuoteDetailPage() {
         return [...prev, newAddOn];
       }
     });
+    updateFormData('addon', '', addOnId, false);
   }, []);
 
   const handleAddOnOptionChange = useCallback(
@@ -521,6 +510,7 @@ export default function QuoteDetailPage() {
           item.id === addOnId ? { ...item, selectedOption: option } : item,
         ),
       );
+      updateFormData('addon', option, addOnId);
     },
     [],
   );
@@ -593,7 +583,7 @@ export default function QuoteDetailPage() {
     }
   }, [currentStep, scrollToTop]);
 
-  // Edit handlers for Step 3
+  //#region Edit handlers for Step 3
   const handleEditPolicyDetails = useCallback(() => {
     setCurrentStep(1);
     scrollToTop();
@@ -614,6 +604,7 @@ export default function QuoteDetailPage() {
     }, 100);
     return () => clearTimeout(timeoutId);
   }, [scrollToElement]);
+  //#endregion
 
   const steps = [
     <Step1QuoteForm
@@ -629,18 +620,18 @@ export default function QuoteDetailPage() {
       selectedPlan={selectedPlan}
       selectedAddOns={selectedAddOns}
       customizationData={formData.coverageOptions}
-      updateCustomizationData={updateCustomizationData}
+      updateCustomizationData={updateFormData}
       isLoading={isLoading}
       onCalculateQuote={handleCalculateQuote}
       onPlanSelect={handlePlanSelect}
       onCustomizationComplete={handleCustomizationComplete}
       onAddOnToggle={handleAddOnToggle}
-      onAddOnOptionChange={handleAddOnOptionChange}
       onNext={handleNext}
       onBack={handleBack}
       currentStep={currentStep}
       hasViewedCustomization={hasViewedCustomization}
       setHasViewedCustomization={setHasViewedCustomization}
+      onAddOnOptionChange={handleAddOnOptionChange}
     />,
     <Step2PersonalInfo
       key='Step 2'
@@ -691,12 +682,6 @@ export default function QuoteDetailPage() {
       setInsuredInfoOpen={setInsuredInfoOpen}
     />,
   ];
-
-  useEffect(() => {
-    console.log(
-      `I am changing visitedSteps: ${JSON.stringify(Array.from(visitedSteps))}`,
-    );
-  }, [visitedSteps]);
 
   return (
     <QuoteDetail
