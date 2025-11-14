@@ -138,6 +138,7 @@ export default function QuoteDetailPage() {
 
     return INITIAL_FORM_DATA;
   });
+  ///stores updated data in local storage.
   useEffect(() => {
     console.log(`formData changed: ${JSON.stringify(formData)}`);
     localStorage.setItem('quoteFormData', JSON.stringify(formData));
