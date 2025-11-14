@@ -40,7 +40,6 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
     onBack,
     formData,
     customizationData,
-    hasViewedCustomization = true, // Default to true for non-step-1 usage
     showAddOns = true, // Default to true for non-step-1 usage
   }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -271,7 +270,6 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
           onClose={() => setIsDrawerOpen(false)}
           selectedPlan={selectedPlan}
           selectedAddOns={selectedAddOns}
-          totalPremium={totalPremium}
           promoStatus={promoStatus}
           formData={formData}
           customizationData={customizationData}

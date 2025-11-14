@@ -25,7 +25,7 @@ interface PremiumBreakdownDrawerProps {
   onClose: () => void;
   selectedPlan: InsurancePlan | null;
   selectedAddOns: SelectedAddOn[];
-  totalPremium: number;
+  // totalPremium: number;
   promoStatus: PromoCodeStatus;
   formData: QuoteForm;
   customizationData?: CustomizationData;
@@ -36,7 +36,6 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
   onClose,
   selectedPlan,
   selectedAddOns,
-  totalPremium,
   promoStatus,
   formData,
   customizationData,

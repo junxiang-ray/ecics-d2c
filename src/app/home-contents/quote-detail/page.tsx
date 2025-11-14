@@ -42,8 +42,32 @@ import {
 export default function QuoteDetailPage() {
   //#region State Management
   // State management - using pre-computed initial objects
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState<number>(() => {
+    try {
+      const storedData = localStorage.getItem('currentStep');
+      if (storedData) {
+        const step = parseInt(storedData);
+        if (!isNaN(step)) {
+          return step;
+        }
+      }
+      return 1;
+    } catch (e) {
+      console.error('error getting step');
+      return 1;
+    }
+  });
   const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set([1]));
+  useEffect(() => {
+    localStorage.setItem('currentStep', currentStep.toString());
+    setVisitedSteps((prev) => {
+      const newSet = new Set(prev);
+      for (let i = 2; i <= currentStep; i++) {
+        newSet.add(i);
+      }
+      return newSet;
+    });
+  }, [currentStep]);
 
   //generate quote
   const { mutateAsync: generateHomeContentQuote, isPending } =
@@ -126,6 +150,7 @@ export default function QuoteDetailPage() {
     }
     if (formData.quoteStep >= 3) {
       setShowAddOns(true);
+      // scrollToBottom();
     }
   }, [formData]);
 
@@ -319,6 +344,10 @@ export default function QuoteDetailPage() {
   // Optimized scroll functions
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }, []);
 
   const scrollToElement = useCallback((selector: string) => {

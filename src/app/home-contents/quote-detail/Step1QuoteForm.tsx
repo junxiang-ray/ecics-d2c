@@ -976,7 +976,6 @@ const Step1QuoteForm = memo<Step1Props>(
             onBack={onBack}
             formData={formData}
             customizationData={customizationData}
-            hasViewedCustomization={hasViewedCustomization}
             showAddOns={showAddOns}
           />
         )}
