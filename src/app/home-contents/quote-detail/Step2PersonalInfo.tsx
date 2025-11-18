@@ -132,37 +132,27 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
 
             {/* Mobile MyInfo Section - Button only, no container */}
             {!isMyInfoRetrieved && (
-              <div className='mt-4 block sm:mt-6 sm:hidden'>
+              <div className='mb-4 mt-4 block sm:mt-6 sm:hidden'>
                 <Button
                   onClick={onRetrieveMyInfo}
                   disabled={myInfoData.isLoading}
-                  className='myinfo-button-mobile w-full rounded-xl bg-red-600 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-red-700 hover:shadow-xl sm:w-auto'
+                  className='flex w-full items-center  bg-red-500 py-3 transition-all duration-300 hover:bg-red-500 hover:shadow-xl'
                 >
                   {myInfoData.isLoading ? (
-                    <span className='flex w-full items-center justify-center gap-1.5 px-1 sm:gap-2'>
-                      <div className='h-3 w-3 flex-shrink-0 animate-spin rounded-full border-b-2 border-white sm:h-4 sm:w-4'></div>
-                      <span
-                        className='truncate text-sm font-medium sm:text-base'
-                        style={{ fontSize: '14px' }}
-                      >
-                        Retrieving MyInfo...
-                      </span>
-                    </span>
+                    <>
+                      <div className='h-4 w-4 animate-spin rounded-full border-b-2 border-white'></div>
+                      <span>Retrieving MyInfo...</span>
+                    </>
                   ) : (
-                    <span className='flex w-full items-center justify-center gap-1 px-1 sm:gap-1.5'>
-                      <span
-                        className='whitespace-nowrap text-sm font-medium sm:text-base'
-                        style={{ fontSize: '14px' }}
-                      >
-                        Retrieve MyInfo with
-                      </span>
+                    <>
+                      {/* <Shield className='size-5 text-white' /> */}
+                      {/* <span>Retrieve MyInfo with</span> */}
                       <img
-                        src='/singpass.svg'
+                        src='/singpass-white-inline.svg'
                         alt='Singpass'
-                        className='ml-0.5 w-auto flex-shrink-0'
-                        style={{ height: '12px' }}
+                        className='h-8 '
                       />
-                    </span>
+                    </>
                   )}
                 </Button>
               </div>
@@ -187,12 +177,12 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
             )}
           </CardHeader>
-          <CardContent className='form-header-mobile form-field-spacing-mobile'>
+          <CardContent className='grid w-full grid-cols-1 gap-6 sm:grid-cols-2'>
             {/* Mobile Layout - Single Column */}
-            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
+            <div>
               {/* NRIC/FIN */}
-              <div>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+              <div className='col-span-1 mb-4'>
+                <Label className='w-full text-base font-semibold text-gray-700 sm:text-lg'>
                   NRIC/FIN <span className='text-red-500'>*</span>
                 </Label>
                 <Input
@@ -205,7 +195,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                     )
                   }
                   className={cn(
-                    'h-12 rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
                     personalInfoErrors.policyHolderNricFin
                       ? 'border-red-500'
                       : 'border-gray-200 focus:border-[#02ADEF]',
@@ -224,7 +214,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Full Name */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Full Name (As per NRIC/FIN){' '}
                   <span className='text-red-500'>*</span>
@@ -239,7 +229,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                     )
                   }
                   className={cn(
-                    'h-12 rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
                     personalInfoErrors.policyHolderFullName
                       ? 'border-red-500'
                       : 'border-gray-200 focus:border-[#02ADEF]',
@@ -258,7 +248,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Date of Birth */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Date of Birth <span className='text-red-500'>*</span>
                 </Label>
@@ -268,7 +258,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                     updatePersonalInfoData('policyHolderDateOfBirth', value)
                   }
                   className={cn(
-                    'h-12 rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
                     personalInfoErrors.policyHolderDateOfBirth
                       ? 'border-red-500'
                       : 'border-gray-200 focus:border-[#02ADEF]',
@@ -287,7 +277,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Nationality */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Nationality <span className='text-red-500'>*</span>
                 </Label>
@@ -312,7 +302,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Phone Number */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Phone Number <span className='text-red-500'>*</span>
                   {isMyInfoRetrieved && (
@@ -332,7 +322,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                     )
                   }
                   className={cn(
-                    'h-12 rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
                     personalInfoErrors.policyHolderMobileNumber
                       ? 'border-red-500'
                       : 'border-gray-200 focus:border-[#02ADEF]',
@@ -353,7 +343,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Email */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Email <span className='text-red-500'>*</span>
                   {isMyInfoRetrieved && (
@@ -370,7 +360,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                     updatePersonalInfoData('policyHolderEmail', e.target.value)
                   }
                   className={cn(
-                    'h-12 rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
                     personalInfoErrors.policyHolderEmail
                       ? 'border-red-500'
                       : 'border-gray-200 focus:border-[#02ADEF]',
@@ -391,7 +381,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Section Header */}
-              <div className='col-span-1 border-t border-gray-200 pt-6 sm:col-span-2'>
+              <div className='col-span-2 border-t border-gray-200 pt-6'>
                 <h3 className='mb-1 text-lg font-semibold text-gray-800 sm:text-xl'>
                   Insured Premises
                 </h3>
@@ -401,7 +391,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Address Line 1 */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Address Line 1 <span className='text-red-500'>*</span>
                 </Label>
@@ -412,7 +402,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                     updatePersonalInfoData('addressLine1', e.target.value)
                   }
                   className={cn(
-                    'h-12 rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
                     personalInfoErrors.addressLine1
                       ? 'border-red-500'
                       : 'border-gray-200 focus:border-[#02ADEF]',
@@ -421,7 +411,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Postal Code */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Postal Code <span className='text-red-500'>*</span>
                 </Label>
@@ -432,7 +422,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                     updatePersonalInfoData('postalCode', e.target.value)
                   }
                   className={cn(
-                    'h-12 rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
                     personalInfoErrors.postalCode
                       ? 'border-red-500'
                       : 'border-gray-200 focus:border-[#02ADEF]',
@@ -441,7 +431,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </div>
 
               {/* Address Line 2 */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Address Line 2
                 </Label>
@@ -451,12 +441,12 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                   onChange={(e) =>
                     updatePersonalInfoData('addressLine2', e.target.value)
                   }
-                  className='h-12 rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
+                  className='h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
                 />
               </div>
 
               {/* Address Line 3 */}
-              <div>
+              <div className='col-span-1 mb-4'>
                 <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
                   Address Line 3
                 </Label>
@@ -466,12 +456,12 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                   onChange={(e) =>
                     updatePersonalInfoData('addressLine3', e.target.value)
                   }
-                  className='h-12 rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
+                  className='h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
                 />
               </div>
 
               {/* Checkbox */}
-              <div className='col-span-1 mt-6 sm:col-span-2'>
+              <div className='col-span-2 mt-6'>
                 <div className='flex items-center space-x-3 rounded-xl border-2 border-gray-200 bg-gray-50 p-4'>
                   <input
                     type='checkbox'
@@ -493,7 +483,8 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                   </label>
                 </div>
               </div>
-              {/* Mailing Address Section - Conditional Full Width */}
+
+              {/* Mailing Address Section */}
               {personalInfoData.mailingAddressDifferent === 'yes' && (
                 <div className='col-span-2'>
                   <div className='rounded-xl border-2 border-blue-200 bg-blue-50/50 p-6'>
@@ -503,7 +494,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
 
                     <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
                       {/* Mailing Address Line 1 */}
-                      <div>
+                      <div className='col-span-1 mb-4'>
                         <Label className='text-base font-semibold text-gray-700'>
                           Mailing Address Line 1{' '}
                           <span className='text-red-500'>*</span>
@@ -518,7 +509,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                             )
                           }
                           className={cn(
-                            'mt-2 h-12 rounded-xl border-2 bg-white px-4 text-base',
+                            'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
                             personalInfoErrors.mailingAddressLine1
                               ? 'border-red-500'
                               : 'border-gray-200 focus:border-[#02ADEF]',
@@ -535,7 +526,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                       </div>
 
                       {/* Mailing Address Line 2 */}
-                      <div>
+                      <div className='col-span-1 mb-4'>
                         <Label className='text-base font-semibold text-gray-700'>
                           Mailing Address Line 2
                         </Label>
@@ -548,12 +539,12 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                               e.target.value,
                             )
                           }
-                          className='mt-2 h-12 rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
+                          className='mt-2 h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
                         />
                       </div>
 
                       {/* Mailing Address Line 3 */}
-                      <div>
+                      <div className='col-span-1 mb-4'>
                         <Label className='text-base font-semibold text-gray-700'>
                           Mailing Address Line 3
                         </Label>
@@ -566,12 +557,12 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                               e.target.value,
                             )
                           }
-                          className='mt-2 h-12 rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
+                          className='mt-2 h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
                         />
                       </div>
 
                       {/* Mailing Postal Code */}
-                      <div>
+                      <div className='col-span-1 mb-4'>
                         <Label className='text-base font-semibold text-gray-700'>
                           Mailing Postal Code{' '}
                           <span className='text-red-500'>*</span>
@@ -586,7 +577,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                             )
                           }
                           className={cn(
-                            'mt-2 h-12 rounded-xl border-2 bg-white px-4 text-base',
+                            'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
                             personalInfoErrors.mailingPostalCode
                               ? 'border-red-500'
                               : 'border-gray-200 focus:border-[#02ADEF]',
@@ -605,22 +596,20 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                   </div>
                 </div>
               )}
+
+              {/* PayNow Section */}
               <div className='col-span-2 border-t border-gray-200 pt-6'>
                 <h3 className='mb-2 text-xl font-semibold text-gray-800'>
                   PayNow Details for Claims Disbursement
                 </h3>
                 <p className='mb-3 text-base text-gray-600'>
                   In the event of a claim, we will disburse the payout via
-                  PayNow. We will use the phone number you've provided above for
-                  this purpose.
+                  PayNow…
                 </p>
                 <p className='mb-4 text-base text-gray-600'>
-                  If your PayNow account is registered under a different number,
-                  please check the box below to provide the correct PayNow
-                  account details.
+                  If your PayNow account is registered under a different number…
                 </p>
 
-                {/* PayNow Account Checkbox - Desktop */}
                 <div className='mb-4'>
                   <div className='flex items-center space-x-3 rounded-xl border-2 border-gray-200 bg-gray-50 p-4'>
                     <input
@@ -642,13 +631,11 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                       htmlFor='payNowAccountDifferent'
                       className='cursor-pointer select-none text-base font-semibold text-gray-700'
                     >
-                      My PayNow account is different from the phone number
-                      provided
+                      My PayNow account is different…
                     </label>
                   </div>
                 </div>
 
-                {/* PayNow Account Input - Conditional Desktop */}
                 {personalInfoData.payNowAccountDifferent === 'yes' && (
                   <div className='rounded-xl border-2 border-orange-200 bg-orange-50/50 p-6'>
                     <div className='max-w-md'>
@@ -667,7 +654,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                           )
                         }
                         className={cn(
-                          'mt-2 h-12 rounded-xl border-2 bg-white px-4 text-base',
+                          'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
                           personalInfoErrors.payNowAccount
                             ? 'border-red-500'
                             : 'border-gray-200 focus:border-[#02ADEF]',
@@ -681,10 +668,6 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                           {personalInfoErrors.payNowAccount}
                         </p>
                       )}
-                      <p className='mt-2 text-sm text-gray-500'>
-                        Kindly ensure the information is accurate to avoid any
-                        delays in processing your claim.
-                      </p>
                     </div>
                   </div>
                 )}

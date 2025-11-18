@@ -4,15 +4,11 @@ import { X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
-import {
-  CustomizationData,
-  PersonalInfoForm,
-  QuoteForm,
-} from '@/libs/types/homeContents';
-import { cn } from '@/libs/utils/utils';
-
 // Utils
-import { ProgressStepper } from '@/components/new-ui/StepsCard';
+import {
+  ProgressStepper,
+  ProgressStepperProps,
+} from '@/components/new-ui/StepsCard';
 import AppBar from '@/components/ui/appbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/cardNew';
@@ -21,21 +17,18 @@ import { Dialog, DialogTitle } from '@/components/ui/dialog';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useRequestLog } from '@/hook/insurance/quote';
-import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
-import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
-import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
-import { useAppDispatch } from '@/redux/store';
+import { cn } from '@/libs/utils/utils';
 
 //#endregion
 
 interface QuoteDetailProps {
-  progressStepper: React.ReactElement;
+  progressStepperData: ProgressStepperProps;
   steps: React.ReactElement[]; // array of React components with props already applied
   currentStep: number;
 }
 
 const QuoteDetail = ({
-  progressStepper,
+  progressStepperData,
   steps,
   currentStep,
 }: QuoteDetailProps) => {
@@ -95,7 +88,9 @@ const QuoteDetail = ({
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/50'>
       <AppBar />
       <div className='mx-auto max-w-6xl px-3 py-4 pb-24 sm:px-4 sm:py-6 sm:pb-32 lg:px-6 lg:py-8'>
-        {currentStep < 4 && progressStepper}
+        {currentStep < 4 && (
+          <ProgressStepper {...progressStepperData}></ProgressStepper>
+        )}
         {currentStep === 1 && steps[0]}
         {currentStep === 2 && steps[1]}
         {currentStep === 3 && steps[2]}

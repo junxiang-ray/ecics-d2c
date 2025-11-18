@@ -150,7 +150,7 @@ const StepItem = memo<StepItemProps>(
 
 StepItem.displayName = 'StepItem';
 
-interface ProgressStepperProps {
+export interface ProgressStepperProps {
   currentStep: number;
   visitedSteps: Set<number>;
   selectedPlan?: string;
