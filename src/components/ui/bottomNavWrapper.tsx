@@ -5,8 +5,9 @@ import { cn } from '@/libs/utils/utils';
 interface BottomNavWrapperProps {
   children: React.ReactNode;
   className?: string;
-  // if you want to override the max width of the container
+  // if you want to override the max width/height of the container
   maxWidthClass?: string;
+  maxHeightClass?: string;
   innerContainerClassName?: string;
 }
 
@@ -14,7 +15,8 @@ interface BottomNavWrapperProps {
 export const BottomNavWrapper: React.FC<BottomNavWrapperProps> = ({
   children,
   className,
-  maxWidthClass = 'max-w-4xl',
+  maxWidthClass = 'max-w-3xl',
+  maxHeightClass = 'max-h-20',
   innerContainerClassName,
 }) => {
   return (
@@ -26,8 +28,16 @@ export const BottomNavWrapper: React.FC<BottomNavWrapperProps> = ({
         className,
       )}
     >
-      <div className={cn('mx-auto px-3 sm:px-4 lg:px-6', maxWidthClass)}>
-        <div className={cn('sm:py-4', innerContainerClassName)}>{children}</div>
+      <div
+        className={cn(
+          'mx-auto px-3 sm:px-4 lg:px-6',
+          maxWidthClass,
+          maxHeightClass,
+        )}
+      >
+        <div className={cn('py-2 sm:py-3', innerContainerClassName)}>
+          {children}
+        </div>
       </div>
     </div>
   );

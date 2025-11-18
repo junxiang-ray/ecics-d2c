@@ -15,7 +15,7 @@ const buttonVariants = {
     default: 'text-base h-9 px-4 py-2',
     sm: 'text-sm h-8 px-3',
     lg: 'text-base h-10 px-6',
-    xl: 'text-base h-12 sm:h-14 px-2', // extra large for bottom navbar buttons
+    md: 'text-xs h-10 px-6', // extra large for bottom navbar buttons
     icon: 'size-9 rounded-md',
   },
 };
