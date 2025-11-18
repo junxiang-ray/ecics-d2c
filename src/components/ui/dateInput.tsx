@@ -30,7 +30,7 @@ export const DateInput = memo(
             className={twMerge(
               clsx(
                 'h-14 w-full rounded-xl border-2 px-4 text-base transition-all duration-200',
-                'bg-white hover:border-[#02ADEF]/60 hover:shadow-sm focus:border-[#02ADEF] focus:outline-none focus:ring-4 focus:ring-[#02ADEF]/10',
+                'bg-white hover:border-brand-blue/60 hover:shadow-sm focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/10',
                 'placeholder:text-gray-500',
                 disabled && 'pointer-events-none cursor-not-allowed opacity-50',
                 error ? 'border-red-500' : 'border-gray-200',

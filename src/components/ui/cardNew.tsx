@@ -79,7 +79,7 @@ function CardHeader({
         data-slot='card-header'
         className={cn(
           // Base padding
-          hasGradient ? 'p-8' : 'p-8',
+          'p-8',
           // Gradient background
           hasGradient &&
             (gradientClassName ||
@@ -110,14 +110,14 @@ function CardHeader({
               </div>
             )}
             {(title || description) && (
-              <div>
+              <div className='mb-3'>
                 {title && (
-                  <h2 className='m-0 mb-1 text-3xl font-bold leading-tight text-gray-800'>
+                  <h2 className='m-0 mb-1 text-2.5xl font-bold leading-tight text-gray-800'>
                     {title}
                   </h2>
                 )}
                 {description && (
-                  <p className='m-0 text-base text-gray-600'>{description}</p>
+                  <p className='m-0 text-sm text-gray-600'>{description}</p>
                 )}
               </div>
             )}

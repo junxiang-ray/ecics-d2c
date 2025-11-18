@@ -12,6 +12,10 @@ const config: Config = {
       fontFamily: {
         primary: ['Inter', 'sans-serif'],
       },
+      fontSize: {
+        '2.5xl': '1.75rem',
+        '2xs': '0.65625rem',
+      },
       colors: {
         primaryBlue: '#002EFF',
         secondaryBlue: '#007AFF',

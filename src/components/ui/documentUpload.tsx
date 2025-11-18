@@ -48,6 +48,9 @@ export default function DocumentUploads({
   };
 
   const handleFileSelect = (docId: string, files: FileList | null) => {
+    // log any selected files first
+    console.log('Selected files for document:', docId);
+
     if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
@@ -157,18 +160,18 @@ export default function DocumentUploads({
                   )}
                 >
                   {hasFiles ? (
-                    <CheckCircle2 className='size-6' />
+                    <CheckCircle2 className='size-5' />
                   ) : (
-                    <Upload className='size-6' />
+                    <Upload className='size-5' />
                   )}
                 </div>
 
                 {/* Text */}
                 <div className='min-w-0 flex-1'>
-                  <p className='m-0 mb-1 font-semibold text-gray-800'>
+                  <p className='m-0 mb-1 text-sm font-semibold text-gray-800'>
                     {doc.label}
                   </p>
-                  <p className='m-0 text-sm text-gray-600'>
+                  <p className='m-0 text-xs text-gray-600'>
                     {isDragging ? (
                       <span className='font-medium text-brand-blue'>
                         Drop files here

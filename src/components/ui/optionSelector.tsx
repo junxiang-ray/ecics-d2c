@@ -22,6 +22,8 @@ interface OptionSelectorProps {
   /** Icon to appear before the label (e.g. <Building />) */
   labelIcon?: ReactNode;
   /** Whether the field is required */
+  labelClassName?: string;
+  /** Label Classnames */
   required?: boolean;
   /** List of options */
   options: OptionSelectorOption[];
@@ -71,6 +73,7 @@ const COLOR_CLASSES: Record<
 export function OptionSelector({
   label,
   labelIcon,
+  labelClassName,
   required = false,
   options,
   selected,
@@ -87,7 +90,7 @@ export function OptionSelector({
   return (
     <div className={cn('space-y-4', className)}>
       {label && (
-        <Label className='flex items-center gap-3 text-lg font-semibold text-gray-700'>
+        <Label className={cn('gap-3 text-lg', labelClassName)}>
           {labelIcon && <span className='text-brand-blue'>{labelIcon}</span>}
           {label}
           {required && <span className='text-red-500'>*</span>}
@@ -168,7 +171,7 @@ export function OptionSelector({
 
                   <div className='min-w-0 flex-1'>
                     <div className='flex items-center gap-2'>
-                      <p className='mt-0 font-semibold text-gray-800'>
+                      <p className='mt-0 text-sm font-semibold text-gray-800'>
                         {opt.label}
                       </p>
 
@@ -192,7 +195,7 @@ export function OptionSelector({
 
                     {/* Show description when provided, even in single-column compact variant */}
                     {opt.description && (
-                      <p className='m-0 mt-1 text-xs text-gray-500'>
+                      <p className='m-0 mt-1 text-2xs leading-normal text-gray-500'>
                         {opt.description}
                       </p>
                     )}
