@@ -11,8 +11,23 @@ const config: Config = {
     extend: {
       fontFamily: {
         primary: ['Inter', 'sans-serif'],
+        heading: ['Montserrat', 'sans-serif'],
+        body: ['Open Sans', 'sans-serif'],
       },
       colors: {
+        primary: {
+          DEFAULT: '#02adef',
+          50: '#e6f7fd',
+          100: '#bff0fb',
+          200: '#99e8f9',
+          300: '#4dd3f5',
+          400: '#1ac3f2',
+          500: '#02adef',
+          600: '#0199d9',
+          700: '#017bbf',
+          800: '#015e9f',
+          900: '#004074',
+        },
         primaryBlue: '#002EFF',
         secondaryBlue: '#007AFF',
         'brand-blue': '#00ADEF',
