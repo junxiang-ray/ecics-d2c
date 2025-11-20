@@ -117,6 +117,19 @@ export const formatPromoCode = (code: string | null): string => {
   return code ? code.trim().toUpperCase() : '';
 };
 
+export const formatNumber = (
+  value: number,
+  fractionDigits = 2,
+  always?: boolean,
+): string => {
+  const formatted = value.toLocaleString('en-US', {
+    minimumFractionDigits: always ? fractionDigits : 0,
+    maximumFractionDigits: fractionDigits,
+  });
+
+  return formatted;
+};
+
 const formatNumberWithPrefix = (prefix: string, number: number): string => {
   const formatted = number.toLocaleString('en-US', {
     minimumFractionDigits: 2,
