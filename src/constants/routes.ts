@@ -37,6 +37,21 @@ export const ROUTES = {
     RENEWAL_REVIEW: '/renewal/review',
     RENEWAL_ACCOUNT_SETUP: '/renewal/account-setup',
   },
+  PORTAL: {
+    LOGIN: '/login',
+    HOME: {
+      ROOT: '/home',
+    },
+    POLICIES: {
+      ROOT: '/policies',
+    },
+    CLAIMS: {
+      ROOT: '/claims',
+    },
+    REWARDS: {
+      ROOT: '/rewards',
+    },
+  },
 };
 
 export const STEP_TO_ROUTE: Record<number, string> = {
