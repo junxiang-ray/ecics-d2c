@@ -25,21 +25,25 @@ const MENU_ITEMS = [
     key: ROUTES.PORTAL.HOME.ROOT,
     label: 'Home',
     icon: <HomeOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     key: ROUTES.PORTAL.POLICIES.ROOT,
     label: 'Policies',
     icon: <FileCheckOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     key: ROUTES.PORTAL.CLAIMS.ROOT,
     label: 'Claims',
     icon: <InfoCircleOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     key: ROUTES.PORTAL.REWARDS.ROOT,
     label: 'Rewards',
     icon: <GiftOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     type: 'divider',
@@ -49,11 +53,13 @@ const MENU_ITEMS = [
     key: ROUTES.PORTAL.HOME.ROOT,
     label: 'Profile',
     icon: <ProfileOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     key: ROUTES.PORTAL.HOME.ROOT,
     label: 'Payment Methods',
     icon: <DocumentOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     type: 'divider',
@@ -63,11 +69,13 @@ const MENU_ITEMS = [
     key: ROUTES.PORTAL.HOME.ROOT,
     label: 'Terms and Conditions',
     icon: <ScrollTextOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     key: ROUTES.PORTAL.HOME.ROOT,
     label: 'Privacy Policy',
     icon: <ShieldOutlined width='17.5' height='17.5' />,
+    children: null,
   },
   {
     type: 'divider',
@@ -79,6 +87,7 @@ const MENU_ITEMS = [
     icon: (
       <LogoutOutlined className='text-red-500' width='17.5' height='17.5' />
     ),
+    children: null,
   },
 ];
 
