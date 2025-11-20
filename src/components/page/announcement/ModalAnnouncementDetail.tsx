@@ -21,7 +21,7 @@ const ModalAnnouncementDetail = ({
   open,
   announcement,
   onModalCancel,
-}: Props): JSX.Element => {
+}: Props): JSX.Element | null => {
   const detail: Announcement['attributes'] = announcement?.attributes ?? {};
 
   if (!announcement) return null;
