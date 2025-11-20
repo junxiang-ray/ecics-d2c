@@ -75,7 +75,11 @@ const PortalPageHeader = (): JSX.Element => {
         item.type === 'divider' ? (
           <Divider key={idx} className='m-1' />
         ) : item.routerPath ? (
-          <Link key={item.key} href={item.routerPath} legacyBehavior>
+          <Link
+            key={`navlink_${item.key}`}
+            href={item.routerPath}
+            legacyBehavior
+          >
             <button
               className={`transition-bg flex w-full cursor-pointer flex-nowrap items-center gap-3.5 rounded-md px-3.5 py-2 text-sm text-gray-500 duration-200 hover:bg-gray-200 ${item.className ?? ''}`}
             >
@@ -87,7 +91,7 @@ const PortalPageHeader = (): JSX.Element => {
           </Link>
         ) : (
           <button
-            key={item.key}
+            key={`navlinkBtn_${item.key}`}
             className={`transition-bg flex w-full cursor-pointer flex-nowrap items-center gap-3.5 rounded-md px-3.5 py-2 text-sm text-gray-500 duration-200 hover:bg-gray-200 ${item.className ?? ''}`}
             onClick={item.onClick}
           >
@@ -118,7 +122,11 @@ const PortalPageHeader = (): JSX.Element => {
             </div>
             <nav className='hidden items-center font-body md:mr-8 md:flex [&>*:not(:last-child)]:mr-8'>
               {navItems.map((navItem) => (
-                <Link key={navItem.path} href={navItem.path} legacyBehavior>
+                <Link
+                  key={`navItem_${navItem.path}`}
+                  href={navItem.path}
+                  legacyBehavior
+                >
                   <button
                     className={`font-medium transition-colors duration-200 hover:text-[#02ADEF]/90 ${
                       pathName.startsWith(navItem.path) ? 'text-[#02ADEF]' : ''

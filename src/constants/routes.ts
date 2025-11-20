@@ -9,6 +9,23 @@ const createInsuranceRoutes = (basePath: string) => ({
   HELPER_DETAIL: `${basePath}/helpers-detail`,
 });
 
+const createPortalRoutes = (basePath: string) => ({
+  ROOT: basePath,
+  LOGIN: `${basePath}/login`,
+  HOME: {
+    ROOT: `${basePath}/home`,
+  },
+  POLICIES: {
+    ROOT: `${basePath}/policies`,
+  },
+  CLAIMS: {
+    ROOT: `${basePath}/claims`,
+  },
+  REWARDS: {
+    ROOT: `${basePath}/rewards`,
+  },
+});
+
 export const ROUTES = {
   INSURANCE: createInsuranceRoutes('/motor/insurance'),
   INSURANCE_MAID: createInsuranceRoutes('/maid/insurance'),
@@ -37,21 +54,7 @@ export const ROUTES = {
     RENEWAL_REVIEW: '/renewal/review',
     RENEWAL_ACCOUNT_SETUP: '/renewal/account-setup',
   },
-  PORTAL: {
-    LOGIN: '/login',
-    HOME: {
-      ROOT: '/home',
-    },
-    POLICIES: {
-      ROOT: '/policies',
-    },
-    CLAIMS: {
-      ROOT: '/claims',
-    },
-    REWARDS: {
-      ROOT: '/rewards',
-    },
-  },
+  PORTAL: createPortalRoutes('/portal'),
 };
 
 export const STEP_TO_ROUTE: Record<number, string> = {
