@@ -64,3 +64,5 @@ export const API_RETRIVE_NRIC_SINGPASS_RENEWAL =
   '/renewal/motor/retrieve-nric-singpass';
 
 export const API_POST_CMS_CHECK_POLICIES = '/check-policies';
+
+export const API_ANNOUNCEMENT_GET = '/announcements';
