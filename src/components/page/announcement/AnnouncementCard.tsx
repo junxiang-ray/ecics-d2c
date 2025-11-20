@@ -32,7 +32,7 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
         ? 'text-orange-600'
         : 'text-gray-600';
 
-  const notiBadgeClr: string =
+  const notiBadgeClr =
     announcementDetail.priority === 'Urgent'
       ? 'red'
       : announcementDetail.priority === 'Notice'

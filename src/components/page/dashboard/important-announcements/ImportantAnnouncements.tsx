@@ -1,0 +1,47 @@
+'use client';
+
+import { useState } from 'react';
+import { Announcement } from '@/libs/types/announcement';
+import { useAnnouncementPreview } from '@/hook/announcement/announcement';
+
+import ModalAnnouncement from './ModalAnnouncement';
+import Card from '@/components/page/announcement/AnnouncementCard';
+import RightOutlined from '@/assets/icons/add-on/right-outlined.svg';
+
+const ImportantAnnouncements = (): JSX.Element => {
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const { data, isFetching } = useAnnouncementPreview();
+
+  const announcements: Array<Announcement | null> =
+    data == null && isFetching ? [null, null] : (data?.results ?? []);
+
+  return (
+    <>
+      <div>
+        <div className='mb-6 flex items-center justify-between'>
+          <h2 className='font-heading text-xl font-semibold text-gray-900'>
+            Important Announcements
+          </h2>
+          <button
+            className='flex items-center gap-1 rounded font-body text-sm font-medium text-primary transition-colors duration-200 hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2'
+            onClick={() => setIsOpenModal(true)}
+          >
+            View More
+            <RightOutlined className='text-lg' />
+          </button>
+        </div>
+        <div className='[&_>:not(:last-child)]:mb-4'>
+          {announcements.map((ann, idx) => (
+            <Card key={ann?.id ?? idx} data={ann} />
+          ))}
+        </div>
+      </div>
+
+      <ModalAnnouncement
+        open={isOpenModal}
+        onCancel={() => setIsOpenModal(false)}
+      />
+    </>
+  );
+};
+export default ImportantAnnouncements;

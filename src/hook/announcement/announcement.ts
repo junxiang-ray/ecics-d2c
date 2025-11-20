@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import type { AxiosResponse } from 'axios';
 
 import {
   Announcement,
@@ -7,14 +7,19 @@ import {
   AnnouncementResponseData,
 } from '@/libs/types/announcement';
 
+import { useQuery } from '@tanstack/react-query';
 import announcement from '@/api/base-service/announcement';
 
 export const useAnnouncementPreview = () => {
   const fetchAnnouncements = async (): Promise<AnnouncementResponse> => {
     try {
-      const resp: AnnouncementResponseData = await announcement.getAnnouncement(
-        { sortField: 'createdAt', sortOrder: 'desc', pageNo: 1, pageSize: 2 },
-      );
+      const resp: AxiosResponse<AnnouncementResponseData> =
+        await announcement.getAnnouncement({
+          sortField: 'createdAt',
+          sortOrder: 'desc',
+          pageNo: 1,
+          pageSize: 2,
+        });
 
       return {
         message: '',
@@ -39,11 +44,13 @@ export const useAnnouncementPreview = () => {
   });
 };
 
-export const useAnnouncements = (params: AnnouncementRequest) => {
+export const useAnnouncements = (params: AnnouncementRequest | null) => {
   const fetchAnnouncements = async (): Promise<AnnouncementResponse> => {
     try {
-      const resp: AnnouncementResponseData =
-        await announcement.getAnnouncement(params);
+      const resp: AxiosResponse<AnnouncementResponseData> =
+        await announcement.getAnnouncement(
+          params as unknown as AnnouncementRequest,
+        );
 
       return {
         message: '',
