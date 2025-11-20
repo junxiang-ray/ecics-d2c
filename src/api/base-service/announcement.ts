@@ -1,3 +1,5 @@
+import type { AxiosResponse } from 'axios';
+
 import {
   AnnouncementRequest,
   AnnouncementResponseData,
@@ -9,9 +11,9 @@ import baseClient from './api.config';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  getAnnouncement<T = { data: AnnouncementResponseData }>(
+  getAnnouncement<T = AnnouncementResponseData>(
     payload: AnnouncementRequest,
-  ): Promise<T> {
+  ): Promise<AxiosResponse<T>> {
     const params = {
       sort: payload.sortField
         ? `${payload.sortField}:${payload.sortOrder}`
@@ -22,7 +24,7 @@ export default {
       },
     };
 
-    return baseClient.get<AnnouncementResponseData>(`${API_ANNOUNCEMENT_GET}`, {
+    return baseClient.get<T>(`${API_ANNOUNCEMENT_GET}`, {
       params,
     });
   },
