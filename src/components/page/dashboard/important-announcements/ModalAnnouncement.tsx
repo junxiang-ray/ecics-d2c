@@ -23,9 +23,10 @@ const SearchPayloadDefaults: AnnouncementRequest = {
 interface Props {
   open: boolean;
   onCancel: () => void;
+  onShowDetail: (data: Announcement) => void;
 }
 
-const ModalAnnouncement = ({ open, onCancel }: Props) => {
+const ModalAnnouncement = ({ open, onCancel, onShowDetail }: Props) => {
   const totalRecordRef = useRef(0);
 
   const [searchPayload, setSearchPayload] =
@@ -93,10 +94,11 @@ const ModalAnnouncement = ({ open, onCancel }: Props) => {
       classNames={{
         mask: 'bg-black/50 backdrop-blur-sm',
         content:
-          'rouneded-3xl overflow-hidden p-0 max-h-[90vh] w-fit max-w-4xl shadow-2xl',
+          'rounded-3xl overflow-hidden p-0 max-h-[90vh] w-fit max-w-4xl shadow-2xl',
         body: 'w-fit',
         footer: 'm-0',
       }}
+      destroyOnHidden
       title={
         <div className='border-b border-gray-200 bg-gray-50 p-6'>
           <h2 className='font-heading text-2xl font-semibold text-gray-900'>
@@ -160,7 +162,11 @@ const ModalAnnouncement = ({ open, onCancel }: Props) => {
             </div>
           ) : (
             announcements.map((ann, idx) => (
-              <Card key={ann?.id ?? idx} data={ann} />
+              <Card
+                key={ann?.id ?? idx}
+                data={ann}
+                onShowDetail={onShowDetail}
+              />
             ))
           )}
         </div>
