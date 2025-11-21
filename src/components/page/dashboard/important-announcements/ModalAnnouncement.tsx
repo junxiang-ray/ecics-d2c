@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { Announcement, AnnouncementRequest } from '@/libs/types/announcement';
+import { Announcement, AnnouncementPayload } from '@/libs/types/announcement';
 import { useAnnouncements } from '@/hook/announcement/announcement';
 
 import { Modal, Skeleton } from 'antd';
@@ -10,7 +10,7 @@ import Pagination from '@/components/pagination/Pagination';
 import PaginationSimple from '@/components/pagination/PaginationSimple';
 import Card from '@/components/page/announcement/AnnouncementCard';
 
-const SearchPayloadDefaults: AnnouncementRequest = {
+const SearchPayloadDefaults: AnnouncementPayload = {
   sortField: 'publishedAt',
   sortOrder: 'desc',
   pageNo: 1,
@@ -26,7 +26,7 @@ const ModalAnnouncement = ({ open, onCancel }: Props): ReactNode => {
   const totalRecordRef = useRef(0);
 
   const [searchPayload, setSearchPayload] =
-    useState<AnnouncementRequest | null>(null);
+    useState<AnnouncementPayload | null>(null);
 
   const { data, isFetching } = useAnnouncements(searchPayload);
 
