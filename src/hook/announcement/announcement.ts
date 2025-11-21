@@ -1,8 +1,7 @@
 import type { AxiosResponse } from 'axios';
 
 import {
-  Announcement,
-  AnnouncementRequest,
+  AnnouncementPayload,
   AnnouncementResponse,
   AnnouncementResponseData,
 } from '@/libs/types/announcement';
@@ -14,24 +13,19 @@ export const useAnnouncementPreview = () => {
   const fetchAnnouncements = async (): Promise<AnnouncementResponse> => {
     try {
       const resp: AxiosResponse<AnnouncementResponseData> =
-        await announcement.getAnnouncement({
+        await announcement.getAnnouncements({
           sortField: 'createdAt',
           sortOrder: 'desc',
           pageNo: 1,
           pageSize: 2,
         });
 
-      return {
-        message: '',
-        pagination: resp?.data?.meta?.pagination,
-        results: (resp?.data?.data ?? []) as unknown as Announcement[],
-      };
+      return resp?.data as unknown as AnnouncementResponse;
     } catch (e) {
       return {
-        message: '',
-        pagination: { total: 0 },
-        results: [],
-      };
+        meta: {},
+        data: null,
+      } as unknown as AnnouncementResponse;
     }
   };
 
@@ -44,25 +38,20 @@ export const useAnnouncementPreview = () => {
   });
 };
 
-export const useAnnouncements = (params: AnnouncementRequest | null) => {
+export const useAnnouncements = (params: AnnouncementPayload | null) => {
   const fetchAnnouncements = async (): Promise<AnnouncementResponse> => {
     try {
       const resp: AxiosResponse<AnnouncementResponseData> =
-        await announcement.getAnnouncement(
-          params as unknown as AnnouncementRequest,
+        await announcement.getAnnouncements(
+          params as unknown as AnnouncementPayload,
         );
 
-      return {
-        message: '',
-        pagination: resp?.data?.meta?.pagination,
-        results: (resp?.data?.data ?? []) as unknown as Announcement[],
-      };
+      return resp?.data as unknown as AnnouncementResponse;
     } catch (e) {
       return {
-        message: '',
-        pagination: { total: 0 },
-        results: [],
-      };
+        meta: {},
+        data: null,
+      } as unknown as AnnouncementResponse;
     }
   };
 

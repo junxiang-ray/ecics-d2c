@@ -2,18 +2,15 @@
 
 import { useRef, useMemo, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-
-import { Announcement, AnnouncementRequest } from '@/libs/types/announcement';
+import { Announcement, AnnouncementPayload } from '@/libs/types/announcement';
 import { useAnnouncements } from '@/hook/announcement/announcement';
 
-import { Modal, Pagination, Skeleton } from 'antd';
-
+import { Modal, Skeleton } from 'antd';
+import Pagination from '@/components/pagination/Pagination';
+import PaginationSimple from '@/components/pagination/PaginationSimple';
 import Card from '@/components/page/announcement/AnnouncementCard';
 
-import RightOutlined from '@/assets/icons/add-on/right-outlined.svg';
-import LeftOutlined from '@/assets/icons/add-on/left-outlined.svg';
-
-const SearchPayloadDefaults: AnnouncementRequest = {
+const SearchPayloadDefaults: Required<AnnouncementPayload> = {
   sortField: 'publishedAt',
   sortOrder: 'desc',
   pageNo: 1,
@@ -26,11 +23,15 @@ interface Props {
   onShowDetail: (data: Announcement) => void;
 }
 
-const ModalAnnouncement = ({ open, onCancel, onShowDetail }: Props) => {
+const ModalAnnouncement = ({
+  open,
+  onCancel,
+  onShowDetail,
+}: Props): ReactNode => {
   const totalRecordRef = useRef(0);
 
   const [searchPayload, setSearchPayload] =
-    useState<AnnouncementRequest | null>(null);
+    useState<AnnouncementPayload | null>(null);
 
   const { data, isFetching } = useAnnouncements(searchPayload);
 
@@ -41,45 +42,19 @@ const ModalAnnouncement = ({ open, onCancel, onShowDetail }: Props) => {
   const totalRecords = useMemo<number>(() => {
     if (isFetching) return totalRecordRef.current;
 
-    return (totalRecordRef.current = data?.pagination?.total ?? 0);
-  }, [isFetching, data?.pagination?.total]);
+    return (totalRecordRef.current = data?.meta?.pagination?.total ?? 0);
+  }, [isFetching, data?.meta?.pagination?.total]);
 
   const pageNo: number = searchPayload?.pageNo ?? 0;
   const pageSize: number = searchPayload?.pageSize ?? 0;
-  const totalPage: number = data?.pagination?.pageCount ?? 0;
-  const itemFrom: number = (pageNo - 1) * pageSize + 1;
-  const itemTo: number = Math.min(pageNo * pageSize, totalRecords);
+  const totalPage: number = data?.meta?.pagination?.pageCount ?? 0;
 
   const announcements: Array<Announcement | null> =
-    data == null && isFetching ? [null] : (data?.results ?? []);
+    data?.data == null && isFetching ? [null] : (data?.data ?? []);
 
   const onModalCancel = (): void => {
     setSearchPayload((prev) => ({ ...prev, pageNo: 0 }));
     onCancel();
-  };
-
-  const pageItemRender = (
-    _: unknown,
-    type: 'next' | 'page' | 'prev' | 'jump-prev' | 'jump-next',
-    originalElement: ReactNode,
-  ): ReactNode => {
-    if (type === 'prev')
-      return (
-        <a className='mr-2 flex h-8 flex-nowrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm leading-none'>
-          <LeftOutlined />
-          Previous
-        </a>
-      );
-
-    if (type === 'next')
-      return (
-        <a className='ml-2 flex h-8 flex-nowrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm leading-none'>
-          Next
-          <RightOutlined />
-        </a>
-      );
-
-    return originalElement;
   };
 
   const onPageChange = (pageNo: number): void => {
@@ -111,48 +86,25 @@ const ModalAnnouncement = ({ open, onCancel, onShowDetail }: Props) => {
       }
       footer={
         <div className='rounded-bl-md rounded-br-md border-t border-gray-200 bg-gray-50 px-6 py-4 '>
-          <div className='flex items-center justify-between gap-2'>
-            <span className='font-body text-sm text-gray-600'>
-              Showing {itemFrom} to {itemTo} of {totalRecords} announcements
-            </span>
-            <Pagination
-              align='start'
-              size='small'
-              current={pageNo}
-              total={totalRecords}
-              defaultPageSize={pageSize}
-              itemRender={pageItemRender}
-              onChange={(pageNo: number) => onPageChange(pageNo)}
-            />
-          </div>
+          <Pagination
+            total={totalRecords}
+            pageNo={pageNo}
+            pageSize={pageSize}
+            onChange={onPageChange}
+          />
         </div>
       }
       onCancel={onModalCancel}
     >
       <div className='h-[60vh] w-fit px-5 py-6'>
-        <div className='mb-4 flex items-center justify-between px-1'>
-          <p className='font-body text-sm text-gray-600'>
-            {totalRecords} announcements
-          </p>
-          <div className='flex items-center space-x-2'>
-            <button
-              className='rounded-md p-1 transition-colors duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50'
-              disabled={pageNo === SearchPayloadDefaults.pageNo}
-              onClick={() => onPageChange(pageNo - 1)}
-            >
-              <LeftOutlined />
-            </button>
-            <span className='font-body text-sm text-gray-600'>
-              {pageNo} of {totalPage}
-            </span>
-            <button
-              className='rounded-md p-1 transition-colors duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50'
-              disabled={pageNo === totalPage}
-              onClick={() => onPageChange(pageNo + 1)}
-            >
-              <RightOutlined />
-            </button>
-          </div>
+        <div className='mb-4 px-1'>
+          <PaginationSimple
+            total={totalRecords}
+            page={pageNo}
+            pageCount={totalPage}
+            defaultPage={SearchPayloadDefaults.pageNo}
+            onChange={onPageChange}
+          />
         </div>
 
         <div className='mb-4 max-h-[calc(60vh-8rem)] w-fit min-w-[50rem] overflow-auto px-1 [&_>:not(:last-child)]:mb-3'>

@@ -1,9 +1,9 @@
-import { SortOrder, Pagination, PaginationMetaData } from '@/libs/types/common';
+import { Pagination, PaginationMetaData, SortOrder } from '@/libs/types/common';
 import { NotificationPriority } from '@/libs/types/notification';
 
 type SortField = keyof Announcement['attributes'];
 
-export type AnnouncementRequest = Pagination &
+export type AnnouncementPayload = Pagination &
   Partial<{
     sortField?: SortField;
     sortOrder?: SortOrder;
@@ -25,10 +25,9 @@ export type AnnouncementResponseData = {
   meta: { pagination: PaginationMetaData };
 };
 
-export interface AnnouncementResponse {
-  message: string;
-  pagination: Partial<PaginationMetaData>;
-  results: Announcement[];
+export interface AnnouncementResponse
+  extends Pick<AnnouncementResponseData, 'meta'> {
+  data: Announcement[];
 }
 
 export type Announcement = {

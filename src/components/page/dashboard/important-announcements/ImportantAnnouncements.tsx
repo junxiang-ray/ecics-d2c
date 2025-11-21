@@ -17,7 +17,7 @@ const ImportantAnnouncements = (): JSX.Element => {
   const { data, isFetching } = useAnnouncementPreview();
 
   const announcements: Array<Announcement | null> =
-    data == null && isFetching ? [null, null] : (data?.results ?? []);
+    data?.data == null && isFetching ? [null, null] : (data?.data ?? []);
 
   return (
     <>
