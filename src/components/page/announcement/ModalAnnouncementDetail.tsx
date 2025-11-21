@@ -23,7 +23,8 @@ const ModalAnnouncementDetail = ({
   announcement,
   onModalCancel,
 }: Props): JSX.Element | null => {
-  const detail: Announcement['attributes'] = announcement?.attributes ?? {};
+  const detail: Announcement['attributes'] =
+    announcement?.attributes ?? ({} as unknown as Announcement['attributes']);
 
   if (!announcement) return null;
 
