@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios';
 
 import {
-  AnnouncementRequest,
+  AnnouncementPayload,
   AnnouncementResponseData,
 } from '@/libs/types/announcement';
 
@@ -11,8 +11,8 @@ import baseClient from './api.config';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  getAnnouncement<T = AnnouncementResponseData>(
-    payload: AnnouncementRequest,
+  getAnnouncements<T = AnnouncementResponseData>(
+    payload: AnnouncementPayload,
   ): Promise<AxiosResponse<T>> {
     const params = {
       sort: payload.sortField

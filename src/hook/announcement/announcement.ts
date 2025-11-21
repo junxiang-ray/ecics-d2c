@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios';
 
 import {
-  AnnouncementRequest,
+  AnnouncementPayload,
   AnnouncementResponse,
   AnnouncementResponseData,
 } from '@/libs/types/announcement';
@@ -38,12 +38,12 @@ export const useAnnouncementPreview = () => {
   });
 };
 
-export const useAnnouncements = (params: AnnouncementRequest | null) => {
+export const useAnnouncements = (params: AnnouncementPayload | null) => {
   const fetchAnnouncements = async (): Promise<AnnouncementResponse> => {
     try {
       const resp: AxiosResponse<AnnouncementResponseData> =
         await announcement.getAnnouncements(
-          params as unknown as AnnouncementRequest,
+          params as unknown as AnnouncementPayload,
         );
 
       return resp?.data as unknown as AnnouncementResponse;
