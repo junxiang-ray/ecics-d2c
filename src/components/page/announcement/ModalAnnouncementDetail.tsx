@@ -14,7 +14,7 @@ import WarnTriableOutlined from '@/assets/icons/add-on/warning-triangle-outlined
 
 interface Props {
   open: boolean;
-  announcement: Announcement;
+  announcement: Announcement | null;
   onModalCancel: () => void;
 }
 
