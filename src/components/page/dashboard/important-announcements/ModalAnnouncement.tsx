@@ -10,7 +10,7 @@ import Pagination from '@/components/pagination/Pagination';
 import PaginationSimple from '@/components/pagination/PaginationSimple';
 import Card from '@/components/page/announcement/AnnouncementCard';
 
-const SearchPayloadDefaults: AnnouncementPayload = {
+const SearchPayloadDefaults: Required<AnnouncementPayload> = {
   sortField: 'publishedAt',
   sortOrder: 'desc',
   pageNo: 1,
@@ -96,7 +96,7 @@ const ModalAnnouncement = ({ open, onCancel }: Props): ReactNode => {
             total={totalRecords}
             page={pageNo}
             pageCount={totalPage}
-            defaultPage={SearchPayloadDefaults!.pageNo}
+            defaultPage={SearchPayloadDefaults.pageNo}
             onChange={onPageChange}
           />
         </div>
