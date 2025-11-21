@@ -14,7 +14,7 @@ const BoxIcon = ({ className, icon, bordered, size }: Props): JSX.Element => {
       className={`relative grid aspect-square place-items-center ${boxSize} ${className ?? ''}`}
     >
       <div
-        className={`transition-background absolute inset-0 z-0  bg-[currentColor] opacity-10 duration-200 group-hover:opacity-20 ${
+        className={`boxIcon-overlay transition-background absolute inset-0 z-0  bg-[currentColor] opacity-10 duration-200 group-hover:opacity-20 ${
           size === 'sm' ? 'rounded-lg' : 'rounded-xl'
         }`}
       />
