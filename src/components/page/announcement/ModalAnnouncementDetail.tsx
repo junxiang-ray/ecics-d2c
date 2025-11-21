@@ -1,4 +1,5 @@
 import { Announcement } from '@/libs/types/announcement';
+import { Props as BadgeProps } from '@/components/ui/Badge';
 
 import { formatDateString } from '@/libs/utils/dayjs';
 
@@ -33,7 +34,7 @@ const ModalAnnouncementDetail = ({
         ? 'text-orange-600'
         : 'text-gray-600';
 
-  const notiBadgeClr: string =
+  const notiBadgeClr: BadgeProps['color'] =
     detail.priority === 'Urgent'
       ? 'red'
       : detail.priority === 'Notice'
@@ -68,7 +69,7 @@ const ModalAnnouncementDetail = ({
         body: 'w-fit',
         footer: 'm-0',
       }}
-      destroyOnHidden
+      destroyOnClose
       footer={
         <div className='mx-6 mb-6 mt-8 flex justify-end border-t border-gray-200 pt-4'>
           <Button
