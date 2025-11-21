@@ -73,7 +73,7 @@ const ModalAnnouncement = ({
         body: 'w-fit',
         footer: 'm-0',
       }}
-      destroyOnHidden
+      destroyOnClose
       title={
         <div className='border-b border-gray-200 bg-gray-50 p-6'>
           <h2 className='font-heading text-2xl font-semibold text-gray-900'>
