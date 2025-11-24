@@ -66,3 +66,7 @@ export const API_RETRIVE_NRIC_SINGPASS_RENEWAL =
 export const API_POST_CMS_CHECK_POLICIES = '/check-policies';
 
 export const API_ANNOUNCEMENT_GET = '/announcements';
+
+export const API_PROMOTION_GET = '/current-promotions';
+
+export const API_POLICY_GET = '/policies';
