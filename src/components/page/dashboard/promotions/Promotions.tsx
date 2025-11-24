@@ -36,11 +36,13 @@ const Promotions = (): React.ReactNode => {
           768: { slidesPerView: 2 },
         }}
         pagination={{ clickable: true }}
-        style={{
-          ['--swiper-pagination-bullet-width']: '.75rem',
-          ['--swiper-pagination-bullet-height']: '.75rem',
-          ['--swiper-pagination-color']: '#02adef',
-        }}
+        style={
+          {
+            '--swiper-pagination-bullet-width': '.75rem',
+            '--swiper-pagination-bullet-height': '.75rem',
+            '--swiper-pagination-color': '#02adef',
+          } as React.CSSProperties
+        }
       >
         {promotions.map((promotion, idx) => (
           <SwiperSlide key={promotion?.id ?? `promot_${idx}`}>
