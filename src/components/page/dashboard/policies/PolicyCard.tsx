@@ -1,0 +1,146 @@
+import { Policy } from '@/libs/types/policy';
+import { formatDateString } from '@/libs/utils/dayjs';
+import { getPolicyStatusTag } from '@/libs/utils/policy';
+
+import { Skeleton } from 'antd';
+
+import BoxIcon from '@/components/ui/BoxIcon';
+import Badge from '@/components/ui/Badge';
+import CarOutlined from '@/assets/icons/add-on/car-outlined.svg';
+import UserGroupOutlined from '@/assets/icons/add-on/user-group-outlined.svg';
+import MotorcycleOutlined from '@/assets/icons/add-on/motorcycle-outlined.svg';
+import HomeOutlined from '@/assets/icons/add-on/home-outlined.svg';
+import PlaneOutlined from '@/assets/icons/add-on/plane-outlined.svg';
+import RightOutlined from '@/assets/icons/add-on/right-outlined.svg';
+
+interface Props {
+  data: Policy | null;
+  onShowDetail: (policy: Policy | null) => void;
+}
+
+const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
+  if (data == null)
+    return (
+      <div className='transform overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm'>
+        <Skeleton.Input active block className='h-[230px] opacity-50' />
+      </div>
+    );
+
+  const icon: React.ReactNode =
+    data.policy_type === 'car' ? (
+      <CarOutlined width='21' height='21' />
+    ) : data.policy_type === 'motorcycle' ? (
+      <MotorcycleOutlined width='21' height='21' />
+    ) : data.policy_type === 'maid' ? (
+      <UserGroupOutlined width='21' height='21' />
+    ) : data.policy_type === 'home' ? (
+      <HomeOutlined width='21' height='21' />
+    ) : data.policy_type === 'travel' ? (
+      <PlaneOutlined width='21' height='21' />
+    ) : (
+      <></>
+    );
+
+  const cardTitle: string =
+    data.policy_type === 'car'
+      ? 'Private Motor Car'
+      : data.policy_type === 'motorcycle'
+        ? 'Private Motorcycle'
+        : data.policy_type === 'maid'
+          ? 'Maid Insurance'
+          : data.policy_type === 'home'
+            ? 'Home Insurance'
+            : data.policy_type === 'travel'
+              ? 'Home Insurance'
+              : '';
+
+  const isPendingRenewal: boolean = data.tags === 'pending_renewal';
+  const tags = getPolicyStatusTag(
+    isPendingRenewal ? undefined : data.policy_status,
+    data.tags,
+  );
+
+  return (
+    <div
+      className='transform cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow transition-all duration-200 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg'
+      onClick={!!onShowDetail && (() => onShowDetail(data))}
+    >
+      <div className='border-b border-gray-100 p-6'>
+        <div className='mb-4 flex items-start justify-between'>
+          <div className='flex min-w-0 flex-1 items-center pr-3'>
+            <BoxIcon className='mr-4 text-primary' icon={icon} />
+            <div className='min-w-0 flex-1'>
+              <h3 className='truncate font-heading text-lg font-semibold text-gray-900'>
+                {cardTitle}
+              </h3>
+              <p className='truncate font-body text-sm text-gray-600'>
+                {data.plan?.plan_name}
+              </p>
+            </div>
+          </div>
+          {!!tags && (
+            <Badge
+              bordered
+              color={tags.color}
+              font='medium'
+              size='lg'
+              content={tags.label}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className='p-5'>
+        <div className='mb-4 flex items-start justify-between'>
+          <div>
+            <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+              Policy Number
+            </p>
+            <p className='font-body text-sm font-semibold text-gray-900'>
+              {data.policy_no}
+            </p>
+          </div>
+          <div className='text-right'>
+            <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+              Expiry Date
+            </p>
+            <p className='font-body text-sm font-semibold text-gray-900'>
+              {formatDateString(data.end_date, 'YYYY-MM-DD', 'DD MMM YYYY')}
+            </p>
+          </div>
+        </div>
+        <div className='flex items-center justify-between border-t border-gray-100 pt-4'>
+          {['car', 'motorcycle'].includes(data.policy_type) && (
+            <>
+              <div>
+                <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+                  Vehicle Registration
+                </p>
+                <p className='font-body text-sm font-semibold text-gray-900'>
+                  {data.vehicle?.vehicle_number ?? '-'}
+                </p>
+              </div>
+            </>
+          )}
+          {data.policy_type === 'maid' && (
+            <>
+              <div>
+                <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+                  HELPER'S NAME
+                </p>
+                <p className='font-body text-sm font-semibold text-gray-900'>
+                  {data.maid_info?.name ?? '-'}
+                </p>
+              </div>
+            </>
+          )}
+          <div className='flex items-center font-body text-primary transition-all duration-200 hover:text-primary/80'>
+            <span className='mr-2 text-sm font-semibold'>Renew Now</span>
+            <RightOutlined />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+export default PolicyCard;
