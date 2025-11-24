@@ -10,7 +10,7 @@ import ExternalOutlined from '@/assets/icons/add-on/external-outlined.svg';
 
 type Props = {
   data: Promotion;
-  onClick: (evt: MouseEvent) => void;
+  onClick: (evt: MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 
 const PromotionCard = ({ data, onClick }: Props): React.ReactNode => {
