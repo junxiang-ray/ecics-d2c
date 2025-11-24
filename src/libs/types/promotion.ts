@@ -12,15 +12,16 @@ export type PromotionPayload = Pagination &
 export type PromotionResponseData = {
   data: Array<{
     id: number;
-    attributes: PromotionAttributes;
+    attributes: Record<string, unknown>;
   }>;
   meta: { pagination: PaginationMetaData };
 };
 
-export type PromotionResponse = {
-  message: string;
-  pagination: Partial<PaginationMetaData>;
-  results: Promotion[];
+export type PromotionResponse = Pick<PromotionResponseData, 'meta'> & {
+  data: Array<{
+    id: number;
+    attributes: PromotionAttributes;
+  }>;
 };
 
 export type Promotion = {
