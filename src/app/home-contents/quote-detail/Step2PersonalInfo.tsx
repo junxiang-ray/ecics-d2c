@@ -178,500 +178,485 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
             )}
           </CardHeader>
           <CardContent className='grid w-full grid-cols-1 gap-6 sm:grid-cols-2'>
-            {/* Mobile Layout - Single Column */}
-            <div>
-              {/* NRIC/FIN */}
-              <div className='col-span-1 mb-4'>
-                <Label className='w-full text-base font-semibold text-gray-700 sm:text-lg'>
-                  NRIC/FIN <span className='text-red-500'>*</span>
-                </Label>
-                <Input
-                  placeholder='Enter your NRIC/FIN'
-                  value={personalInfoData.policyHolderNricFin}
-                  onChange={(e) =>
-                    updatePersonalInfoData(
-                      'policyHolderNricFin',
-                      e.target.value,
-                    )
-                  }
-                  className={cn(
-                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
-                    personalInfoErrors.policyHolderNricFin
-                      ? 'border-red-500'
-                      : 'border-gray-200 focus:border-[#02ADEF]',
-                    isMyInfoRetrieved ? 'bg-green-50' : '',
-                  )}
-                  disabled={myInfoData.isLoading || isMyInfoRetrieved}
-                />
-                {personalInfoErrors.policyHolderNricFin && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {personalInfoErrors.policyHolderNricFin}
-                  </p>
+            {/* NRIC/FIN */}
+            <div className='col-span-1 mb-4'>
+              <Label className='w-full text-base font-semibold text-gray-700 sm:text-lg'>
+                NRIC/FIN <span className='text-red-500'>*</span>
+              </Label>
+              <Input
+                placeholder='Enter your NRIC/FIN'
+                value={personalInfoData.policyHolderNricFin}
+                onChange={(e) =>
+                  updatePersonalInfoData('policyHolderNricFin', e.target.value)
+                }
+                className={cn(
+                  'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                  personalInfoErrors.policyHolderNricFin
+                    ? 'border-red-500'
+                    : 'border-gray-200 focus:border-[#02ADEF]',
+                  isMyInfoRetrieved ? 'bg-green-50' : '',
                 )}
-              </div>
-
-              {/* Full Name */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Full Name (As per NRIC/FIN){' '}
-                  <span className='text-red-500'>*</span>
-                </Label>
-                <Input
-                  placeholder='Enter your full name as per NRIC/FIN'
-                  value={personalInfoData.policyHolderFullName}
-                  onChange={(e) =>
-                    updatePersonalInfoData(
-                      'policyHolderFullName',
-                      e.target.value,
-                    )
-                  }
-                  className={cn(
-                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
-                    personalInfoErrors.policyHolderFullName
-                      ? 'border-red-500'
-                      : 'border-gray-200 focus:border-[#02ADEF]',
-                    isMyInfoRetrieved ? 'bg-green-50' : '',
-                  )}
-                  disabled={myInfoData.isLoading || isMyInfoRetrieved}
-                />
-                {personalInfoErrors.policyHolderFullName && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {personalInfoErrors.policyHolderFullName}
-                  </p>
-                )}
-              </div>
-
-              {/* Date of Birth */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Date of Birth <span className='text-red-500'>*</span>
-                </Label>
-                <DateInput
-                  value={personalInfoData.policyHolderDateOfBirth}
-                  onChange={(value) =>
-                    updatePersonalInfoData('policyHolderDateOfBirth', value)
-                  }
-                  className={cn(
-                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
-                    personalInfoErrors.policyHolderDateOfBirth
-                      ? 'border-red-500'
-                      : 'border-gray-200 focus:border-[#02ADEF]',
-                    isMyInfoRetrieved ? 'bg-green-50' : '',
-                  )}
-                  disabled={myInfoData.isLoading || isMyInfoRetrieved}
-                />
-                {personalInfoErrors.policyHolderDateOfBirth && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {personalInfoErrors.policyHolderDateOfBirth}
-                  </p>
-                )}
-              </div>
-
-              {/* Nationality */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Nationality <span className='text-red-500'>*</span>
-                </Label>
-                <Select
-                  options={NATIONALITIES}
-                  defaultValue={personalInfoData.policyHolderNationality}
-                  onChange={(value) =>
-                    updatePersonalInfoData('policyHolderNationality', value)
-                  }
-                  disabled={myInfoData.isLoading || isMyInfoRetrieved}
-                  placeholder='Select your nationality'
-                  className='h-12 text-base sm:h-14'
-                />
-                {personalInfoErrors.policyHolderNationality && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {personalInfoErrors.policyHolderNationality}
-                  </p>
-                )}
-              </div>
-
-              {/* Phone Number */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Phone Number <span className='text-red-500'>*</span>
-                  {isMyInfoRetrieved && (
-                    <span className='ml-2 text-xs font-normal text-blue-600'>
-                      (You can update this)
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  type='tel'
-                  placeholder='Enter your phone number'
-                  value={personalInfoData.policyHolderMobileNumber}
-                  onChange={(e) =>
-                    updatePersonalInfoData(
-                      'policyHolderMobileNumber',
-                      e.target.value,
-                    )
-                  }
-                  className={cn(
-                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
-                    personalInfoErrors.policyHolderMobileNumber
-                      ? 'border-red-500'
-                      : 'border-gray-200 focus:border-[#02ADEF]',
-                    isMyInfoRetrieved
-                      ? 'border-blue-200 bg-blue-50 focus:border-blue-500'
-                      : '',
-                  )}
-                  disabled={myInfoData.isLoading}
-                />
-                {personalInfoErrors.policyHolderMobileNumber && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {personalInfoErrors.policyHolderMobileNumber}
-                  </p>
-                )}
-              </div>
-
-              {/* Email */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Email <span className='text-red-500'>*</span>
-                  {isMyInfoRetrieved && (
-                    <span className='ml-2 text-xs font-normal text-blue-600'>
-                      (You can update this)
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  type='email'
-                  placeholder='Enter your email address'
-                  value={personalInfoData.policyHolderEmail}
-                  onChange={(e) =>
-                    updatePersonalInfoData('policyHolderEmail', e.target.value)
-                  }
-                  className={cn(
-                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
-                    personalInfoErrors.policyHolderEmail
-                      ? 'border-red-500'
-                      : 'border-gray-200 focus:border-[#02ADEF]',
-                    isMyInfoRetrieved
-                      ? 'border-blue-200 bg-blue-50 focus:border-blue-500'
-                      : '',
-                  )}
-                  disabled={myInfoData.isLoading}
-                />
-                {personalInfoErrors.policyHolderEmail && (
-                  <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                      !
-                    </span>
-                    {personalInfoErrors.policyHolderEmail}
-                  </p>
-                )}
-              </div>
-
-              {/* Section Header */}
-              <div className='col-span-2 border-t border-gray-200 pt-6'>
-                <h3 className='mb-1 text-lg font-semibold text-gray-800 sm:text-xl'>
-                  Insured Premises
-                </h3>
-                <p className='text-sm text-gray-600 sm:text-base'>
-                  Please provide your property address details
+                disabled={myInfoData.isLoading || isMyInfoRetrieved}
+              />
+              {personalInfoErrors.policyHolderNricFin && (
+                <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                  <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                    !
+                  </span>
+                  {personalInfoErrors.policyHolderNricFin}
                 </p>
-              </div>
-
-              {/* Address Line 1 */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Address Line 1 <span className='text-red-500'>*</span>
-                </Label>
-                <Input
-                  placeholder='Enter address line 1'
-                  value={personalInfoData.addressLine1}
-                  onChange={(e) =>
-                    updatePersonalInfoData('addressLine1', e.target.value)
-                  }
-                  className={cn(
-                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
-                    personalInfoErrors.addressLine1
-                      ? 'border-red-500'
-                      : 'border-gray-200 focus:border-[#02ADEF]',
-                  )}
-                />
-              </div>
-
-              {/* Postal Code */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Postal Code <span className='text-red-500'>*</span>
-                </Label>
-                <Input
-                  placeholder='Enter postal code'
-                  value={personalInfoData.postalCode}
-                  onChange={(e) =>
-                    updatePersonalInfoData('postalCode', e.target.value)
-                  }
-                  className={cn(
-                    'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
-                    personalInfoErrors.postalCode
-                      ? 'border-red-500'
-                      : 'border-gray-200 focus:border-[#02ADEF]',
-                  )}
-                />
-              </div>
-
-              {/* Address Line 2 */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Address Line 2
-                </Label>
-                <Input
-                  placeholder='Enter address line 2 (optional)'
-                  value={personalInfoData.addressLine2}
-                  onChange={(e) =>
-                    updatePersonalInfoData('addressLine2', e.target.value)
-                  }
-                  className='h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
-                />
-              </div>
-
-              {/* Address Line 3 */}
-              <div className='col-span-1 mb-4'>
-                <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                  Address Line 3
-                </Label>
-                <Input
-                  placeholder='Enter address line 3 (optional)'
-                  value={personalInfoData.addressLine3}
-                  onChange={(e) =>
-                    updatePersonalInfoData('addressLine3', e.target.value)
-                  }
-                  className='h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
-                />
-              </div>
-
-              {/* Checkbox */}
-              <div className='col-span-2 mt-6'>
-                <div className='flex items-center space-x-3 rounded-xl border-2 border-gray-200 bg-gray-50 p-4'>
-                  <input
-                    type='checkbox'
-                    id='mailingAddressDifferent'
-                    checked={personalInfoData.mailingAddressDifferent === 'yes'}
-                    onChange={(e) =>
-                      updatePersonalInfoData(
-                        'mailingAddressDifferent',
-                        e.target.checked ? 'yes' : 'no',
-                      )
-                    }
-                    className='h-5 w-5 rounded border-gray-300 bg-white text-[#02ADEF] focus:ring-2 focus:ring-[#02ADEF]'
-                  />
-                  <label
-                    htmlFor='mailingAddressDifferent'
-                    className='cursor-pointer select-none text-base font-semibold text-gray-700'
-                  >
-                    My Insured Premises and Mailing Address is different
-                  </label>
-                </div>
-              </div>
-
-              {/* Mailing Address Section */}
-              {personalInfoData.mailingAddressDifferent === 'yes' && (
-                <div className='col-span-2'>
-                  <div className='rounded-xl border-2 border-blue-200 bg-blue-50/50 p-6'>
-                    <h3 className='mb-4 text-lg font-semibold text-gray-800'>
-                      Mailing Address
-                    </h3>
-
-                    <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-                      {/* Mailing Address Line 1 */}
-                      <div className='col-span-1 mb-4'>
-                        <Label className='text-base font-semibold text-gray-700'>
-                          Mailing Address Line 1{' '}
-                          <span className='text-red-500'>*</span>
-                        </Label>
-                        <Input
-                          placeholder='Enter mailing address line 1'
-                          value={personalInfoData.mailingAddressLine1}
-                          onChange={(e) =>
-                            updatePersonalInfoData(
-                              'mailingAddressLine1',
-                              e.target.value,
-                            )
-                          }
-                          className={cn(
-                            'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
-                            personalInfoErrors.mailingAddressLine1
-                              ? 'border-red-500'
-                              : 'border-gray-200 focus:border-[#02ADEF]',
-                          )}
-                        />
-                        {personalInfoErrors.mailingAddressLine1 && (
-                          <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                            <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                              !
-                            </span>
-                            {personalInfoErrors.mailingAddressLine1}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Mailing Address Line 2 */}
-                      <div className='col-span-1 mb-4'>
-                        <Label className='text-base font-semibold text-gray-700'>
-                          Mailing Address Line 2
-                        </Label>
-                        <Input
-                          placeholder='Enter mailing address line 2 (optional)'
-                          value={personalInfoData.mailingAddressLine2}
-                          onChange={(e) =>
-                            updatePersonalInfoData(
-                              'mailingAddressLine2',
-                              e.target.value,
-                            )
-                          }
-                          className='mt-2 h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
-                        />
-                      </div>
-
-                      {/* Mailing Address Line 3 */}
-                      <div className='col-span-1 mb-4'>
-                        <Label className='text-base font-semibold text-gray-700'>
-                          Mailing Address Line 3
-                        </Label>
-                        <Input
-                          placeholder='Enter mailing address line 3 (optional)'
-                          value={personalInfoData.mailingAddressLine3}
-                          onChange={(e) =>
-                            updatePersonalInfoData(
-                              'mailingAddressLine3',
-                              e.target.value,
-                            )
-                          }
-                          className='mt-2 h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
-                        />
-                      </div>
-
-                      {/* Mailing Postal Code */}
-                      <div className='col-span-1 mb-4'>
-                        <Label className='text-base font-semibold text-gray-700'>
-                          Mailing Postal Code{' '}
-                          <span className='text-red-500'>*</span>
-                        </Label>
-                        <Input
-                          placeholder='Enter mailing postal code'
-                          value={personalInfoData.mailingPostalCode}
-                          onChange={(e) =>
-                            updatePersonalInfoData(
-                              'mailingPostalCode',
-                              e.target.value,
-                            )
-                          }
-                          className={cn(
-                            'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
-                            personalInfoErrors.mailingPostalCode
-                              ? 'border-red-500'
-                              : 'border-gray-200 focus:border-[#02ADEF]',
-                          )}
-                        />
-                        {personalInfoErrors.mailingPostalCode && (
-                          <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
-                            <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
-                              !
-                            </span>
-                            {personalInfoErrors.mailingPostalCode}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
               )}
+            </div>
 
-              {/* PayNow Section */}
-              <div className='col-span-2 border-t border-gray-200 pt-6'>
-                <h3 className='mb-2 text-xl font-semibold text-gray-800'>
-                  PayNow Details for Claims Disbursement
-                </h3>
-                <p className='mb-3 text-base text-gray-600'>
-                  In the event of a claim, we will disburse the payout via
-                  PayNow…
+            {/* Full Name */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Full Name (As per NRIC/FIN){' '}
+                <span className='text-red-500'>*</span>
+              </Label>
+              <Input
+                placeholder='Enter your full name as per NRIC/FIN'
+                value={personalInfoData.policyHolderFullName}
+                onChange={(e) =>
+                  updatePersonalInfoData('policyHolderFullName', e.target.value)
+                }
+                className={cn(
+                  'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                  personalInfoErrors.policyHolderFullName
+                    ? 'border-red-500'
+                    : 'border-gray-200 focus:border-[#02ADEF]',
+                  isMyInfoRetrieved ? 'bg-green-50' : '',
+                )}
+                disabled={myInfoData.isLoading || isMyInfoRetrieved}
+              />
+              {personalInfoErrors.policyHolderFullName && (
+                <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                  <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                    !
+                  </span>
+                  {personalInfoErrors.policyHolderFullName}
                 </p>
-                <p className='mb-4 text-base text-gray-600'>
-                  If your PayNow account is registered under a different number…
+              )}
+            </div>
+
+            {/* Date of Birth */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Date of Birth <span className='text-red-500'>*</span>
+              </Label>
+              <DateInput
+                value={personalInfoData.policyHolderDateOfBirth}
+                onChange={(value) =>
+                  updatePersonalInfoData('policyHolderDateOfBirth', value)
+                }
+                className={cn(
+                  'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                  personalInfoErrors.policyHolderDateOfBirth
+                    ? 'border-red-500'
+                    : 'border-gray-200 focus:border-[#02ADEF]',
+                  isMyInfoRetrieved ? 'bg-green-50' : '',
+                )}
+                disabled={myInfoData.isLoading || isMyInfoRetrieved}
+              />
+              {personalInfoErrors.policyHolderDateOfBirth && (
+                <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                  <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                    !
+                  </span>
+                  {personalInfoErrors.policyHolderDateOfBirth}
                 </p>
+              )}
+            </div>
 
-                <div className='mb-4'>
-                  <div className='flex items-center space-x-3 rounded-xl border-2 border-gray-200 bg-gray-50 p-4'>
-                    <input
-                      type='checkbox'
-                      id='payNowAccountDifferent'
-                      checked={
-                        personalInfoData.payNowAccountDifferent === 'yes'
-                      }
-                      onChange={(e) =>
-                        updatePersonalInfoData(
-                          'payNowAccountDifferent',
-                          e.target.checked ? 'yes' : 'no',
-                        )
-                      }
-                      className='h-5 w-5 rounded border-gray-300 bg-white text-[#02ADEF] focus:ring-2 focus:ring-[#02ADEF]'
-                      disabled={myInfoData.isLoading}
-                    />
-                    <label
-                      htmlFor='payNowAccountDifferent'
-                      className='cursor-pointer select-none text-base font-semibold text-gray-700'
-                    >
-                      My PayNow account is different…
-                    </label>
-                  </div>
-                </div>
+            {/* Nationality */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Nationality <span className='text-red-500'>*</span>
+              </Label>
+              <Select
+                options={NATIONALITIES}
+                defaultValue={personalInfoData.policyHolderNationality}
+                onChange={(value) =>
+                  updatePersonalInfoData('policyHolderNationality', value)
+                }
+                disabled={myInfoData.isLoading || isMyInfoRetrieved}
+                placeholder='Select your nationality'
+                className='h-12 text-base sm:h-14'
+              />
+              {personalInfoErrors.policyHolderNationality && (
+                <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                  <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                    !
+                  </span>
+                  {personalInfoErrors.policyHolderNationality}
+                </p>
+              )}
+            </div>
 
-                {personalInfoData.payNowAccountDifferent === 'yes' && (
-                  <div className='rounded-xl border-2 border-orange-200 bg-orange-50/50 p-6'>
-                    <div className='max-w-md'>
+            {/* Phone Number */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Phone Number <span className='text-red-500'>*</span>
+                {isMyInfoRetrieved && (
+                  <span className='ml-2 text-xs font-normal text-blue-600'>
+                    (You can update this)
+                  </span>
+                )}
+              </Label>
+              <Input
+                type='tel'
+                placeholder='Enter your phone number'
+                value={personalInfoData.policyHolderMobileNumber}
+                onChange={(e) =>
+                  updatePersonalInfoData(
+                    'policyHolderMobileNumber',
+                    e.target.value,
+                  )
+                }
+                className={cn(
+                  'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                  personalInfoErrors.policyHolderMobileNumber
+                    ? 'border-red-500'
+                    : 'border-gray-200 focus:border-[#02ADEF]',
+                  isMyInfoRetrieved
+                    ? 'border-blue-200 bg-blue-50 focus:border-blue-500'
+                    : '',
+                )}
+                disabled={myInfoData.isLoading}
+              />
+              {personalInfoErrors.policyHolderMobileNumber && (
+                <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                  <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                    !
+                  </span>
+                  {personalInfoErrors.policyHolderMobileNumber}
+                </p>
+              )}
+            </div>
+
+            {/* Email */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Email <span className='text-red-500'>*</span>
+                {isMyInfoRetrieved && (
+                  <span className='ml-2 text-xs font-normal text-blue-600'>
+                    (You can update this)
+                  </span>
+                )}
+              </Label>
+              <Input
+                type='email'
+                placeholder='Enter your email address'
+                value={personalInfoData.policyHolderEmail}
+                onChange={(e) =>
+                  updatePersonalInfoData('policyHolderEmail', e.target.value)
+                }
+                className={cn(
+                  'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                  personalInfoErrors.policyHolderEmail
+                    ? 'border-red-500'
+                    : 'border-gray-200 focus:border-[#02ADEF]',
+                  isMyInfoRetrieved
+                    ? 'border-blue-200 bg-blue-50 focus:border-blue-500'
+                    : '',
+                )}
+                disabled={myInfoData.isLoading}
+              />
+              {personalInfoErrors.policyHolderEmail && (
+                <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                  <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                    !
+                  </span>
+                  {personalInfoErrors.policyHolderEmail}
+                </p>
+              )}
+            </div>
+
+            {/* Section Header: Insured Premises */}
+            <div className='col-span-1 border-t border-gray-200 pt-6 sm:col-span-2'>
+              <h3 className='mb-1 text-lg font-semibold text-gray-800 sm:text-xl'>
+                Insured Premises
+              </h3>
+              <p className='text-sm text-gray-600 sm:text-base'>
+                Please provide your property address details
+              </p>
+            </div>
+
+            {/* Address Line 1 */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Address Line 1 <span className='text-red-500'>*</span>
+              </Label>
+              <Input
+                placeholder='Enter address line 1'
+                value={personalInfoData.addressLine1}
+                onChange={(e) =>
+                  updatePersonalInfoData('addressLine1', e.target.value)
+                }
+                className={cn(
+                  'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                  personalInfoErrors.addressLine1
+                    ? 'border-red-500'
+                    : 'border-gray-200 focus:border-[#02ADEF]',
+                )}
+              />
+            </div>
+
+            {/* Postal Code */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Postal Code <span className='text-red-500'>*</span>
+              </Label>
+              <Input
+                placeholder='Enter postal code'
+                value={personalInfoData.postalCode}
+                onChange={(e) =>
+                  updatePersonalInfoData('postalCode', e.target.value)
+                }
+                className={cn(
+                  'h-12 w-full rounded-xl border-2 bg-white px-4 text-base sm:h-14',
+                  personalInfoErrors.postalCode
+                    ? 'border-red-500'
+                    : 'border-gray-200 focus:border-[#02ADEF]',
+                )}
+              />
+            </div>
+
+            {/* Address Line 2 */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Address Line 2
+              </Label>
+              <Input
+                placeholder='Enter address line 2 (optional)'
+                value={personalInfoData.addressLine2}
+                onChange={(e) =>
+                  updatePersonalInfoData('addressLine2', e.target.value)
+                }
+                className='h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
+              />
+            </div>
+
+            {/* Address Line 3 */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Address Line 3
+              </Label>
+              <Input
+                placeholder='Enter address line 3 (optional)'
+                value={personalInfoData.addressLine3}
+                onChange={(e) =>
+                  updatePersonalInfoData('addressLine3', e.target.value)
+                }
+                className='h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF] sm:h-14'
+              />
+            </div>
+
+            {/* Checkbox: Mailing Address Different */}
+            <div className='col-span-1 mt-6 sm:col-span-2'>
+              <div className='flex items-center space-x-3 rounded-xl border-2 border-gray-200 bg-gray-50 p-4'>
+                <input
+                  type='checkbox'
+                  id='mailingAddressDifferent'
+                  checked={personalInfoData.mailingAddressDifferent === 'yes'}
+                  onChange={(e) =>
+                    updatePersonalInfoData(
+                      'mailingAddressDifferent',
+                      e.target.checked ? 'yes' : 'no',
+                    )
+                  }
+                  className='h-5 w-5 rounded border-gray-300 bg-white text-[#02ADEF] focus:ring-2 focus:ring-[#02ADEF]'
+                />
+                <label
+                  htmlFor='mailingAddressDifferent'
+                  className='cursor-pointer select-none text-base font-semibold text-gray-700'
+                >
+                  My Insured Premises and Mailing Address is different
+                </label>
+              </div>
+            </div>
+
+            {/* Mailing Address Section */}
+            {personalInfoData.mailingAddressDifferent === 'yes' && (
+              <div className='col-span-1 sm:col-span-2'>
+                <div className='rounded-xl border-2 border-blue-200 bg-blue-50/50 p-6'>
+                  <h3 className='mb-4 text-lg font-semibold text-gray-800'>
+                    Mailing Address
+                  </h3>
+
+                  <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+                    {/* Mailing Address Line 1 */}
+                    <div className='col-span-1 mb-4'>
                       <Label className='text-base font-semibold text-gray-700'>
-                        PayNow Account (if different){' '}
+                        Mailing Address Line 1{' '}
                         <span className='text-red-500'>*</span>
                       </Label>
                       <Input
-                        type='tel'
-                        placeholder='Enter your PayNow mobile number'
-                        value={personalInfoData.payNowAccount}
+                        placeholder='Enter mailing address line 1'
+                        value={personalInfoData.mailingAddressLine1}
                         onChange={(e) =>
                           updatePersonalInfoData(
-                            'payNowAccount',
+                            'mailingAddressLine1',
                             e.target.value,
                           )
                         }
                         className={cn(
                           'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
-                          personalInfoErrors.payNowAccount
+                          personalInfoErrors.mailingAddressLine1
                             ? 'border-red-500'
                             : 'border-gray-200 focus:border-[#02ADEF]',
                         )}
                       />
-                      {personalInfoErrors.payNowAccount && (
+                      {personalInfoErrors.mailingAddressLine1 && (
                         <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
                           <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
                             !
                           </span>
-                          {personalInfoErrors.payNowAccount}
+                          {personalInfoErrors.mailingAddressLine1}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Mailing Address Line 2 */}
+                    <div className='col-span-1 mb-4'>
+                      <Label className='text-base font-semibold text-gray-700'>
+                        Mailing Address Line 2
+                      </Label>
+                      <Input
+                        placeholder='Enter mailing address line 2 (optional)'
+                        value={personalInfoData.mailingAddressLine2}
+                        onChange={(e) =>
+                          updatePersonalInfoData(
+                            'mailingAddressLine2',
+                            e.target.value,
+                          )
+                        }
+                        className='mt-2 h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
+                      />
+                    </div>
+
+                    {/* Mailing Address Line 3 */}
+                    <div className='col-span-1 mb-4'>
+                      <Label className='text-base font-semibold text-gray-700'>
+                        Mailing Address Line 3
+                      </Label>
+                      <Input
+                        placeholder='Enter mailing address line 3 (optional)'
+                        value={personalInfoData.mailingAddressLine3}
+                        onChange={(e) =>
+                          updatePersonalInfoData(
+                            'mailingAddressLine3',
+                            e.target.value,
+                          )
+                        }
+                        className='mt-2 h-12 w-full rounded-xl border-2 border-gray-200 bg-white px-4 text-base focus:border-[#02ADEF]'
+                      />
+                    </div>
+
+                    {/* Mailing Postal Code */}
+                    <div className='col-span-1 mb-4'>
+                      <Label className='text-base font-semibold text-gray-700'>
+                        Mailing Postal Code{' '}
+                        <span className='text-red-500'>*</span>
+                      </Label>
+                      <Input
+                        placeholder='Enter mailing postal code'
+                        value={personalInfoData.mailingPostalCode}
+                        onChange={(e) =>
+                          updatePersonalInfoData(
+                            'mailingPostalCode',
+                            e.target.value,
+                          )
+                        }
+                        className={cn(
+                          'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
+                          personalInfoErrors.mailingPostalCode
+                            ? 'border-red-500'
+                            : 'border-gray-200 focus:border-[#02ADEF]',
+                        )}
+                      />
+                      {personalInfoErrors.mailingPostalCode && (
+                        <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                          <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                            !
+                          </span>
+                          {personalInfoErrors.mailingPostalCode}
                         </p>
                       )}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
+            )}
+
+            {/* PayNow Section */}
+            <div className='col-span-1 border-t border-gray-200 pt-6 sm:col-span-2'>
+              <h3 className='mb-2 text-xl font-semibold text-gray-800'>
+                PayNow Details for Claims Disbursement
+              </h3>
+              <p className='mb-3 text-base text-gray-600'>
+                In the event of a claim, we will disburse the payout via PayNow…
+              </p>
+              <p className='mb-4 text-base text-gray-600'>
+                If your PayNow account is registered under a different number…
+              </p>
+
+              <div className='mb-4'>
+                <div className='flex items-center space-x-3 rounded-xl border-2 border-gray-200 bg-gray-50 p-4'>
+                  <input
+                    type='checkbox'
+                    id='payNowAccountDifferent'
+                    checked={personalInfoData.payNowAccountDifferent === 'yes'}
+                    onChange={(e) =>
+                      updatePersonalInfoData(
+                        'payNowAccountDifferent',
+                        e.target.checked ? 'yes' : 'no',
+                      )
+                    }
+                    className='h-5 w-5 rounded border-gray-300 bg-white text-[#02ADEF] focus:ring-2 focus:ring-[#02ADEF]'
+                    disabled={myInfoData.isLoading}
+                  />
+                  <label
+                    htmlFor='payNowAccountDifferent'
+                    className='cursor-pointer select-none text-base font-semibold text-gray-700'
+                  >
+                    My PayNow account is different…
+                  </label>
+                </div>
+              </div>
+
+              {personalInfoData.payNowAccountDifferent === 'yes' && (
+                <div className='rounded-xl border-2 border-orange-200 bg-orange-50/50 p-6'>
+                  <div className='max-w-md'>
+                    <Label className='text-base font-semibold text-gray-700'>
+                      PayNow Account (if different){' '}
+                      <span className='text-red-500'>*</span>
+                    </Label>
+                    <Input
+                      type='tel'
+                      placeholder='Enter your PayNow mobile number'
+                      value={personalInfoData.payNowAccount}
+                      onChange={(e) =>
+                        updatePersonalInfoData('payNowAccount', e.target.value)
+                      }
+                      className={cn(
+                        'mt-2 h-12 w-full rounded-xl border-2 bg-white px-4 text-base',
+                        personalInfoErrors.payNowAccount
+                          ? 'border-red-500'
+                          : 'border-gray-200 focus:border-[#02ADEF]',
+                      )}
+                    />
+                    {personalInfoErrors.payNowAccount && (
+                      <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                        <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                          !
+                        </span>
+                        {personalInfoErrors.payNowAccount}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
