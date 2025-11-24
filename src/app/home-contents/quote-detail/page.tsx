@@ -38,6 +38,8 @@ import {
   INITIAL_MYINFO_DATA,
   INITIAL_FORM_DATA,
 } from './initialData';
+import { useRequestLoginHomeContent } from '@/hook/auth/login-home-content';
+import { PRODUCT_NAME } from '@/app/api/constants/product';
 
 export default function QuoteDetailPage() {
   //#region State Management
@@ -407,8 +409,20 @@ export default function QuoteDetailPage() {
   );
 
   //#region Singpass Retrieve
+
+  const { mutate: requestLoginHomeContents } = useRequestLoginHomeContent(
+    PRODUCT_NAME.HOME_CONTENT,
+    {
+      onError: () => {
+        console.log('ERROR');
+      },
+    },
+  );
+
   // 🔒 PROTECTED - MyInfo handler with memory cleanup
   const handleRetrieveMyInfo = useCallback(() => {
+    requestLoginHomeContents();
+
     setMyInfoData((prev) => ({ ...prev, isLoading: true }));
 
     const timeoutId = setTimeout(() => {

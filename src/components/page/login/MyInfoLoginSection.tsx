@@ -13,6 +13,7 @@ import { useRequestLogin } from '@/hook/auth/login';
 import { useRequestLoginMaid } from '@/hook/auth/login-maid';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRequestLoginHomeContent } from '@/hook/auth/login-home-content';
 
 interface MyInfoLoginSectionProps {
   promoCode?: string;
@@ -45,6 +46,15 @@ const MyInfoLoginSection = ({
     },
   });
 
+  const { mutate: requestLoginHomeContents } = useRequestLoginHomeContent(
+    PRODUCT_NAME.HOME_CONTENT,
+    {
+      onError: () => {
+        setIsShowSingpassDownModal(true);
+      },
+    },
+  );
+
   const { mutate: requestLog } = useRequestLog(
     isMaid
       ? PRODUCT_NAME.MAID
@@ -58,7 +68,11 @@ const MyInfoLoginSection = ({
   const handleLogin = () => {
     setIsUserActive(true);
     {
-      isMaid ? requestLoginMaid() : requestLogin();
+      isMaid
+        ? requestLoginMaid()
+        : isHomeContents
+          ? requestLoginHomeContents()
+          : requestLogin();
     }
     requestLog();
   };
