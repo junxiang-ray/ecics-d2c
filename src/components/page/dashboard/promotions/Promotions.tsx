@@ -13,7 +13,7 @@ import Badge from '@/components/ui/Badge';
 import RightOutlined from '@/assets/icons/add-on/right-outlined.svg';
 import ExternalOutlined from '@/assets/icons/add-on/external-outlined.svg';
 
-const Promotion = (): React.ReactNode => {
+const Promotions = (): React.ReactNode => {
   const { data, isFetching } = usePromotions();
 
   const isDraggingRef = useRef(false);
@@ -107,4 +107,4 @@ const Promotion = (): React.ReactNode => {
     </div>
   );
 };
-export default Promotion;
+export default Promotions;
