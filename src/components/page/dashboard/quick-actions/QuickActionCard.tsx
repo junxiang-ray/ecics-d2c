@@ -1,5 +1,5 @@
 import React from 'react';
-import BoxIcon from '@/components/ui/BoxIcon.tsx';
+import BoxIcon from '@/components/ui/BoxIcon';
 
 interface Props {
   icon: JSX.Element;

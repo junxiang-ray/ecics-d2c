@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Dropdown } from 'antd';
 
-import BoxIcon from '@/components/ui/BoxIcon.tsx';
+import BoxIcon from '@/components/ui/BoxIcon';
 
 import Card from './QuickActionCard';
 import CarOutlined from '@/assets/icons/add-on/car-outlined.svg';
