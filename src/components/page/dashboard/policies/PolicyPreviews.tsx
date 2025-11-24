@@ -111,7 +111,7 @@ const PolicyPreviews = (): React.ReactNode => {
         className='mb-6 [&_.ant-tabs-ink-bar]:bg-[#02ADEF] [&_.ant-tabs-nav-list]:gap-6 [&_.ant-tabs-nav]:m-0 [&_.ant-tabs-tab-active]:font-semibold [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-[#02ADEF] [&_.ant-tabs-tab:hover]:text-gray-900 [&_.ant-tabs-tab]:m-0 [&_.ant-tabs-tab]:cursor-pointer [&_.ant-tabs-tab]:select-none [&_.ant-tabs-tab]:px-2 [&_.ant-tabs-tab]:px-2 [&_.ant-tabs-tab]:pb-4 [&_.ant-tabs-tab]:pt-0 [&_.ant-tabs-tab]:font-body [&_.ant-tabs-tab]:text-gray-600 [&_.ant-tabs-tab]:transition-colors'
         items={tabItems}
         tabBarExtraContent={extraContent}
-        onChange={onTabChange}
+        onChange={(activeKey) => onTabChange(activeKey as TabKey)}
       />
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3'>
         {policies?.map((policy, idx) => (
