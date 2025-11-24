@@ -37,9 +37,9 @@ const Promotions = (): React.ReactNode => {
         }}
         pagination={{ clickable: true }}
         style={{
-          '--swiper-pagination-bullet-width': '.75rem',
-          '--swiper-pagination-bullet-height': '.75rem',
-          '--swiper-pagination-color': '#02adef',
+          ['--swiper-pagination-bullet-width']: '.75rem',
+          ['--swiper-pagination-bullet-height']: '.75rem',
+          ['--swiper-pagination-color']: '#02adef',
         }}
       >
         {promotions.map((promotion, idx) => (
