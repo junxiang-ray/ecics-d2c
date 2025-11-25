@@ -34,7 +34,7 @@ export type ContextValues = {
   ) => void;
 };
 
-export const PolicyContext = createContext<ContextValues>(undefined);
+export const PolicyContext = createContext<ContextValues>({} as ContextValues);
 
 const Layout = ({ children }: Props): JSX.Element => {
   const router = useRouter();
