@@ -65,11 +65,8 @@ const FilterBar = (): JSX.Element => {
     if (item) pushQuery([{ key: 'type', value: item.value }]);
   };
 
-  const onInputChange = (evt: FormEventHandler<HTMLInputElement>): void => {
-    setInputSearch(
-      ((evt as unknown as KeyboardEvent)?.target as HTMLInputElement)
-        ?.value as string,
-    );
+  const onInputChange = (inputEl?: HTMLInputElement): void => {
+    setInputSearch(inputEl?.value as string);
   };
 
   return (
@@ -90,7 +87,9 @@ const FilterBar = (): JSX.Element => {
         maxLength={150}
         className='h-[31.5px] border-0 bg-[#f3f3f5] text-[12.25px] leading-none focus-visible:ring-[3px] focus-visible:ring-red-400 [&_input::placeholder]:text-gray-500'
         placeholder='Search by policy number, type or verhicle number '
-        onInput={onInputChange}
+        onInput={(evt) =>
+          onInputChange((evt as KeyboardEvent)?.target as HTMLInputElement)
+        }
       />
     </div>
   );
