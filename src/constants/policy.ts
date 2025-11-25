@@ -16,3 +16,11 @@ export const POLICY_TYPE_ICON: Record<
   home: HomeOutlined,
   travel: PlaneOutlined,
 };
+
+export const POLICY_TYPE_NAME: Record<Exclude<PolicyType, 'all'>, string> = {
+  car: 'Private Motor Car',
+  motorcycle: 'Private Motorcycle',
+  maid: 'Maid Insurance',
+  home: 'Home Insurance',
+  travel: 'Home Insurance',
+};

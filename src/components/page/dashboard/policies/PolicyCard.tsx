@@ -1,6 +1,6 @@
 import { Policy, PolicyType } from '@/libs/types/policy';
 
-import { POLICY_TYPE_ICON } from '@/constants/policy';
+import { POLICY_TYPE_ICON, POLICY_TYPE_NAME } from '@/constants/policy';
 
 import { formatDateString } from '@/libs/utils/dayjs';
 import { getPolicyStatusTag } from '@/libs/utils/policy';
@@ -11,8 +11,6 @@ import BoxIcon from '@/components/ui/BoxIcon';
 import Badge from '@/components/ui/Badge';
 
 import RightOutlined from '@/assets/icons/add-on/right-outlined.svg';
-
-type SvgIconName = Exclude<PolicyType, 'all'>;
 
 interface Props {
   data: Policy | null;
@@ -28,16 +26,10 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
     );
 
   const SvgIcon: React.FC<React.SVGProps<SVGSVGElement>> | null =
-    POLICY_TYPE_ICON[data.policy_type as SvgIconName] ?? null;
+    POLICY_TYPE_ICON[data.policy_type as Exclude<PolicyType, 'all'>] ?? null;
 
-  const getCardTitle = (policyType?: PolicyType): string => {
-    if (policyType === 'car') return 'Private Motor Car';
-    if (policyType === 'motorcycle') return 'Private Motorcycle';
-    if (policyType === 'maid') return 'Maid Insurance';
-    if (policyType === 'home') return 'Home Insurance';
-    if (policyType === 'travel') return 'Home Insurance';
-    return '';
-  };
+  const cardTitle: string =
+    POLICY_TYPE_NAME[data.policy_type as Exclude<PolicyType, 'all'>] ?? '-';
 
   const isPendingRenewal: boolean = data.tags === 'pending_renewal';
   const tags = getPolicyStatusTag(
@@ -59,7 +51,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
             />
             <div className='min-w-0 flex-1'>
               <h3 className='truncate font-heading text-lg font-semibold text-gray-900'>
-                {getCardTitle(data.policy_type)}
+                {cardTitle}
               </h3>
               <p className='truncate font-body text-sm text-gray-600'>
                 {data.plan?.plan_name}
