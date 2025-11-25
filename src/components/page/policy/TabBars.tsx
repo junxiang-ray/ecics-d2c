@@ -3,6 +3,7 @@
 import { PolicySummary } from '@/libs/types/policy';
 
 import { useContext, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { PolicyContext } from '@/app/portal/policies/layout';
 
 import { Tabs } from 'antd';
@@ -17,6 +18,7 @@ type Tab = {
 
 const TabBars = (): JSX.Element => {
   const { summary, pushQuery } = useContext(PolicyContext);
+  const params = useSearchParams();
 
   const tabItems = useRef<Tab[]>([
     {
@@ -40,6 +42,15 @@ const TabBars = (): JSX.Element => {
       label: 'Expired/Cancelled',
     },
   ]).current;
+
+  const defaultActiveTabKey = useRef<TabKeys>(
+    (() => {
+      const tabKey = (params.get('status') || params.get('tags')) as TabKeys;
+      if (!tabKey) return 'all';
+
+      return tabItems.find((item) => item.key === tabKey)?.key || 'all';
+    })(),
+  ).current;
 
   const onChange = (tabKey: TabKeys): void => {
     if (tabKey === 'active')
@@ -77,6 +88,7 @@ const TabBars = (): JSX.Element => {
   return (
     <Tabs
       className='[&_.ant-tabs-nav-list]:w-full [&_.ant-tabs-tab]:flex-1 [&_.ant-tabs-tab]:justify-center'
+      defaultActiveKey={defaultActiveTabKey}
       items={tabItems.map((item) => ({
         key: item.key,
         label: tabLabelRender(item),
