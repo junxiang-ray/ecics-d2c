@@ -26,7 +26,7 @@ const PolicyCard = ({
       >
         <div className='flex items-center gap-4'>
           <BoxIcon
-            icon={icon}
+            icon={icon ?? <></>}
             className='text-primary [&_.boxIcon-overlay]:rounded-2xl'
           />
           <div>
