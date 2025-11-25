@@ -82,7 +82,7 @@ const TabBars = (): JSX.Element => {
         label: tabLabelRender(item),
       }))}
       centered
-      onChange={onChange}
+      onChange={(activeKey: string) => onChange(activeKey as TabKeys)}
     />
   );
 };
