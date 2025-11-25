@@ -1,7 +1,13 @@
 'use client';
 
 import { PolicyType } from '@/libs/types/policy';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  FormEventHandler,
+} from 'react';
 import { useDebounce } from '@/hook/useDebounce';
 import { PolicyContext, QueryValues } from '@/app/portal/policies/layout';
 
@@ -59,6 +65,13 @@ const FilterBar = (): JSX.Element => {
     if (item) pushQuery([{ key: 'type', value: item.value }]);
   };
 
+  const onInputChange = (evt: FormEventHandler<HTMLInputElement>): void => {
+    setInputSearch(
+      ((evt as unknown as KeyboardEvent)?.target as HTMLInputElement)
+        ?.value as string,
+    );
+  };
+
   return (
     <div className='flex gap-3 border-b border-gray-200 p-4 sm:flex-row sm:gap-4'>
       <InputDropdown<PolicyType>
@@ -77,9 +90,7 @@ const FilterBar = (): JSX.Element => {
         maxLength={150}
         className='h-[31.5px] border-0 bg-[#f3f3f5] text-[12.25px] leading-none focus-visible:ring-[3px] focus-visible:ring-red-400 [&_input::placeholder]:text-gray-500'
         placeholder='Search by policy number, type or verhicle number '
-        onInput={(e: KeyboardEvent) =>
-          setInputSearch((e?.target as HTMLInputElement)?.value as string)
-        }
+        onInput={onInputChange}
       />
     </div>
   );
