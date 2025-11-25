@@ -1,4 +1,7 @@
-import { Policy } from '@/libs/types/policy';
+import { Policy, PolicyType } from '@/libs/types/policy';
+
+import { POLICY_TYPE_ICON } from '@/constants/policy';
+
 import { formatDateString } from '@/libs/utils/dayjs';
 import { getPolicyStatusTag } from '@/libs/utils/policy';
 
@@ -6,12 +9,10 @@ import { Skeleton } from 'antd';
 
 import BoxIcon from '@/components/ui/BoxIcon';
 import Badge from '@/components/ui/Badge';
-import CarOutlined from '@/assets/icons/add-on/car-outlined.svg';
-import UserGroupOutlined from '@/assets/icons/add-on/user-group-outlined.svg';
-import MotorcycleOutlined from '@/assets/icons/add-on/motorcycle-outlined.svg';
-import HomeOutlined from '@/assets/icons/add-on/home-outlined.svg';
-import PlaneOutlined from '@/assets/icons/add-on/plane-outlined.svg';
+
 import RightOutlined from '@/assets/icons/add-on/right-outlined.svg';
+
+type SvgIconName = Exclude<PolicyType, 'all'>;
 
 interface Props {
   data: Policy | null;
@@ -26,33 +27,17 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
       </div>
     );
 
-  const icon: React.ReactNode =
-    data.policy_type === 'car' ? (
-      <CarOutlined width='21' height='21' />
-    ) : data.policy_type === 'motorcycle' ? (
-      <MotorcycleOutlined width='21' height='21' />
-    ) : data.policy_type === 'maid' ? (
-      <UserGroupOutlined width='21' height='21' />
-    ) : data.policy_type === 'home' ? (
-      <HomeOutlined width='21' height='21' />
-    ) : data.policy_type === 'travel' ? (
-      <PlaneOutlined width='21' height='21' />
-    ) : (
-      <></>
-    );
+  const SvgIcon: React.FC<React.SVGProps<SVGSVGElement>> | null =
+    POLICY_TYPE_ICON[data.policy_type as SvgIconName] ?? null;
 
-  const cardTitle: string =
-    data.policy_type === 'car'
-      ? 'Private Motor Car'
-      : data.policy_type === 'motorcycle'
-        ? 'Private Motorcycle'
-        : data.policy_type === 'maid'
-          ? 'Maid Insurance'
-          : data.policy_type === 'home'
-            ? 'Home Insurance'
-            : data.policy_type === 'travel'
-              ? 'Home Insurance'
-              : '';
+  const getCardTitle = (policyType?: PolicyType): string => {
+    if (policyType === 'car') return 'Private Motor Car';
+    if (policyType === 'motorcycle') return 'Private Motorcycle';
+    if (policyType === 'maid') return 'Maid Insurance';
+    if (policyType === 'home') return 'Home Insurance';
+    if (policyType === 'travel') return 'Home Insurance';
+    return '';
+  };
 
   const isPendingRenewal: boolean = data.tags === 'pending_renewal';
   const tags = getPolicyStatusTag(
@@ -68,10 +53,13 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
       <div className='border-b border-gray-100 p-6'>
         <div className='mb-4 flex items-start justify-between'>
           <div className='flex min-w-0 flex-1 items-center pr-3'>
-            <BoxIcon className='mr-4 text-primary' icon={icon} />
+            <BoxIcon
+              className='mr-4 text-primary'
+              icon={SvgIcon && <SvgIcon width='21' height='21' />}
+            />
             <div className='min-w-0 flex-1'>
               <h3 className='truncate font-heading text-lg font-semibold text-gray-900'>
-                {cardTitle}
+                {getCardTitle(data.policy_type)}
               </h3>
               <p className='truncate font-body text-sm text-gray-600'>
                 {data.plan?.plan_name}
