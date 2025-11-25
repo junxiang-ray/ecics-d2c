@@ -4,7 +4,7 @@ export const PRODUCT_NAME = {
   MOTOR: 'motor',
   MOTORCYCLE: 'b2c_motorcycle2',
   RENEWAL: 'renewal',
-  HOME_CONTENT: 'b2c_hc', /// <- change this when API ready
+  HOME_CONTENT: 'home_contents', /// <- change this when API ready
   // HOME_CONTENT_SINGPASS: 'home_contents'
 } as const;
 

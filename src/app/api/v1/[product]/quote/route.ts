@@ -27,7 +27,7 @@ export async function POST(
       return getQuouteForMaid(body);
     case PRODUCT_NAME.MOTORCYCLE:
       return getQuoteForMotorcycle(body);
-    case PRODUCT_NAME.HOME_CONTENT:
+    case 'b2c_hc':
       return getQuoteForHomeContent(body);
     default:
       return NextResponse.json(
