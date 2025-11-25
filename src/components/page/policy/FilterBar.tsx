@@ -87,7 +87,7 @@ const FilterBar = (): JSX.Element => {
         maxLength={150}
         className='h-[31.5px] border-0 bg-[#f3f3f5] text-[12.25px] leading-none focus-visible:ring-[3px] focus-visible:ring-red-400 [&_input::placeholder]:text-gray-500'
         placeholder='Search by policy number, type or verhicle number '
-        onInput={(evt) =>
+        onInput={(evt: unknown) =>
           onInputChange((evt as KeyboardEvent)?.target as HTMLInputElement)
         }
       />
