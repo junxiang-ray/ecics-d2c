@@ -15,7 +15,7 @@ import {
   PARTNER_CODE,
   PROMO_CODE,
 } from '@/constants/general.constant';
-import { ROUTES } from '@/constants/routes';
+
 import { updateEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
 import { useAppDispatch } from '@/redux/store';
 
