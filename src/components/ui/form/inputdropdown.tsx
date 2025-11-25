@@ -10,6 +10,7 @@ export interface ItemType<T = string> {
   danger?: boolean;
   disabled?: boolean;
   icon?: React.ReactNode;
+  className?: string;
   key: string;
   label?: React.ReactNode | string;
   title?: React.ReactNode | string;
