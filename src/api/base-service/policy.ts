@@ -856,7 +856,7 @@ export default {
             data: {
               data: getPolicy(payload),
               meta: { pagination: {} },
-            } as any,
+            } as unknown as AxiosResponse<T>,
           });
         },
         Math.ceil(Math.random() * 100 + 50),
