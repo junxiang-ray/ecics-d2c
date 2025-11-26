@@ -856,11 +856,11 @@ export default {
             data: {
               data: getPolicy(payload),
               meta: { pagination: {} },
-            } as unknown as AxiosResponse<T>,
+            } as any,
           });
         },
         Math.ceil(Math.random() * 100 + 50),
       );
-    });
+    }) as any;
   },
 };
