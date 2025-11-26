@@ -75,7 +75,7 @@ const ModalAnnouncement = ({
       }}
       destroyOnClose
       title={
-        <div className='border-b border-gray-200 bg-gray-50 p-6'>
+        <div className='border-b border-gray-200 bg-gray-50 p-6 pr-[4rem]'>
           <h2 className='font-heading text-2xl font-semibold text-gray-900'>
             Announcements
           </h2>
@@ -107,7 +107,7 @@ const ModalAnnouncement = ({
           />
         </div>
 
-        <div className='mb-4 max-h-[calc(60vh-8rem)] w-fit min-w-[50rem] overflow-auto px-1 [&_>:not(:last-child)]:mb-3'>
+        <div className='mb-4 max-h-[calc(60vh-8rem)] w-fit min-w-[min(50rem,80svw)] overflow-auto px-1 [&_>:not(:last-child)]:mb-3'>
           {data == null && isFetching ? (
             <div className='min-h-[200px]'>
               <Skeleton.Input block active className='h-[50px] opacity-50' />

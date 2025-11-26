@@ -42,8 +42,8 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
       className='transform cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow transition-all duration-200 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg'
       onClick={!!onShowDetail && (() => onShowDetail(data))}
     >
-      <div className='border-b border-gray-100 p-6'>
-        <div className='mb-4 flex items-start justify-between'>
+      <div className='border-b border-gray-100 p-5'>
+        <div className='flex items-start justify-between'>
           <div className='flex min-w-0 flex-1 items-center pr-3'>
             <BoxIcon
               className='mr-4 text-primary'
