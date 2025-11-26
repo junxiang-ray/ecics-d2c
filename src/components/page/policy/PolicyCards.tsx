@@ -65,7 +65,7 @@ const PolicyCards = ({ dataSource, onShowDetail }: Props): JSX.Element => {
               </div>
             </div>
 
-            <div className='mb-3 flex flex-col gap-2'>
+            <div className='flex flex-col gap-2'>
               <div className='flex flex-nowrap items-center gap-2 text-gray-700'>
                 {getIcon(data?.policy_type)}
                 {getPolicyTypeName(data?.policy_type)}
