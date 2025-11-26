@@ -22,7 +22,7 @@ const Pagination = ({
   const itemTo: number = Math.min(pageNo * pageSize, total);
 
   return (
-    <div className='flex items-center justify-between gap-2'>
+    <div className='flex flex-col items-center justify-between gap-2 md:flex-row'>
       <span className='font-body text-sm text-gray-600'>
         Showing {itemFrom} to {itemTo} of {total} announcements
       </span>
