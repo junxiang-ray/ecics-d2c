@@ -17,6 +17,7 @@ const createPortalRoutes = (basePath: string) => ({
   },
   POLICIES: {
     ROOT: `${basePath}/policies`,
+    DETAIL: `${basePath}/policies/detail`,
   },
   CLAIMS: {
     ROOT: `${basePath}/claims`,

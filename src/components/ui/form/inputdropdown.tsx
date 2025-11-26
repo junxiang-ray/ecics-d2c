@@ -65,10 +65,11 @@ const InputDropdown = <T,>({
       trigger={['click']}
       onOpenChange={(isOpen: boolean) => setOpen(isOpen)}
     >
+      {/*w-full sm:w-64*/}
       <button
-        className='data-[placeholder]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 line-clamp-1 flex min-w-[14em] flex-nowrap items-center justify-between gap-2 rounded-md bg-[#f3f3f5] px-2 py-1 outline-none'
+        className='line-clamp-1 flex h-9 min-w-[14em] flex-nowrap items-center justify-between gap-2 rounded-md bg-[#f3f3f5] px-3 py-2 outline-none data-[size=sm]:h-8'
         type='button'
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen(!open)}
       >
         <span className='text-[12.25px] leading-tight text-[#000]/90'>
           {selected?.label ?? '-'}

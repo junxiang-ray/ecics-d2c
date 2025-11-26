@@ -79,7 +79,7 @@ const TabBars = (): JSX.Element => {
   };
 
   const tabLabelRender = (item: Tab): React.ReactNode => (
-    <div className='flex items-center justify-center gap-[.25em] text-sm text-[#000]/90'>
+    <div className='flex items-center justify-center gap-[.25em] px-2 text-sm text-[#000]/90'>
       <span>{item.label}</span>
       {!!summary && <span>({summary[item.dataIndex] || 0})</span>}
     </div>
