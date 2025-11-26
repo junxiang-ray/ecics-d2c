@@ -2,7 +2,7 @@
 
 import { ROUTES } from '@/constants/routes';
 
-import type { Columns } from 'antd';
+import { ColumnsType as Columns } from 'antd/es/table';
 import { Policy, PolicyType } from '@/libs/types/policy';
 
 import { POLICY_TYPE_ICON, POLICY_TYPE_NAME } from '@/constants/policy';
