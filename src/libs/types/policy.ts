@@ -7,7 +7,7 @@ import {
 import { Company, AddNamedDriverInfo, Vehicle } from '@/libs/types/quote';
 import { MaidInfo, MaidPersonalInfo } from '@/libs/types/maidQuote';
 
-export type PlanCode = 'c' | 'cp' | 'cm' | 'cfncdb';
+export type PlanCode = 'c' | 'cp' | 'cm' | 'cs' | 'cfncdb' | 'p';
 
 export type PolicyType =
   | 'maid'

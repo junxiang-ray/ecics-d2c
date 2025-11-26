@@ -19,6 +19,7 @@ import {
 } from '@/components/contexts/PolicyLayoutContext';
 
 import { Table as AntTable } from 'antd';
+import PolicyCards from '@/components/page/policy/PolicyCards';
 
 import Badge from '@/components/ui/Badge';
 import CalendarOutlined from '@/assets/icons/add-on/calendar-outlined.svg';
@@ -46,8 +47,8 @@ const Table = (): JSX.Element => {
             </span>
           )}
           {row?.vehicle?.registration_no && (
-            <span className='leading-none text-[#000]/60'>
-              {row.vehicle.vehicle_number}
+            <span className='text-[#000]/60'>
+              {row.vehicle.registration_no}
             </span>
           )}
           {row?.maid_info?.name && (
@@ -135,21 +136,28 @@ const Table = (): JSX.Element => {
   };
 
   return (
-    <AntTable
-      rowKey='policy_no'
-      className='mt-3 text-sm [&_.ant-table-body_.ant-table-row]:cursor-pointer [&_.ant-table-header_.ant-table-cell]:bg-white/0'
-      bordered={false}
-      dataSource={policies}
-      columns={columns}
-      loading={loading}
-      pagination={false}
-      size='small'
-      sticky
-      scroll={{ x: 'max-content' }}
-      onRow={(record: Policy) => ({
-        onClick: () => openDetail(record),
-      })}
-    />
+    <>
+      <div className='hidden md:block'>
+        <AntTable
+          rowKey='policy_no'
+          className='mt-3 text-sm [&_.ant-table-body_.ant-table-row]:cursor-pointer [&_.ant-table-header_.ant-table-cell]:bg-white/0'
+          bordered={false}
+          dataSource={policies}
+          columns={columns}
+          loading={loading}
+          pagination={false}
+          size='small'
+          sticky
+          scroll={{ x: 'max-content' }}
+          onRow={(record: Policy) => ({
+            onClick: () => openDetail(record),
+          })}
+        />
+      </div>
+      <div className='block md:hidden'>
+        <PolicyCards dataSource={policies} onShowDetail={openDetail} />
+      </div>
+    </>
   );
 };
 export default Table;

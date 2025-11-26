@@ -54,7 +54,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
                 {cardTitle}
               </h3>
               <p className='truncate font-body text-sm text-gray-600'>
-                {data.plan?.plan_name}
+                {data?.plan?.plan_name}
               </p>
             </div>
           </div>
@@ -97,7 +97,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
                   Vehicle Registration
                 </p>
                 <p className='font-body text-sm font-semibold text-gray-900'>
-                  {data.vehicle?.vehicle_number ?? '-'}
+                  {data.vehicle?.registration_no ?? '-'}
                 </p>
               </div>
             </>
