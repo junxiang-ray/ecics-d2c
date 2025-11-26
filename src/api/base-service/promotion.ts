@@ -28,10 +28,9 @@ export default {
     return baseClient.get<T>(`${API_PROMOTION_GET}`, {
       params,
       headers: {
-        Authorization:
-          'Bearer 01adf500f461b4941905d6fba440f6914ea8ed66a703c1067986530c723aab5f41a0e80330828fc3f5ac4fcf1259afba136fd724982c71775a1e5454105bf7289788a6214dd31abf6c860b66485f7134fc41b0851123f996d1856478a14bbd3d232a4057056bfe4362347d9bd83bd63513e6153f0f617df342a9e4cff581b8ff',
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_CMS_TOKEN}`,
       },
-      baseURL: 'https://cms.triceratopdev.com/api',
+      baseURL: process.env.NEXT_PUBLIC_API_CMS_BASE_URL,
     });
   },
 };
