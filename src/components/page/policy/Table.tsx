@@ -146,7 +146,7 @@ const Table = (): JSX.Element => {
       size='small'
       sticky
       scroll={{ x: 'max-content' }}
-      onRow={(record: Policy, idx: number) => ({
+      onRow={(record: Policy) => ({
         onClick: () => openDetail(record),
       })}
     />
