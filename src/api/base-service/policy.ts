@@ -8,6 +8,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2024-05-21',
     end_date: '2025-05-20',
     issue_date: '2024-05-21',
@@ -61,6 +62,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - MOTORCYCLE",
     policy_type: 'motorcycle',
+    policy_type_name: 'moto vehicle - motocycle',
     start_date: '2023-08-05',
     end_date: '2024-08-04',
     issue_date: '2023-08-05',
@@ -109,6 +111,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "DOMESTIC MAID INSURANCE",
     policy_type: 'maid',
+    policy_type_name: 'maid',
     start_date: '2024-06-10',
     end_date: '2025-06-09',
     issue_date: '2023-06-23',
@@ -144,6 +147,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2024-01-15',
     end_date: '2025-01-14',
     issue_date: '2024-01-15',
@@ -197,6 +201,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2024-02-10',
     end_date: '2025-02-09',
     issue_date: '2024-02-10',
@@ -244,6 +249,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "DOMESTIC MAID INSURANCE",
     policy_type: 'maid',
+    policy_type_name: 'maid',
     start_date: '2024-02-15',
     end_date: '2025-02-14',
     issue_date: '2024-02-15',
@@ -279,6 +285,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2025-03-01',
     end_date: '2026-02-28',
     issue_date: '2025-02-25',
@@ -327,6 +334,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "DOMESTIC MAID INSURANCE",
     policy_type: 'maid',
+    policy_type_name: 'maid',
     start_date: '2025-01-01',
     end_date: '2025-12-31',
     issue_date: '2024-12-28',
@@ -362,6 +370,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2023-10-10',
     end_date: '2024-10-09',
     issue_date: '2023-10-01',
@@ -410,6 +419,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2025-06-05',
     end_date: '2026-06-04',
     issue_date: '2025-06-01',
@@ -463,6 +473,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "DOMESTIC MAID INSURANCE",
     policy_type: 'maid',
+    policy_type_name: 'maid',
     start_date: '2025-03-10',
     end_date: '2026-03-09',
     issue_date: '2025-03-05',
@@ -498,6 +509,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - MOTORCYCLE",
     policy_type: 'motorcycle',
+    policy_type_name: 'motor vehicle - motorcycle',
     start_date: '2024-09-20',
     end_date: '2025-09-19',
     issue_date: '2024-09-15',
@@ -546,6 +558,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2025-01-01',
     end_date: '2025-12-31',
     issue_date: '2024-12-20',
@@ -594,6 +607,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "DOMESTIC MAID INSURANCE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2024-04-05',
     end_date: '2025-04-04',
     issue_date: '2024-03-25',
@@ -629,6 +643,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - PRIVATE",
     policy_type: 'car',
+    policy_type_name: 'motor vehicle - car',
     start_date: '2025-05-15',
     end_date: '2026-05-14',
     issue_date: '2025-05-10',
@@ -677,6 +692,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "MOTOR POLICY - MOTORCYCLE",
     policy_type: 'motorcycle',
+    policy_type_name: 'motor vehicle - motorcycle',
     start_date: '2025-01-08',
     end_date: '2026-01-07',
     issue_date: '2025-01-05',
@@ -725,6 +741,7 @@ const MOCK_DATA = [
   {
     // "policy_type": "DUPLICATE POLICY - MOTORCYCLE",
     policy_type: 'motorcycle',
+    policy_type_name: 'motor vehicle - motorcycle',
     start_date: '2024-09-20',
     end_date: '2025-09-19',
     issue_date: '2024-09-15',
@@ -779,6 +796,7 @@ const getPolicy = (payload: any) => {
   })).filter((item) => {
     if (payload.policyNo) return item.policy_no === payload.policyNo;
 
+    const queryStr = payload.queryStr?.toLowerCase() ?? '';
     return (
       (!payload.policyStatus || payload.policyStatus === item.policy_status) &&
       (!payload.tags || payload.tags.split(',').includes(item.tags)) &&
@@ -786,10 +804,10 @@ const getPolicy = (payload: any) => {
         payload.policyType === 'all' ||
         payload.policyType === item.policy_type) &&
       (!payload.queryStr ||
-        item.policy_no?.startsWith(payload.queryStr) ||
-        item.policy_type_name?.startsWith(payload.queryStr) ||
-        item.vehicle?.registration_no?.startsWith(payload.queryStr) ||
-        item.maid_info?.name?.startsWith(payload.queryStr))
+        item.policy_no?.toLowerCase()?.startsWith(queryStr) ||
+        item.policy_type_name?.startsWith(queryStr) ||
+        item.vehicle?.registration_no?.toLowerCase()?.startsWith(queryStr) ||
+        item.maid_info?.name?.toLowerCase()?.startsWith(queryStr))
     );
   });
 
