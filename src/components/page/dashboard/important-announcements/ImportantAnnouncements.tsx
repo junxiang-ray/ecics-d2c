@@ -5,11 +5,15 @@ import { Announcement } from '@/libs/types/announcement';
 import { useAnnouncementPreview } from '@/hook/announcement/announcement';
 
 import ModalAnnouncement from './ModalAnnouncement';
+import ModalDetail from '@/components/page/announcement/ModalAnnouncementDetail';
 import Card from '@/components/page/announcement/AnnouncementCard';
 import RightOutlined from '@/assets/icons/add-on/right-outlined.svg';
 
 const ImportantAnnouncements = (): JSX.Element => {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [selAnnouncement, setSelAnnouncement] = useState<Announcement | null>(
+    null,
+  );
   const { data, isFetching } = useAnnouncementPreview();
 
   const announcements: Array<Announcement | null> =
@@ -32,7 +36,11 @@ const ImportantAnnouncements = (): JSX.Element => {
         </div>
         <div className='[&_>:not(:last-child)]:mb-4'>
           {announcements.map((ann, idx) => (
-            <Card key={ann?.id ?? idx} data={ann} />
+            <Card
+              key={ann?.id ?? idx}
+              data={ann}
+              onShowDetail={(ann) => setSelAnnouncement(ann)}
+            />
           ))}
         </div>
       </div>
@@ -40,6 +48,12 @@ const ImportantAnnouncements = (): JSX.Element => {
       <ModalAnnouncement
         open={isOpenModal}
         onCancel={() => setIsOpenModal(false)}
+        onShowDetail={(ann) => setSelAnnouncement(ann)}
+      />
+      <ModalDetail
+        open={!!selAnnouncement}
+        announcement={selAnnouncement}
+        onModalCancel={() => setSelAnnouncement(null)}
       />
     </>
   );

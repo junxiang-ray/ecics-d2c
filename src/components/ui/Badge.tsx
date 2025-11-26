@@ -1,4 +1,4 @@
-interface Props {
+export interface Props {
   content: string;
   size?: 'sm' | 'md' | 'lg';
   bordered?: boolean;
@@ -106,7 +106,7 @@ const Badge = ({
         />
       )}
       <span
-        className={`z-2 relative inline-block font-body text-[10.5px] leading-none font-${font ?? 'normal'}`}
+        className={`z-2 relative inline-block text-nowrap font-body text-[10.5px] leading-none font-${font ?? 'normal'}`}
       >
         {content}
       </span>
