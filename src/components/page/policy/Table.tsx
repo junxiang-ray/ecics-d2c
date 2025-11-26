@@ -13,7 +13,10 @@ import { getPolicyStatusTag, getPolicyTypeName } from '@/libs/utils/policy';
 
 import { useRef } from 'react';
 import { useContext } from 'react';
-import { PolicyContext, QueryValues } from '@/app/portal/policies/layout';
+import {
+  PolicyContext,
+  QueryValues,
+} from '@/components/contexts/PolicyLayoutContext';
 
 import { Table as AntTable } from 'antd';
 

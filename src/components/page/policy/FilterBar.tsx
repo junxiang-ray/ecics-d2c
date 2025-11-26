@@ -9,7 +9,10 @@ import {
   FormEventHandler,
 } from 'react';
 import { useDebounce } from '@/hook/useDebounce';
-import { PolicyContext, QueryValues } from '@/app/portal/policies/layout';
+import {
+  PolicyContext,
+  QueryValues,
+} from '@/components/contexts/PolicyLayoutContext';
 
 import { Input } from 'antd';
 import InputDropdown, { ItemType } from '@/components/ui/form/inputdropdown';

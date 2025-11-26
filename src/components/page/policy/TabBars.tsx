@@ -4,7 +4,7 @@ import { PolicySummary } from '@/libs/types/policy';
 
 import { useContext, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { PolicyContext } from '@/app/portal/policies/layout';
+import { PolicyContext } from '@/components/contexts/PolicyLayoutContext';
 
 import { Tabs } from 'antd';
 
