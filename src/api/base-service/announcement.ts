@@ -26,6 +26,10 @@ export default {
 
     return baseClient.get<T>(`${API_ANNOUNCEMENT_GET}`, {
       params,
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_CMS_TOKEN}`,
+      },
+      baseURL: process.env.NEXT_PUBLIC_API_CMS_BASE_URL,
     });
   },
 };
