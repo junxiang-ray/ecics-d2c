@@ -70,7 +70,7 @@ const FilterBar = (): JSX.Element => {
   };
 
   return (
-    <div className='flex gap-3 border-b border-gray-200 p-4 sm:flex-row sm:gap-4'>
+    <div className='flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:gap-4'>
       <InputDropdown<PolicyType>
         value={selPolicyType}
         items={dropdownItemPolicyTypes}

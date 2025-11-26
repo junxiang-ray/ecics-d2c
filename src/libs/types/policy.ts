@@ -38,16 +38,15 @@ export type VehicleInfo = Vehicle & {
   company: Company;
 };
 
+type ExcessDetail = {
+  name: string;
+  description?: string;
+  amount: number;
+};
+
 export type Excess = {
-  policy_excess: {
-    windscreen_sunmoon_roof: number;
-    standard_excess: number;
-    standard_excess_outside_sg: number;
-  };
-  additional_excess: {
-    unnamed_drivers: number;
-    young_or_inexperienced: number;
-  };
+  policy_excess: ExcessDetail[];
+  additional_excess: ExcessDetail[];
 };
 
 export type PolicyHolder = {
@@ -108,6 +107,7 @@ export type PolicySummary = {
 
 export type PolicyPayload = Partial<Pagination> &
   Partial<{
+    policyNo: Policy['policy_no'];
     queryStr: string;
     policyStatus: PolicyStatus;
     policyType: PolicyType;

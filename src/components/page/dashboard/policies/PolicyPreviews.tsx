@@ -97,12 +97,14 @@ const PolicyPreviews = (): React.ReactNode => {
     }).current;
 
   const navigateToDetailScreen = (policy: Policy | null): void => {
-    if (!policy) {
+    if (!policy?.policy_no) {
       router.push(ROUTES.PORTAL.POLICIES.ROOT);
       return;
     }
 
-    router.push(`${ROUTES.PORTAL.POLICIES.ROOT}/${policy.policy_no}`);
+    router.push(
+      `${ROUTES.PORTAL.POLICIES.DETAIL}?no=${encodeURIComponent(policy.policy_no)}`,
+    );
   };
 
   return (
