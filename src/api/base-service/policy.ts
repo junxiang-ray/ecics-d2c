@@ -772,7 +772,7 @@ const MOCK_DATA = [
   },
 ];
 
-const getPolicy = (payload: PolicyPayload) => {
+const getPolicy = (payload: any) => {
   const results = MOCK_DATA.map((item, idx) => ({
     id: idx + 1,
     ...item,
