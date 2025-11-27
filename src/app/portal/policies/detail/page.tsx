@@ -39,7 +39,9 @@ const PolicyDetailPage = () => {
 
   const isVehicle =
     !!policyDetail &&
-    (['car' | 'motorcycle'] as PolicyType[]).includes(policyDetail.policy_type);
+    (['car' | 'motorcycle'] as unknown as PolicyType[]).includes(
+      policyDetail.policy_type,
+    );
   const isPendingRenewal =
     !!policyDetail && policyDetail.tags === 'pending_renewal';
 
