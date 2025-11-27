@@ -23,7 +23,7 @@ export type ContextValues = {
   selPolicyType: PolicyType;
   policies: Policy[];
   summary: PolicySummary;
-  policyDetail: Policy | null;
+  policyDetail: Policy;
   pushQuery: (
     queryParams: { key: QueryKeys; value?: QueryValues }[],
     path?: string,

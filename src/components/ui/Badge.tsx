@@ -97,7 +97,7 @@ const Badge = ({
 
   return (
     <span
-      className={`border-box relative grid w-fit items-center ${badgeClr} ${badgeSize}`}
+      className={`border-box relative grid h-fit w-fit items-center ${badgeClr} ${badgeSize}`}
     >
       <span className={`absolute inset-0 z-0 rounded-full ${badgeBg}`} />
       {bordered && (

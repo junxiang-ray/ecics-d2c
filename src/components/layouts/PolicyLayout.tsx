@@ -50,10 +50,13 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
     return (summaryRef.current = (data?.data?.summary ?? {}) as PolicySummary);
   }, [data, isFetching]);
 
-  const policyDetail = useMemo<Policy | null>(() => {
-    if (!policyNo || !policies) return null;
+  const policyDetail = useMemo<Policy>(() => {
+    if (!policyNo || !policies) return {} as Policy;
 
-    return policies?.find((policy) => policy.policy_no === policyNo) ?? null;
+    return (
+      policies?.find((policy) => policy.policy_no === policyNo) ??
+      ({} as Policy)
+    );
   }, [policies, policyNo]);
 
   const pushQuery = (
