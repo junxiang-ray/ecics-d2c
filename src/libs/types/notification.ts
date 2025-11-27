@@ -1,1 +1,1 @@
-export type NotificationPriority = 'Urgent' | 'Notice' | 'Info';
+export type NotificationCategory = 'Urgent' | 'Notice' | 'Info';

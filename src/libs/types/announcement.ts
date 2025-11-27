@@ -1,5 +1,5 @@
 import { Pagination, PaginationMetaData, SortOrder } from '@/libs/types/common';
-import { NotificationPriority } from '@/libs/types/notification';
+import { NotificationCategory } from '@/libs/types/notification';
 
 type SortField = keyof Announcement['attributes'];
 
@@ -16,7 +16,7 @@ export type AnnouncementResponseData = {
       title: string;
       description: string;
       content: string;
-      priority: string;
+      category: string;
       createdAt: string;
       updatedAt: string;
       publishedAt: string;
@@ -34,9 +34,9 @@ export type Announcement = {
   id: AnnouncementResponseData['data'][number]['id'];
   attributes: Omit<
     AnnouncementResponseData['data'][number]['attributes'],
-    'priority'
+    'category'
   > & {
-    priority: NotificationPriority;
+    category: NotificationCategory;
   };
 };
 

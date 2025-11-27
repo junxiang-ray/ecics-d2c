@@ -29,23 +29,23 @@ const ModalAnnouncementDetail = ({
   if (!announcement) return null;
 
   const notiIconClr: string =
-    detail.priority === 'Urgent'
+    detail.category === 'Urgent'
       ? 'text-red-600'
-      : detail.priority === 'Notice'
+      : detail.category === 'Notice'
         ? 'text-orange-600'
         : 'text-gray-600';
 
   const notiBadgeClr: BadgeProps['color'] =
-    detail.priority === 'Urgent'
+    detail.category === 'Urgent'
       ? 'red'
-      : detail.priority === 'Notice'
+      : detail.category === 'Notice'
         ? 'orange'
         : 'gray';
 
   const notiIcon: JSX.Element =
-    detail.priority === 'Urgent' ? (
+    detail.category === 'Urgent' ? (
       <WarnTriableOutlined width='18' height='18' />
-    ) : detail.priority === 'Notice' ? (
+    ) : detail.category === 'Notice' ? (
       <InfoCircleOutlined width='18' height='18' />
     ) : (
       <BellOutlined width='18' height='18' />
@@ -106,7 +106,7 @@ const ModalAnnouncementDetail = ({
               <Badge
                 bordered
                 color={notiBadgeClr}
-                content={detail.priority}
+                content={detail.category}
                 size='lg'
               />
             </div>
