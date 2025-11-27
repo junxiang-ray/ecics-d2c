@@ -16,10 +16,9 @@ const VehiclePolicyDetail = ({ data }: Props): JSX.Element | null => {
   const renderTags = (
     policyStatus?: PolicyStatus,
     policyTags?: PolicyTag,
-  ): JSX.Element | null => {
+  ): JSX.Element => {
     const tag = getPolicyStatusTag(policyStatus, policyTags);
-
-    if (!tag) return null;
+    if (!tag) return <></>;
 
     return (
       <span className='inline-block [&>span>span:last-child]:px-3 [&>span>span:last-child]:px-3 [&>span>span:last-child]:py-[8px] [&>span>span]:rounded-lg [&>span>span]:text-base'>
