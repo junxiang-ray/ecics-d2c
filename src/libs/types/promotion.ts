@@ -1,5 +1,4 @@
 import { SortOrder, Pagination, PaginationMetaData } from '@/libs/types/common';
-import { NotificationPriority } from '@/libs/types/notification';
 
 type SortField = keyof PromotionAttributes;
 

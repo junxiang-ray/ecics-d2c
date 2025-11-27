@@ -26,23 +26,23 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
   const announcementDetail: Announcement['attributes'] = data?.attributes ?? {};
 
   const notiIconClr: string =
-    announcementDetail.priority === 'Urgent'
+    announcementDetail.category === 'Urgent'
       ? 'text-red-600'
-      : announcementDetail.priority === 'Notice'
+      : announcementDetail.category === 'Notice'
         ? 'text-orange-600'
         : 'text-gray-600';
 
   const notiBadgeClr =
-    announcementDetail.priority === 'Urgent'
+    announcementDetail.category === 'Urgent'
       ? 'red'
-      : announcementDetail.priority === 'Notice'
+      : announcementDetail.category === 'Notice'
         ? 'orange'
         : 'gray';
 
   const notiIcon: JSX.Element =
-    announcementDetail.priority === 'Urgent' ? (
+    announcementDetail.category === 'Urgent' ? (
       <WarnTriableOutlined width='14' height='14' />
-    ) : announcementDetail.priority === 'Notice' ? (
+    ) : announcementDetail.category === 'Notice' ? (
       <InfoCircleOutlined width='14' height='14' />
     ) : (
       <BellOutlined width='14' height='14' />
@@ -75,7 +75,7 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
         <Badge
           size='sm'
           color={notiBadgeClr}
-          content={announcementDetail.priority}
+          content={announcementDetail.category}
         />
       </div>
       <p className='mb-4 font-body text-sm text-gray-600'>
