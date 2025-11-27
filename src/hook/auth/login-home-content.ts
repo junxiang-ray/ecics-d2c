@@ -55,6 +55,7 @@ export const usePostUserInfoHomeContent = ({
   productType: ProductTypeWeb;
 }) => {
   const dispatch = useAppDispatch();
+  console.log('CALLING');
   const postUserInfoHomeContent = async () => {
     const res = await auth.postUserInfoHomeContent({ payload, productType });
     dispatch(updateEcicsUserInfo(JSON.stringify(res.data.data)));
@@ -65,7 +66,7 @@ export const usePostUserInfoHomeContent = ({
   };
   return useQuery({
     queryFn: postUserInfoHomeContent,
-    queryKey: ['user-info-maid', payload],
+    queryKey: ['user-info-home-contents', payload],
     enabled:
       !!payload.code_verifier &&
       !!payload.nonce &&
@@ -74,7 +75,7 @@ export const usePostUserInfoHomeContent = ({
   });
 };
 
-export const usePostPersonalInfo = () => {
+export const usePostPersonalInfoHomeContent = () => {
   const postPersonalInfoHomeContent = async (payload: any) => {
     const res = await insurance.postPersonalInfoSave(payload);
     return res.data;

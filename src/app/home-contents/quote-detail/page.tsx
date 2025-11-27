@@ -1,6 +1,8 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { v4 as uuid } from 'uuid';
+import { DataFromSingpass } from '@/libs/types/quote';
 
 import {
   CustomizationData,
@@ -19,6 +21,7 @@ import {
 import {
   generateKeyAndAttachToUrl,
   saveToLocalStorage,
+  saveToSessionStorage,
 } from '@/libs/utils/utils';
 
 import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
@@ -38,8 +41,17 @@ import {
   INITIAL_MYINFO_DATA,
   INITIAL_FORM_DATA,
 } from './initialData';
-import { useRequestLoginHomeContent } from '@/hook/auth/login-home-content';
+import {
+  usePostPersonalInfoHomeContent,
+  useRequestLoginHomeContent,
+} from '@/hook/auth/login-home-content';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { ProductType } from '@/app/motor/insurance/basic-detail/options';
+import { useAppSelector } from '@/redux/store';
+import dayjs from 'dayjs';
+import { GetUserInfoFromSingpassService } from '@/app/api/v1/singpass/user-info/[product]/singpass-get-user-info.service';
+import { DATA_FROM_SINGPASS } from '@/constants/general.constant';
+import Item from 'antd/es/list/Item';
 
 export default function QuoteDetailPage() {
   //#region State Management
@@ -80,9 +92,9 @@ export default function QuoteDetailPage() {
     setKey(keyQuote);
   }, []);
 
-  const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
-    INITIAL_PERSONAL_INFO,
-  );
+  // const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
+  //   INITIAL_PERSONAL_INFO,
+  // );
 
   // UI state
   const [showPlans, setShowPlans] = useState(false);
@@ -161,6 +173,8 @@ export default function QuoteDetailPage() {
 
   //#region Product type code
   const searchParams = useSearchParams();
+  const partnerCode = searchParams.get('partner_code') || '';
+  const promoDefault = searchParams.get('promo_code') || '';
 
   const initKey = searchParams.get('key') || '';
   const [key, setKey] = useState(initKey);
@@ -307,6 +321,67 @@ export default function QuoteDetailPage() {
   );
 
   //#region Personal Info Handler
+  const homeContentInfo = useAppSelector(
+    (state) => state.ecicsUserInfo?.userInfo,
+  );
+  const personalInfo = homeContentInfo ? JSON.parse(homeContentInfo) : null;
+
+  const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
+    () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const storedData = sessionStorage.getItem(DATA_FROM_SINGPASS);
+          if (storedData) {
+            const parsedData = JSON.parse(storedData);
+
+            // console.log('storedData =', parsedData);
+
+            // setSelectedAddOns(parsedData.addons || INITIAL_FORM_DATA.addons);
+            console.log(`singpass Data = ${JSON.stringify(parsedData)}`);
+            console.log(`personalInfo Data = ${JSON.stringify(personalInfo)}`);
+            console.log(`singpass Data email = ${parsedData.email.value}`);
+            const newData = INITIAL_PERSONAL_INFO;
+            newData.policyHolderEmail = parsedData?.email.value || '';
+            newData.policyHolderMobileNumber =
+              parsedData?.mobileno.nbr.value || '';
+            newData.addressLine1 =
+              parsedData?.regadd?.block?.value &&
+              parsedData?.regadd?.street?.value
+                ? `${parsedData.regadd.block.value} ${parsedData.regadd.street.value}`
+                : '';
+            newData.addressLine2 = parsedData?.regadd?.building?.value || '';
+            newData.policyHolderFullName = parsedData?.name?.value || '';
+            newData.policyHolderNationality =
+              parsedData?.nationality?.desc || '';
+            newData.policyHolderNricFin = parsedData?.uinfin?.value || '';
+            newData.policyHolderDateOfBirth = parsedData?.dob?.value || '';
+            newData.postalCode = parsedData?.regadd?.postal?.value || '';
+            return newData;
+          } else {
+            console.log(`singpass Data not found`);
+          }
+        } catch (error) {
+          console.error('Failed to parse saved form data:', error);
+        }
+      }
+
+      return INITIAL_PERSONAL_INFO;
+    },
+  );
+
+  useEffect(() => {
+    console.log(
+      `personalFormData changed: ${JSON.stringify(personalInfoData)}`,
+    );
+    setPersonalInfoErrors((prev) => {
+      const newErrors = { ...prev };
+      Object.keys(personalInfoData).forEach((key) => {
+        delete newErrors[key as keyof PersonalInfoForm];
+      });
+      return newErrors;
+    });
+  }, [personalInfoData]);
+
   const updatePersonalInfoData = useCallback(
     (field: keyof PersonalInfoForm, value: string) => {
       setPersonalInfoData((prev) => {
@@ -409,6 +484,7 @@ export default function QuoteDetailPage() {
   );
 
   //#region Singpass Retrieve
+  const { mutate: savePersonalInfo } = usePostPersonalInfoHomeContent();
 
   const { mutate: requestLoginHomeContents } = useRequestLoginHomeContent(
     PRODUCT_NAME.HOME_CONTENT,
@@ -420,43 +496,8 @@ export default function QuoteDetailPage() {
   );
 
   // 🔒 PROTECTED - MyInfo handler with memory cleanup
-  const handleRetrieveMyInfo = useCallback(() => {
-    requestLoginHomeContents();
+  const handleRetrieveMyInfo = () => requestLoginHomeContents();
 
-    setMyInfoData((prev) => ({ ...prev, isLoading: true }));
-
-    const timeoutId = setTimeout(() => {
-      const mockData = {
-        policyHolderFullName: 'John Tan Wei Ming',
-        policyHolderDateOfBirth: '1985-05-15',
-        policyHolderNricFin: 'S8505123A',
-        policyHolderNationality: 'Singaporean',
-        policyHolderMobileNumber: '91234567',
-        policyHolderEmail: 'john.tan@email.com',
-        addressLine1: '123 Orchard Road',
-        addressLine2: '#12-34',
-        addressLine3: 'Orchard Plaza',
-        postalCode: '238874',
-      };
-
-      setPersonalInfoData((prev) => ({ ...prev, ...mockData }));
-      setPersonalInfoErrors((prev) => {
-        const newErrors = { ...prev };
-        Object.keys(mockData).forEach((key) => {
-          delete newErrors[key as keyof PersonalInfoForm];
-        });
-        return newErrors;
-      });
-      setMyInfoData({
-        isRetrieved: true,
-        isLoading: false,
-        data: mockData,
-      });
-    }, 2000);
-
-    // Memory cleanup
-    return () => clearTimeout(timeoutId);
-  }, []);
   //#endregion
 
   // 🔒 PROTECTED - Quote calculation with timeout management

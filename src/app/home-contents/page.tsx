@@ -8,6 +8,7 @@ import { clearQuote, clearMatchedMakeModel } from '@/redux/slices/quote.slice';
 import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useEffect } from 'react';
 import { useAppDispatch } from '@/redux/store';
+import { saveToLocalStorage } from '@/libs/utils/utils';
 
 export default function HomeContentPage() {
   const router = useRouter();
@@ -22,8 +23,9 @@ export default function HomeContentPage() {
   }, []);
 
   const searchParams = useSearchParams();
-  const promoCode = searchParams.get('promo_code');
-  const partnerCode = searchParams.get('partner_code');
+  const promoCode = searchParams.get('promo_code') || '';
+  const partnerCode = searchParams.get('partner_code') || '';
+  saveToLocalStorage({ promo_code: promoCode, partner_code: partnerCode });
   if (promoCode) queryParams.append('promo_code', promoCode);
   if (partnerCode) queryParams.append('partner_code', partnerCode);
 
