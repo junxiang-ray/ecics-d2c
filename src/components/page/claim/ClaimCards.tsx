@@ -1,25 +1,24 @@
 import { POLICY_TYPE_ICON } from '@/constants/policy';
 
-import {
-  Policy,
-  PolicyStatus,
-  PolicyTag,
-  PolicyType,
-} from '@/libs/types/policy';
+import { Claim, ClaimStatus } from '@/libs/types/claim';
+import { PolicyType } from '@/libs/types/policy';
+
 import { formatDateString } from '@/libs/utils/dayjs';
 import { formatNumber } from '@/libs/utils/utils';
-import { getPolicyStatusTag, getPolicyTypeName } from '@/libs/utils/policy';
+import { getPolicyTypeName } from '@/libs/utils/policy';
+import { getClaimStatusTag } from '@/libs/utils/claim';
 
 import { Empty } from 'antd';
 import Badge from '@/components/ui/Badge';
 import CalendarOutlined from '@/assets/icons/add-on/calendar-outlined.svg';
+import EyesOutlined from '@/assets/icons/renewal/eye-open.svg';
 
 interface Props {
-  dataSource: Policy[];
-  onShowDetail: (data: Policy) => void;
+  dataSource: Claim[];
+  onShowDetail: (data: Claim) => void;
 }
 
-const PolicyCards = ({ dataSource, onShowDetail }: Props): JSX.Element => {
+const ClaimCards = ({ dataSource, onShowDetail }: Props): JSX.Element => {
   const getIcon = (policyType: PolicyType): React.ReactNode | null => {
     const SvgIcon = POLICY_TYPE_ICON[policyType as Exclude<PolicyType, 'all'>];
     if (!SvgIcon) return null;
@@ -27,14 +26,11 @@ const PolicyCards = ({ dataSource, onShowDetail }: Props): JSX.Element => {
     return <SvgIcon width='14' height='14' />;
   };
 
-  const renderTags = (
-    policyStatus?: PolicyStatus,
-    policyTags?: PolicyTag,
-  ): JSX.Element | null => {
-    const tag = getPolicyStatusTag(policyStatus, policyTags);
-    if (!tag) return null;
+  const renderTags = (status: ClaimStatus): JSX.Element => {
+    const tag = getClaimStatusTag(status);
+    if (!tag) return <></>;
 
-    return <Badge bordered color={tag.color} content={tag.label} size='sm' />;
+    return <Badge bordered color={tag.color} content={tag.label} />;
   };
 
   if (!dataSource?.length)
@@ -49,48 +45,55 @@ const PolicyCards = ({ dataSource, onShowDetail }: Props): JSX.Element => {
       <div className=''>
         {dataSource.map((data, idx) => (
           <div
-            key={`policy_${data?.policy_no}_${idx}`}
+            key={`policy_${data?.claim_no}_${idx}`}
             className='cursor-pointer border-gray-200 p-4 transition-colors hover:bg-gray-50 [&:not(:last-child)]:border-b'
             onClick={() => onShowDetail(data)}
           >
             <div className='mb-3 flex items-start justify-between'>
               <div className='min-w-0 flex-1'>
                 <div className='mb-1 font-body font-medium text-gray-900'>
-                  {data.policy_no}
+                  {data.claim_no}
                 </div>
                 <div className='font-body text-sm text-gray-500'>
-                  <span className='block'>
-                    {data?.vehicle?.registration_no}
-                  </span>
-                  <span className='block'>{data?.maid_info?.name}</span>
+                  {!!data?.short_description && (
+                    <span
+                      className='block max-w-xs truncate text-sm text-gray-500'
+                      title={data.short_description}
+                    >
+                      {data.short_description}
+                    </span>
+                  )}
+                  {!!data?.policy?.policy_no && (
+                    <span className='block text-xs text-gray-400'>
+                      Policy: {data?.policy?.policy_no}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className='ml-3 flex shrink-0 flex-col items-end gap-2'>
-                {renderTags(data.policy_status)}
-                {renderTags(undefined, data.tags)}
+                {renderTags(data.status)}
               </div>
             </div>
 
             <div className='flex flex-col gap-2'>
               <div className='flex flex-nowrap items-center gap-2 text-gray-700'>
-                {getIcon(data?.policy_type)}
-                {getPolicyTypeName(data?.policy_type)}
+                {getIcon(data?.policy?.policy_type)}
+                {getPolicyTypeName(data?.policy?.policy_type)}
               </div>
               <div className='grid grid-cols-2 gap-3'>
                 <div>
                   <label className='mb-1 block font-body text-xs text-gray-500'>
-                    Premium
+                    Claim Amount
                   </label>
                   <div className='font-body text-sm'>
                     <a className='font-medium'>
-                      $ {formatNumber(data?.premium, 2, true)}
+                      ${formatNumber(data?.amount, 2, true)}
                     </a>
-                    <span className='text-gray-500'> /year</span>
                   </div>
                 </div>
                 <div>
                   <label className='mb-1 block font-body text-xs text-gray-500'>
-                    Expiry Date
+                    Last Updated
                   </label>
                   <div className='flex flex-nowrap items-center gap-2 text-sm'>
                     <CalendarOutlined
@@ -100,7 +103,7 @@ const PolicyCards = ({ dataSource, onShowDetail }: Props): JSX.Element => {
                     />
                     <span className='leading-none'>
                       {formatDateString(
-                        data?.end_date,
+                        data?.last_update,
                         'YYYY-MM-DD',
                         'DD MMM YYYY',
                       )}
@@ -109,10 +112,19 @@ const PolicyCards = ({ dataSource, onShowDetail }: Props): JSX.Element => {
                 </div>
               </div>
             </div>
+            <div className='mt-3'>
+              <button
+                className='text-foreground inline-flex h-8 w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-md border px-3 text-sm font-medium outline-none transition-all hover:bg-gray-200'
+                data-slot='button'
+              >
+                <EyesOutlined className='mr-2 h-4 w-4' />
+                View Claim
+              </button>
+            </div>
           </div>
         ))}
       </div>
     </>
   );
 };
-export default PolicyCards;
+export default ClaimCards;
