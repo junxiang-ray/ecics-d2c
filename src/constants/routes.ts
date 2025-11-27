@@ -26,6 +26,18 @@ const createPortalRoutes = (basePath: string) => ({
   REWARDS: {
     ROOT: `${basePath}/rewards`,
   },
+  PRIVACY_POLICY: {
+    ROOT: `${basePath}/privacy-policy`,
+  },
+  TERM: {
+    ROOT: `${basePath}/terms`,
+  },
+  PAYMENT_METHODS: {
+    ROOT: `${basePath}/payment`,
+  },
+  PROFILE: {
+    ROOT: `${basePath}/profile`,
+  },
 });
 
 export const ROUTES = {
