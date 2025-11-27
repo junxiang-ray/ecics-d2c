@@ -1,6 +1,6 @@
 'use client';
 
-import { PrivacyPolicy } from 'src/libs/types/privacy-policy';
+import { PrivacyPolicy } from '@/libs/types/privacy-policy';
 
 import { formatDateString } from '@/libs/utils/dayjs';
 
@@ -45,7 +45,7 @@ const PrivacyPolicy = (): JSX.Element => {
             {!isNodata &&
               formatDateString(
                 privacyDetail.updatedAt,
-                '2025-11-26T02:43:15.317Z',
+                'YYYY-MM-DDTHH:mm:sssZ',
                 'MMM DD, YYYY',
               )}
           </p>
