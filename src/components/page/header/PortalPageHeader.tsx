@@ -23,6 +23,7 @@ const PortalPageHeader = (): JSX.Element => {
   const router = useRouter();
 
   const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   const navItems = useRef([
     { name: 'Home', path: ROUTES.PORTAL.HOME.ROOT },
@@ -34,26 +35,26 @@ const PortalPageHeader = (): JSX.Element => {
   const dropdownItems = useRef([
     {
       key: 'profile',
-      routerPath: ROUTES.PORTAL.HOME.ROOT,
+      routerPath: ROUTES.PORTAL.PROFILE.ROOT,
       icon: <ProfileOutlined height='14' width='14' />,
       label: 'Profile',
     },
     {
       key: 'payment',
-      routerPath: ROUTES.PORTAL.HOME.ROOT,
+      routerPath: ROUTES.PORTAL.PAYMENT_METHODS.ROOT,
       icon: <DocumentOutlined height='14' width='14' />,
       label: 'Payment Methods',
     },
     { type: 'divider' },
     {
       key: 'terms',
-      routerPath: ROUTES.PORTAL.HOME.ROOT,
+      routerPath: ROUTES.PORTAL.TERM.ROOT,
       icon: <ScrollTextOutlined height='14' width='14' />,
       label: 'Terms and Conditions',
     },
     {
       key: 'privacy',
-      routerPath: ROUTES.PORTAL.HOME.ROOT,
+      routerPath: ROUTES.PORTAL.PRIVACY_POLICY.ROOT,
       icon: <ShieldOutlined height='14' width='14' />,
       label: 'Privacy Policy',
     },
@@ -82,6 +83,7 @@ const PortalPageHeader = (): JSX.Element => {
           >
             <button
               className={`transition-bg flex w-full cursor-pointer flex-nowrap items-center gap-3.5 rounded-md px-3.5 py-2 text-sm text-gray-500 duration-200 hover:bg-gray-200 ${item.className ?? ''}`}
+              onClick={(evt) => setShowDropdown(false)}
             >
               {item.icon}
               <span className='text-nowrap leading-tight opacity-95 hover:opacity-100'>
@@ -93,7 +95,11 @@ const PortalPageHeader = (): JSX.Element => {
           <button
             key={`navlinkBtn_${item.key}`}
             className={`transition-bg flex w-full cursor-pointer flex-nowrap items-center gap-3.5 rounded-md px-3.5 py-2 text-sm text-gray-500 duration-200 hover:bg-gray-200 ${item.className ?? ''}`}
-            onClick={item.onClick}
+            onClick={(evt) => {
+              evt?.preventDefault();
+              if (item.onClick) item.onClick();
+              setShowDropdown(false);
+            }}
           >
             {item.icon}
             <span className='text-nowrap leading-tight opacity-90 hover:opacity-100'>
@@ -142,8 +148,13 @@ const PortalPageHeader = (): JSX.Element => {
               overlay={overlayPanel}
               placement='bottomRight'
               trigger={['click']}
+              open={showDropdown}
+              onOpenChange={(isOpen: boolean) => setShowDropdown(isOpen)}
             >
-              <button className='flex items-center rounded-lg p-2 font-body transition-colors duration-200 hover:bg-gray-100 [&>*:not(:last-child)]:mr-3'>
+              <button
+                className='flex items-center rounded-lg p-2 font-body transition-colors duration-200 hover:bg-gray-100 [&>*:not(:last-child)]:mr-3'
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
                 <div className='flex aspect-square h-8 items-center justify-center rounded-full bg-[#02adef]'>
                   <span className='text-[.875em] font-medium text-white'>
                     J

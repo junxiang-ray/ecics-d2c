@@ -50,12 +50,12 @@ const MENU_ITEMS: MenuItem[] = [
     className: 'my-4',
   },
   {
-    key: ROUTES.PORTAL.HOME.ROOT,
+    key: ROUTES.PORTAL.PROFILE.ROOT,
     label: 'Profile',
     icon: <ProfileOutlined width='17.5' height='17.5' />,
   },
   {
-    key: ROUTES.PORTAL.HOME.ROOT,
+    key: ROUTES.PORTAL.PAYMENT_METHODS.ROOT,
     label: 'Payment Methods',
     icon: <DocumentOutlined width='17.5' height='17.5' />,
   },
@@ -64,12 +64,12 @@ const MENU_ITEMS: MenuItem[] = [
     className: 'my-4',
   },
   {
-    key: ROUTES.PORTAL.HOME.ROOT,
+    key: ROUTES.PORTAL.TERM.ROOT,
     label: 'Terms and Conditions',
     icon: <ScrollTextOutlined width='17.5' height='17.5' />,
   },
   {
-    key: ROUTES.PORTAL.HOME.ROOT,
+    key: ROUTES.PORTAL.PRIVACY_POLICY.ROOT,
     label: 'Privacy Policy',
     icon: <ShieldOutlined width='17.5' height='17.5' />,
   },
@@ -78,7 +78,7 @@ const MENU_ITEMS: MenuItem[] = [
     className: 'my-4',
   },
   {
-    key: ROUTES.PORTAL.HOME.ROOT,
+    key: ROUTES.PORTAL.LOGIN,
     label: <span className='text-red-500'>Sign Out</span>,
     icon: (
       <LogoutOutlined className='text-red-500' width='17.5' height='17.5' />
@@ -95,6 +95,11 @@ const PortalPageHeaderCollapsible = ({
   const activeKeys: string[] = [pathName.split('/').at(1) ?? ''];
 
   const onMenuClick = ({ keyPath }: { keyPath: string[] }): void => {
+    if (keyPath?.at(0) === ROUTES.PORTAL.LOGIN) {
+      // todo: handle logic logout here
+      return;
+    }
+
     onClose();
     onSelect(keyPath.join('/'));
   };
