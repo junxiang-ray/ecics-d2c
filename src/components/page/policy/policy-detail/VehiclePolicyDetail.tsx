@@ -21,7 +21,7 @@ const VehiclePolicyDetail = ({ data }: Props): JSX.Element | null => {
     if (!tag) return <></>;
 
     return (
-      <span className='inline-block [&>span>span:last-child]:px-3 [&>span>span:last-child]:px-3 [&>span>span:last-child]:py-[8px] [&>span>span]:rounded-lg [&>span>span]:text-base'>
+      <span className='inline-block [&>span>span:last-child]:px-3 [&>span>span:last-child]:px-3 [&>span>span:last-child]:py-[8px] [&>span>span]:rounded-lg [&>span>span]:text-base [&>span]:h-fit'>
         <Badge bordered color={tag.color} content={tag.label} size='lg' />
       </span>
     );

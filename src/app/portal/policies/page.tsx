@@ -19,7 +19,7 @@ const Policies = (): React.ReactNode => {
           </div>
         </div>
       </div>
-      <div className='text-card-foreground flex flex-col rounded-xl border border-gray-200 bg-white pt-1'>
+      <div className='text-card-foreground flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white pt-1'>
         <TabBars />
         <FilterBar />
         <Table />

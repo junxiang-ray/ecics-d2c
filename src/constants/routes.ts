@@ -21,6 +21,7 @@ const createPortalRoutes = (basePath: string) => ({
   },
   CLAIMS: {
     ROOT: `${basePath}/claims`,
+    DETAIL: `${basePath}/claims/detail`,
   },
   REWARDS: {
     ROOT: `${basePath}/rewards`,
