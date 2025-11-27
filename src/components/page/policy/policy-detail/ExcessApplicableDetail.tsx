@@ -49,7 +49,7 @@ const ExcessApplicableDetail = ({ data }: Props): JSX.Element | null => {
             Policy Excess
           </h3>
           <div className='[&>:not(:last-child)]:mb-4 [&>:not(:last-child)]:border-b'>
-            {!!data.policy_excess?.lenth &&
+            {!!data.policy_excess?.length &&
               data.policy_excess.map((excess, idx) => (
                 <Fragment key={idx}>
                   {row(excess?.name, excess?.description, excess?.amount)}
