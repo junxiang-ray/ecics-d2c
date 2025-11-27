@@ -8,7 +8,7 @@ export type PrivacyPolicyResponseData = {
 
 export interface PrivacyPolicyResponse
   extends Pick<PrivacyPolicyResponseData, 'meta'> {
-  data: PrivacyPolicy[];
+  data: PrivacyPolicy;
 }
 
 export type PrivacyPolicy = {
