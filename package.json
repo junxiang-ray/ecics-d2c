@@ -43,7 +43,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.56.1",
-    "react-markdown": "^10.1.0",
+    "react-markdown": "^8.0.7",
     "react-redux": "^9.2.0",
     "react-toastify": "^11.0.5",
     "redux-persist": "^6.0.0",
