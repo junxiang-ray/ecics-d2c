@@ -39,7 +39,7 @@ const PolicyDetailPage = () => {
 
   const isVehicle =
     !!policyDetail &&
-    (['car' | 'motorcycle'] as unknown as PolicyType[]).includes(
+    (['car', 'motorcycle'] as unknown as PolicyType[]).includes(
       policyDetail.policy_type,
     );
   const isPendingRenewal =
