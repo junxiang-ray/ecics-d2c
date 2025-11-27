@@ -140,7 +140,7 @@ const Table = (): JSX.Element => {
       <div className='hidden md:block'>
         <AntTable
           rowKey='policy_no'
-          className='mt-3 text-sm [&_.ant-table-body_.ant-table-row]:cursor-pointer [&_.ant-table-header_.ant-table-cell]:bg-white/0'
+          className='mt-3 text-sm [&_.ant-table-body_.ant-table-row:last-child_.ant-table-cell]:border-b-0 [&_.ant-table-body_.ant-table-row]:cursor-pointer [&_.ant-table-header_.ant-table-cell]:bg-white/0'
           bordered={false}
           dataSource={policies}
           columns={columns}
