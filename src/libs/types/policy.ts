@@ -81,6 +81,7 @@ export type Policy = {
   id: number;
   policy_no: string;
   policy_type: PolicyType;
+  policy_type_name: string;
   start_date: string;
   end_date: string;
   issue_date: string;
