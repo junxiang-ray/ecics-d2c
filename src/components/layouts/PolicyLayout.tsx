@@ -51,7 +51,7 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
   }, [data, isFetching]);
 
   const policyDetail = useMemo<Policy | null>(() => {
-    if (!policyNo || !policies) return null;
+    if (!policyNo || !policies) return {} as Policy;
 
     return policies?.find((policy) => policy.policy_no === policyNo) ?? null;
   }, [policies, policyNo]);
