@@ -13,10 +13,12 @@ export interface PrivacyPolicyResponse
 
 export type PrivacyPolicy = {
   id: number;
-  attributes: {
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    content: string;
-  };
+  attributes: PrivacyPolicyAttr;
+};
+
+export type PrivacyPolicyAttr = {
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  content: string;
 };

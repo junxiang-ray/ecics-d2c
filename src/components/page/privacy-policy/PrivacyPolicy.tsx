@@ -1,6 +1,6 @@
 'use client';
 
-import { PrivacyPolicy } from '@/libs/types/privacy-policy';
+import { PrivacyPolicyAttr } from '@/libs/types/privacy-policy';
 
 import { formatDateString } from '@/libs/utils/dayjs';
 
@@ -15,8 +15,8 @@ const PrivacyPolicy = (): JSX.Element => {
   const { data, isFetching } = usePrivacyPolicies();
 
   const isNodata: boolean = !isFetching && !data;
-  const privacyDetail: PrivacyPolicy['attributes'] = (data?.data?.attributes ??
-    {}) as PrivacyPolicy['attributes'];
+  const privacyDetail: PrivacyPolicyAttr = (data?.data?.attributes ??
+    {}) as PrivacyPolicyAttr;
 
   return (
     <>
