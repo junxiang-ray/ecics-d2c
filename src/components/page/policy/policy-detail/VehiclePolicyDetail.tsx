@@ -1,4 +1,4 @@
-import { Policy } from '@/libs/types/policy';
+import { Policy, PolicyStatus, PolicyTag } from '@/libs/types/policy';
 import { formatDateString } from '@/libs/utils/dayjs';
 import { getPolicyStatusTag } from '@/libs/utils/policy';
 
