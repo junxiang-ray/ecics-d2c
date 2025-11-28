@@ -2,24 +2,11 @@
 
 import { ROUTES } from '@/constants/routes';
 
-import { Policy, PolicyType } from '@/libs/types/policy';
-
-import { useEffect, useState, useContext } from 'react';
+import { useContext } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ClaimContext } from '@/components/contexts/ClaimLayoutContext';
-
-import { Empty } from 'antd';
-
-import DownloadOutlined from '@/assets/icons/renewal/download.svg';
 import BackOutlined from '@/assets/icons/renewal/back.svg';
-import PolicyDetail from '@/components/page/policy/policy-detail/PolicyDetail';
-import VehiclePolicyDetail from '@/components/page/policy/policy-detail/VehiclePolicyDetail';
-import InsuredMaidDetail from '@/components/page/policy/policy-detail/InsuredMaidDetail';
-import VehicleDetail from '@/components/page/policy/policy-detail/VehicleDetail';
-import CoverageDetail from '@/components/page/policy/policy-detail/CoverageDetail';
-import PolicyholderDetail from '@/components/page/policy/policy-detail/PolicyholderDetail';
-import ExcessApplicableDetail from '@/components/page/policy/policy-detail/ExcessApplicableDetail';
-import DriverDetail from '@/components/page/policy/policy-detail/DriverDetail';
+import CarClaim from '@/components/page/claim/claim-detail/CarClaim';
 
 const ClaimDetail = (): React.ReactNode => {
   const router = useRouter();
@@ -56,7 +43,7 @@ const ClaimDetail = (): React.ReactNode => {
           </div>
         </div>
       </div>
-      <div>{/*todo: Render claim detail here*/}</div>
+      <CarClaim />
     </div>
   );
 };
