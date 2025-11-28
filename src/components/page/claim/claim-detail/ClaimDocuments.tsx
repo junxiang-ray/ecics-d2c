@@ -58,7 +58,7 @@ const ClaimDocuments = (): JSX.Element => {
               </div>
               <Button
                 className='ml-auto'
-                color='gray'
+                color='default'
                 variant='text'
                 title='Download'
                 icon={<DownloadOutlined />}
