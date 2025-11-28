@@ -81,10 +81,8 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
       <p className='mb-4 font-body text-sm text-gray-600'>
         {announcementDetail.description}
       </p>
-      <div className='flex items-center text-orange-600 transition-colors duration-200 group-hover:text-orange-700'>
-        <span className='mr-2 font-body text-sm font-semibold'>
-          Read Full Details
-        </span>
+      <div className='flex items-center text-primary transition-colors duration-200 group-hover:text-primary-600'>
+        <span className='mr-2 font-body text-sm font-semibold'>Read More</span>
         <RightOulined />
       </div>
     </div>
