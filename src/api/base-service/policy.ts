@@ -34,8 +34,13 @@ const MOCK_DATA = [
     },
     drivers: [
       {
-        full_name: 'LIM WEI LING',
-        is_main_driver: false,
+        name: 'LIM WEI LING',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
       },
     ],
     vehicle: {
@@ -89,7 +94,17 @@ const MOCK_DATA = [
         postal_code: '560789',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'WONG',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'SGM9876C',
       chassis_number: 'JM1FDK45A4U801234',
@@ -182,8 +197,13 @@ const MOCK_DATA = [
     },
     drivers: [
       {
-        full_name: 'PRIYA D/O KRISHNAMOORTHY',
-        is_main_driver: false,
+        name: 'PRIYA D/O KRISHNAMOORTHY',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
       },
     ],
     vehicle: {
@@ -327,7 +347,17 @@ const MOCK_DATA = [
         postal_code: '520034',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'PRIYA D/O HNAMOORTHY',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'SJQ1234F',
       chassis_number: 'JM1FDK45A4U908765',
@@ -418,7 +448,17 @@ const MOCK_DATA = [
         postal_code: '530200',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'PRIYA D/O KRISHNAMOORTHY',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'SLK8888H',
       chassis_number: 'JM1FNH35A4U999999',
@@ -472,8 +512,13 @@ const MOCK_DATA = [
     },
     drivers: [
       {
-        full_name: 'ALAN WONG',
-        is_main_driver: false,
+        name: 'ALAN WONG',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
       },
     ],
     vehicle: {
@@ -566,7 +611,17 @@ const MOCK_DATA = [
         postal_code: '760500',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'ALAN WONG',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'FBM5432B',
       chassis_number: 'JM1FDH53A4U000001',
@@ -618,7 +673,17 @@ const MOCK_DATA = [
         postal_code: '238823',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'ALAN WONG',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'SJW1000K',
       chassis_number: 'JM1FNH35A4U987654',
@@ -709,7 +774,17 @@ const MOCK_DATA = [
         postal_code: '518341',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'ALAN WONG',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'SJW2000R',
       chassis_number: 'JM1FNH35A4U765432',
@@ -761,7 +836,17 @@ const MOCK_DATA = [
         postal_code: '699999',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'ALAN WONG',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'FBL1122C',
       chassis_number: 'JM1FDH53A4U000002',
@@ -813,7 +898,17 @@ const MOCK_DATA = [
         postal_code: '760500',
       },
     },
-    drivers: [],
+    drivers: [
+      {
+        name: 'ALAN WONG',
+        is_main_driver: true,
+        gender: '',
+        nric_or_fin: '',
+        date_of_birth: '',
+        marital_status: '',
+        driving_experience: '',
+      },
+    ],
     vehicle: {
       registration_number: 'FBM5432B',
       chassis_number: 'JM1FDH53A4U000001',
