@@ -15,7 +15,7 @@ import { Progress } from 'antd';
 import CheckCircleOutlined from '@/assets/icons/check-circle.svg';
 import CloseCircleOutlined from '@/assets/icons/close-circle-outlined.svg';
 
-const ClaimProgress = (): JSX.Element => {
+const ClaimProgressInfo = (): JSX.Element => {
   const { claimDetail: claim } = useContext(ClaimContext);
 
   const currProgress = claim?.progress as ClaimProgress;
@@ -171,4 +171,4 @@ const ClaimProgress = (): JSX.Element => {
     </>
   );
 };
-export default ClaimProgress;
+export default ClaimProgressInfo;

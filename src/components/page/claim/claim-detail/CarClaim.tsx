@@ -1,5 +1,5 @@
 import ClaimInfo from './ClaimInfo';
-import ClaimProgress from './ClaimProgress';
+import ClaimProgress from './ClaimProgressInfo';
 import Documents from './ClaimDocuments';
 import Notes from './Notes';
 import PolicyInfo from './PolicyInfo';
