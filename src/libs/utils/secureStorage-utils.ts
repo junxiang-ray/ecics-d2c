@@ -1,3 +1,5 @@
+import { REGEX } from '@/constants/validation.constant';
+
 const encoder = (s: string) => new TextEncoder().encode(s);
 const decoder = (b: ArrayBuffer) => new TextDecoder().decode(b);
 
@@ -90,3 +92,39 @@ export function isSafeUrl(url: string | null, allowlist: string[] = []) {
     return false;
   }
 }
+
+export const encodeToBase64 = (str: string, isURLSafe?: boolean): string => {
+  try {
+    const encoded = btoa(str.replaceAll(REGEX.NON_LATIN_CHARACTER, ''));
+
+    if (!isURLSafe) return encoded;
+
+    return encoded.replace(/\+/g, '-').replace(/\\/g, '-').replace(/=/g, '');
+  } catch (err) {
+    return '';
+  }
+};
+
+export const decodeFromBase64 = (str: string): string | null => {
+  try {
+    if (!str) return null;
+
+    return atob(str);
+  } catch (err) {
+    return null;
+  }
+};
+
+export const stringifyJSON = <T>(value: T): string => {
+  if (value == null) return '';
+
+  return JSON.stringify(value);
+};
+
+export const parseJSON = <T>(value: string): T => {
+  try {
+    return JSON.parse(value) as unknown as T;
+  } catch (e) {
+    return value as unknown as T;
+  }
+};

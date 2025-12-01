@@ -1,6 +1,6 @@
 export type SortOrder = 'asc' | 'desc';
 
-export type Gener = 'MALE' | 'FEMALE';
+export type Gender = 'MALE' | 'FEMALE';
 
 export type MaritalStatus = 'MARRIED' | 'SINGLE' | 'WIDOWED' | 'DIVORCED';
 

@@ -2,8 +2,12 @@
 
 import { ROUTES } from '@/constants/routes';
 
+import { UserProfile } from '@/libs/types/user-profile';
+
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { clearUser } from '@/redux/slices/portalUser.slice';
 
 import Link from 'next/link';
 import { Divider, Dropdown } from 'antd';
@@ -19,6 +23,11 @@ import ScrollTextOutlined from '@/assets/icons/scroll-text-outlined.svg';
 import ProfileOutlined from '@/assets/icons/renewal/policy-holder.svg';
 
 const PortalPageHeader = (): JSX.Element => {
+  const user: UserProfile | null = useAppSelector(
+    (state) => state.portalUserInfo.user,
+  );
+  const dispatch = useAppDispatch();
+
   const pathName = usePathname();
   const router = useRouter();
 
@@ -71,7 +80,7 @@ const PortalPageHeader = (): JSX.Element => {
   ]).current;
 
   const overlayPanel: JSX.Element = (
-    <div className='text-popover-foreground w-56 min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-white p-1 font-body shadow-md'>
+    <div className='text-popover-foreground font-body w-56 min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-white p-1 shadow-md'>
       {dropdownItems.map((item, idx) =>
         item.type === 'divider' ? (
           <Divider key={idx} className='m-1' />
@@ -126,7 +135,7 @@ const PortalPageHeader = (): JSX.Element => {
             <div className='absolute left-1/2 flex -translate-x-1/2 items-center md:static md:mr-auto md:translate-x-0'>
               <EcicsIcon height='28' width='auto' />
             </div>
-            <nav className='hidden items-center font-body md:mr-8 md:flex [&>*:not(:last-child)]:mr-8'>
+            <nav className='font-body hidden items-center md:mr-8 md:flex [&>*:not(:last-child)]:mr-8'>
               {navItems.map((navItem) => (
                 <Link
                   key={`navItem_${navItem.path}`}
@@ -152,14 +161,18 @@ const PortalPageHeader = (): JSX.Element => {
               onOpenChange={(isOpen: boolean) => setShowDropdown(isOpen)}
             >
               <button
-                className='flex items-center rounded-lg p-2 font-body transition-colors duration-200 hover:bg-gray-100 [&>*:not(:last-child)]:mr-3'
+                className='font-body flex items-center rounded-lg p-2 transition-colors duration-200 hover:bg-gray-100 [&>*:not(:last-child)]:mr-3'
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <div className='flex aspect-square h-8 items-center justify-center rounded-full bg-[#02adef]'>
-                  <span className='text-[.875em] text-white'>J</span>
+                  <span className='text-[.875em] text-white'>
+                    {user?.name?.at(0) || <>&nbsp;</>}
+                  </span>
                 </div>
                 <div className='hidden text-left sm:block'>
-                  <p className='text-sm font-medium text-gray-900'>John Doe</p>
+                  <p className='text-sm font-medium text-gray-900'>
+                    {user?.name}&nbsp;
+                  </p>
                 </div>
               </button>
             </Dropdown>

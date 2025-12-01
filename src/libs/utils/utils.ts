@@ -11,6 +11,13 @@ import { PlanGroupType, PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ECICS_USER_INFO } from '@/constants/general.constant';
 
+import {
+  encodeToBase64,
+  decodeFromBase64,
+  stringifyJSON,
+  parseJSON,
+} from '@/libs/utils/secureStorage-utils';
+
 export const removeFromLocalStorage = (keys: string[]) => {
   keys.forEach((key) => {
     localStorage.removeItem(key);
@@ -282,3 +289,61 @@ export function getMatchedVehicleModel(
 
   return matched?.vehicle_model ?? null;
 }
+
+const getExpireTime = (
+  expireAfter?: Partial<
+    Record<'seconds' | 'minutes' | 'hours' | 'days', number>
+  >,
+) => {
+  let expireTime = 86400000;
+  if (expireAfter?.seconds) expireTime = 1000 * expireAfter?.seconds;
+  else if (expireAfter?.minutes) expireTime = 1000 * 60 * expireAfter?.minutes;
+  else if (expireAfter?.hours) expireTime = 1000 * 60 * 60 * expireAfter?.hours;
+  else if (expireAfter?.days)
+    expireTime = 1000 * 60 * 60 * 24 * expireAfter?.days;
+
+  const now = new Date();
+  const time = now.getTime();
+  now.setTime(time + expireTime);
+
+  return now.toUTCString();
+};
+
+export const setCookie = <T>({
+  path,
+  name,
+  value,
+  expireAfter,
+}: {
+  path: string;
+  name: string;
+  value: T;
+  expireAfter?: Parameters<typeof getExpireTime>[0];
+}): void => {
+  try {
+    document.cookie =
+      `_${name}=${encodeToBase64(stringifyJSON(value), true)}` +
+      `;path=/${path || ''}` +
+      `;expires=${getExpireTime(expireAfter)}`;
+  } catch (e) {
+    console.log('Failed to set item to cookies. Detail: ', e);
+  }
+};
+
+export const getCookie = <T>(name: string): T | undefined => {
+  try {
+    if (!name) return undefined;
+
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+      const [key, value] = cookie.split('=');
+      if (key === `_${name}`)
+        return parseJSON<T>(decodeFromBase64(value) ?? '');
+    }
+
+    return undefined;
+  } catch (e) {
+    console.log('Failed to get item from cookies. Detail: ', e);
+    return undefined;
+  }
+};
