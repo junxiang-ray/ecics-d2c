@@ -134,7 +134,7 @@ const PortalPageHeader = (): JSX.Element => {
                   legacyBehavior
                 >
                   <button
-                    className={`font-medium transition-colors duration-200 hover:text-[#02ADEF]/90 ${
+                    className={`transition-colors duration-200 hover:text-[#02ADEF]/90 ${
                       pathName.startsWith(navItem.path) ? 'text-[#02ADEF]' : ''
                     }`}
                   >
@@ -156,9 +156,7 @@ const PortalPageHeader = (): JSX.Element => {
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <div className='flex aspect-square h-8 items-center justify-center rounded-full bg-[#02adef]'>
-                  <span className='text-[.875em] font-medium text-white'>
-                    J
-                  </span>
+                  <span className='text-[.875em] text-white'>J</span>
                 </div>
                 <div className='hidden text-left sm:block'>
                   <p className='text-sm font-medium text-gray-900'>John Doe</p>
