@@ -20,6 +20,9 @@ export type Claim = {
   policy: Policy;
   status: ClaimStatus;
   progress: ClaimProgress;
+  progress_histories: ProgressHistory[];
+  documents: Document[];
+  notes: Note[];
   amount: number;
   last_update: string;
   incident_date: string;
@@ -27,6 +30,25 @@ export type Claim = {
   address: Address;
   description: string;
   short_description: string;
+};
+
+export type ProgressHistory = {
+  progress: ClaimProgress;
+  process_date: string;
+  expected_process_date: string;
+};
+
+export type Document = {
+  title: string;
+  file_count: number;
+  upload_date: string;
+};
+
+export type Note = {
+  title: string;
+  publish_date: string;
+  created_date: string;
+  content: string;
 };
 
 export type ClaimSummary = {

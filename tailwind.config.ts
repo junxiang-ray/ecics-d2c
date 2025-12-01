@@ -11,8 +11,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         primary: ['Inter', 'sans-serif'],
-        heading: ['Montserrat', 'sans-serif'],
-        body: ['Open Sans', 'sans-serif'],
+        heading: ['Inter', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
       },
       colors: {
         primary: {
