@@ -146,7 +146,7 @@ const MOCK_DATA = [
       {
         progress: 'decision',
         process_date: '2024-12-23T10:00:00.000Z',
-        expected_process_date: '2024-12-23T5:00:00.000Z',
+        expected_process_date: '2024-12-23T05:00:00.000Z',
       },
       {
         progress: 'settlement',
@@ -246,7 +246,7 @@ const MOCK_DATA = [
       },
       {
         progress: 'settlement',
-        process_date: '2024-12-25T10:00:00.000Z',
+        process_date: '2024-12-25T15:00:00.000Z',
         expected_process_date: '2024-12-25T15:00:00.000Z',
       },
     ],
