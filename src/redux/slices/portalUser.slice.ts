@@ -29,7 +29,13 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     updateUser(state, action: PayloadAction<Partial<UserProfile>>) {
-      if (action.payload) state.user = { ...state.user, ...action.payload };
+      if (state.user && action.payload)
+        state.user = {
+          ...state.user,
+          ...(Object.fromEntries(
+            Object.entries(action.payload).filter(([_, v]) => v !== undefined),
+          ) as Partial<UserProfile>),
+        };
     },
     clearUser: () => ({ ...initialState }),
   },

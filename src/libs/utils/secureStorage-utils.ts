@@ -1,5 +1,3 @@
-import { REGEX } from '@/constants/validation.constant';
-
 const encoder = (s: string) => new TextEncoder().encode(s);
 const decoder = (b: ArrayBuffer) => new TextDecoder().decode(b);
 
@@ -93,9 +91,21 @@ export function isSafeUrl(url: string | null, allowlist: string[] = []) {
   }
 }
 
+export const removeNonLatinChar = (value: string): string => {
+  if (!value) return value;
+
+  let result = '';
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code >= 0x00 && code <= 0x7f) result += value[i];
+  }
+
+  return result;
+};
+
 export const encodeToBase64 = (str: string, isURLSafe?: boolean): string => {
   try {
-    const encoded = btoa(str.replaceAll(REGEX.NON_LATIN_CHARACTER, ''));
+    const encoded = btoa(removeNonLatinChar(str));
 
     if (!isURLSafe) return encoded;
 

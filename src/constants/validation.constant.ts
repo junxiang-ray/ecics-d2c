@@ -10,5 +10,4 @@ export const REGEX = {
   LOWERCASE: /[a-z]/g,
   DIGITS: /[0-9]/g,
   SPECIAL_CHARACTER: /[!-/:-@[-`{-~]/g,
-  NON_LATIN_CHARACTER: /\P{ASCII}/gu,
 };

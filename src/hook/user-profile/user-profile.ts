@@ -1,9 +1,6 @@
 import type { AxiosResponse } from 'axios';
 import { Address, MaritalStatus } from '@/libs/types/common';
-import {
-  UserProfileUpdatePayload,
-  UserProfileResponse,
-} from '@/libs/types/user-profile';
+import { UserProfileResponse } from '@/libs/types/user-profile';
 
 import { Observable, of, from } from 'rxjs';
 import { useMutation, useQuery } from '@tanstack/react-query';

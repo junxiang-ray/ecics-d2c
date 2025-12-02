@@ -1,14 +1,6 @@
-import { LabeledValue as SelectionOption } from '@/antd/es/select/index.d';
-import {
-  Gender as TGender,
-  MaritalStatus as TMaritalStatus,
-} from '@/libs/types/common';
-import { Gender, MaritalStatus } from '@/libs/enums/user';
-
-export const GENDER_OPTIONS: SelectionOption<TGender>[] = [
-  { value: Gender.Male, text: 'Male' },
-  { value: Gender.Female, text: 'Female' },
-];
+import type { LabeledValue } from 'antd/es/select';
+import { MaritalStatus as TMaritalStatus } from '@/libs/types/common';
+import { MaritalStatus } from '@/libs/enums/user';
 
 export const MARITAL_STATUS: Record<TMaritalStatus, string> = {
   [MaritalStatus.Married]: 'Married',
@@ -17,7 +9,7 @@ export const MARITAL_STATUS: Record<TMaritalStatus, string> = {
   [MaritalStatus.Divorced]: 'Divorced',
 };
 
-export const MARITAL_STATUS_OPTIONS: SelectionOption<TMaritalStatus> = [
+export const MARITAL_STATUS_OPTIONS: LabeledValue[] = [
   {
     value: MaritalStatus.Married,
     label: MARITAL_STATUS[MaritalStatus.Married],

@@ -70,26 +70,24 @@ const FormItemGroup = <GroupValues,>({
     let subscription: Subscription | undefined;
     if (isEdit) {
       validFieldsRef.current = Object.fromEntries(
-        items.map((item) => [item.name, !getFieldState(item.name)?.invalid]),
+        items.map((item) => [
+          item.name,
+          !getFieldState(item.name as string)?.invalid,
+        ]),
       ) as Record<keyof GroupValues, boolean>;
       setIsValid(Object.values(validFieldsRef.current).every(Boolean));
-      subscription = watch(
-        (
-          _: GroupValues,
-          {
-            values,
-            name,
-            type,
-          }: { values: GroupValues; name: keyof GroupValues; type?: 'change' },
-        ) => {
-          // PURPOSE: Ignore the value change event, or other field validation changes.
-          if (type || itemValueRef.current[name] === undefined) return;
+      subscription = watch((_, { values, name, type }) => {
+        // PURPOSE: Ignore the value change event, or other field validation changes.
+        if (
+          type ||
+          itemValueRef.current[name as keyof GroupValues] === undefined
+        )
+          return;
 
-          const fieldState = getFieldState(name);
-          validFieldsRef.current[name] = !fieldState.invalid;
-          setIsValid(Object.values(validFieldsRef.current).every(Boolean));
-        },
-      );
+        const fieldState = getFieldState(name as string);
+        validFieldsRef.current[name as keyof GroupValues] = !fieldState.invalid;
+        setIsValid(Object.values(validFieldsRef.current).every(Boolean));
+      }) as unknown as Subscription;
     }
 
     return () => subscription?.unsubscribe();
@@ -97,8 +95,8 @@ const FormItemGroup = <GroupValues,>({
 
   const onCancel = (): void => {
     items.forEach(({ name }, idx) => {
-      setValue(name, itemValueRef.current[name]);
-      trigger(name);
+      setValue(name as string, itemValueRef.current[name]);
+      trigger(name as string);
     });
     setIsEdit(false);
   };
@@ -133,8 +131,8 @@ const FormItemGroup = <GroupValues,>({
       .subscribe((resp: UpdateResp<GroupValues>) => {
         itemValueRef.current = resp.data as unknown as GroupValues;
         items.forEach(({ name }, idx) => {
-          setValue(name, itemValueRef.current[name]);
-          trigger(name);
+          setValue(name as string, itemValueRef.current[name]);
+          trigger(name as string);
         });
       });
   };
@@ -145,13 +143,12 @@ const FormItemGroup = <GroupValues,>({
         {isEdit ? (
           <>
             {items.map(({ name, label, render }, idx) => (
-              <div key={`${name}_${idx}`}>
+              <div key={idx}>
                 <label className='form-label mb-2 inline-block font-body text-sm font-medium text-gray-700'>
                   {label}&nbsp;
                 </label>
                 <Controller
-                  key={name}
-                  name={name}
+                  name={name as string}
                   control={control}
                   render={({ field, fieldState }) => (
                     <>
@@ -173,7 +170,7 @@ const FormItemGroup = <GroupValues,>({
           <div className='form-item-no-edit flex items-start justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3'>
             <div className='font-body text-base leading-relaxed text-gray-900'>
               {items.map(({ name, parser }, idx) => (
-                <Fragment key={`${name}_${idx}`}>
+                <Fragment key={idx}>
                   <>
                     {parser
                       ? parser(itemValueRef.current[name], itemValueRef.current)

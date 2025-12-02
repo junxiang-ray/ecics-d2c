@@ -58,14 +58,15 @@ const FormItem = <FormValues,>({
   const [loading, setLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const { control, setValue, getValues, trigger } = useFormContext();
+  const formItemName = name as string;
 
   const itemValueRef = useRef<FormValues[FormItemName<FormValues>]>(
-    getValues(name as string) as FormValues[FormItemName<FormValues>],
+    getValues(formItemName) as FormValues[FormItemName<FormValues>],
   );
 
   const onCancel = (): void => {
-    setValue(name, itemValueRef.current);
-    trigger(name);
+    setValue(formItemName, itemValueRef.current);
+    trigger(formItemName);
     setIsEdit(false);
   };
 
@@ -79,7 +80,7 @@ const FormItem = <FormValues,>({
     if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
 
     setLoading(true);
-    subscriptionRef.current = onSubmit(getValues(name as string))
+    subscriptionRef.current = onSubmit(getValues(formItemName))
       .pipe(
         take(1),
         tap((resp: UpdateResp<FormValues>) => {
@@ -94,7 +95,7 @@ const FormItem = <FormValues,>({
         debounceTime(50),
       )
       .subscribe((resp: UpdateResp<FormValues>) => {
-        setValue(name, resp.data);
+        setValue(formItemName, resp.data);
       });
   };
 
@@ -106,7 +107,7 @@ const FormItem = <FormValues,>({
           {label}&nbsp;
         </label>
         <Controller
-          name={name}
+          name={formItemName}
           control={control}
           render={({ field, fieldState }) =>
             isEdit ? (
