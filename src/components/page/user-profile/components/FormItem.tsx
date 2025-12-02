@@ -99,7 +99,6 @@ const FormItem = <FormValues,>({
       });
   };
 
-  console.log(itemValueRef.current);
   return (
     <>
       <div className={`[&>.form-label+div]:max-w-full ${className ?? ''}`}>
