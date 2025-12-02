@@ -6,6 +6,7 @@ import { Skeleton } from 'antd';
 import Badge from '@/components/ui/Badge';
 import BellOutlined from '@/assets/icons/add-on/bell-outlined.svg';
 import BoxIcon from '@/components/ui/BoxIcon';
+import CalendarOutlined from '@/assets/icons/add-on/calendar-outlined.svg';
 import InfoCircleOutlined from '@/assets/icons/add-on/info-circle-outlined.svg';
 import RightOulined from '@/assets/icons/add-on/right-outlined.svg';
 import WarnTriableOutlined from '@/assets/icons/add-on/warning-triangle-outlined.svg';
@@ -43,9 +44,9 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
     announcementDetail.category === 'Urgent' ? (
       <WarnTriableOutlined width='14' height='14' />
     ) : announcementDetail.category === 'Notice' ? (
-      <InfoCircleOutlined width='14' height='14' />
-    ) : (
       <BellOutlined width='14' height='14' />
+    ) : (
+      <InfoCircleOutlined width='14' height='14' />
     );
 
   const createdDate: string =
@@ -67,7 +68,8 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
             <h3 className='font-heading text-base font-semibold text-gray-900 transition-colors duration-200 group-hover:text-orange-600'>
               {announcementDetail.title}
             </h3>
-            <p className='mt-1 font-body text-xs text-gray-500'>
+            <p className='font-body flex flex-nowrap items-center text-xs text-gray-500'>
+              <CalendarOutlined className='mr-2' />
               {createdDate}
             </p>
           </div>
@@ -78,11 +80,11 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
           content={announcementDetail.category}
         />
       </div>
-      <p className='mb-4 font-body text-sm text-gray-600'>
+      <p className='font-body mb-4 text-sm text-gray-600'>
         {announcementDetail.description}
       </p>
       <div className='flex items-center text-primary transition-colors duration-200 group-hover:text-primary-600'>
-        <span className='mr-2 font-body text-sm font-semibold'>Read More</span>
+        <span className='font-body mr-2 text-sm font-semibold'>Read More</span>
         <RightOulined />
       </div>
     </div>

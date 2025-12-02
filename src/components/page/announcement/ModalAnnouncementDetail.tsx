@@ -46,9 +46,9 @@ const ModalAnnouncementDetail = ({
     detail.category === 'Urgent' ? (
       <WarnTriableOutlined width='18' height='18' />
     ) : detail.category === 'Notice' ? (
-      <InfoCircleOutlined width='18' height='18' />
-    ) : (
       <BellOutlined width='18' height='18' />
+    ) : (
+      <InfoCircleOutlined width='18' height='18' />
     );
 
   const publishDate: string =
@@ -74,7 +74,7 @@ const ModalAnnouncementDetail = ({
       footer={
         <div className='mx-6 mb-6 mt-8 flex justify-end border-t border-gray-200 pt-4'>
           <Button
-            className='rounded-lg bg-[#02ADEF] px-6 py-2 font-body text-sm font-medium text-white transition-colors duration-200 hover:bg-[#02ADEF]/90'
+            className='font-body rounded-lg bg-[#02ADEF] px-6 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-[#02ADEF]/90'
             type='primary'
             onClick={onModalCancel}
           >
@@ -87,7 +87,7 @@ const ModalAnnouncementDetail = ({
           <h2 className='font-heading text-2xl font-semibold text-gray-900'>
             {detail.title}&nbsp;
           </h2>
-          <p className='mt-1 font-body text-sm text-gray-600'>
+          <p className='font-body mt-1 text-sm text-gray-600'>
             Published on {publishDate}
           </p>
         </div>
@@ -112,7 +112,7 @@ const ModalAnnouncementDetail = ({
             </div>
           </div>
 
-          <div className='whitespace-pre-line px-5 font-body leading-relaxed text-gray-700'>
+          <div className='font-body whitespace-pre-line px-5 leading-relaxed text-gray-700'>
             {detail.content}
           </div>
         </div>
