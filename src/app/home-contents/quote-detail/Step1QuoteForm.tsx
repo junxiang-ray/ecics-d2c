@@ -52,6 +52,7 @@ import {
 interface Step1Props {
   formData: QuoteForm;
   updateFormData: (field: keyof QuoteForm, value: string) => void;
+  resetFormData: () => void;
   errors: Partial<QuoteForm>;
   promoStatus: PromoCodeStatus;
   setPromoStatus: (status: PromoCodeStatus) => void;
@@ -82,6 +83,7 @@ const Step1QuoteForm = memo<Step1Props>(
   ({
     formData,
     updateFormData,
+    resetFormData,
     errors,
     promoStatus,
     setPromoStatus,
@@ -230,7 +232,12 @@ const Step1QuoteForm = memo<Step1Props>(
                 selected={formData.ownership}
                 options={HOME_OWNERSHIP_TYPES}
                 error={errors.ownership}
-                onChange={(value) => updateFormData('ownership', value)}
+                onChange={(value) => {
+                  updateFormData('ownership', value);
+                  if (showPlans) {
+                    resetFormData();
+                  }
+                }}
                 className='col-span-1 space-y-4 lg:col-span-2'
               ></OptionSelector>
               {/* Type of Home - Full Width Row */}
@@ -239,7 +246,12 @@ const Step1QuoteForm = memo<Step1Props>(
                 label='Type of Home'
                 options={HOME_TYPES}
                 className='col-span-1 space-y-4 lg:col-span-2'
-                onChange={(value) => updateFormData('homeType', value)}
+                onChange={(value) => {
+                  updateFormData('homeType', value);
+                  if (showPlans) {
+                    resetFormData();
+                  }
+                }}
                 error={errors.homeType}
                 required={true}
                 selected={formData.homeType}
@@ -267,6 +279,9 @@ const Step1QuoteForm = memo<Step1Props>(
                       );
                       if (selectedUnit) {
                         updateFormData('unitType', selectedUnit.value);
+                        if (showPlans) {
+                          resetFormData();
+                        }
                       }
                     }}
                     options={availableUnitTypes.map((unit) => unit.label)}
@@ -283,6 +298,93 @@ const Step1QuoteForm = memo<Step1Props>(
                   )}
                 </div>
               )}
+              {/* Home Content Coverage*/}
+              <div className='space-y-3'>
+                <Label className='flex items-center gap-2 text-base font-semibold text-gray-700 sm:text-lg'>
+                  <Shield className='size-5 text-[#02ADEF]' />
+                  Home Content Coverage <span className='text-red-500'>*</span>
+                </Label>
+                <Select
+                  options={HOME_CONTENT_COVERAGE_OPTIONS.map(
+                    (option) => option.label,
+                  )}
+                  defaultValue={
+                    HOME_CONTENT_COVERAGE_OPTIONS.find(
+                      (option) =>
+                        option.value ===
+                        customizationData.homeContentCoverageValue,
+                    )?.label
+                  }
+                  onChange={(label) => {
+                    const selected = HOME_CONTENT_COVERAGE_OPTIONS.find(
+                      (option) => option.label === label,
+                    );
+                    if (selected)
+                      updateCustomizationData(
+                        'homeContentCoverageValue',
+                        selected.value,
+                      );
+                    if (showPlans) {
+                      resetFormData();
+                    }
+                  }}
+                  className='h-14 w-full text-lg'
+                  disabled={!customizationData.hdbFireInsurance}
+                />
+
+                {/* {errors.unitType && (
+                    <p className='mt-1 flex items-center gap-1 text-xs text-red-500 sm:text-sm'>
+                      <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white'>
+                        !
+                      </span>
+                      {errors.unitType}
+                    </p>
+                  )} */}
+              </div>
+              {formData.ownership != 'tenant' && (
+                <div className='space-y-3'>
+                  <Label className='flex items-center gap-2 text-base font-semibold text-gray-700 sm:text-lg'>
+                    <CalendarCheck className='size-5 text-[#02ADEF]' />
+                    Renovation Coverage <span className='text-red-500'>*</span>
+                  </Label>
+                  <Select
+                    options={RENOVATION_COVERAGE_OPTIONS.map(
+                      (option) => option.label,
+                    )}
+                    defaultValue={
+                      RENOVATION_COVERAGE_OPTIONS.find(
+                        (option) =>
+                          option.value ===
+                          customizationData.renovationCoverageValue,
+                      )?.label
+                    }
+                    onChange={(label) => {
+                      const selected = RENOVATION_COVERAGE_OPTIONS.find(
+                        (option) => option.label === label,
+                      );
+                      if (selected) {
+                        updateCustomizationData(
+                          'renovationCoverageValue',
+                          selected.value,
+                        );
+                        if (showPlans) {
+                          resetFormData();
+                        }
+                      }
+                    }}
+                    className='h-14 w-full text-lg'
+                    disabled={!customizationData.hdbFireInsurance}
+                  />
+                  {/* {errors.policyStartDate && (
+                  <p className='mt-1 flex items-center gap-1 text-xs text-red-500 sm:text-sm'>
+                    <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white'>
+                      !
+                    </span>
+                    {errors.policyStartDate}
+                  </p>
+                )} */}
+                </div>
+              )}
 
               {/* Policy Start Date */}
               <div className='space-y-3'>
@@ -292,9 +394,12 @@ const Step1QuoteForm = memo<Step1Props>(
                 </Label>
                 <DateInput
                   value={formData.policyStartDate}
-                  onChange={(value: string) =>
-                    updateFormData('policyStartDate', value)
-                  }
+                  onChange={(value: string) => {
+                    updateFormData('policyStartDate', value);
+                    if (showPlans) {
+                      resetFormData();
+                    }
+                  }}
                   error={!!errors.policyStartDate}
                 />
                 {errors.policyStartDate && (

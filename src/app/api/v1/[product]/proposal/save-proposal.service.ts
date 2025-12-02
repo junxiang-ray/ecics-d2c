@@ -29,6 +29,8 @@ import {
   saveQuoteProposalForMaidDTO,
 } from './save-proposal.dto';
 
+//#region Car
+
 export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;
 
@@ -181,6 +183,9 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
     data: resSaveProposal.data,
   });
 }
+//#endregion
+
+//#region Maid
 
 export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
   const { key, selected_plan, selected_addons, personal_info, maid_info } =
@@ -306,12 +311,14 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
     data: resSaveProposal.data,
   });
 }
+//#endregion
+
+//#region Motorcycle
 
 /// save proposal for motorcycle
 export async function saveProposalForMotorcycle(
   currData: saveQuoteProposalDTO,
 ) {
-  console.log(`currData at saveProposal = ${JSON.stringify(currData)}`);
   const { key, selected_plan, selected_addons, add_named_driver_info } =
     currData;
 
@@ -404,3 +411,108 @@ export async function saveProposalForMotorcycle(
     data: resSaveProposal.data,
   });
 }
+//#endregion
+
+//#region Home Content
+/// save proposal for home content
+export async function saveProposalForHomeContents(
+  currData: saveQuoteProposalDTO,
+) {
+  const { key, selected_plan, selected_addons, add_named_driver_info } =
+    currData;
+
+  const quoteInfo = await prisma.quote.findFirst({
+    where: {
+      key: key,
+    },
+    select: {
+      quote_id: true,
+      proposal_id: true,
+      policy_id: true,
+      data: true,
+      id: true,
+      company: true,
+      company_name_other: true,
+    },
+  });
+
+  if (!quoteInfo) {
+    return ErrNotFound('Quote not found');
+  }
+
+  const { quote_id, proposal_id } = quoteInfo;
+
+  let redirectUrl = '';
+  let returnBaseUrl = '';
+  if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE) {
+    redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE}?key=${key}`;
+  } else {
+    redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/motorcycle/summary?key=${key}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+    returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+  } else {
+    returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+  }
+
+  const payload: any = {
+    quoteId: quote_id,
+    proposalId: proposal_id,
+    applicantInfo: {
+      nric: getPlanIdfromTitle(quoteInfo, selected_plan),
+      dob: getOptionalBenefitCodes(selected_addons),
+      name: getPersonalInfo(quoteInfo),
+      nationality: getVehicleInfo(quoteInfo),
+      contactNo: getAdditionalDriverInfo(quoteInfo),
+      email: quoteInfo.company?.name || '',
+      addressline1: true,
+      addressline2: true,
+      addressline3: true,
+      postalCode: true,
+    },
+    planId: '1year',
+    selectedCoverage: [],
+    finalize: false,
+  };
+
+  logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
+
+  const resSaveProposal = await handleApiCallToISP(
+    `/${MOTORCYCLE_INSURANCE.PREFIX_ENDPOINT}/proposal`,
+    payload,
+  );
+  logger.info(
+    `Response from save proposal: ${JSON.stringify(resSaveProposal)}`,
+  );
+
+  if (resSaveProposal.status !== 0) {
+    return ErrFromISPRes('Failed to save proposal');
+  }
+
+  // Update the quote in the database
+  const quoteData = quoteInfo.data;
+
+  await prisma.quote.update({
+    where: {
+      id: quoteInfo.id,
+    },
+    data: {
+      data: {
+        ...(quoteData && typeof quoteData === 'object' ? quoteData : {}),
+        selected_addons: selected_addons,
+        add_named_driver_info: add_named_driver_info,
+      },
+      quote_finalize_from_ISP: resSaveProposal,
+      is_finalized: true,
+      payment_id: resSaveProposal.data?.paymentId || '',
+    },
+  });
+
+  return successRes({
+    message: 'Proposal saved successfully',
+    data: resSaveProposal.data,
+  });
+}
+
+//#endregion

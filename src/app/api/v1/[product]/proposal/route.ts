@@ -5,6 +5,7 @@ import logger from '@/app/api/libs/logger';
 
 import {
   saveProposalForCar,
+  saveProposalForHomeContents,
   saveProposalForMaid,
   saveProposalForMotorcycle,
 } from './save-proposal.service';
@@ -27,6 +28,8 @@ export async function POST(
       return saveProposalForMaid(body);
     case PRODUCT_NAME.MOTORCYCLE:
       return saveProposalForMotorcycle(body);
+    case 'b2c_hc':
+      return saveProposalForHomeContents(body);
     default:
       return NextResponse.json(
         { error: 'Unsupported product' },

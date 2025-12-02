@@ -52,6 +52,7 @@ import dayjs from 'dayjs';
 import { GetUserInfoFromSingpassService } from '@/app/api/v1/singpass/user-info/[product]/singpass-get-user-info.service';
 import { DATA_FROM_SINGPASS } from '@/constants/general.constant';
 import Item from 'antd/es/list/Item';
+import { useSaveProposal } from '@/hook/insurance/quote';
 
 export default function QuoteDetailPage() {
   //#region State Management
@@ -161,12 +162,19 @@ export default function QuoteDetailPage() {
     }
     if (formData.quoteStep >= 2) {
       setSelectedPlan(formData.selectedPlan);
-      setShowCustomization(true);
-    }
-    if (formData.quoteStep >= 3) {
       setShowAddOns(true);
-      // scrollToBottom();
     }
+    // if (formData.quoteStep >= 3) {
+    //   setShowAddOns(true);
+    //   // scrollToBottom();
+    // }
+  }, [formData]);
+
+  const resetQuoteForm = useCallback(() => {
+    setShowPlans(false);
+    setShowCustomization(false);
+    setShowAddOns(false);
+    setFormData(INITIAL_FORM_DATA);
   }, [formData]);
 
   //#endregion
@@ -227,7 +235,7 @@ export default function QuoteDetailPage() {
       setFormData((prev) => {
         //Addon case
         if (field === 'addon' && addOnId) {
-          console.log(`Updating add-on ${addOnId} with option ${value}`);
+          // console.log(`Updating add-on ${addOnId} with option ${value}`);
           if (remove) {
             const newData: QuoteForm = {
               ...prev,
@@ -543,12 +551,12 @@ export default function QuoteDetailPage() {
   const handlePlanSelect = useCallback(
     (planId: string) => {
       setSelectedPlan(planId);
-      setShowCustomization(true);
+      setShowAddOns(true);
       updateFormData('selectedPlan', planId);
       updateFormData('quoteStep', '2');
 
       const timeoutId = setTimeout(() => {
-        scrollToElement('#customization-section');
+        scrollToElement('#addons-section');
       }, 300);
 
       return () => clearTimeout(timeoutId);
@@ -656,11 +664,20 @@ export default function QuoteDetailPage() {
     scrollToElement,
   ]);
 
+  //#region Payment
+  const {
+    mutateAsync: saveProposal,
+    isSuccess,
+    isPending: isPendingSave,
+    isError,
+  } = useSaveProposal();
+
   const handleMakePayment = useCallback(() => {
+    // saveProposal()
     setCurrentStep(4);
     scrollToTop();
   }, [scrollToTop]);
-
+  //#endregion
   const handleBack = useCallback(() => {
     if (currentStep > 1 && currentStep < 4) {
       setCurrentStep(currentStep - 1);
@@ -696,6 +713,7 @@ export default function QuoteDetailPage() {
       key='Step 1'
       formData={formData}
       updateFormData={updateFormData}
+      resetFormData={resetQuoteForm}
       errors={errors}
       promoStatus={promoStatus}
       setPromoStatus={setPromoStatus}
