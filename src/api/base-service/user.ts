@@ -15,31 +15,29 @@ const getAuthCode = (): string => getCookie('code') ?? '';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  getUserProfile<T = UserProfileResponse>(): Promise<AxiosResponse<T>> {
-    return baseClient.get<T>(`${API_USER_PROFILE_GET}${getAuthCode()}`);
+  getUserProfile() {
+    return baseClient.get(`${API_USER_PROFILE_GET}/${getAuthCode()}`);
   },
-  updateMaritalStatus<T = unknown>(
-    maritalStatus: string,
-  ): Promise<AxiosResponse<T>> {
-    return baseClient.put<T>(API_USER_PROFILE_UPDATE, {
+  updateMaritalStatus(maritalStatus: string) {
+    return baseClient.put(API_USER_PROFILE_UPDATE, {
       key: getAuthCode(),
       marital_status: maritalStatus,
     });
   },
-  updateEmail<T = unknown>(email: string): Promise<AxiosResponse<T>> {
-    return baseClient.put<T>(API_USER_PROFILE_UPDATE, {
+  updateEmail(email: string) {
+    return baseClient.put(API_USER_PROFILE_UPDATE, {
       key: getAuthCode(),
       email,
     });
   },
-  updatePhone<T = unknown>(phone: string): Promise<AxiosResponse<T>> {
-    return baseClient.put<T>(API_USER_PROFILE_UPDATE, {
+  updatePhone(phone: string) {
+    return baseClient.put(API_USER_PROFILE_UPDATE, {
       key: getAuthCode(),
       phone,
     });
   },
-  updateAddress<T = unknown>(address: Address): Promise<AxiosResponse<T>> {
-    return baseClient.put<T>(API_USER_PROFILE_UPDATE, {
+  updateAddress(address: Address) {
+    return baseClient.put(API_USER_PROFILE_UPDATE, {
       key: getAuthCode(),
       address: {
         address_line_1: address?.address_line_1,
@@ -49,8 +47,8 @@ export default {
       },
     });
   },
-  changePassword<T = unknown>(password: string): Promise<AxiosResponse<T>> {
-    return baseClient.put<T>(API_CHANGE_PASSWORD, {
+  changePassword(password: string) {
+    return baseClient.put(API_CHANGE_PASSWORD, {
       code: getAuthCode(),
       password,
     });

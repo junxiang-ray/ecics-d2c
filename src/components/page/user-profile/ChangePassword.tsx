@@ -59,17 +59,11 @@ const ChangePassword = (): JSX.Element => {
     const formData: FormData = getValues();
     sendChangePassword(formData[FORM_ITEM.PASSWORD_NEW], {
       onSuccess: () => {
-        api.error({
-          message: 'Change password success',
-          icon: <CheckCircleOutlined className='text-green-400' />,
-        });
+        api.success({ message: 'Change password success' });
         reset();
       },
       onError: () => {
-        api.error({
-          message: 'Change password failed!',
-          icon: <MehOutlined className='text-red-400' />,
-        });
+        api.error({ message: 'Change password failed!' });
       },
     });
   };
