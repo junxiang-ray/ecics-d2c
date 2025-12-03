@@ -17,7 +17,7 @@ const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
   ): JSX.Element => {
     return (
       <div>
-        <label className='mb-1.5 block font-body text-sm font-medium text-gray-700'>
+        <label className='font-body mb-1.5 block text-sm font-medium text-gray-700'>
           {label}
         </label>
         <p
@@ -36,18 +36,18 @@ const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
       icon={<UserOutlined width='21' height='21' />}
     >
       <>
-        <h3 className='mb-4 font-heading text-base font-semibold text-gray-900'>
+        <div className='font-heading mb-4 font-semibold text-gray-900'>
           Personal Details
-        </h3>
+        </div>
         <div className='grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2'>
           {row('Full Name', data.name)}
           {row('Marital Status', data.marital_status, 'capitalize')}
           {row('Mobile Number', data.mobile)}
           {row('Email', data.email)}
         </div>
-        <h3 className='mb-4 font-heading text-base font-semibold text-gray-900'>
+        <div className='font-heading mb-4 font-semibold text-gray-900'>
           Address Information
-        </h3>
+        </div>
         <div className='grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2'>
           {row('Address Line 1', data.address?.address_line_1)}
           {row('Address Line 2', data.address?.address_line_2)}

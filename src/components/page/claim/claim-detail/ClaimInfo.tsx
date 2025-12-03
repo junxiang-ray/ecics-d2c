@@ -56,11 +56,11 @@ const ClaimInfo = (): JSX.Element => {
         >
           <div className='flex items-start justify-between'>
             <div>
-              <h4 className='flex items-center font-heading font-medium leading-none opacity-80'>
+              <div className='font-heading flex items-center text-lg font-semibold leading-none opacity-80'>
                 <DocumentOutlined className='mr-2 h-5 w-5 opacity-90' />
                 <span>Car Claim</span>
-              </h4>
-              <p className='mt-1 font-body text-sm text-gray-600'>
+              </div>
+              <p className='font-body mt-1 text-sm text-gray-600'>
                 {claim?.description || '-'}
               </p>
             </div>
@@ -75,7 +75,7 @@ const ClaimInfo = (): JSX.Element => {
                 <label className='font-body text-sm text-gray-600'>
                   Claim Amount
                 </label>
-                <p className='text-nowrap font-body font-medium'>
+                <p className='font-body text-nowrap font-medium'>
                   <span className='mr-[.1rem] inline-block'>$</span>
                   {formatNumber(claim?.amount ?? 0, 2, true)}
                 </p>

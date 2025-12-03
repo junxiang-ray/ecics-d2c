@@ -22,7 +22,7 @@ const PromotionCard = ({ data, onClick }: Props): React.ReactNode => {
 
   return (
     <div
-      className='oerflow-hidden group mb-2.5 max-h-[20rem] cursor-pointer select-none rounded-xl border border-gray-200 bg-white transition-all duration-200 hover:border-[#02ADEF]/30 hover:shadow-md md:h-[20rem]'
+      className='group mb-2.5 max-h-[20rem] cursor-pointer select-none overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-200 hover:border-[#02ADEF]/30 hover:shadow-md md:h-[20rem]'
       title={data?.attributes?.title}
       onClick={onClick}
     >
@@ -38,9 +38,9 @@ const PromotionCard = ({ data, onClick }: Props): React.ReactNode => {
       </div>
       <div className='p-4'>
         <div className='mb-3 flex items-start justify-between'>
-          <h3 className='font-heading truncate pr-2 text-base font-semibold text-gray-900 transition-colors duration-200 group-hover:text-[#02ADEF]'>
+          <p className='display-3 font-heading truncate pr-2 text-base font-semibold text-gray-900 transition-colors duration-200 group-hover:text-[#02ADEF]'>
             {data?.attributes?.title}
-          </h3>
+          </p>
           <Badge
             color='cyan'
             content={formatExpiredDate(data?.attributes?.expired_date)}

@@ -76,10 +76,10 @@ const ModalAnnouncement = ({
       destroyOnClose
       title={
         <div className='border-b border-gray-200 bg-gray-50 p-6 pr-[4rem]'>
-          <h2 className='font-heading text-2xl font-semibold text-gray-900'>
+          <p className='display-2 font-heading text-2xl font-semibold text-gray-900'>
             Announcements
-          </h2>
-          <p className='mt-1 font-body text-sm text-gray-600'>
+          </p>
+          <p className='font-body mt-1 text-sm text-gray-600'>
             Stay updated with important information and updates
           </p>
         </div>

@@ -18,7 +18,9 @@ const Notes = (): JSX.Element => {
   return (
     <>
       <div className='rounded-xl border border-gray-200 bg-white p-6'>
-        <h4 className='mb-6 font-heading leading-none'>Notes & Updates</h4>
+        <div className='font-heading mb-6 text-lg font-semibold leading-none'>
+          Notes & Updates
+        </div>
         <div className='flex flex-col gap-4'>
           {notes.map((note, idx) => (
             <div
@@ -26,7 +28,7 @@ const Notes = (): JSX.Element => {
               className='transform-bg border-l-4 border-blue-200 pl-4 duration-200 hover:bg-gray-50'
             >
               <div className='mb-1 flex items-center justify-between'>
-                <h5 className='font-body font-medium'>{note?.title}</h5>
+                <div className='font-body font-medium'>{note?.title}</div>
                 <span className='font-body text-sm text-gray-400'>
                   {formatDateString(
                     note?.publish_date,

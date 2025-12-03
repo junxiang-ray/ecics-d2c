@@ -10,9 +10,9 @@ const Policies = (): React.ReactNode => {
       <div className='mb-5'>
         <div className='flex items-center justify-between'>
           <div>
-            <h1 className='mb-1 font-heading text-[1.64rem] font-bold text-gray-900'>
+            <p className='font-heading mb-1 text-2xl font-bold text-gray-900'>
               My Policies
-            </h1>
+            </p>
             <p className='font-body text-sm text-gray-600'>
               View and manage your insurance policies
             </p>

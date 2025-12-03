@@ -46,9 +46,9 @@ const QuickActions = (): React.ReactNode => {
   const overlayPanel = (
     <>
       <div className='w-[65%] rounded-lg border border-gray-200 bg-white p-6 shadow-md'>
-        <h4 className='mb-4 font-heading text-lg font-semibold text-gray-900'>
+        <div className='display-4 font-heading mb-4 text-lg font-semibold text-gray-900'>
           Choose Insurance Type
-        </h4>
+        </div>
         <div className='flex flex-col gap-3'>
           {QUICK_ACTION_ITEMS.map((item) => (
             <a
@@ -73,9 +73,9 @@ const QuickActions = (): React.ReactNode => {
 
   return (
     <div className='mb-8'>
-      <h2 className='mb-5 font-heading text-xl font-semibold text-gray-900'>
+      <div className='display-2 font-heading mb-5 text-xl font-semibold text-gray-900'>
         Quick Actions
-      </h2>
+      </div>
       <div className='grid grid-cols-3 gap-6'>
         <Dropdown overlay={overlayPanel} trigger={['click']}>
           <Card

@@ -84,9 +84,9 @@ const ModalAnnouncementDetail = ({
       }
       title={
         <div className='border-b border-gray-200 bg-gray-50 p-6 shadow-sm'>
-          <h2 className='font-heading text-2xl font-semibold text-gray-900'>
+          <p className='display-2 font-heading text-2xl font-semibold text-gray-900'>
             {detail.title}&nbsp;
-          </h2>
+          </p>
           <p className='font-body mt-1 text-sm text-gray-600'>
             Published on {publishDate}
           </p>
