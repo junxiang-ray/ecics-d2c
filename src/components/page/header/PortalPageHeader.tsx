@@ -65,9 +65,9 @@ const PortalPageHeader = (): JSX.Element => {
       className: 'text-red-500',
       icon: <LogoutOutlined height='14' width='14' />,
       label: 'Sign Out',
-      // onClick: () => {
-      //   // todo: Handle signout here.
-      // },
+      onClick: () => {
+        // todo: Handle signout here.
+      },
     },
   ]).current;
 
