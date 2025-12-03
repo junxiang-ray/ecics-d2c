@@ -34,7 +34,7 @@ const schema = z.object({
     .min(8, 'Password must be at least 8 characters'),
 });
 
-type FormValues = Record<keyof typeof FORM_ITEM, string>;
+type FormValues = Record<(typeof FORM_ITEM)[keyof typeof FORM_ITEM], string>;
 
 const LoginPage = (): JSX.Element => {
   const [form] = Form.useForm();
