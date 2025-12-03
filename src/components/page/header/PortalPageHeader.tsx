@@ -61,17 +61,18 @@ const PortalPageHeader = (): JSX.Element => {
     { type: 'divider' },
     {
       key: 'sign-out',
+      routerPath: ROUTES.PORTAL.LOGIN,
       className: 'text-red-500',
       icon: <LogoutOutlined height='14' width='14' />,
       label: 'Sign Out',
-      onClick: () => {
-        // todo: Handle signout here.
-      },
+      // onClick: () => {
+      //   // todo: Handle signout here.
+      // },
     },
   ]).current;
 
   const overlayPanel: JSX.Element = (
-    <div className='text-popover-foreground w-56 min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-white p-1 font-body shadow-md'>
+    <div className='text-popover-foreground font-body w-56 min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-white p-1 shadow-md'>
       {dropdownItems.map((item, idx) =>
         item.type === 'divider' ? (
           <Divider key={idx} className='m-1' />
@@ -126,7 +127,7 @@ const PortalPageHeader = (): JSX.Element => {
             <div className='absolute left-1/2 flex -translate-x-1/2 items-center md:static md:mr-auto md:translate-x-0'>
               <EcicsIcon height='28' width='auto' />
             </div>
-            <nav className='hidden items-center font-body md:mr-8 md:flex [&>*:not(:last-child)]:mr-8'>
+            <nav className='font-body hidden items-center md:mr-8 md:flex [&>*:not(:last-child)]:mr-8'>
               {navItems.map((navItem) => (
                 <Link
                   key={`navItem_${navItem.path}`}
@@ -152,7 +153,7 @@ const PortalPageHeader = (): JSX.Element => {
               onOpenChange={(isOpen: boolean) => setShowDropdown(isOpen)}
             >
               <button
-                className='flex items-center rounded-lg p-2 font-body transition-colors duration-200 hover:bg-gray-100 [&>*:not(:last-child)]:mr-3'
+                className='font-body flex items-center rounded-lg p-2 transition-colors duration-200 hover:bg-gray-100 [&>*:not(:last-child)]:mr-3'
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <div className='flex aspect-square h-8 items-center justify-center rounded-full bg-[#02adef]'>
