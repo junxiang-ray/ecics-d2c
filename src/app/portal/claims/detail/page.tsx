@@ -28,7 +28,7 @@ const ClaimDetail = (): React.ReactNode => {
       <div className='mb-6 flex flex-wrap items-center justify-between gap-4'>
         <div className='flex items-center gap-5'>
           <button
-            className='flex flex-nowrap items-center gap-2 font-body text-gray-600 transition-colors hover:text-gray-900'
+            className='font-body flex flex-nowrap items-center gap-2 text-gray-600 transition-colors hover:text-gray-900'
             onClick={backToPreviousPage}
           >
             <BackOutlined />
@@ -36,9 +36,9 @@ const ClaimDetail = (): React.ReactNode => {
           </button>
           <div className='h-6 w-px bg-gray-300' />
           <div>
-            <h1 className='font-heading text-3xl font-bold text-gray-900'>
+            <div className='font-heading text-3xl font-bold text-gray-900'>
               Claim Details
-            </h1>
+            </div>
             <p className='font-body text-gray-600'>{claimDetail?.claim_no}</p>
           </div>
         </div>

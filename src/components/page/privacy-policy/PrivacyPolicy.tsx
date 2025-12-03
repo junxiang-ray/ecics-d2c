@@ -29,9 +29,9 @@ const PrivacyPolicy = (): JSX.Element => {
             <BackOutlined />
           </span>
           <div className='mb-2 flex flex-col items-start gap-3'>
-            <h1 className='font-heading text-3xl font-bold text-gray-900'>
+            <div className='font-heading text-3xl font-bold text-gray-900'>
               Privacy Policy
-            </h1>
+            </div>
             <p className='font-body text-gray-600'>
               Learn how we protect and manage your personal information
             </p>

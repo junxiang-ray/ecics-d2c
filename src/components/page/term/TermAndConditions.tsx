@@ -28,9 +28,9 @@ const TermAndConditions = (): JSX.Element => {
             <BackOutlined />
           </span>
           <div className='mb-2 flex flex-col items-start gap-3'>
-            <h1 className='font-heading text-3xl font-bold text-gray-900'>
+            <div className='font-heading text-3xl font-bold text-gray-900'>
               Terms and Conditions
-            </h1>
+            </div>
             <p className='font-body text-gray-600'>
               Please read our terms and conditions carefully
             </p>

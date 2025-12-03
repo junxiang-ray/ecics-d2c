@@ -30,10 +30,10 @@ const PolicyCard = ({
             className='text-primary [&_.boxIcon-overlay]:rounded-2xl'
           />
           <div>
-            <h2 className='m-0 mb-1 font-heading text-[28px] font-bold text-gray-800'>
+            <p className='font-heading m-0 mb-1 text-2xl font-bold text-gray-800'>
               {title}&nbsp;
-            </h2>
-            <p className='mt-1 font-body text-sm text-gray-600'>
+            </p>
+            <p className='font-body mt-1 text-sm text-gray-600'>
               {subTitle}&nbsp;
             </p>
           </div>

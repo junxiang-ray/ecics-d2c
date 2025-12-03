@@ -29,6 +29,7 @@ const Pagination = ({
       <AntPagination
         align='start'
         size='small'
+        className='items-center'
         total={total || 0}
         current={pageNo}
         pageSize={pageSize}
@@ -40,7 +41,7 @@ const Pagination = ({
         ): ReactNode => {
           if (type === 'prev')
             return (
-              <a className='mr-2 flex h-8 flex-nowrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm leading-none'>
+              <a className='mr-2 mt-[-.125rem] flex h-7 flex-nowrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm leading-none'>
                 <LeftOutlined />
                 Previous
               </a>
@@ -48,7 +49,7 @@ const Pagination = ({
 
           if (type === 'next')
             return (
-              <a className='ml-2 flex h-8 flex-nowrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm leading-none'>
+              <a className='ml-2 mt-[-.125rem] flex h-7 flex-nowrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm leading-none'>
                 Next
                 <RightOutlined />
               </a>

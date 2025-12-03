@@ -3,9 +3,9 @@ const Welcome = (): React.ReactNode => {
 
   return (
     <div className='mb-12'>
-      <h1 className='mb-3 font-heading text-3xl font-bold text-gray-900'>
+      <p className='font-heading mb-3 text-3xl font-bold text-gray-900'>
         Welcome back, <span>John</span>
-      </h1>
+      </p>
       <p className='font-body text-lg text-gray-600'>
         Manage your policies and stay protected
       </p>

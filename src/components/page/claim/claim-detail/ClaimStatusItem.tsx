@@ -61,11 +61,11 @@ const ClaimStatusItem = ({
         </div>
         <div className='flex-1'>
           <div className='flex items-center justify-between'>
-            <h4
+            <div
               className={`font-body text-base font-medium leading-tight ${color}`}
             >
               {title}
-            </h4>
+            </div>
             <div className='font-body text-sm text-gray-500'>
               {processTimestamp ? (
                 <span className='inline-block whitespace-nowrap'>

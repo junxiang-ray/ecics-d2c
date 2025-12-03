@@ -50,10 +50,10 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
               icon={SvgIcon && <SvgIcon width='21' height='21' />}
             />
             <div className='min-w-0 flex-1'>
-              <h3 className='truncate font-heading text-lg font-semibold text-gray-900'>
+              <p className='display-3 font-heading truncate text-lg font-semibold text-gray-900'>
                 {cardTitle}
-              </h3>
-              <p className='truncate font-body text-sm text-gray-600'>
+              </p>
+              <p className='font-body truncate text-sm text-gray-600'>
                 {data?.plan?.plan_name}
               </p>
             </div>
@@ -73,7 +73,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
       <div className='p-5'>
         <div className='mb-4 flex items-start justify-between'>
           <div>
-            <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+            <p className='font-body mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
               Policy Number
             </p>
             <p className='font-body text-sm font-semibold text-gray-900'>
@@ -81,7 +81,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
             </p>
           </div>
           <div className='text-right'>
-            <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+            <p className='font-body mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
               Expiry Date
             </p>
             <p className='font-body text-sm font-semibold text-gray-900'>
@@ -93,7 +93,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
           {['car', 'motorcycle'].includes(data.policy_type) && (
             <>
               <div>
-                <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+                <p className='font-body mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
                   Vehicle Registration
                 </p>
                 <p className='font-body text-sm font-semibold text-gray-900'>
@@ -105,7 +105,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
           {data.policy_type === 'maid' && (
             <>
               <div>
-                <p className='mb-1 font-body text-xs font-medium uppercase tracking-wide text-gray-500'>
+                <p className='font-body mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
                   HELPER'S NAME
                 </p>
                 <p className='font-body text-sm font-semibold text-gray-900'>
@@ -114,7 +114,7 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
               </div>
             </>
           )}
-          <div className='flex items-center font-body text-primary transition-all duration-200 hover:text-primary/80'>
+          <div className='font-body flex items-center text-primary transition-all duration-200 hover:text-primary/80'>
             <span className='mr-2 text-sm font-semibold'>Renew Now</span>
             <RightOutlined />
           </div>
