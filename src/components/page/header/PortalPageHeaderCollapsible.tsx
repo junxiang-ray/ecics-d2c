@@ -95,10 +95,10 @@ const PortalPageHeaderCollapsible = ({
   const activeKeys: string[] = [pathName.split('/').at(1) ?? ''];
 
   const onMenuClick = ({ keyPath }: { keyPath: string[] }): void => {
-    if (keyPath?.at(0) === ROUTES.PORTAL.LOGIN) {
-      // todo: handle logic logout here
-      return;
-    }
+    // if (keyPath?.at(0) === ROUTES.PORTAL.LOGIN) {
+    //   // todo: handle logic logout here
+    //   return;
+    // }
 
     onClose();
     onSelect(keyPath.join('/'));
