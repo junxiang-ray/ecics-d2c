@@ -55,8 +55,9 @@ const LoginPage = (): JSX.Element => {
   const [systemMaintain, setSystemMaintain] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmitSigninRenewal = (values: FormData): void => {
+  const onSubmitSigninRenewal = (values: FormValues): Promise<void> => {
     // todo: Impl logic call Api login by email
+    return new Promise((resolve, reject) => reject());
   };
 
   const onRequestSignSingpass = (): void => {
