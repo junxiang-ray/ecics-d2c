@@ -4,7 +4,6 @@ import { ROUTES } from '@/constants/routes';
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { setCookie } from '@/libs/utils/utils';
 
 import Header from '@/components/page/header/PortalPageHeader';
 
