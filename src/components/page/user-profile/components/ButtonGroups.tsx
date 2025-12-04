@@ -14,7 +14,7 @@ const ButtonGroups = ({
 }: Props): JSX.Element | null => {
   const {
     reset,
-    formState: { isValid, dirtyFields, ...rest },
+    formState: { isValid, dirtyFields },
   } = useFormContext();
 
   const isDirty = !!Object.keys(dirtyFields).length;
