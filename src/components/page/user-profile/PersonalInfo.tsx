@@ -1,6 +1,6 @@
 'use client';
 
-import { MaritalStatus } from '@/libs/types/common';
+import { Gender, MaritalStatus } from '@/libs/types/common';
 import {
   UserProfile,
   UserProfileUpdatePayload,
@@ -42,8 +42,9 @@ export type UserUpdateResponse<T> = {
 
 export type FormValues = Omit<
   Record<(typeof FORM_ITEM)[keyof typeof FORM_ITEM], string>,
-  'marital_status'
+  'marital_status' | 'gender'
 > & {
+  [FORM_ITEM.GENDER]: Gender;
   [FORM_ITEM.MARITAL_STATUS]: MaritalStatus;
 };
 
