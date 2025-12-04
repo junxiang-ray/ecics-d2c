@@ -1,9 +1,6 @@
 import type { AxiosResponse } from 'axios';
 import { Address } from '@/libs/types/common';
-import {
-  UserProfileUpdatePayload,
-  UserProfileResponse,
-} from '@/libs/types/user-profile';
+import { UserProfileUpdatePayload } from '@/libs/types/user-profile';
 
 import {
   API_USER_PROFILE_GET,
