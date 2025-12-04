@@ -7,12 +7,12 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import user from '@/api/base-service/user';
 
 export const useGetUserProfile = () => {
-  const fetchUserProfile = async (): Promise<UserProfileResponse> => {
+  const fetchUserProfile = async (): Promise<AxiosResponse> => {
     try {
       const resp = await user.getUserProfile();
-      return resp?.data as unknown as UserProfileResponse;
+      return resp?.data;
     } catch (e) {
-      return {} as UserProfileResponse;
+      return {} as AxiosResponse;
     }
   };
 
