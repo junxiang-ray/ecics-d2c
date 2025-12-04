@@ -77,10 +77,9 @@ const FormItem = <FormValues,>({
                     }
                     size='large'
                     onChange={(event) => {
-                      const value = event.target.value;
-                      const formatted = (formatter
-                        ? formatter(value)
-                        : value) as unknown as FormValues[Props<FormValues>['name']];
+                      const value = event.target
+                        .value as unknown as FormValues[Props<FormValues>['name']];
+                      const formatted = formatter ? formatter(value) : value;
                       field.onChange(formatted);
                     }}
                   />
