@@ -7,7 +7,7 @@ import {
 } from '@/libs/types/user-profile';
 import { useUpdateUserInfo } from '@/hook/user-profile/user-profile';
 
-import { parsePhoneNumber, formatPhoneNumber } from '@/libs/utils/utils';
+import { formatPhoneNumber } from '@/libs/utils/utils';
 
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
