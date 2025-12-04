@@ -18,7 +18,8 @@ interface Props {
 const PersonalInfoForm = ({ isEdit }: Props): JSX.Element => {
   const parseGender = useCallback<(value: string) => string>(
     (value) =>
-      GENDER_OPTIONS.find((option) => value === option.value)?.label ?? '',
+      (GENDER_OPTIONS.find((option) => value === option.value)
+        ?.label as unknown as string) ?? '',
     [],
   );
   const parseMaritalStatus = useCallback<(value: string) => string>(
