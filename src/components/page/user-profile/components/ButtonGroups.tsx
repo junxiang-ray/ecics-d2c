@@ -14,7 +14,7 @@ const ButtonGroups = ({
 }: Props): JSX.Element | null => {
   const {
     reset,
-    formState: { isValid },
+    formState: { isValid, dirtyFields, isDirty },
   } = useFormContext();
 
   if (hidden) return null;
@@ -37,7 +37,7 @@ const ButtonGroups = ({
           className='bg-[#52c41a] text-white transition-colors hover:bg-[#52c41a]/90 disabled:cursor-not-allowed disabled:opacity-50 [&_.ant-btn-loading-icon]:pb-1 [&_.ant-btn-loading-icon]:leading-none'
           color='green'
           variant='filled'
-          disabled={!isValid || loading}
+          disabled={!isDirty || !isValid || loading}
           loading={loading}
           htmlType='submit'
         >
