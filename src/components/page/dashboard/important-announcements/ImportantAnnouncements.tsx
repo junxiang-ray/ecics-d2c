@@ -23,11 +23,11 @@ const ImportantAnnouncements = (): JSX.Element => {
     <>
       <div>
         <div className='mb-6 flex items-center justify-between'>
-          <h2 className='font-heading text-xl font-semibold text-gray-900'>
+          <div className='display-2 font-heading text-xl font-semibold text-gray-900'>
             Important Announcements
-          </h2>
+          </div>
           <button
-            className='flex items-center gap-1 rounded font-body text-sm font-medium text-primary transition-colors duration-200 hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2'
+            className='font-body flex items-center gap-1 rounded text-sm font-medium text-primary transition-colors duration-200 hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2'
             onClick={() => setIsOpenModal(true)}
           >
             View More

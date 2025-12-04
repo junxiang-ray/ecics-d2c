@@ -25,9 +25,9 @@ const ClaimDocuments = (): JSX.Element => {
   return (
     <>
       <div className='rounded-xl border border-gray-200 bg-white p-6'>
-        <h4 className='mb-4 font-heading font-medium leading-none'>
+        <div className='font-heading mb-4 text-lg font-semibold leading-none'>
           Documents
-        </h4>
+        </div>
         <div className='flex flex-col gap-4'>
           {documents.map((doc, idx) => (
             <div
@@ -36,8 +36,8 @@ const ClaimDocuments = (): JSX.Element => {
             >
               <DocumentOutlined className='h-5 w-5 text-gray-500' />
               <div>
-                <h5 className='font-body font-medium'>{doc?.title}</h5>
-                <div className='flex flex-col font-body text-sm text-gray-500 sm:flex-row'>
+                <div className='font-body font-medium'>{doc?.title}</div>
+                <div className='font-body flex flex-col text-sm text-gray-500 sm:flex-row'>
                   <span>
                     {doc?.file_count > 2 ? (
                       <span>{doc?.file_count || 0} files</span>

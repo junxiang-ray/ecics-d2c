@@ -51,9 +51,9 @@ const ClaimProgressInfo = (): JSX.Element => {
   return (
     <>
       <div className='rounded-xl border border-gray-200 bg-white p-6 pb-4'>
-        <h4 className='font-heading font-medium leading-none'>
+        <div className='font-heading text-lg font-semibold leading-none'>
           Claim Progress
-        </h4>
+        </div>
         <div className='mb-6'>
           <Progress
             percent={100}

@@ -65,9 +65,9 @@ const AnnouncementCard = ({ data, onShowDetail }: Props): JSX.Element => {
         <div className='flex items-center gap-3'>
           <BoxIcon className={notiIconClr} icon={notiIcon} size='sm' />
           <div>
-            <h3 className='font-heading text-base font-semibold text-gray-900 transition-colors duration-200 group-hover:text-orange-600'>
+            <p className='display-3 font-heading text-base font-semibold text-gray-900 transition-colors duration-200 group-hover:text-orange-600'>
               {announcementDetail.title}
-            </h3>
+            </p>
             <p className='font-body flex flex-nowrap items-center text-xs text-gray-500'>
               <CalendarOutlined className='mr-2' />
               {createdDate}

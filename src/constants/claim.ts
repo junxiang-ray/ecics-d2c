@@ -16,7 +16,7 @@ export const CLAIM_STATUS_CONF = {
   },
   IN_PROGRESS: {
     ICON: CheckCircleOutlined,
-    COLOR: 'text-orange-700',
+    COLOR: 'text-orange-600',
   },
   SUCCESS: {
     ICON: CheckCircleOutlined,

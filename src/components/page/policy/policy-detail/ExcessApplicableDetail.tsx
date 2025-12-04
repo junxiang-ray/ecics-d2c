@@ -25,7 +25,7 @@ const ExcessApplicableDetail = ({ data }: Props): JSX.Element | null => {
             {title ?? '-'}
           </p>
           {!!description && (
-            <p className='mt-1 font-body text-sm text-gray-600'>
+            <p className='font-body mt-1 text-sm text-gray-600'>
               {description}
             </p>
           )}
@@ -45,9 +45,9 @@ const ExcessApplicableDetail = ({ data }: Props): JSX.Element | null => {
     >
       <div className='[&>:not(:last-child)]:mb-6'>
         <div>
-          <h3 className='mb-4 font-heading text-base font-semibold text-gray-900'>
+          <div className='font-heading mb-4 font-semibold text-gray-900'>
             Policy Excess
-          </h3>
+          </div>
           <div className='[&>:not(:last-child)]:mb-4 [&>:not(:last-child)]:border-b'>
             {!!data.policy_excess?.length &&
               data.policy_excess.map((excess, idx) => (
@@ -58,9 +58,9 @@ const ExcessApplicableDetail = ({ data }: Props): JSX.Element | null => {
           </div>
         </div>
         <div>
-          <h3 className='mb-4 font-heading text-base font-semibold text-gray-900'>
+          <div className='font-heading mb-4 font-semibold text-gray-900'>
             Additional Excess
-          </h3>
+          </div>
           <div className='[&>:not(:last-child)]:mb-4 [&>:not(:last-child)]:border-b'>
             {!!data.additional_excess?.length &&
               data.additional_excess.map((excess, idx) => (

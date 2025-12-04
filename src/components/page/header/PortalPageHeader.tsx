@@ -70,6 +70,7 @@ const PortalPageHeader = (): JSX.Element => {
     { type: 'divider' },
     {
       key: 'sign-out',
+      routerPath: ROUTES.PORTAL.LOGIN,
       className: 'text-red-500',
       icon: <LogoutOutlined height='14' width='14' />,
       label: 'Sign Out',

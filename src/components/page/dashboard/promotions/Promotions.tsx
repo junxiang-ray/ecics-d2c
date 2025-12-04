@@ -22,9 +22,9 @@ const Promotions = (): React.ReactNode => {
 
   return (
     <div className='overflow-hidden'>
-      <h2 className='mb-6 font-heading text-xl font-semibold text-gray-900'>
+      <div className='display-2 font-heading mb-6 text-xl font-semibold text-gray-900'>
         Current Promotions
-      </h2>
+      </div>
       <Swiper
         className='pb-[2.5rem] [&_.swiper-pagination-bullet-active]:scale-110 [&_.swiper-pagination-bullet]:transition-transform [&_.swiper-pagination-bullet]:duration-200'
         modules={[Pagination]}
