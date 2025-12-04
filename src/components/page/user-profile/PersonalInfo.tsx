@@ -7,6 +7,8 @@ import {
 } from '@/libs/types/user-profile';
 import { useUpdateUserInfo } from '@/hook/user-profile/user-profile';
 
+import { formatPhoneNumber } from '@/libs/utils/utils';
+
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -85,7 +87,7 @@ const PersonalInfo = (): JSX.Element => {
       [FORM_ITEM.GENDER]: user?.gender,
       [FORM_ITEM.MARITAL_STATUS]: user?.marital_status,
       [FORM_ITEM.EMAIL]: user?.email,
-      [FORM_ITEM.PHONE]: user?.phone,
+      [FORM_ITEM.PHONE]: formatPhoneNumber(user?.phone ?? ''),
       [FORM_ITEM.ADDRESS_1]: user?.address?.address_line_1,
       [FORM_ITEM.ADDRESS_2]: user?.address?.address_line_2,
       [FORM_ITEM.ADDRESS_3]: user?.address?.address_line_3,
@@ -110,7 +112,7 @@ const PersonalInfo = (): JSX.Element => {
     const payload: UserProfileUpdatePayload = {
       marital_status: formValues[FORM_ITEM.MARITAL_STATUS],
       email: formValues[FORM_ITEM.EMAIL],
-      phone: formValues[FORM_ITEM.PHONE],
+      phone: formValues[FORM_ITEM.PHONE].replace(/[ ]/g, ''),
       address: {
         address_line_1: formValues[FORM_ITEM.ADDRESS_1],
         address_line_2: formValues[FORM_ITEM.ADDRESS_2],
