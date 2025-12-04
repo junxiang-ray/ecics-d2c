@@ -1,6 +1,9 @@
 import type { AxiosResponse } from 'axios';
 import { Address } from '@/libs/types/common';
-import { UserProfileResponse } from '@/libs/types/user-profile';
+import {
+  UserProfileUpdatePayload,
+  UserProfileResponse,
+} from '@/libs/types/user-profile';
 
 import {
   API_USER_PROFILE_GET,
@@ -18,33 +21,10 @@ export default {
   getUserProfile() {
     return baseClient.get(`${API_USER_PROFILE_GET}/${getAuthCode()}`);
   },
-  updateMaritalStatus(maritalStatus: string) {
+  updateUserProfile(payload: UserProfileUpdatePayload) {
     return baseClient.put(API_USER_PROFILE_UPDATE, {
       key: getAuthCode(),
-      marital_status: maritalStatus,
-    });
-  },
-  updateEmail(email: string) {
-    return baseClient.put(API_USER_PROFILE_UPDATE, {
-      key: getAuthCode(),
-      email,
-    });
-  },
-  updatePhone(phone: string) {
-    return baseClient.put(API_USER_PROFILE_UPDATE, {
-      key: getAuthCode(),
-      phone,
-    });
-  },
-  updateAddress(address: Address) {
-    return baseClient.put(API_USER_PROFILE_UPDATE, {
-      key: getAuthCode(),
-      address: {
-        address_line_1: address?.address_line_1,
-        address_line_2: address?.address_line_2,
-        address_line_3: address?.address_line_3,
-        postal_code: address?.postal_code,
-      },
+      ...payload,
     });
   },
   changePassword(password: string) {

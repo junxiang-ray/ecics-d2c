@@ -114,7 +114,7 @@ const ChangePassword = (): JSX.Element => {
               />
               <PasswordRequirements />
               <Button
-                className='w-full bg-[#52c41a] text-base text-white transition-colors hover:bg-[#52c41a]/90 disabled:cursor-not-allowed disabled:opacity-50'
+                className='w-full bg-[#52c41a] text-base text-white transition-colors hover:bg-[#52c41a]/90 disabled:cursor-not-allowed disabled:opacity-50 [&_.ant-btn-loading-icon]:pb-1 [&_.ant-btn-loading-icon]:leading-none'
                 color='green'
                 variant='filled'
                 size='large'

@@ -8,7 +8,7 @@ type UserState = {
 const initialState: UserState = {
   user: {
     name: 'John Doe',
-    phone: '91234567',
+    phone: '+6591234567',
     email: 'john.doe@email.com',
     gender: 'MALE',
     marital_status: 'SINGLE',

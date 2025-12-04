@@ -1,6 +1,9 @@
 import type { AxiosResponse } from 'axios';
 import { Address, MaritalStatus } from '@/libs/types/common';
-import { UserProfileResponse } from '@/libs/types/user-profile';
+import {
+  UserProfileUpdatePayload,
+  UserProfileResponse,
+} from '@/libs/types/user-profile';
 
 import { Observable, of, from } from 'rxjs';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -24,22 +27,18 @@ export const useGetUserProfile = () => {
   });
 };
 
-export const updateMaritalStatus = (
-  maritalStatus: MaritalStatus,
-): Observable<AxiosResponse> => {
-  return from(user.updateMaritalStatus(maritalStatus));
-};
+export const useUpdateUserInfo = () => {
+  const updateUser = async (
+    payload: UserProfileUpdatePayload,
+  ): Promise<AxiosResponse> => {
+    const resp = await user.updateUserProfile(payload);
+    return resp;
+  };
 
-export const updateEmail = (email: string): Observable<AxiosResponse> => {
-  return from(user.updateEmail(email));
-};
-
-export const updatePhone = (phone: string): Observable<AxiosResponse> => {
-  return from(user.updatePhone(phone));
-};
-
-export const updateAddress = (address: Address): Observable<AxiosResponse> => {
-  return from(user.updateAddress(address));
+  return useMutation({
+    mutationFn: updateUser,
+    mutationKey: ['user_profile'],
+  });
 };
 
 export const useChangePassword = () => {

@@ -1,6 +1,17 @@
 import type { LabeledValue } from 'antd/es/select';
 import { MaritalStatus as TMaritalStatus } from '@/libs/types/common';
-import { MaritalStatus } from '@/libs/enums/user';
+import { MaritalStatus, Gender } from '@/libs/enums/user';
+
+export const GENDER_OPTIONS: LabeledValue[] = [
+  {
+    value: Gender.Male,
+    label: 'Male',
+  },
+  {
+    value: Gender.Female,
+    label: 'Female',
+  },
+];
 
 export const MARITAL_STATUS: Record<TMaritalStatus, string> = {
   [MaritalStatus.Married]: 'Married',

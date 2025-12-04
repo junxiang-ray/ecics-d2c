@@ -1,41 +1,28 @@
 'use client';
 
+import type { LabeledValue } from 'antd/es/select';
+
 import { UserUpdateResponse } from '../PersonalInfo';
-
-import {
-  Subscription,
-  Observable,
-  take,
-  tap,
-  filter,
-  debounceTime,
-} from 'rxjs';
-
-import { useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { Input, Select, Button, Form } from 'antd';
-import BtnEdit from './BtnEdit';
+import { Input, Select } from 'antd';
 
 interface Props<FormValues> {
+  type?: 'select' | 'input';
   label: string;
   name: keyof FormValues;
   className?: string;
   prefix?: JSX.Element;
   suffix?: JSX.Element;
+  enabled?: boolean;
+  options?: LabeledValue[];
+  placeholder?: boolean | string;
   parser?: (
     value: FormValues[Props<FormValues>['name']],
   ) => FormValues[Props<FormValues>['name']];
-  children: ({
-    field,
-    fieldState,
-  }: {
-    field?: any;
-    fieldState?: any;
-  }) => JSX.Element;
-  onSubmit?: (
+  formatter?: (
     value: FormValues[Props<FormValues>['name']],
-  ) => Observable<UserUpdateResponse<FormValues[Props<FormValues>['name']]>>;
+  ) => FormValues[Props<FormValues>['name']];
 }
 
 type FormItemName<FormValues> = Props<FormValues>['name'];
@@ -46,112 +33,71 @@ type UpdateResp<FormValues> = UserUpdateResponse<
 const FormItem = <FormValues,>({
   name,
   label,
+  type,
+  options,
+  placeholder,
   className,
+  enabled,
   prefix,
   suffix,
-  children: Children,
   parser,
-  onSubmit,
+  formatter,
 }: Props<FormValues>): JSX.Element => {
-  const subscriptionRef = useRef<Subscription | null>();
-
-  const [loading, setLoading] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const { control, setValue, getValues, trigger } = useFormContext();
+  const ctx = useFormContext();
   const formItemName = name as string;
-
-  const itemValueRef = useRef<FormValues[FormItemName<FormValues>]>(
-    getValues(formItemName) as FormValues[FormItemName<FormValues>],
-  );
-
-  const onCancel = (): void => {
-    setValue(formItemName, itemValueRef.current);
-    trigger(formItemName);
-    setIsEdit(false);
-  };
-
-  const onEdit = (): void => {
-    setIsEdit(true);
-  };
-
-  const requestSubmit = (): void => {
-    if (!onSubmit) return;
-
-    if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
-
-    setLoading(true);
-    subscriptionRef.current = onSubmit(getValues(formItemName))
-      .pipe(
-        take(1),
-        tap((resp: UpdateResp<FormValues>) => {
-          setLoading(false);
-          if (!resp.success) return;
-
-          itemValueRef.current =
-            resp.data as unknown as FormValues[FormItemName<FormValues>];
-          setIsEdit(false);
-        }),
-        filter((resp: UpdateResp<FormValues>) => resp?.success),
-        debounceTime(50),
-      )
-      .subscribe((resp: UpdateResp<FormValues>) => {
-        setValue(formItemName, resp.data);
-      });
-  };
 
   return (
     <>
       <div className={`[&>.form-label+div]:max-w-full ${className ?? ''}`}>
-        <label className='form-label mb-2 inline-block font-body text-sm font-medium text-gray-700'>
+        <label className='form-label font-body mb-2 inline-block text-sm font-medium text-gray-700'>
           {label}&nbsp;
         </label>
         <Controller
           name={formItemName}
-          control={control}
+          control={ctx.control}
           render={({ field, fieldState }) =>
-            isEdit ? (
+            enabled ? (
               <>
-                {Children && <Children {...{ field, fieldState }} />}
+                {type === 'select' ? (
+                  <Select
+                    {...field}
+                    className='[&_.ant-select-arrow_svg]:fill-gray-500 [&_.ant-select-selection-item]:text-base '
+                    size='large'
+                    options={options}
+                  />
+                ) : (
+                  <Input
+                    {...field}
+                    placeholder={
+                      placeholder === true
+                        ? parser
+                          ? parser(field.value)
+                          : field.value
+                        : placeholder
+                    }
+                    size='large'
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      const formatted = formatter ? formatter(value) : value;
+                      field.onChange(formatted);
+                    }}
+                  />
+                )}
                 {fieldState.invalid && (
                   <span className='text-sm text-red-400'>
                     {fieldState.error?.message}
                   </span>
                 )}
-                <div className='mt-3 grid grid-cols-2 gap-3'>
-                  <Button
-                    color='default'
-                    variant='filled'
-                    disabled={loading}
-                    onClick={onCancel}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className='bg-[#52c41a] text-white transition-colors hover:bg-[#52c41a]/90 disabled:cursor-not-allowed disabled:opacity-50'
-                    color='green'
-                    variant='filled'
-                    disabled={fieldState.invalid || loading}
-                    loading={loading}
-                    onClick={requestSubmit}
-                  >
-                    Save Changes
-                  </Button>
-                </div>
               </>
             ) : (
-              <div className='flex h-[2.86rem] items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3'>
+              <div className='flex h-[2.5rem] items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3'>
                 <div className='flex flex-nowrap items-center gap-3'>
                   {prefix}
-                  <span className='block font-body text-base text-gray-900'>
-                    <>
-                      {parser
-                        ? parser(itemValueRef.current)
-                        : itemValueRef.current}
-                    </>
+                  <span className='font-body block text-base text-gray-900'>
+                    <>{parser ? parser(field.value) : field.value}</>
                   </span>
                   {suffix}
                 </div>
-                <BtnEdit onClick={onEdit} />
               </div>
             )
           }

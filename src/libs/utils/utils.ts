@@ -120,6 +120,19 @@ export const parsePhoneNumber = (raw: string) => {
   return { prefix, areaCode, nbr };
 };
 
+export const formatPhoneNumber = (
+  phoneStr: string,
+  areaCode?: string,
+): string => {
+  const digits = phoneStr.replace(/[^\d]/g, '');
+
+  if (!areaCode) areaCode = digits.slice(0, 2);
+
+  return [`+${areaCode}`, digits.slice(2, 6), digits.slice(6, 10)]
+    .join(' ')
+    .trim();
+};
+
 export const formatPromoCode = (code: string | null): string => {
   return code ? code.trim().toUpperCase() : '';
 };
