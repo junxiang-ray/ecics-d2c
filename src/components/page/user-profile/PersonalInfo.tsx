@@ -48,6 +48,8 @@ export type FormValues = Omit<
 };
 
 const schema = z.object({
+  [FORM_ITEM.NAME]: z.string(),
+  [FORM_ITEM.GENDER]: z.string(),
   [FORM_ITEM.MARITAL_STATUS]: z.string().min(1, 'Marital Status is required'),
   [FORM_ITEM.EMAIL]: z
     .string()
