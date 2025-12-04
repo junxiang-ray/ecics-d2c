@@ -18,6 +18,7 @@ import quoteReducer from '@/redux/slices/quote.slice';
 import renewalQuoteReducer from '@/redux/slices/renewalQuote.slice';
 import userInfoCarReducer from '@/redux/slices/userInfoCar.slice';
 import ecicsUserInfoReducer from '@/redux/slices/ecicsUserInfo.slice';
+import portalUserInfoReducer from '@/redux/slices/portalUser.slice';
 import storage from '@/redux/store/storage';
 
 // Root reducer
@@ -29,13 +30,21 @@ const rootReducer = combineReducers({
   renewalQuote: renewalQuoteReducer,
   userInfoCar: userInfoCarReducer,
   ecicsUserInfo: ecicsUserInfoReducer,
+  portalUserInfo: portalUserInfoReducer,
 });
 
 // Persist config
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['app', 'general', 'renewalQuote', 'ecicsUserInfo', 'userInfoCar'],
+  whitelist: [
+    'app',
+    'general',
+    'renewalQuote',
+    'ecicsUserInfo',
+    'userInfoCar',
+    'portalUserInfo',
+  ],
 };
 
 // Persisted reducer

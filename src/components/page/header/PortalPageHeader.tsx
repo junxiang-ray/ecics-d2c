@@ -2,8 +2,12 @@
 
 import { ROUTES } from '@/constants/routes';
 
+import { UserProfile } from '@/libs/types/user-profile';
+
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { clearUser } from '@/redux/slices/portalUser.slice';
 
 import Link from 'next/link';
 import { Divider, Dropdown } from 'antd';
@@ -19,6 +23,11 @@ import ScrollTextOutlined from '@/assets/icons/scroll-text-outlined.svg';
 import ProfileOutlined from '@/assets/icons/renewal/policy-holder.svg';
 
 const PortalPageHeader = (): JSX.Element => {
+  const user: UserProfile | null = useAppSelector(
+    (state) => state.portalUserInfo.user,
+  );
+  const dispatch = useAppDispatch();
+
   const pathName = usePathname();
   const router = useRouter();
 
@@ -157,10 +166,14 @@ const PortalPageHeader = (): JSX.Element => {
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <div className='flex aspect-square h-8 items-center justify-center rounded-full bg-[#02adef]'>
-                  <span className='text-[.875em] text-white'>J</span>
+                  <span className='text-[.875em] text-white'>
+                    {user?.name?.at(0) || <>&nbsp;</>}
+                  </span>
                 </div>
                 <div className='hidden text-left sm:block'>
-                  <p className='text-sm font-medium text-gray-900'>John Doe</p>
+                  <p className='text-sm font-medium text-gray-900'>
+                    {user?.name}&nbsp;
+                  </p>
                 </div>
               </button>
             </Dropdown>

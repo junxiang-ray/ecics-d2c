@@ -90,3 +90,51 @@ export function isSafeUrl(url: string | null, allowlist: string[] = []) {
     return false;
   }
 }
+
+export const removeNonLatinChar = (value: string): string => {
+  if (!value) return value;
+
+  let result = '';
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code >= 0x00 && code <= 0x7f) result += value[i];
+  }
+
+  return result;
+};
+
+export const encodeToBase64 = (str: string, isURLSafe?: boolean): string => {
+  try {
+    const encoded = btoa(removeNonLatinChar(str));
+
+    if (!isURLSafe) return encoded;
+
+    return encoded.replace(/\+/g, '-').replace(/\\/g, '-').replace(/=/g, '');
+  } catch (err) {
+    return '';
+  }
+};
+
+export const decodeFromBase64 = (str: string): string | null => {
+  try {
+    if (!str) return null;
+
+    return atob(str);
+  } catch (err) {
+    return null;
+  }
+};
+
+export const stringifyJSON = <T>(value: T): string => {
+  if (value == null) return '';
+
+  return JSON.stringify(value);
+};
+
+export const parseJSON = <T>(value: string): T => {
+  try {
+    return JSON.parse(value) as unknown as T;
+  } catch (e) {
+    return value as unknown as T;
+  }
+};

@@ -76,3 +76,9 @@ export const API_CLAIM_GET = '/claims';
 export const API_PRIVACY_POLICY_GET = '/privacy-policy';
 
 export const API_TERM_GET = '/term-and-condition';
+
+export const API_USER_PROFILE_GET = '/user';
+
+export const API_USER_PROFILE_UPDATE = '/user/update';
+
+export const API_CHANGE_PASSWORD = '/user/password';
