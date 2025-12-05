@@ -23,7 +23,7 @@ const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
         <p
           className={`font-body text-base font-semibold text-gray-900 opacity-80 ${className ?? ''}`}
         >
-          {content || 'N/A'}
+          {content || '-'}
         </p>
       </div>
     );
@@ -39,7 +39,7 @@ const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
         <div className='font-heading mb-4 font-semibold text-gray-900'>
           Personal Details
         </div>
-        <div className='grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2'>
+        <div className='mb-6 grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2'>
           {row('Full Name', data.name)}
           {row('Marital Status', data.marital_status, 'capitalize')}
           {row('Mobile Number', data.mobile)}

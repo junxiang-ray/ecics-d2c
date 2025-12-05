@@ -1,6 +1,8 @@
+import { Button } from 'antd';
 import TabBars from '@/components/page/claim/TabBars';
 import FilterBar from '@/components/page/claim/FilterBar';
 import Table from '@/components/page/claim/Table';
+import PlusOutlined from '@/assets/icons/renewal/plus-small.svg';
 
 const Claims = (): React.ReactNode => {
   return (
@@ -15,9 +17,13 @@ const Claims = (): React.ReactNode => {
               Track and manage your insurance claims
             </p>
           </div>
-          <button className='font-body hidden h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#52c41a] px-4 py-2 text-sm font-medium leading-none text-white outline-none transition-all hover:bg-[#52c41a]/90 sm:flex'>
+          <Button
+            className='font-body flex flex-nowrap items-center justify-center gap-2 border-transparent bg-[#52c41a] ps-2 text-sm font-medium leading-none outline-none transition-all hover:bg-[#52c41a]/90'
+            type='primary'
+          >
+            <PlusOutlined className='h-4 w-4' />
             New Claim
-          </button>
+          </Button>
         </div>
       </div>
       <div className='text-card-foreground flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white pt-1'>

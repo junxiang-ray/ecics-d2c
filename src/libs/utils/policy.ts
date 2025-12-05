@@ -29,7 +29,7 @@ export const getPolicyTypeName = (policyType?: PolicyType): string | null => {
   if (policyType === 'motorcycle') return 'Motor Vehicle - Motocycle';
   if (policyType === 'maid') return 'Maid';
   if (policyType === 'home') return 'Home Content';
-  if (policyType === 'travel') return 'Traval Insuarance';
+  if (policyType === 'travel') return 'Travel Insurance';
 
   return null;
 };

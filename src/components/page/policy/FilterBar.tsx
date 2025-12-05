@@ -58,7 +58,7 @@ const FilterBar = (): JSX.Element => {
       {
         key: 'travel',
         value: 'travel',
-        label: 'Traval Insuarance',
+        label: 'Travel Insurance',
       },
     ],
     [],

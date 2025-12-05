@@ -142,6 +142,8 @@ export const formatNumber = (
   fractionDigits = 2,
   always?: boolean,
 ): string => {
+  if (isNaN(value)) return `${value ?? ''}`;
+
   const formatted = value.toLocaleString('en-US', {
     minimumFractionDigits: always ? fractionDigits : 0,
     maximumFractionDigits: fractionDigits,

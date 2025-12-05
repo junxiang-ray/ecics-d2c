@@ -6,7 +6,7 @@ import { ColumnsType as Columns } from 'antd/es/table';
 import { PolicyType } from '@/libs/types/policy';
 import { Claim } from '@/libs/types/claim';
 
-import { POLICY_TYPE_ICON } from '@/constants/policy';
+import { CLAIM_POLICY_TYPE_ICON } from '@/constants/claim';
 
 import { formatDateString } from '@/libs/utils/dayjs';
 import { formatNumber } from '@/libs/utils/utils';
@@ -30,7 +30,8 @@ const Table = (): JSX.Element => {
   const { loading, claims, pushQuery } = useContext(ClaimContext);
 
   const getIcon = (policyType: PolicyType): React.ReactNode | null => {
-    const SvgIcon = POLICY_TYPE_ICON[policyType as Exclude<PolicyType, 'all'>];
+    const SvgIcon =
+      CLAIM_POLICY_TYPE_ICON[policyType as Exclude<PolicyType, 'all'>];
     if (!SvgIcon) return null;
 
     return <SvgIcon width='14' height='14' />;

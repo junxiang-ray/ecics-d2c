@@ -5,6 +5,8 @@ import { ROUTES } from '@/constants/routes';
 import { useContext } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ClaimContext } from '@/components/contexts/ClaimLayoutContext';
+import { Button } from 'antd';
+import UploadOutlined from '@/assets/icons/add-on/upload-outlined.svg';
 import BackOutlined from '@/assets/icons/renewal/back.svg';
 import CarClaim from '@/components/page/claim/claim-detail/CarClaim';
 
@@ -42,6 +44,10 @@ const ClaimDetail = (): React.ReactNode => {
             <p className='font-body text-gray-600'>{claimDetail?.claim_no}</p>
           </div>
         </div>
+        <Button className='bg-[#02ADEF] hover:bg-[#02ADEF]/90' type='primary'>
+          <UploadOutlined className='mr-2 h-4 w-4' />
+          Submit Additional Info
+        </Button>
       </div>
       <CarClaim />
     </div>

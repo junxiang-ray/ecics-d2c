@@ -1,5 +1,24 @@
+import { PolicyType } from '@/libs/types/policy';
+
+import CarOutlined from '@/assets/icons/add-on/car-outlined.svg';
+import UserGroupOutlined from '@/assets/icons/add-on/user-group-outlined.svg';
+import MotorcycleOutlined from '@/assets/icons/add-on/motorcycle-outlined.svg';
+import HomeOutlined from '@/assets/icons/add-on/home-outlined.svg';
+import BriefcaseOutlined from '@/assets/icons/briefcase-outlined.svg';
+
 import CheckCircleOutlined from '@/assets/icons/check-circle.svg';
 import CloseCircleOutlined from '@/assets/icons/close-circle-outlined.svg';
+
+export const CLAIM_POLICY_TYPE_ICON: Record<
+  Exclude<PolicyType, 'all'>,
+  React.FC<React.SVGProps<SVGSVGElement>>
+> = {
+  car: CarOutlined,
+  motorcycle: MotorcycleOutlined,
+  maid: UserGroupOutlined,
+  home: HomeOutlined,
+  travel: BriefcaseOutlined,
+};
 
 export const CLAIM_PROGRESS = {
   SUBMITTED: 'submitted',
