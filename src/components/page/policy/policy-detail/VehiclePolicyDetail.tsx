@@ -1,4 +1,5 @@
 import { Policy, PolicyStatus, PolicyTag } from '@/libs/types/policy';
+import { formatNumber } from '@/libs/utils/utils';
 import { formatDateString } from '@/libs/utils/dayjs';
 import { getPolicyStatusTag } from '@/libs/utils/policy';
 
@@ -34,7 +35,7 @@ const VehiclePolicyDetail = ({ data }: Props): JSX.Element | null => {
   ): JSX.Element => {
     return (
       <div>
-        <label className='mb-1.5 block font-body text-sm font-medium text-gray-700'>
+        <label className='font-body mb-1.5 block text-sm font-medium text-gray-700'>
           {label}
         </label>
         <p
@@ -60,7 +61,7 @@ const VehiclePolicyDetail = ({ data }: Props): JSX.Element | null => {
         {row('Plan Type', data.plan?.plan_name)}
         {row('Scheme', data.scheme)}
         {row('Intermediary Name', data.intermediary_name)}
-        {row('Premium', data.premium)}
+        {row('Premium', `$${formatNumber(data.premium, 2, true)}`)}
         {row('Policy Status', renderTags(data.policy_status))}
         {row('Tags', renderTags(undefined, data.tags))}
       </div>

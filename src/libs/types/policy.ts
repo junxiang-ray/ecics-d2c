@@ -65,16 +65,16 @@ type Maid = MaidInfo &
 type SubCoverageDetail = {
   letter: string;
   name: string;
-  amount: string;
+  amount?: number;
   notes?: string;
 };
 
 type CoverageDetail = {
   id: number;
   name: string;
-  amount: string;
+  amount?: number;
   notes?: string;
-  subDetails?: SubCoverageDetail[];
+  sub_details?: SubCoverageDetail[];
 };
 
 export type Policy = {
@@ -82,8 +82,10 @@ export type Policy = {
   policy_no: string;
   policy_type: PolicyType;
   policy_type_name: string;
+  policy_name: string;
   start_date: string;
   end_date: string;
+  expire_date: string;
   issue_date: string;
   plan: Plan;
   scheme: string;

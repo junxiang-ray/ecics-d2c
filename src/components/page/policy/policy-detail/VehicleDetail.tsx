@@ -16,7 +16,7 @@ const VehicleDetail = ({ data }: Props): JSX.Element | null => {
   ): JSX.Element => {
     return (
       <div>
-        <label className='mb-1.5 block font-body text-sm font-medium text-gray-700'>
+        <label className='font-body mb-1.5 block text-sm font-medium text-gray-700'>
           {label}
         </label>
         <p className='font-body text-base font-semibold text-gray-900 opacity-80'>
@@ -33,13 +33,13 @@ const VehicleDetail = ({ data }: Props): JSX.Element | null => {
       icon={<CarOutlined width='21' height='21' />}
     >
       <>
-        <h3 className='mb-4 font-heading text-base font-semibold text-gray-900'>
+        <h3 className='font-heading mb-4 text-base font-semibold text-gray-900'>
           Vehicle Information
         </h3>
         <div className='grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2'>
           {row('Registration Number', 'registration_no')}
           {row('Make / Model', 'vehicle_make')}
-          {row('Chassis Number', 'chasis_number')}
+          {row('Chassis Number', 'chassis_no')}
           {row('Engine / Motor Number', 'engine_no')}
           {row('Capacity', 'engine_capacity')}
           {row('Registration Year', 'first_registered_year')}

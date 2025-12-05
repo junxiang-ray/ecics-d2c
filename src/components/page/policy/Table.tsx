@@ -115,7 +115,7 @@ const Table = (): JSX.Element => {
         <div className='flex flex-nowrap items-center gap-2'>
           <CalendarOutlined className='text-gray-400' width='14' height='14' />
           <span className='leading-none'>
-            {formatDateString(row.end_date, 'YYYY-MM-DD', 'DD MMM YYYY')}
+            {formatDateString(row.expire_date, 'YYYY-MM-DD', 'DD MMM YYYY')}
           </span>
         </div>
       ),

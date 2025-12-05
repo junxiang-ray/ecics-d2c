@@ -82,7 +82,7 @@ const ClaimInfo = (): JSX.Element => {
               </div>
             </div>
             <div className='flex items-center space-x-2'>
-              <DolarOutlined className='h-4 w-4 text-gray-500' />
+              <CalendarOutlined className='h-4 w-4 text-gray-500' />
               <div>
                 <label className='font-body text-sm text-gray-600'>
                   Incident Date
