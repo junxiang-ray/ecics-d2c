@@ -31,6 +31,31 @@ export const useGenerateHomeContentsQuote = () => {
   });
 };
 
+export const useGetProductDetails = () => {
+  const getProductDetails = async () => {
+    console.log('I am Here');
+    const res = await homecontents.getProductDetails();
+    return res.data.data;
+  };
+
+  return useMutation({
+    mutationFn: getProductDetails,
+    mutationKey: ['get-homecontent-details'],
+  });
+};
+
+export const useGetPremiumCalc = () => {
+  const getPremiumCalc = async (data: HomeContentQuoteCreationPayload) => {
+    const res = await homecontents.getPremiumCalc(data);
+    return res.data.data;
+  };
+
+  return useMutation({
+    mutationFn: getPremiumCalc,
+    mutationKey: ['get-homecontent-calc'],
+  });
+};
+
 export const useSaveHomeContentQuote = () => {
   const saveHomeContentQuote = async ({
     key,
@@ -50,6 +75,6 @@ export const useSaveHomeContentQuote = () => {
   };
   return useMutation({
     mutationFn: saveHomeContentQuote,
-    mutationKey: ['save-maid-quote'],
+    mutationKey: ['save-homecontent-quote'],
   });
 };

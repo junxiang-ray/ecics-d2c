@@ -15,6 +15,13 @@ export default {
   generateHomeContentQuote(data: HomeContentQuoteCreationPayload) {
     return baseClient.post<HomeContentResponse>('/b2c_hc/quote', data);
   },
+  getProductDetails() {
+    return baseClient.post<HomeContentResponse>('/b2c_hc/details');
+  },
+  getPremiumCalc(data: HomeContentQuoteCreationPayload) {
+    return baseClient.post<HomeContentResponse>('/b2c_hc/calc', data);
+  },
+
   saveHomeContentQuote(key: string, data: any, is_sending_email: boolean) {
     const formatData = {
       data: { ...data },

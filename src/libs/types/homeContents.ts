@@ -159,7 +159,7 @@ export interface CustomizationData {
   renovationCoverageValue: string;
 }
 
-///ENDPOINTS
+///ENDPOIN
 export interface HomeContentResponse {
   message: string;
   data: any;
@@ -170,6 +170,8 @@ export interface HomeContentQuoteCreationPayload {
   homeType: string;
   homeOwnership: string;
   unitType: string;
+  homeContents: string;
+  renovations: string;
   startDate: string;
   promoCode: string;
   redirectUrl: string;

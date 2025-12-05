@@ -98,31 +98,10 @@ export const calculateCoveragePremium = (
 };
 
 // Get base plan price based on promo status and policy duration
-export const getBasePlanPrice = (
-  plan: InsurancePlan,
-  promoStatus: PromoCodeStatus,
-  policyDuration?: string,
-): number => {
+export const getBasePlanPrice = (plan: InsurancePlan): number => {
   if (!plan) return 0;
 
-  let basePrice = plan.originalPrice;
-
-  // Apply duration discount for 3-year policies
-  if (policyDuration) {
-    basePrice = adjustPremiumForDuration(basePrice, policyDuration);
-  }
-
-  const hasValidPromo =
-    promoStatus?.status === 'applied' && promoStatus.discount;
-
-  if (hasValidPromo) {
-    // Apply promo discount to already adjusted price
-    const discountPercentage = promoStatus.discount || 0;
-    return basePrice * (1 - discountPercentage / 100);
-  } else {
-    // No promo applied, use adjusted price
-    return basePrice;
-  }
+  return plan.originalPrice;
 };
 
 // Calculate total premium including coverage, add-ons and promo discounts
@@ -137,7 +116,7 @@ export const calculateTotalPremium = (
 
   // Get base plan price (original price with duration and promo discounts if applicable)
   // Policy duration will be determined by plan structure in the future
-  let total = getBasePlanPrice(selectedPlan, promoStatus, policyDuration);
+  let total = getBasePlanPrice(selectedPlan);
 
   // Add coverage-based premium
   const coveragePremium = calculateCoveragePremium(customizationData);

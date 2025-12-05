@@ -31,6 +31,11 @@ export const PlanCard = memo<PlanCardProps>(
       return `$${amount.toLocaleString()}`;
     }, []);
 
+    const formatPremium = useCallback((amount: number | undefined | null) => {
+      if (typeof amount !== 'number' || isNaN(amount)) return '$0';
+      return `$${amount.toFixed(2)}`;
+    }, []);
+
     const handleSelect = useCallback(() => {
       if (id) onSelect(id);
     }, [id, onSelect]);
@@ -99,12 +104,12 @@ export const PlanCard = memo<PlanCardProps>(
           {/* Price & Savings */}
           <div className='flex flex-wrap items-center gap-2'>
             <span className='text-3xl font-bold text-[#02ADEF]'>
-              {formatCurrency(displayPrice)}
+              {formatPremium(displayPrice)}
             </span>
 
             {promoStatus?.status === 'applied' && promoStatus.discount && (
               <span className='text-lg text-gray-400 line-through'>
-                {formatCurrency(originalPrice)}
+                {formatPremium(originalPrice)}
               </span>
             )}
 

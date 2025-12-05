@@ -538,9 +538,13 @@ export async function getQuoteForHomeContent(
       unitType: data.unitType,
       startDate: data.startDate,
       promoCode: data.promoCode,
+      coverageHomeContents: data.homeContents,
+      coverageRenovation: data.renovations,
       redirectUrl: '',
       returnUrl: '',
     };
+
+    logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
 
     const getQuoteRes = await handleApiCallToISP(
       `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/quote`,

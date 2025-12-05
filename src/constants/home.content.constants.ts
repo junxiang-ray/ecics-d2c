@@ -36,13 +36,18 @@ export const HOME_TYPES: HomeType[] = [
 ];
 
 export const UNIT_TYPES: UnitType[] = [
-  { value: 'studio', label: '1-room/Studio', homeTypes: ['hdb', 'condo'] },
-  { value: '2-room', label: '2-Room', homeTypes: ['hdb', 'condo'] },
-  { value: '3-room', label: '3-Room', homeTypes: ['hdb', 'condo'] },
-  { value: '4-room', label: '4-Room', homeTypes: ['hdb', 'condo'] },
-  { value: '5-room', label: '5-Room', homeTypes: ['hdb', 'condo'] },
+  { value: 'Landed', label: 'Landed', homeTypes: ['landed'] },
   {
-    value: 'executive',
+    value: '1-Room/Studio',
+    label: '1-room/Studio',
+    homeTypes: ['hdb', 'condo'],
+  },
+  { value: '2-Room', label: '2-Room', homeTypes: ['hdb', 'condo'] },
+  { value: '3-Room', label: '3-Room', homeTypes: ['hdb', 'condo'] },
+  { value: '4-Room', label: '4-Room', homeTypes: ['hdb', 'condo'] },
+  { value: '5-Room', label: '5-Room', homeTypes: ['hdb', 'condo'] },
+  {
+    value: 'Executive/Multi-generation',
     label: 'Executive/Multi-generation',
     homeTypes: ['hdb'],
   },
@@ -132,38 +137,38 @@ export const PLANS: InsurancePlan[] = [
       'Most popular',
     ],
   },
-  {
-    id: '5-year',
-    name: '5 Year',
-    originalPrice: 1000, // 3 years worth at $225/year (10% discount applied)
-    discountedPrice: 1000,
-    discount: 20, // 10% discount already applied to the price
-    isPopular: false,
-    coverage: {
-      contents: 50000,
-      personalAccident: 30000,
-      personalLiability: 1000000,
-      alternativeAccommodation: 5000,
-      lossOfRent: 3000,
-      tenantLiability: 20000,
-    },
-    features: [
-      'Contents coverage up to $50,000',
-      'Personal accident protection up to $30,000',
-      'Personal liability coverage up to $1,000,000',
-      'Alternative accommodation up to $5,000',
-      'Loss of rent coverage up to $3,000',
-      'Priority customer support',
-      'Express claims processing',
-      'Worldwide coverage for personal belongings',
-    ],
-    highlights: [
-      'Best value',
-      'Save 10%',
-      'Long-term protection',
-      'Most popular',
-    ],
-  },
+  // {
+  //   id: '5-year',
+  //   name: '5 Year',
+  //   originalPrice: 1000, // 3 years worth at $225/year (10% discount applied)
+  //   discountedPrice: 1000,
+  //   discount: 20, // 10% discount already applied to the price
+  //   isPopular: false,
+  //   coverage: {
+  //     contents: 50000,
+  //     personalAccident: 30000,
+  //     personalLiability: 1000000,
+  //     alternativeAccommodation: 5000,
+  //     lossOfRent: 3000,
+  //     tenantLiability: 20000,
+  //   },
+  //   features: [
+  //     'Contents coverage up to $50,000',
+  //     'Personal accident protection up to $30,000',
+  //     'Personal liability coverage up to $1,000,000',
+  //     'Alternative accommodation up to $5,000',
+  //     'Loss of rent coverage up to $3,000',
+  //     'Priority customer support',
+  //     'Express claims processing',
+  //     'Worldwide coverage for personal belongings',
+  //   ],
+  //   highlights: [
+  //     'Best value',
+  //     'Save 10%',
+  //     'Long-term protection',
+  //     'Most popular',
+  //   ],
+  // },
 ];
 
 export const INSURER_OPTIONS = [
@@ -210,24 +215,54 @@ export const COVERAGE_PRICING = {
 } as const;
 
 export const BUILDING_COVERAGE_OPTIONS: CoverageOption[] = [
-  { value: '100000', label: '$100,000', amount: 100000 },
-  { value: '150000', label: '$150,000', amount: 150000 },
   { value: '200000', label: '$200,000', amount: 200000 },
-  { value: '250000', label: '$250,000', amount: 250000 },
   { value: '300000', label: '$300,000', amount: 300000 },
+  { value: '400000', label: '$400,000', amount: 400000 },
+  { value: '500000', label: '$500,000', amount: 500000 },
+  { value: '600000', label: '$600,000', amount: 600000 },
+  { value: '700000', label: '$700,000', amount: 700000 },
+  { value: '800000', label: '$800,000', amount: 800000 },
+  { value: '900000', label: '$900,000', amount: 900000 },
+  { value: '1000000', label: '$1,000,000', amount: 1000000 },
 ];
 
 export const HOME_CONTENT_COVERAGE_OPTIONS: CoverageOption[] = [
-  { value: '30000', label: '$30,000', amount: 30000 },
+  { value: '40000', label: '$40,000', amount: 40000 },
   { value: '50000', label: '$50,000', amount: 50000 },
-  { value: '75000', label: '$75,000', amount: 75000 },
+  { value: '60000', label: '$60,000', amount: 60000 },
+  { value: '70000', label: '$70,000', amount: 70000 },
+  { value: '80000', label: '$80,000', amount: 80000 },
+  { value: '90000', label: '$90,000', amount: 90000 },
   { value: '100000', label: '$100,000', amount: 100000 },
+  { value: '110000', label: '$110,000', amount: 110000 },
+  { value: '120000', label: '$120,000', amount: 120000 },
+  { value: '130000', label: '$130,000', amount: 130000 },
+  { value: '140000', label: '$140,000', amount: 140000 },
   { value: '150000', label: '$150,000', amount: 150000 },
+  { value: '160000', label: '$160,000', amount: 160000 },
+  { value: '170000', label: '$170,000', amount: 170000 },
+  { value: '180000', label: '$180,000', amount: 180000 },
+  { value: '190000', label: '$190,000', amount: 190000 },
+  { value: '200000', label: '$200,000', amount: 200000 },
 ];
 
 export const RENOVATION_COVERAGE_OPTIONS: CoverageOption[] = [
-  { value: '10000', label: '$10,000', amount: 10000 },
-  { value: '25000', label: '$25,000', amount: 25000 },
+  { value: '30000', label: '$30,000', amount: 30000 },
+  { value: '40000', label: '$40,000', amount: 40000 },
   { value: '50000', label: '$50,000', amount: 50000 },
-  { value: '75000', label: '$75,000', amount: 75000 },
+  { value: '60000', label: '$60,000', amount: 60000 },
+  { value: '70000', label: '$70,000', amount: 70000 },
+  { value: '80000', label: '$80,000', amount: 80000 },
+  { value: '90000', label: '$90,000', amount: 90000 },
+  { value: '100000', label: '$100,000', amount: 100000 },
+  { value: '110000', label: '$110,000', amount: 110000 },
+  { value: '120000', label: '$120,000', amount: 120000 },
+  { value: '130000', label: '$130,000', amount: 130000 },
+  { value: '140000', label: '$140,000', amount: 140000 },
+  { value: '150000', label: '$150,000', amount: 150000 },
+  { value: '160000', label: '$160,000', amount: 160000 },
+  { value: '170000', label: '$170,000', amount: 170000 },
+  { value: '180000', label: '$180,000', amount: 180000 },
+  { value: '190000', label: '$190,000', amount: 190000 },
+  { value: '200000', label: '$200,000', amount: 200000 },
 ];

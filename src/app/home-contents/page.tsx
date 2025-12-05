@@ -1,38 +1,61 @@
 'use client';
+
 import { LoadingOutlined } from '@ant-design/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useMemo } from 'react';
 
 import { ROUTES } from '@/constants/routes';
-import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
-import { clearQuote, clearMatchedMakeModel } from '@/redux/slices/quote.slice';
-import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
-import { useEffect } from 'react';
 import { useAppDispatch } from '@/redux/store';
 import { saveToLocalStorage } from '@/libs/utils/utils';
+import { useGetProductDetails } from '@/hook/insurance/homeContentQuote';
 
 export default function HomeContentPage() {
   const router = useRouter();
-  // const basePath = ROUTES.INSURANCE_HOMECONTENTS.QUOTE_DETAILS;
-  const basePath = ROUTES.HOMECONTENT.QUOTE_DETAIL;
-  const queryParams = new URLSearchParams();
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    sessionStorage.clear();
-    localStorage.clear();
-  }, []);
-
   const searchParams = useSearchParams();
+  const { mutateAsync: getProductDetails } = useGetProductDetails();
+
+  const basePath = ROUTES.HOMECONTENT.QUOTE_DETAIL;
+
   const promoCode = searchParams.get('promo_code') || '';
   const partnerCode = searchParams.get('partner_code') || '';
-  saveToLocalStorage({ promo_code: promoCode, partner_code: partnerCode });
-  if (promoCode) queryParams.append('promo_code', promoCode);
-  if (partnerCode) queryParams.append('partner_code', partnerCode);
 
-  const queryString = queryParams.toString();
-  console.log(`${basePath}${queryString ? `?${queryString}` : ''}`);
-  router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);
-  ///Reset all stored info
+  const queryString = useMemo(() => {
+    const params = new URLSearchParams();
+    if (promoCode) params.append('promo_code', promoCode);
+    if (partnerCode) params.append('partner_code', partnerCode);
+    return params.toString();
+  }, [promoCode, partnerCode]);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        sessionStorage.clear();
+        localStorage.clear();
+
+        saveToLocalStorage({
+          promo_code: promoCode,
+          partner_code: partnerCode,
+        });
+
+        const response = await getProductDetails();
+        console.log(`response from details: ${JSON.stringify(response)}`);
+
+        router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);
+      } catch (error) {
+        console.error('Failed to get product details:', error);
+      }
+    };
+
+    init();
+  }, [
+    getProductDetails,
+    router,
+    basePath,
+    queryString,
+    promoCode,
+    partnerCode,
+  ]);
 
   return (
     <div className='flex h-screen w-full items-center justify-center'>

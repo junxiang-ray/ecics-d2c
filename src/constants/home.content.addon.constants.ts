@@ -3,8 +3,8 @@ import { AddOn } from '../libs/types/homeContents';
 // Add-ons for Home Content Insurance
 export const ADD_ONS: AddOn[] = [
   {
-    id: 'valuables-extension',
-    name: 'Valuables Extension',
+    id: 'building',
+    name: 'Building Coverage',
     price: 80,
     description:
       'Extended coverage for jewelry, watches, cameras, and other high-value items.',

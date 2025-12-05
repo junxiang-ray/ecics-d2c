@@ -28,13 +28,16 @@ import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPag
 
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import { PLANS } from '@/constants/home.content.constants';
-import { useGenerateHomeContentsQuote } from '@/hook/insurance/homeContentQuote';
+import {
+  useGenerateHomeContentsQuote,
+  useGetPremiumCalc,
+  useGetProductDetails,
+} from '@/hook/insurance/homeContentQuote';
 
 import Step1QuoteForm from './Step1QuoteForm';
 import Step2PersonalInfo from './Step2PersonalInfo';
 import Step3Summary from './Step3Summary';
 import Step4Success from './Step4Success';
-import { ProgressStepper } from '@/components/new-ui/StepsCard';
 import {
   INITIAL_PERSONAL_INFO,
   INITIAL_PROMO_STATUS,
@@ -46,12 +49,9 @@ import {
   useRequestLoginHomeContent,
 } from '@/hook/auth/login-home-content';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useAppSelector } from '@/redux/store';
-import dayjs from 'dayjs';
 import { GetUserInfoFromSingpassService } from '@/app/api/v1/singpass/user-info/[product]/singpass-get-user-info.service';
 import { DATA_FROM_SINGPASS } from '@/constants/general.constant';
-import Item from 'antd/es/list/Item';
 import { useSaveProposal } from '@/hook/insurance/quote';
 
 export default function QuoteDetailPage() {
@@ -85,8 +85,10 @@ export default function QuoteDetailPage() {
   }, [currentStep]);
 
   //generate quote
-  const { mutateAsync: generateHomeContentQuote, isPending } =
-    useGenerateHomeContentsQuote();
+  // const { mutateAsync: generateHomeContentQuote, isPending } =
+  //   useGenerateHomeContentsQuote();
+
+  const { mutateAsync: getPremiumCalc, isPending } = useGetPremiumCalc();
 
   useEffect(() => {
     const keyQuote = generateKeyAndAttachToUrl(initKey);
@@ -99,6 +101,23 @@ export default function QuoteDetailPage() {
 
   // UI state
   const [showPlans, setShowPlans] = useState(false);
+  const [allplans, setAllPlans] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const storedData = localStorage.getItem('plans');
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+
+          console.log('storedData =', parsedData);
+
+          return PLANS;
+        }
+      } catch (error) {
+        console.error('Failed to parse saved form data:', error);
+      }
+    }
+    return PLANS;
+  });
   const [showCustomization, setShowCustomization] = useState(false);
   const [showAddOns, setShowAddOns] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -129,8 +148,10 @@ export default function QuoteDetailPage() {
     if (typeof window !== 'undefined') {
       try {
         const storedData = localStorage.getItem('quoteFormData');
+        console.log('setting Form Data now');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
+          console.log('parsing Form Data now');
 
           console.log('storedData =', parsedData);
 
@@ -174,7 +195,7 @@ export default function QuoteDetailPage() {
     setShowPlans(false);
     setShowCustomization(false);
     setShowAddOns(false);
-    setFormData(INITIAL_FORM_DATA);
+    // setFormData(INITIAL_FORM_DATA);
   }, [formData]);
 
   //#endregion
@@ -292,8 +313,8 @@ export default function QuoteDetailPage() {
         // Home type logic
         if (quoteField === 'homeType') {
           if (value === 'landed') newData.unitType = '';
-          else if (value === 'hdb') newData.unitType = '4-room';
-          else if (value === 'condo') newData.unitType = '3-room';
+          else if (value === 'hdb') newData.unitType = '4-Room';
+          else if (value === 'condo') newData.unitType = '3-Room';
         }
 
         if (quoteField === 'quoteStep') {
@@ -524,15 +545,24 @@ export default function QuoteDetailPage() {
       unitType: formData.unitType,
       startDate: formData.policyStartDate,
       promoCode: formData.promoCode,
+      renovations: formData.coverageOptions.renovationCoverageValue,
+      homeContents: formData.coverageOptions.homeContentCoverageValue,
       redirectUrl: '',
       returnUrl: '',
     };
 
-    generateHomeContentQuote(payload)
+    console.log(`payload set to quote = ${JSON.stringify(payload)}`);
+
+    getPremiumCalc(payload)
       .then((res) => {
+        console.log(`res = ${JSON.stringify(res)}`);
+        // const returns = JSON.parse(res);
+        // console.log(`cells = ${JSON.stringify(res.data.cells)}`);
+        // setAllPlans(res);
         setShowPlans(true);
         setIsLoading(false);
         updateFormData('quoteStep', '1');
+        setAllPlans(res);
 
         const timeoutId = setTimeout(() => {
           const scrollTimeoutId = setTimeout(() => {
@@ -708,10 +738,12 @@ export default function QuoteDetailPage() {
   }, [scrollToElement]);
   //#endregion
 
+  //#region STEPS
   const steps = [
     <Step1QuoteForm
       key='Step 1'
       formData={formData}
+      planData={allplans}
       updateFormData={updateFormData}
       resetFormData={resetQuoteForm}
       errors={errors}
@@ -785,6 +817,7 @@ export default function QuoteDetailPage() {
       setInsuredInfoOpen={setInsuredInfoOpen}
     />,
   ];
+  //#endregion
 
   return (
     <QuoteDetail

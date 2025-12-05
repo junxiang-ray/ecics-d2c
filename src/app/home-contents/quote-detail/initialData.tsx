@@ -15,15 +15,15 @@ const TOMORROW_DATE = new Date(Date.now() + 86400000)
 const INITIAL_FORM_DATA: QuoteForm = {
   ownership: 'owner',
   homeType: 'hdb',
-  unitType: '4-room',
+  unitType: '4-Room',
   policyStartDate: TOMORROW_DATE,
   promoCode: '',
   selectedPlan: '',
   coverageOptions: {
     hdbFireInsurance: 'yes', // Default to "Yes" - most common case
     building: '100000', // Default $100,000 (smallest option)
-    homeContentCoverageValue: '30000', // Default $30,000 (smallest option)
-    renovationCoverageValue: '10000', // Default $10,000 (smallest option)
+    homeContentCoverageValue: '40000', // Default $30,000 (smallest option)
+    renovationCoverageValue: '30000', // Default $10,000 (smallest option)
   },
   addons: [],
   quoteStep: 0,

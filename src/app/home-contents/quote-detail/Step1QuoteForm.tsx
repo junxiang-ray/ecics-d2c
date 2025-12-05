@@ -11,6 +11,7 @@ import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
   CustomizationData,
+  InsurancePlan,
   PromoCodeStatus,
   QuoteForm,
   SelectedAddOn,
@@ -51,6 +52,7 @@ import {
 
 interface Step1Props {
   formData: QuoteForm;
+  planData: InsurancePlan[];
   updateFormData: (field: keyof QuoteForm, value: string) => void;
   resetFormData: () => void;
   errors: Partial<QuoteForm>;
@@ -82,6 +84,7 @@ interface Step1Props {
 const Step1QuoteForm = memo<Step1Props>(
   ({
     formData,
+    planData,
     updateFormData,
     resetFormData,
     errors,
@@ -144,8 +147,8 @@ const Step1QuoteForm = memo<Step1Props>(
     }, [formData.policyStartDate]);
 
     const currentPlan = useMemo(() => {
-      if (!PLANS || !Array.isArray(PLANS) || !selectedPlan) return null;
-      return PLANS.find((p) => p.id === selectedPlan) || null;
+      if (!planData || !Array.isArray(planData) || !selectedPlan) return null;
+      return planData.find((p) => p.id === selectedPlan) || null;
     }, [selectedPlan]);
 
     const totalPremium = useMemo(() => {
@@ -563,8 +566,8 @@ const Step1QuoteForm = memo<Step1Props>(
             </div>
 
             <div className='mb-16 pt-4'>
-              <div className='mx-auto grid max-w-4xl grid-cols-1 items-start gap-8 md:grid-cols-3 md:gap-6 xl:gap-4'>
-                {PLANS.map((plan) => (
+              <div className='mx-auto grid max-w-4xl grid-cols-1 items-start gap-8 md:grid-cols-2 md:gap-6 xl:gap-4'>
+                {planData.map((plan) => (
                   <PlanCard
                     key={plan.id}
                     plan={plan}
