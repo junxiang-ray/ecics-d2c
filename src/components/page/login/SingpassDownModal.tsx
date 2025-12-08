@@ -64,12 +64,14 @@ export const SingpassDownModal = ({
           >
             Close
           </SecondaryButton>
-          <PrimaryButton
-            className={`${isMobile ? 'w-full' : 'md:w-40'} bg-brand-blue`}
-            onClick={onContinue}
-          >
-            Continue
-          </PrimaryButton>
+          {onContinue && (
+            <PrimaryButton
+              className={`${isMobile ? 'w-full' : 'md:w-40'} bg-brand-blue`}
+              onClick={onContinue}
+            >
+              Continue
+            </PrimaryButton>
+          )}
         </div>
       </div>
     </>
