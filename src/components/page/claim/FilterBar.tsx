@@ -1,17 +1,12 @@
 'use client';
 
 import { PolicyType } from '@/libs/types/policy';
-import {
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  FormEventHandler,
-} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@/hook/useDebounce';
 import {
-  ClaimContext,
+  QUERY_KEY,
   QueryValues,
+  useClaimContext,
 } from '@/components/contexts/ClaimLayoutContext';
 
 import { Input } from 'antd';
@@ -19,13 +14,18 @@ import InputDropdown, { ItemType } from '@/components/ui/form/inputdropdown';
 import SearchOutlined from '@/assets/icons/add-on/search-outlined.svg';
 
 const FilterBar = (): JSX.Element => {
-  const { selPolicyType, pushQuery } = useContext(ClaimContext);
+  const { selPolicyType, searchQuery, pushQuery } = useClaimContext();
 
-  const [inputSearch, setInputSearch] = useState<string>();
+  const [inputSearch, setInputSearch] = useState<string>(searchQuery);
   const inputSearchDebounce = useDebounce(inputSearch, 300);
 
   useEffect(() => {
-    pushQuery([{ key: 'query', value: inputSearchDebounce as QueryValues }]);
+    pushQuery([
+      {
+        key: QUERY_KEY.SEARCH_QUERY,
+        value: encodeURIComponent(inputSearchDebounce) as QueryValues,
+      },
+    ]);
   }, [inputSearchDebounce]);
 
   const dropdownItemPolicyTypes = useMemo<ItemType<PolicyType>[]>(
@@ -65,7 +65,7 @@ const FilterBar = (): JSX.Element => {
   );
 
   const onPolicyTypeChange = (item: ItemType<PolicyType>): void => {
-    if (item) pushQuery([{ key: 'type', value: item.value }]);
+    if (item) pushQuery([{ key: QUERY_KEY.POLICY_TYPE, value: item.value }]);
   };
 
   const onInputChange = (inputEl?: HTMLInputElement): void => {
@@ -87,8 +87,9 @@ const FilterBar = (): JSX.Element => {
             height='14'
           />
         }
+        defaultValue={searchQuery}
         maxLength={150}
-        className='h-[31.5px] border-0 bg-[#f3f3f5] text-[12.25px] leading-none focus-visible:ring-[3px] focus-visible:ring-red-400 [&_input::placeholder]:text-gray-500'
+        className='border-0 bg-[#f3f3f5] py-2 text-[12.25px] leading-none [&_input::placeholder]:text-gray-500'
         placeholder='Search claims'
         onInput={(evt: unknown) =>
           onInputChange((evt as KeyboardEvent)?.target as HTMLInputElement)

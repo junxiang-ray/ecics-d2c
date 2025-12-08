@@ -1,10 +1,13 @@
 'use client';
 
-import { ClaimSummary, ClaimStatus } from '@/libs/types/claim';
+import { ClaimStatus, ClaimSummary } from '@/libs/types/claim';
 
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ClaimContext } from '@/components/contexts/ClaimLayoutContext';
+import {
+  QUERY_KEY,
+  useClaimContext,
+} from '@/components/contexts/ClaimLayoutContext';
 
 import { Tabs } from 'antd';
 
@@ -17,7 +20,7 @@ type Tab = {
 };
 
 const TabBars = (): JSX.Element => {
-  const { summary, pushQuery } = useContext(ClaimContext);
+  const { summary, pushQuery } = useClaimContext();
   const params = useSearchParams();
 
   const tabItems = useRef<Tab[]>([
@@ -63,9 +66,10 @@ const TabBars = (): JSX.Element => {
   ).current;
 
   const onChange = (tabKey: TabKeys): void => {
-    if (tabKey === 'all') return pushQuery([{ key: 'status', value: '' }]);
+    if (tabKey === 'all')
+      return pushQuery([{ key: QUERY_KEY.CLAIM_STATUS, value: '' }]);
 
-    pushQuery([{ key: 'status', value: tabKey }]);
+    pushQuery([{ key: QUERY_KEY.CLAIM_STATUS, value: tabKey }]);
   };
 
   const tabLabelRender = (item: Tab): React.ReactNode => (
