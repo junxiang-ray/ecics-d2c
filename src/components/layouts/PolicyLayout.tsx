@@ -16,7 +16,16 @@ import {
   PolicyNo,
   QueryKeys,
   QueryValues,
+  QUERY_KEY,
 } from '@/components/contexts/PolicyLayoutContext';
+
+const QUERY_KEYS: QueryKeys[] = [
+  QUERY_KEY.POLICY_NO,
+  QUERY_KEY.POLICY_TYPE,
+  QUERY_KEY.POLICY_STATUS,
+  QUERY_KEY.POLICY_TAGS,
+  QUERY_KEY.SEARCH_QUERY,
+];
 
 interface Props {
   children: React.ReactNode;
@@ -27,19 +36,22 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
   const searchParams = useSearchParams();
   const summaryRef = useRef<PolicySummary>({} as PolicySummary);
   const policyNo: PolicyNo = decodeURIComponent(
-    searchParams.get('no') ?? '',
+    searchParams.get(QUERY_KEY.POLICY_NO) ?? '',
   ) as unknown as PolicyNo;
+  const selPolicyType: PolicyType =
+    (searchParams.get(QUERY_KEY.POLICY_TYPE) as unknown as PolicyType) ?? 'all';
+  const searchQuery = decodeURIComponent(
+    searchParams.get(QUERY_KEY.SEARCH_QUERY) ?? '',
+  );
 
   const { data, isFetching } = usePolicies({
     policyNo: policyNo ?? null,
     policyStatus: searchParams.get('status') ?? '',
-    policyType: searchParams.get('type') ?? '',
+    policyType: selPolicyType,
     tags: searchParams.get('tags') ?? '',
-    queryStr: searchParams.get('query') ?? '',
+    queryStr: searchQuery,
   } as PolicyPayload);
 
-  const selPolicyType: PolicyType =
-    (searchParams.get('type') as unknown as PolicyType) ?? 'all';
   const policies = useMemo<Policy[]>(
     () => (data?.data?.results ?? []) as Policy[],
     [data],
@@ -59,14 +71,26 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
     );
   }, [policies, policyNo]);
 
-  const pushQuery = (
+  const appendQueryParams = (
     queryParams: { key: QueryKeys; value?: QueryValues }[] = [],
-    path?: string,
-  ): void => {
+  ): URLSearchParams => {
     const params = new URLSearchParams(searchParams);
     for (const { key, value } of queryParams)
       value ? params.set(key, value) : params.delete(key);
 
+    return new URLSearchParams(
+      (Array.from(params.entries()) as [QueryKeys, string][]).sort(
+        ([leftKey], [rightKey]) =>
+          QUERY_KEYS.indexOf(leftKey) - QUERY_KEYS.indexOf(rightKey),
+      ),
+    );
+  };
+
+  const pushQuery = (
+    queryParams: Parameters<typeof appendQueryParams>[0],
+    path?: string,
+  ): void => {
+    const params = appendQueryParams(queryParams);
     router.push(`${path ?? ''}?${params.toString()}`);
   };
 
@@ -74,6 +98,7 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
     <PolicyContext.Provider
       value={{
         selPolicyType,
+        searchQuery,
         loading: isFetching,
         policies,
         summary,

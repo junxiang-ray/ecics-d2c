@@ -2,9 +2,12 @@
 
 import { PolicySummary } from '@/libs/types/policy';
 
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { PolicyContext } from '@/components/contexts/PolicyLayoutContext';
+import {
+  QUERY_KEY,
+  usePolicyContext,
+} from '@/components/contexts/PolicyLayoutContext';
 
 import { Tabs } from 'antd';
 
@@ -17,7 +20,7 @@ type Tab = {
 };
 
 const TabBars = (): JSX.Element => {
-  const { summary, pushQuery } = useContext(PolicyContext);
+  const { summary, pushQuery } = usePolicyContext();
   const params = useSearchParams();
 
   const tabItems = useRef<Tab[]>([
@@ -55,26 +58,26 @@ const TabBars = (): JSX.Element => {
   const onChange = (tabKey: TabKeys): void => {
     if (tabKey === 'active')
       return pushQuery([
-        { key: 'status', value: 'active' },
-        { key: 'tags', value: '' },
+        { key: QUERY_KEY.POLICY_STATUS, value: 'active' },
+        { key: QUERY_KEY.POLICY_TAGS, value: '' },
       ]);
 
     if (tabKey === 'expired')
       return pushQuery([
-        { key: 'status', value: 'expired' },
-        { key: 'tags', value: '' },
+        { key: QUERY_KEY.POLICY_STATUS, value: 'expired' },
+        { key: QUERY_KEY.POLICY_TAGS, value: '' },
       ]);
 
     if (tabKey === 'all')
       return pushQuery([
-        { key: 'status', value: '' },
-        { key: 'tags', value: '' },
+        { key: QUERY_KEY.POLICY_STATUS, value: '' },
+        { key: QUERY_KEY.POLICY_TAGS, value: '' },
       ]);
 
     if (tabKey === 'pending_renewal')
       return pushQuery([
-        { key: 'status', value: '' },
-        { key: 'tags', value: 'pending_renewal' },
+        { key: QUERY_KEY.POLICY_STATUS, value: '' },
+        { key: QUERY_KEY.POLICY_TAGS, value: 'pending_renewal' },
       ]);
   };
 

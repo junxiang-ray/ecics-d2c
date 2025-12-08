@@ -5,17 +5,17 @@ import { ROUTES } from '@/constants/routes';
 import { ColumnsType as Columns } from 'antd/es/table';
 import { Policy, PolicyType } from '@/libs/types/policy';
 
-import { POLICY_TYPE_ICON, POLICY_TYPE_NAME } from '@/constants/policy';
+import { POLICY_TYPE_ICON } from '@/constants/policy';
 
 import { formatDateString } from '@/libs/utils/dayjs';
 import { formatNumber } from '@/libs/utils/utils';
 import { getPolicyStatusTag, getPolicyTypeName } from '@/libs/utils/policy';
 
 import { useRef } from 'react';
-import { useContext } from 'react';
 import {
-  PolicyContext,
+  QUERY_KEY,
   QueryValues,
+  usePolicyContext,
 } from '@/components/contexts/PolicyLayoutContext';
 
 import { Table as AntTable } from 'antd';
@@ -25,7 +25,7 @@ import Badge from '@/components/ui/Badge';
 import CalendarOutlined from '@/assets/icons/add-on/calendar-outlined.svg';
 
 const Table = (): JSX.Element => {
-  const { loading, policies, pushQuery } = useContext(PolicyContext);
+  const { loading, policies, pushQuery } = usePolicyContext();
 
   const getIcon = (policyType: PolicyType): React.ReactNode | null => {
     const SvgIcon = POLICY_TYPE_ICON[policyType as Exclude<PolicyType, 'all'>];
@@ -127,7 +127,7 @@ const Table = (): JSX.Element => {
       pushQuery(
         [
           {
-            key: 'no',
+            key: QUERY_KEY.POLICY_NO,
             value: encodeURIComponent(policy.policy_no) as QueryValues,
           },
         ],
