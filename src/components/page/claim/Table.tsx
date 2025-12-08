@@ -13,11 +13,12 @@ import { formatNumber } from '@/libs/utils/utils';
 import { getClaimStatusTag } from '@/libs/utils/claim';
 import { getPolicyTypeName } from '@/libs/utils/policy';
 
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 
 import {
-  ClaimContext,
+  QUERY_KEY,
   QueryValues,
+  useClaimContext,
 } from '@/components/contexts/ClaimLayoutContext';
 
 import { Table as AntTable } from 'antd';
@@ -27,7 +28,7 @@ import CalendarOutlined from '@/assets/icons/add-on/calendar-outlined.svg';
 import EyesOutlined from '@/assets/icons/renewal/eye-open.svg';
 
 const Table = (): JSX.Element => {
-  const { loading, claims, pushQuery } = useContext(ClaimContext);
+  const { loading, claims, pushQuery } = useClaimContext();
 
   const getIcon = (policyType: PolicyType): React.ReactNode | null => {
     const SvgIcon =
@@ -131,7 +132,7 @@ const Table = (): JSX.Element => {
       pushQuery(
         [
           {
-            key: 'no',
+            key: QUERY_KEY.CLAIM_NO,
             value: encodeURIComponent(claim.claim_no) as QueryValues,
           },
         ],

@@ -5,17 +5,21 @@ import { Claim, ClaimStatus, ClaimSummary } from '@/libs/types/claim';
 
 import { createContext, useContext } from 'react';
 
-export type QueryKeys = 'no' | 'status' | 'type' | 'query';
+export const QUERY_KEY = {
+  CLAIM_NO: 'no',
+  CLAIM_STATUS: 'status',
+  POLICY_TYPE: 'type',
+  SEARCH_QUERY: 'search_query',
+} as const;
+
+export type QueryKeys = (typeof QUERY_KEY)[keyof typeof QUERY_KEY];
 export type QueryValues = ClaimStatus | PolicyType | '';
 export type ClaimNo = Claim['claim_no'];
-
-interface Props {
-  children: React.ReactNode;
-}
 
 export type ContextValues = {
   loading: boolean;
   selPolicyType: PolicyType;
+  searchQuery: string;
   claims: Claim[];
   summary: ClaimSummary;
   claimDetail: Claim | null;
@@ -27,7 +31,7 @@ export type ContextValues = {
 
 export const ClaimContext = createContext<ContextValues>({} as ContextValues);
 
-export const useClaim = () => {
+export const useClaimContext = () => {
   const context = useContext(ClaimContext);
 
   if (!context)
