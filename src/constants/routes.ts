@@ -12,6 +12,7 @@ const createInsuranceRoutes = (basePath: string) => ({
 const createPortalRoutes = (basePath: string) => ({
   ROOT: basePath,
   LOGIN: `${basePath}/login`,
+  LOGOUT: `${basePath}/login?signout=true`,
   HOME: {
     ROOT: `${basePath}/home`,
   },

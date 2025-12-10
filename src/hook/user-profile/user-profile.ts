@@ -1,25 +1,42 @@
 import type { AxiosResponse } from 'axios';
-import { Address, MaritalStatus } from '@/libs/types/common';
-import { UserProfileUpdatePayload } from '@/libs/types/user-profile';
+import {
+  UserProfileResponse,
+  UserProfileUpdatePayload,
+} from '@/libs/types/user-profile';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import user from '@/api/base-service/user';
+import { decryptValue, parseJSON } from '@/libs/utils/secureStorage-utils';
+import { getCookie } from '@/libs/utils/utils';
+import { PortalAuthorization } from '@/libs/types/auth';
+import { COOKIE_NAME } from '@/constants/general.constant';
 
-export const useGetUserProfile = () => {
-  const fetchUserProfile = async (): Promise<AxiosResponse> => {
-    try {
-      const resp = await user.getUserProfile();
-      return resp?.data;
-    } catch (e) {
-      return {} as AxiosResponse;
-    }
+export const getNric = async (): Promise<string> => {
+  const decryptedStr = await decryptValue(
+    getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION) ?? '',
+    process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
+  );
+
+  if (!decryptedStr) return '';
+
+  return parseJSON<PortalAuthorization>(decryptedStr)?.nric ?? '';
+};
+
+export const useGetUserProfile = (enabled = true) => {
+  const fetchUserProfile = async (): Promise<UserProfileResponse> => {
+    const nric = await getNric();
+    if (!nric) throw new Error('Unauthorized!');
+
+    const resp = await user.getUserProfile(nric);
+    return resp?.data;
   };
 
   return useQuery({
     queryFn: fetchUserProfile,
-    queryKey: ['user_profile'],
-    enabled: true,
+    queryKey: ['user_profile', enabled],
+    enabled,
+    retry: false,
   });
 };
 
@@ -27,7 +44,8 @@ export const useUpdateUserInfo = () => {
   const updateUser = async (
     payload: UserProfileUpdatePayload,
   ): Promise<AxiosResponse> => {
-    const resp = await user.updateUserProfile(payload);
+    const nric = await getNric();
+    const resp = await user.updateUserProfile(nric, payload);
     return resp;
   };
 
@@ -39,7 +57,8 @@ export const useUpdateUserInfo = () => {
 
 export const useChangePassword = () => {
   const changePassword = async (password: string): Promise<AxiosResponse> => {
-    const resp = await user.changePassword(password);
+    const nric = await getNric();
+    const resp = await user.changePassword(nric, password);
     return resp;
   };
 

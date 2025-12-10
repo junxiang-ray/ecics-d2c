@@ -77,6 +77,8 @@ export const API_PRIVACY_POLICY_GET = '/privacy-policy';
 
 export const API_TERM_GET = '/term-and-condition';
 
+export const API_RETRIVE_NRIC_SINGPASS_PORTAL = 'singpass/retrieve-nric/portal';
+
 export const API_USER_PROFILE_GET = '/user';
 
 export const API_USER_PROFILE_UPDATE = '/user/update';

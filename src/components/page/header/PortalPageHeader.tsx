@@ -7,7 +7,6 @@ import { UserProfile } from '@/libs/types/user-profile';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { clearUser } from '@/redux/slices/portalUser.slice';
 
 import Link from 'next/link';
 import { Divider, Dropdown } from 'antd';
@@ -70,13 +69,10 @@ const PortalPageHeader = (): JSX.Element => {
     { type: 'divider' },
     {
       key: 'sign-out',
-      routerPath: ROUTES.PORTAL.LOGIN,
+      routerPath: ROUTES.PORTAL.LOGOUT,
       className: 'text-red-500',
       icon: <LogoutOutlined height='14' width='14' />,
       label: 'Sign Out',
-      onClick: () => {
-        // todo: Handle signout here.
-      },
     },
   ]).current;
 
@@ -107,7 +103,8 @@ const PortalPageHeader = (): JSX.Element => {
             className={`transition-bg flex w-full cursor-pointer flex-nowrap items-center gap-3.5 rounded-md px-3.5 py-2 text-sm text-gray-500 duration-200 hover:bg-gray-200 ${item.className ?? ''}`}
             onClick={(evt) => {
               evt?.preventDefault();
-              if (item.onClick) item.onClick();
+              if ('onClick' in item && typeof item.onClick === 'function')
+                item.onClick();
               setShowDropdown(false);
             }}
           >

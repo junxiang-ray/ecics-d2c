@@ -2,15 +2,15 @@
 
 import { ROUTES } from '@/constants/routes';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch } from '@/redux/store';
 import { useRequestSignInSingpass } from '@/hook/auth/login-portal';
 
-import { Button, Divider, Form } from 'antd';
+import { Button, Divider, Form, Spin } from 'antd';
 import {
   EyeInvisibleOutlined,
   EyeOutlined,
@@ -21,6 +21,10 @@ import MailOutlined from '@/components/icons/MailIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { SingpassDownModal } from '@/components/page/login/SingpassDownModal';
+import { removeCookie } from '@/libs/utils/utils';
+import { clearUser } from '@/redux/slices/portalUser.slice';
+import { useGetUserProfile } from '@/hook/user-profile/user-profile';
+import { COOKIE_NAME } from '@/constants/general.constant';
 
 const FORM_ITEM = {
   EMAIL: 'email',
@@ -41,7 +45,8 @@ type FormValues = Record<(typeof FORM_ITEM)[keyof typeof FORM_ITEM], string>;
 const LoginPage = (): JSX.Element => {
   const [form] = Form.useForm();
   const router = useRouter();
-  const singpassLoginMutation = useRequestSignInSingpass();
+  const searchParams = useSearchParams();
+  const signoutFlg = useRef(searchParams.get('signout')).current;
 
   const dispatch = useAppDispatch();
 
@@ -54,36 +59,57 @@ const LoginPage = (): JSX.Element => {
     formState: { errors },
   } = methods;
 
+  const [isVerifying, setIsVerifying] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [errMsg, setErrMsg] = useState<string | null>(null);
-  const [systemMaintain, setSystemMaintain] = useState(false);
-  const [isSingpassDown, setIsSingpassDown] = useState(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null); // todo:
+  const [singpassMaintain, setSingpassMaintain] = useState(false);
+
+  const isSignOut = signoutFlg === 'true';
+
+  const singpassLoginMutation = useRequestSignInSingpass({
+    onError: () => setSingpassMaintain(true),
+  });
+  const userProfileQuery = useGetUserProfile(!isSignOut);
 
   useEffect(() => {
-    const url = new URL(
-      'https://ecics-v2-dev.tdt.asia/maid/review-info-detail?code=v2-XIpouyRDeQlkKxNKo4AjyMdGlqhtZ5szuRRMeVUI&state=12505123a6b7f564a81957a46dd622ad',
-    );
-    console.log(`${url.origin}${url.pathname}`);
-  }, []);
+    let timeout: NodeJS.Timeout | undefined;
+    if (signoutFlg != null) {
+      timeout = setTimeout(() => {
+        router.push(ROUTES.PORTAL.LOGIN);
+        setIsVerifying(false);
+      }, 1500);
+
+      if (!isSignOut) return;
+
+      removeCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
+      dispatch(clearUser());
+    }
+    return () => clearTimeout(timeout);
+  }, [signoutFlg]);
+
+  useEffect(() => {
+    if (userProfileQuery.isSuccess) router.push(ROUTES.PORTAL.HOME.ROOT);
+  }, [userProfileQuery.isSuccess]);
+
+  useEffect(() => {
+    if (!userProfileQuery.isError) return;
+
+    removeCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
+    dispatch(clearUser());
+    setIsVerifying(false);
+  }, [userProfileQuery.isError]);
 
   const onSubmitSigninRenewal = (values: FormValues): Promise<void> => {
     // todo: Impl logic call Api login by email
     return new Promise((resolve, reject) => reject());
   };
 
-  const onRequestSignSingpass = (): void => {
-    // todo: Impl logic call Api singpass
-    // Temporary bypass the login and go straight into the home page.
-    setTimeout(() => {
-      router.push(ROUTES.PORTAL.HOME.ROOT);
-      setIsLoading(false);
-    }, 2000);
-  };
-
   const hideModalSingpassDown = useCallback<() => void>(
-    () => setIsSingpassDown(false),
+    () => setSingpassMaintain(false),
     [],
   );
+
+  const isShowBtnLoading = singpassLoginMutation.isPending;
 
   return (
     <>
@@ -101,20 +127,11 @@ const LoginPage = (): JSX.Element => {
           </p>
           <Button
             className='shadow- w-full rounded-lg bg-[#F4333D] py-5 text-center font-semibold text-white'
-            onClick={onRequestSignSingpass}
-            loading={singpassLoginMutation.isPending}
+            onClick={() => singpassLoginMutation.mutate()}
+            loading={isShowBtnLoading}
           >
             Log in with Singpass
           </Button>
-          {systemMaintain && (
-            <div className='mt-2 flex w-full flex-row items-start gap-2 rounded-lg border border-[#FFC9C9] bg-[#FEF2F2] p-2 font-normal text-[#E7000B]'>
-              <InfoCircleOutlined className='mt-1' />
-              <p>
-                SingPass is currently under maintenance. Please try again later
-                or use your Vehicle Registration Number and Password to login.
-              </p>
-            </div>
-          )}
           <div className='flex w-full flex-row items-center justify-center gap-6'>
             <Divider className='font-body my-2 border-gray-200 text-gray-500'>
               or continue with email
@@ -126,6 +143,7 @@ const LoginPage = (): JSX.Element => {
               layout='vertical'
               className='flex w-full flex-col gap-4'
               autoComplete='off'
+              disabled={isShowBtnLoading}
               onFinish={handleSubmit(onSubmitSigninRenewal)}
             >
               <Form.Item
@@ -193,7 +211,7 @@ const LoginPage = (): JSX.Element => {
               <PrimaryButton
                 htmlType='submit'
                 className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'
-                loading={singpassLoginMutation.isPending}
+                loading={isShowBtnLoading}
               >
                 Sign in
               </PrimaryButton>
@@ -203,9 +221,12 @@ const LoginPage = (): JSX.Element => {
       </div>
 
       <SingpassDownModal
-        visible={isSingpassDown}
+        visible={singpassMaintain}
         onExit={hideModalSingpassDown}
       />
+      {(isVerifying || userProfileQuery.isFetching) && (
+        <Spin className='pointer-events-none' fullscreen delay={150} />
+      )}
     </>
   );
 };

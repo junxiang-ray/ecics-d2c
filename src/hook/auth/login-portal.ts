@@ -1,93 +1,77 @@
-import type { AxiosResponse, AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 
-import { LoginData, LoginResponse, UserInfoPayload } from '@/libs/types/auth';
-import { saveToSessionStorage } from '@/libs/utils/utils';
+import { LoginResponse, UserInfoPayload } from '@/libs/types/auth';
+import { setCookie } from '@/libs/utils/utils';
 
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { encryptValue, stringifyJSON } from '@/libs/utils/secureStorage-utils';
 
-import auth from '@/api/singpass-renewal-service/auth';
-import { PRODUCT_NAME, ProductTypeWeb } from '@/app/api/constants/product';
-import {
-  DATA_FROM_SINGPASS,
-  ECICS_USER_INFO,
-} from '@/constants/general.constant';
+import auth from '@/api/singpass-portal-service/auth';
+import { COOKIE_NAME } from '@/constants/general.constant';
 
-export const useRequestSignIn = () => {
-  const requestSignIn = async (): Promise<LoginResponse> => {
-    const res = await auth.requestSignInSingpass(PRODUCT_NAME.PORTAL);
-    return res.data;
+export const useRequestSignInByMail = () => {
+  const requestSignIn = async (): Promise<any> => {
+    const resp = await new Promise<any>((resolve, reject) => {
+      setTimeout(() => resolve({ data: {}, message: '' }), 1000);
+    });
+    return resp;
   };
 
   return useMutation({
     mutationFn: requestSignIn,
     mutationKey: ['portal_login'],
-    // onSuccess: (data: LoginResponse) => {
-    //     const { url, state, nonce, code_verifier } = data.data;
-    //     const params = new URL(url).searchParams;
-    //     const redirectUrl =
-    //     // params.get('code');
-    //   // params.get('code');
-    //
-    //     // todo: extract the url
-    //     // window.location.href = url;
-    //     saveToSessionStorage({
-    //         state: state,
-    //         nonce: nonce,
-    //         code_verifier: code_verifier,
-    //     });
-    // },
-    // onError: (error: AxiosError<unknown>, variables: unknown, context: unknown) => {
-    //     options?.onError?.(error, variables, context);
-    // },
+    onSuccess: (data: any) => {
+      // todo: handle resp success;
+    },
+    onError: (
+      error: AxiosError<unknown>,
+      variables: unknown,
+      context: unknown,
+    ) => {
+      // todo: handle resp error;
+    },
   });
 };
 
-export const useRequestSignInSingpass = () => {
+export const useRequestSignInSingpass = (
+  options?: UseMutationOptions<any, unknown, void, unknown>,
+) => {
   const requestSignIn = async (): Promise<LoginResponse> => {
-    const res = await auth.requestSignInSingpass(PRODUCT_NAME.PORTAL);
+    const res = await auth.requestSignInSingpass();
     return res.data;
   };
 
   return useMutation({
     mutationFn: requestSignIn,
     mutationKey: ['portal_singpass_login'],
-    onSuccess: (data: LoginResponse) => {
+    onSuccess: async (data: LoginResponse) => {
       const { url, state, nonce, code_verifier } = data.data;
-      window.location.href = url;
-
-      // todo: Cache to cookie
-      saveToSessionStorage({
-        state: state,
-        nonce: nonce,
-        code_verifier: code_verifier,
+      const encrypted = await encryptValue(
+        stringifyJSON({ state, nonce, code_verifier }),
+        process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
+      );
+      setCookie<string>({
+        name: COOKIE_NAME.PORTAL_AUTHORIZATION,
+        value: encrypted,
+        expireAfter: { days: 30 },
       });
+      sessionStorage.setItem(COOKIE_NAME.PORTAL_AUTHORIZATION, encrypted);
+      window.location.href = url;
     },
-    // onError: (error: AxiosError<unknown>, variables: unknown, context: unknown) => {
-    //     options?.onError?.(error, variables, context);
-    // },
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context);
+    },
   });
 };
 
 export const useRetriveNricSingpass = () => {
-  const retriveNricSingpass = async ({
-    payload,
-  }: {
-    payload: UserInfoPayload;
-  }): Promise<AxiosResponse<{ data: unknown }>> => {
-    const res = await auth.retriveNricSingpass({ payload });
-    const resData = {
-      uinfin: {
-        value: res?.data?.data || '',
-      },
-    };
-    saveToSessionStorage({ [ECICS_USER_INFO]: JSON.stringify(resData) });
-    saveToSessionStorage({
-      [DATA_FROM_SINGPASS]: JSON.stringify(resData),
-    });
-    return res.data;
+  const retriveNricSingpass = async (payload: UserInfoPayload) => {
+    const resp = await auth.retriveNricSingpass(payload);
+    return resp.data;
   };
+
   return useMutation({
     mutationFn: retriveNricSingpass,
-    mutationKey: ['retrive-nric-singpass'],
+    mutationKey: ['retrive-nric-singpass-portal'],
   });
 };

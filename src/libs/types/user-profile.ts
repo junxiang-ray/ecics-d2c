@@ -1,4 +1,10 @@
 import { Address, Gender, PaginationMetaData } from '@/libs/types/common';
+import { UserInfo } from 'node:os';
+
+export type UserProfileResponse = {
+  data: UserProfile;
+  meta: any;
+};
 
 export type UserProfileUpdatePayload = {
   address: Address;

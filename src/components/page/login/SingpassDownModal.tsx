@@ -55,7 +55,7 @@ export const SingpassDownModal = ({
         </div>
         <div className='mt-[10px] flex flex-row items-center justify-between gap-[10px]'>
           <SecondaryButton
-            className={`${
+            className={`mx-auto ${
               isMobile
                 ? 'w-full'
                 : 'w-[10vw] min-w-[150px] px-4 py-2 md:w-[10vw]'
@@ -66,7 +66,7 @@ export const SingpassDownModal = ({
           </SecondaryButton>
           {onContinue && (
             <PrimaryButton
-              className={`${isMobile ? 'w-full' : 'md:w-40'} bg-brand-blue`}
+              className={`mx-auto ${isMobile ? 'w-full' : 'md:w-40'} bg-brand-blue`}
               onClick={onContinue}
             >
               Continue
