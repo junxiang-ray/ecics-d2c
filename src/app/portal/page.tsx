@@ -25,7 +25,7 @@ const Page = (): JSX.Element | null => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const mutation = useRetriveNricSingpass();
+  const retriveNRICMutation = useRetriveNricSingpass();
 
   const [auth, setAuth] = useState<Record<string, any>>();
   const singpassCodeRef = useRef(searchParams.get('code'));
@@ -50,7 +50,7 @@ const Page = (): JSX.Element | null => {
 
   useEffect(() => {
     router.push(pathname);
-    if (!auth || auth?.nric || mutation.isPending) return;
+    if (!auth || auth?.nric || retriveNRICMutation.isPending) return;
 
     if (singpassCodeRef.current == null && !auth.nric)
       singpassCodeRef.current = auth.code;
@@ -84,7 +84,7 @@ const Page = (): JSX.Element | null => {
       code_verifier: auth?.code_verifier,
     };
 
-    mutation.mutate(payload, {
+    retriveNRICMutation.mutate(payload, {
       onSuccess: async ({ data: nric } = { data: '', message: '' }) => {
         const verifiedAuth = { ...auth, code: payload.code, nric };
         const encrypted = await encryptValue(

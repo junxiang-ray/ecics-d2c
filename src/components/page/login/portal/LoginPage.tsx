@@ -21,10 +21,8 @@ import MailOutlined from '@/components/icons/MailIcon';
 import { PrimaryButton } from '@/components/ui/buttons';
 import { InputField } from '@/components/ui/form/inputfield';
 import { SingpassDownModal } from '@/components/page/login/SingpassDownModal';
-import { removeCookie } from '@/libs/utils/utils';
 import { clearUser } from '@/redux/slices/portalUser.slice';
 import { useGetUserProfile } from '@/hook/user-profile/user-profile';
-import { COOKIE_NAME } from '@/constants/general.constant';
 
 const FORM_ITEM = {
   EMAIL: 'email',
@@ -81,7 +79,6 @@ const LoginPage = (): JSX.Element => {
 
       if (!isSignOut) return;
 
-      removeCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
       dispatch(clearUser());
     }
     return () => clearTimeout(timeout);
@@ -94,7 +91,6 @@ const LoginPage = (): JSX.Element => {
   useEffect(() => {
     if (!userProfileQuery.isError) return;
 
-    removeCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
     dispatch(clearUser());
     setIsVerifying(false);
   }, [userProfileQuery.isError]);

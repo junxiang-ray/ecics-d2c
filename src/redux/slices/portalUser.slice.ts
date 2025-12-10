@@ -1,5 +1,7 @@
 import { UserProfile } from '@/libs/types/user-profile';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { removeCookie } from '@/libs/utils/utils';
+import { COOKIE_NAME } from '@/constants/general.constant';
 
 type UserState = {
   user: UserProfile | null;
@@ -38,7 +40,10 @@ const userSlice = createSlice({
         state.user = payload;
       }
     },
-    clearUser: () => ({ ...initialState }),
+    clearUser: () => {
+      removeCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
+      return { ...initialState };
+    },
   },
 });
 
