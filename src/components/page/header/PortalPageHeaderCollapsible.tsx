@@ -78,7 +78,7 @@ const MENU_ITEMS: MenuItem[] = [
     className: 'my-4',
   },
   {
-    key: ROUTES.PORTAL.LOGIN,
+    key: ROUTES.PORTAL.LOGOUT,
     label: <span className='text-red-500'>Sign Out</span>,
     icon: (
       <LogoutOutlined className='text-red-500' width='17.5' height='17.5' />
@@ -95,11 +95,6 @@ const PortalPageHeaderCollapsible = ({
   const activeKeys: string[] = [pathName.split('/').at(1) ?? ''];
 
   const onMenuClick = ({ keyPath }: { keyPath: string[] }): void => {
-    // if (keyPath?.at(0) === ROUTES.PORTAL.LOGIN) {
-    //   // todo: handle logic logout here
-    //   return;
-    // }
-
     onClose();
     onSelect(keyPath.join('/'));
   };

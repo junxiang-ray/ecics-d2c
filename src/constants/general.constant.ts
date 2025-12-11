@@ -24,3 +24,7 @@ export const PRODUCT_TYPE = 'product';
 
 //value title document screen payment success
 export const VALUE_TITLE_DOC = 'List of Authorised Workshops';
+
+export const COOKIE_NAME = {
+  PORTAL_AUTHORIZATION: 'pa',
+} as const;

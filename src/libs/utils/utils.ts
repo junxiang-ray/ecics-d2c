@@ -210,7 +210,7 @@ export const getPlanGroupPrefix = (
   planName: string,
   planType: PlanGroupType,
 ): string => {
-  const mapping = {
+  const mapping: any = {
     [PRODUCT_NAME.CAR]: [
       { keyword: 'Family NCD Builder', prefix: 'FNCD' },
       { keyword: 'Comprehensive', prefix: 'COM' },
@@ -230,7 +230,7 @@ export const getPlanGroupPrefix = (
     ],
   };
 
-  const matched = mapping[planType]?.find((item) =>
+  const matched = mapping[planType]?.find((item: any) =>
     planName.includes(item.keyword),
   );
   return matched ? matched.prefix : '';
@@ -330,7 +330,7 @@ export const setCookie = <T>({
   value,
   expireAfter,
 }: {
-  path: string;
+  path?: string;
   name: string;
   value: T;
   expireAfter?: Parameters<typeof getExpireTime>[0];
@@ -361,4 +361,16 @@ export const getCookie = <T>(name: string): T | undefined => {
     console.log('Failed to get item from cookies. Detail: ', e);
     return undefined;
   }
+};
+
+export const removeCookie = (name: string, path = '') => {
+  document.cookie = `_${name}=;path=/${path || ''};expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+};
+
+export const debounce = (callback: (...args: any[]) => void, due: number) => {
+  let timeout: NodeJS.Timeout | undefined;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => callback(...args), due);
+  };
 };

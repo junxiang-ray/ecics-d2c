@@ -19,6 +19,19 @@ export interface UserInfoPayload {
   code?: string;
 }
 
+export type PortalAuthorization = Partial<{
+  nric: string;
+  nonce: string;
+  code_verifier: string;
+  state: string;
+  code: string;
+}>;
+
+export type NRICResponse = {
+  data: string;
+  message: string;
+};
+
 export interface SavePersonalInfoPayload {
   key: string;
   is_sending_email?: boolean;

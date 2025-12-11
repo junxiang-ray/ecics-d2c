@@ -1,24 +1,16 @@
 import { UserProfile } from '@/libs/types/user-profile';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { removeCookie } from '@/libs/utils/utils';
+import { COOKIE_NAME } from '@/constants/general.constant';
 
 type UserState = {
   user: UserProfile | null;
+  meta: Record<string, any>;
 };
 
 const initialState: UserState = {
-  user: {
-    name: 'John Doe',
-    phone: '+6591234567',
-    email: 'john.doe@email.com',
-    gender: 'MALE',
-    marital_status: 'SINGLE',
-    address: {
-      address_line_1: '123 Orchard Road',
-      address_line_2: '#05-10 ABC Building',
-      address_line_3: 'Singapore',
-      postal_code: '238858',
-    },
-  } as UserProfile,
+  meta: { ignore: false },
+  user: null,
 };
 
 const userSlice = createSlice({
@@ -26,9 +18,11 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<UserProfile>) {
+      state.meta = { ignore: false };
       state.user = action.payload;
     },
     updateUser(state, action: PayloadAction<Partial<UserProfile>>) {
+      state.meta = { ignore: false };
       if (state.user && action.payload)
         state.user = {
           ...state.user,
@@ -37,10 +31,22 @@ const userSlice = createSlice({
           ) as Partial<UserProfile>),
         };
     },
-    clearUser: () => ({ ...initialState }),
+    syncUser(state, action) {
+      const payload = action.payload;
+      if (state.user === payload) {
+        state.meta = { ignore: null };
+      } else {
+        state.meta = { ignore: true };
+        state.user = payload;
+      }
+    },
+    clearUser: () => {
+      removeCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
+      return { ...initialState };
+    },
   },
 });
 
-export const { setUser, updateUser, clearUser } = userSlice.actions;
+export const { setUser, updateUser, syncUser, clearUser } = userSlice.actions;
 
 export default userSlice.reducer;
