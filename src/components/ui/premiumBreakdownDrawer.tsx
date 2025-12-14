@@ -264,7 +264,6 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                 Coverage
               </h3>
               <div className='space-y-3'>
-                {/* Building Coverage */}
                 {customizationData?.hdbFireInsurance === 'no' &&
                   customizationData?.building && (
                     <div className='flex items-start justify-between'>
@@ -286,7 +285,6 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                     </div>
                   )}
 
-                {/* Home Content Coverage */}
                 {customizationData?.homeContentCoverageValue && (
                   <div className='flex items-start justify-between'>
                     <div className='flex-1 pr-4'>
@@ -310,7 +308,6 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                   </div>
                 )}
 
-                {/* Renovation Coverage */}
                 {customizationData?.renovationCoverageValue && (
                   <div className='flex items-start justify-between'>
                     <div className='flex-1 pr-4'>
@@ -334,6 +331,51 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
               </div>
             </div>
           )}
+
+          {/* ISP Call - Coverage Section (from selectedPlan.coverage, amount under label) */}
+          {/* {selectedPlan?.coverage &&
+            (() => {
+              const renovations = selectedPlan.coverage?.renovations;
+              const contents = selectedPlan.coverage?.contents;
+
+              const items: Array<{ label: string; value: string }> = [];
+              if (contents && contents !== 'Not Covered') {
+                items.push({ label: 'Home Content Coverage', value: contents });
+              }
+              if (renovations && renovations !== 'Not Covered') {
+                items.push({
+                  label: 'Renovation Coverage',
+                  value: renovations,
+                });
+              }
+
+              if (items.length === 0) return null;
+
+              return (
+                <div className='mb-6'>
+                  <h3 className='mb-3 text-base font-bold text-[#303030]'>
+                    Coverage
+                  </h3>
+                  <div className='space-y-3'>
+                    {items.map((item) => (
+                      <div
+                        key={item.label}
+                        className='flex items-start justify-between'
+                      >
+                        <div className='flex-1 pr-4'>
+                          <div className='mb-1 text-sm leading-tight text-[#303030]'>
+                            {item.label}
+                          </div>
+                          <div className='text-xs text-gray-500'>
+                            {item.value}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()} */}
 
           {/* Add-ons Section */}
           {selectedAddOns.length > 0 && (
@@ -387,6 +429,86 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
               </div>
             </div>
           )}
+
+          {/* ISP Call Add-ons Section (from selectedAddOns with discounted prices from selectedPlan) */}
+          {/* {selectedAddOns.length > 0 &&
+            selectedPlan &&
+            (() => {
+              const building = selectedAddOns.find((a) => a.id === 'building');
+              const worldwideFpa = selectedAddOns.find(
+                (a) => a.id === 'worldwide-fpa',
+              );
+
+              // Compose items present in selectedAddOns
+              const items: Array<{
+                id: 'building' | 'worldwide-fpa';
+                label: string;
+                optionText?: string;
+                amount?: number | string;
+              }> = [];
+
+              if (building) {
+                items.push({
+                  id: 'building',
+                  label: 'Building Coverage',
+                  optionText: building.selectedOption
+                    ? `SGD ${building.selectedOption}`
+                    : undefined,
+                  amount: selectedPlan.buildingCoverageWithDiscount,
+                });
+              }
+
+              if (worldwideFpa) {
+                items.push({
+                  id: 'worldwide-fpa',
+                  label: 'Worldwide Family Personal Accident',
+                  optionText: worldwideFpa.selectedOption
+                    ? `SGD ${worldwideFpa.selectedOption}`
+                    : undefined,
+                  amount: selectedPlan.worldwideFpaWithDiscount,
+                });
+              }
+
+              console.log(
+                'Price of worldwide FPA:',
+                selectedPlan.worldwideFpaNoDiscount,
+              );
+
+              // If neither is selected, render nothing
+              if (items.length === 0) return null;
+
+              return (
+                <div className='mb-6'>
+                  <h3 className='mb-3 text-base font-bold text-[#303030]'>
+                    Add-ons
+                  </h3>
+                  <div className='space-y-3'>
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className='flex items-start justify-between'
+                      >
+                        <div className='flex-1 pr-4'>
+                          <div className='mb-1 text-sm leading-tight text-[#303030]'>
+                            {item.label}
+                          </div>
+                          {item.optionText && (
+                            <div className='text-xs text-gray-500'>
+                              {item.optionText}
+                            </div>
+                          )}
+                          <div className='text-xs text-gray-500'>
+                            {typeof item.amount === 'number'
+                              ? `SGD ${item.amount.toFixed(2)}`
+                              : String(item.amount)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()} */}
 
           {/* Separator */}
           <div className='my-6 border-t border-gray-200' />

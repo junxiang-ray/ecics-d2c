@@ -529,6 +529,68 @@ export default function QuoteDetailPage() {
 
   //#endregion
 
+  // 🔒 PROTECTED - Build payload helper for both initial quote and add-on recalculation
+  const buildPayload = useCallback(
+    (addOnsOverride?: SelectedAddOn[]) => {
+      const storedMap = localStorage.getItem('hc_result_map');
+      const resultMap = storedMap ? JSON.parse(storedMap) : null;
+      const addOnsToUse =
+        addOnsOverride !== undefined ? addOnsOverride : selectedAddOns;
+
+      const payload: any = {
+        key: key,
+        homeOwnership: formData.ownership,
+        homeType: formData.homeType,
+        unitType: formData.unitType,
+        startDate: formData.policyStartDate,
+        promoCode: formData.promoCode,
+        renovations: formData.coverageOptions.renovationCoverageValue,
+        homeContents: formData.coverageOptions.homeContentCoverageValue,
+        resultMap: resultMap,
+        redirectUrl: '',
+        returnUrl: '',
+      };
+
+      // Add building and worldwide FPA from add-ons to payload
+      addOnsToUse.forEach((addOn) => {
+        if (addOn.id === 'building' && addOn.selectedOption) {
+          payload.building = addOn.selectedOption;
+        } else if (addOn.id === 'worldwide-fpa' && addOn.selectedOption) {
+          payload.worldwideFpa = addOn.selectedOption;
+        }
+      });
+
+      return payload;
+    },
+    [formData, key, selectedAddOns],
+  );
+
+  // 🔒 PROTECTED - Recalculate premium with new add-ons
+  const recalculateWithAddOns = useCallback(
+    async (newAddOns: SelectedAddOn[]) => {
+      const payload = buildPayload(newAddOns);
+      console.log(
+        `recalculating with add-ons, payload = ${JSON.stringify(payload)}`,
+      );
+
+      try {
+        const res = await getPremiumCalc(payload);
+        console.log(`add-on recalculation response = ${JSON.stringify(res)}`);
+        setAllPlans(res);
+      } catch (err) {
+        console.log('ERROR RECALCULATING PREMIUM WITH ADD-ONS:', err);
+      }
+    },
+    [buildPayload],
+  );
+
+  useEffect(() => {
+    // Only recalc after base quote exists
+    if (!showPlans) return;
+
+    recalculateWithAddOns(selectedAddOns);
+  }, [selectedAddOns, showPlans, recalculateWithAddOns]);
+
   // 🔒 PROTECTED - Quote calculation with timeout management
   const handleCalculateQuote = useCallback(() => {
     const newErrors = validateQuoteForm(formData);
@@ -538,18 +600,7 @@ export default function QuoteDetailPage() {
 
     setIsLoading(true);
 
-    const payload = {
-      key: key,
-      homeOwnership: formData.ownership,
-      homeType: formData.homeType,
-      unitType: formData.unitType,
-      startDate: formData.policyStartDate,
-      promoCode: formData.promoCode,
-      renovations: formData.coverageOptions.renovationCoverageValue,
-      homeContents: formData.coverageOptions.homeContentCoverageValue,
-      redirectUrl: '',
-      returnUrl: '',
-    };
+    const payload = buildPayload();
 
     console.log(`payload set to quote = ${JSON.stringify(payload)}`);
 
@@ -575,7 +626,7 @@ export default function QuoteDetailPage() {
       .catch((err) => {
         console.log('ERROR GENERATING QUOTE:', err);
       });
-  }, [formData, scrollToElement]);
+  }, [formData, scrollToElement, buildPayload]);
 
   // 🔒 PROTECTED - Plan selection with customization revelation
   const handlePlanSelect = useCallback(
@@ -605,37 +656,48 @@ export default function QuoteDetailPage() {
     return () => clearTimeout(timeoutId);
   }, [scrollToElement]);
 
-  // 🔒 PROTECTED - Add-on toggle with efficient array operations
-  const handleAddOnToggle = useCallback((addOnId: string) => {
-    setSelectedAddOns((prev) => {
-      const existingIndex = prev.findIndex((item) => item.id === addOnId);
-      if (existingIndex >= 0) {
-        updateFormData('addon', '', addOnId, true);
-        return prev.filter((_, index) => index !== existingIndex);
-      } else {
-        const addOn = ADD_ONS.find((a) => a.id === addOnId);
-        const newAddOn: SelectedAddOn = {
-          id: addOnId,
-          ...(addOn?.hasOptions && {
-            selectedOption: addOn.options?.[0]?.value,
-          }),
-        };
-        return [...prev, newAddOn];
-      }
-    });
-    updateFormData('addon', '', addOnId, false);
-  }, []);
+  // 🔒 PROTECTED - Add-on toggle - ISP recalculation
+  const handleAddOnToggle = useCallback(
+    (addOnId: string) => {
+      setSelectedAddOns((prev) => {
+        const existingIndex = prev.findIndex((item) => item.id === addOnId);
+        let newAddOns: SelectedAddOn[];
+
+        if (existingIndex >= 0) {
+          // Remove add-on
+          updateFormData('addon', '', addOnId, true);
+          newAddOns = prev.filter((_, index) => index !== existingIndex);
+        } else {
+          // Add add-on with default option
+          const addOn = ADD_ONS.find((a) => a.id === addOnId);
+          const newAddOn: SelectedAddOn = {
+            id: addOnId,
+            ...(addOn?.hasOptions && {
+              selectedOption: addOn.options?.[0]?.value,
+            }),
+          };
+          newAddOns = [...prev, newAddOn];
+          updateFormData('addon', '', addOnId, false);
+        }
+        return newAddOns;
+      });
+    },
+    [updateFormData],
+  );
 
   const handleAddOnOptionChange = useCallback(
     (addOnId: string, option: string) => {
-      setSelectedAddOns((prev) =>
-        prev.map((item) =>
+      setSelectedAddOns((prev) => {
+        const newAddOns = prev.map((item) =>
           item.id === addOnId ? { ...item, selectedOption: option } : item,
-        ),
-      );
-      updateFormData('addon', option, addOnId);
+        );
+
+        updateFormData('addon', option, addOnId);
+
+        return newAddOns;
+      });
     },
-    [],
+    [updateFormData],
   );
 
   // 🔒 PROTECTED - Navigation handlers with progressive sub-steps

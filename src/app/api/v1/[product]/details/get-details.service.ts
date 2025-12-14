@@ -20,8 +20,17 @@ export async function getDetailsHomeContents() {
     const idMap = getQuoteRes.data[0].premium_calc.idmap;
 
     const resultMap = {
-      promo_code_input_id: nameMap.promo_code,
       property_type_input_id: nameMap.property_type,
+      ownership_input_id: nameMap.ownership,
+      unit_type_input_id: nameMap.unit_type,
+      policy_start_date_input_id: nameMap.policy_start_date,
+      policy_period_input_id: nameMap.policy_period,
+      promo_code_input_id: nameMap.promo_code,
+      renovations_si_input_id: nameMap.renovations_si,
+      contents_si_input_id: nameMap.contents_si,
+      building_si_input_id: nameMap.building_si,
+      worldwide_fpa_input_id: nameMap.worldwide_fpa,
+      selected_plan_input_id: nameMap.selected_plan,
     };
 
     ///can store resultMap locally and return blank

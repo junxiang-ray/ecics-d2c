@@ -39,6 +39,12 @@ export default function HomeContentPage() {
         });
 
         const response = await getProductDetails();
+
+        // Save result map to local storage
+        saveToLocalStorage({
+          hc_result_map: JSON.stringify(response),
+        });
+
         console.log(`response from details: ${JSON.stringify(response)}`);
 
         router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);

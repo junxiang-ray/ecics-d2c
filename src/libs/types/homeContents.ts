@@ -45,12 +45,23 @@ export interface MyInfoData {
 
 // Insurance plans and add-ons
 export interface Coverage {
-  contents: number;
-  personalAccident: number;
-  personalLiability: number;
-  alternativeAccommodation: number;
-  lossOfRent: number;
-  tenantLiability: number;
+  renovations: string;
+  renovationsFixturesDebris: string;
+  renovationsProfessionalFees: string;
+  contents: string;
+  contentsValuables: string;
+  contentsCash: string;
+  alternativeAccommodation: string;
+  incidentalExpensesOrEmergencyCashAllowance: string;
+  accidentalBreakageOfMirrorOrFixedGlass: string;
+  petDogOrCatCover: string;
+  accidentalDamageOfEVCharger: string;
+  accidentalDamageOfSolarPanels: string;
+  emergencyHomeAssistance: string;
+  tenantsLiability: string;
+  lossOfRentalAfterInsuredEvent: string;
+  buildingCoverage: string;
+  personalWorldwideFPA: string;
 }
 
 export interface InsurancePlan {
@@ -63,6 +74,13 @@ export interface InsurancePlan {
   features: string[];
   isPopular?: boolean;
   highlights?: string[];
+  totalPricePlanB4GST: number;
+  totalPricePlan: number;
+  // Add building and worldwide FPA costs
+  buildingCoverageNoDiscount?: number;
+  worldwideFpaNoDiscount?: number;
+  buildingCoverageWithDiscount?: number;
+  worldwideFpaWithDiscount?: number;
 }
 
 export interface AddOnOption {
@@ -165,6 +183,35 @@ export interface HomeContentResponse {
   data: any;
 }
 
+// Mapping of input IDs for Home Contents product
+export interface HomeContentResultMap {
+  property_type_input_id: string;
+  ownership_input_id: string;
+  unit_type_input_id: string;
+  policy_start_date_input_id: string;
+  policy_period_input_id: string;
+  promo_code_input_id: string;
+  renovations_si_input_id: string;
+  contents_si_input_id: string;
+  building_si_input_id: string;
+  selected_plan_input_id: string;
+}
+
+// OLD
+// export interface HomeContentQuoteCreationPayload {
+//   key: string;
+//   homeType: string;
+//   homeOwnership: string;
+//   unitType: string;
+//   homeContents: string;
+//   renovations: string;
+//   startDate: string;
+//   promoCode: string;
+//   redirectUrl: string;
+//   returnUrl: string;
+// }
+
+// NEW
 export interface HomeContentQuoteCreationPayload {
   key: string;
   homeType: string;
@@ -176,6 +223,9 @@ export interface HomeContentQuoteCreationPayload {
   promoCode: string;
   redirectUrl: string;
   returnUrl: string;
+  building?: string;
+  worldwideFpa?: string;
+  resultMap?: HomeContentResultMap;
 }
 
 export interface HomeContentQuote {

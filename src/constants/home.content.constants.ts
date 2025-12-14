@@ -83,16 +83,39 @@ export const PLANS: InsurancePlan[] = [
     name: '1 Year',
     originalPrice: 250,
     discountedPrice: 250, // No discount for 1-year
+    totalPricePlanB4GST: 250,
+    totalPricePlan: 268.75,
     discount: 0,
     isPopular: false,
     coverage: {
-      contents: 50000,
-      personalAccident: 30000,
-      personalLiability: 1000000,
-      alternativeAccommodation: 5000,
-      lossOfRent: 3000,
-      tenantLiability: 20000,
+      renovations: '45000',
+      renovationsFixturesDebris: '30000',
+      renovationsProfessionalFees: '20000',
+
+      contents: '50000',
+      // valuables may be descriptive; keep raw
+      contentsValuables: 'Up to policy sub-limits',
+
+      contentsCash: '15000',
+      alternativeAccommodation: '40000',
+
+      incidentalExpensesOrEmergencyCashAllowance: '10000',
+
+      accidentalBreakageOfMirrorOrFixedGlass: '20000',
+      petDogOrCatCover: '15000',
+
+      accidentalDamageOfEVCharger: '25000',
+      accidentalDamageOfSolarPanels: '30000',
+
+      emergencyHomeAssistance: '10000',
+      tenantsLiability: '50000',
+
+      lossOfRentalAfterInsuredEvent: '35000',
+      buildingCoverage: '50000',
+
+      personalWorldwideFPA: '20000',
     },
+
     features: [
       'Contents coverage up to $50,000',
       'Personal accident protection up to $30,000',
@@ -110,16 +133,39 @@ export const PLANS: InsurancePlan[] = [
     name: '3 Year',
     originalPrice: 675, // 3 years worth at $225/year (10% discount applied)
     discountedPrice: 675,
+    totalPricePlanB4GST: 675,
+    totalPricePlan: 723.75,
     discount: 10, // 10% discount already applied to the price
     isPopular: true,
     coverage: {
-      contents: 50000,
-      personalAccident: 30000,
-      personalLiability: 1000000,
-      alternativeAccommodation: 5000,
-      lossOfRent: 3000,
-      tenantLiability: 20000,
+      renovations: '45000',
+      renovationsFixturesDebris: '30000',
+      renovationsProfessionalFees: '20000',
+
+      contents: '50000',
+      // valuables may be descriptive; keep raw
+      contentsValuables: 'Up to policy sub-limits',
+
+      contentsCash: '15000',
+      alternativeAccommodation: '40000',
+
+      incidentalExpensesOrEmergencyCashAllowance: '10000',
+
+      accidentalBreakageOfMirrorOrFixedGlass: '20000',
+      petDogOrCatCover: '15000',
+
+      accidentalDamageOfEVCharger: '25000',
+      accidentalDamageOfSolarPanels: '30000',
+
+      emergencyHomeAssistance: '10000',
+      tenantsLiability: '50000',
+
+      lossOfRentalAfterInsuredEvent: '35000',
+      buildingCoverage: '50000',
+
+      personalWorldwideFPA: '20000',
     },
+
     features: [
       'Contents coverage up to $50,000',
       'Personal accident protection up to $30,000',

@@ -161,6 +161,8 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
                       )}
                       <div className='text-lg font-bold leading-tight text-gray-800'>
                         ${totalPremium.toFixed(2)}
+                        {/* Ara Change - Show original total straight from selected plan/ISP */}
+                        {/* ${selectedPlan.totalPricePlan.toFixed(2)} */}
                       </div>
                       <div className='text-xs leading-tight text-gray-500'>
                         Net Premium
@@ -241,6 +243,8 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
                   <div className='text-right'>
                     <div className='text-xl font-bold text-[#323743]'>
                       ${totalPremium.toFixed(2)}
+                      {/* Ara Change - Show original total straight from selected plan/ISP */}
+                      {/* ${selectedPlan.totalPricePlan.toFixed(2)}{' '} */}
                     </div>
                     <div className='text-xs text-[#666]'>Net Premium</div>
                   </div>
