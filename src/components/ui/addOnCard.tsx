@@ -8,11 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/cardNew';
 import { Label } from '@/components/ui/label';
+import { OptionSelector } from './optionSelector';
+import { Select } from '@/components/ui/select';
 
 interface AddOnCardProps {
   addOn: AddOn;
   isSelected: boolean;
   selectedOption?: string;
+  displayPrice: number;
   onToggle: () => void;
   onOptionChange?: (option: string) => void;
 }
@@ -25,22 +28,30 @@ const ICON_MAP = {
 } as const;
 
 export const AddOnCard = memo<AddOnCardProps>(
-  ({ addOn, isSelected, selectedOption, onToggle, onOptionChange }) => {
+  ({
+    addOn,
+    isSelected,
+    selectedOption,
+    onToggle,
+    onOptionChange,
+    displayPrice,
+  }) => {
     // Dynamically get the icon component
     const IconComponent = useMemo(() => {
       return ICON_MAP[addOn.iconName as keyof typeof ICON_MAP] || Heart;
     }, [addOn.iconName]);
 
     // Calculate the display price based on selected option
-    const displayPrice = useMemo(() => {
-      if (addOn.hasOptions && selectedOption && addOn.options) {
-        const selectedOptionData = addOn.options.find(
-          (option) => option.value === selectedOption,
-        );
-        return selectedOptionData ? selectedOptionData.price : addOn.price;
-      }
-      return addOn.price;
-    }, [addOn.hasOptions, addOn.options, addOn.price, selectedOption]);
+    // const displayPrice = useMemo(() => {
+    //   if ((addOn.hasOptions || addOn.hasList) && selectedOption && addOn.options) {
+    //     console.log(selectedOption);
+    //     const selectedOptionData = addOn.options.find(
+    //       (option) => option.value === selectedOption || option.label === selectedOption,
+    //     );
+    //     return selectedOptionData ? selectedOptionData.price : addOn.price;
+    //   }
+    //   return addOn.price;
+    // }, [addOn.hasOptions, addOn.options, addOn.price, selectedOption]);
 
     return (
       <div className='group relative'>
@@ -56,14 +67,14 @@ export const AddOnCard = memo<AddOnCardProps>(
 
         <Card
           className={cn(
-            'relative shadow-md transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg sm:h-[320px]',
-            'overflow-hidden border-2 bg-white',
+            'relative shadow-md transition-all duration-1000 ease-in-out group-hover:-translate-y-1 group-hover:shadow-lg',
+            'border-2 bg-white',
             isSelected
-              ? 'border-[#02ADEF] shadow-lg ring-2 ring-[#02ADEF]/20'
-              : 'border-gray-200 hover:border-gray-300',
+              ? 'max-h-[1000px] border-[#02ADEF] shadow-lg ring-2 ring-[#02ADEF]/20'
+              : 'max-h-[320px] border-gray-200 hover:border-gray-300',
           )}
         >
-          <CardContent className='flex h-full flex-col p-5 pb-8'>
+          <CardContent className='flex flex-col p-5 pb-8'>
             {/* Header */}
             <div className='mb-3 flex items-start justify-between'>
               <div className='flex min-w-0 flex-1 items-center gap-3'>
@@ -78,7 +89,8 @@ export const AddOnCard = memo<AddOnCardProps>(
               </div>
               <div className='ml-2 flex-shrink-0 text-right'>
                 <span className='text-lg font-bold text-[#02ADEF]'>
-                  ${displayPrice.toFixed(0)}
+                  {displayPrice !== 0 && `$${displayPrice.toFixed(2)}`}
+                  {displayPrice === 0 && '$ - '}
                 </span>
               </div>
             </div>
@@ -97,35 +109,68 @@ export const AddOnCard = memo<AddOnCardProps>(
             </div>
 
             {/* Options Section */}
-            {addOn.hasOptions && addOn.options && isSelected ? (
-              <div className='space-y-2'>
-                <Label className='text-xs font-semibold text-gray-700'>
-                  Select Coverage:
-                </Label>
-                <div className='flex gap-2'>
-                  {addOn.options.map((option, index) => (
-                    <button
-                      key={option.value}
-                      onClick={() => onOptionChange?.(option.value)}
-                      className={cn(
-                        'border border-gray-300  transition-all duration-200',
-                        'text-xs font-medium',
-                        'touch-target min-h-[36px]',
-                        'flex items-center justify-center rounded-md',
-                        'flex-1', // Equal width distribution
-                        selectedOption === option.value
-                          ? 'border-[#02ADEF] bg-[#02ADEF] font-semibold text-white shadow-md'
-                          : 'bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100',
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className='flex-grow'></div>
+            {isSelected && addOn.options?.length && (
+              <>
+                {/* BUTTON OPTIONS */}
+                {addOn.hasOptions && !addOn.hasList && (
+                  <div className='space-y-2'>
+                    <Label className='text-xs font-semibold text-gray-700'>
+                      Select Coverage:
+                    </Label>
+
+                    <div className='flex gap-2 pb-2'>
+                      {addOn.options.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => onOptionChange?.(option.value)}
+                          className={cn(
+                            'border border-gray-300 transition-all duration-200',
+                            'touch-target h-14 text-xs font-medium',
+                            'flex flex-1 items-center justify-center rounded-md',
+                            selectedOption === option.value
+                              ? 'border-[#02ADEF] bg-[#02ADEF] text-lg font-semibold text-white shadow-md'
+                              : 'bg-white text-base text-gray-700 hover:bg-gray-50 active:bg-gray-100',
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* DROPDOWN LIST */}
+                {addOn.hasList && (
+                  <div className='space-y-2 '>
+                    {/* <OptionSelector
+                      // labelIcon={<Building className='size-5 text-[#02ADEF]' />}
+                      required={true}
+                      label='Select Coverage'
+                      selected={selectedOption}
+                      options={addOn.options}
+                      onChange={(option) => onOptionChange?.(option)}
+                      className='col-span-1 space-y-4 lg:col-span-2'
+                    ></OptionSelector> */}
+                    <Label className='text-xs font-semibold text-gray-700'>
+                      Select Coverage:
+                    </Label>
+                    <Select
+                      defaultValue={selectedOption}
+                      placeholder='Select Coverage'
+                      onChange={(option) => {
+                        console.log(option);
+                        onOptionChange?.(option);
+                      }}
+                      options={
+                        addOn.options.map((o) => o.label) as readonly string[]
+                      }
+                      className=''
+                    />
+                  </div>
+                )}
+              </>
             )}
+
             {/* <div className='mb-3 flex-1'></div> */}
             {/* Action Button */}
             <div className='mt-4 flex justify-center'>

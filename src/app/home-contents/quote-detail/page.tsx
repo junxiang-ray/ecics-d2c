@@ -108,8 +108,6 @@ export default function QuoteDetailPage() {
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
-          console.log('storedData =', parsedData);
-
           return PLANS;
         }
       } catch (error) {
@@ -148,12 +146,8 @@ export default function QuoteDetailPage() {
     if (typeof window !== 'undefined') {
       try {
         const storedData = localStorage.getItem('quoteFormData');
-        console.log('setting Form Data now');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
-          console.log('parsing Form Data now');
-
-          console.log('storedData =', parsedData);
 
           setSelectedAddOns(parsedData.addons || INITIAL_FORM_DATA.addons);
 
@@ -192,9 +186,15 @@ export default function QuoteDetailPage() {
   }, [formData]);
 
   const resetQuoteForm = useCallback(() => {
+    console.log('Resetting');
     setShowPlans(false);
     setShowCustomization(false);
     setShowAddOns(false);
+    updateFormData('quoteStep', '0'); // remember to reset the step so that the page properly resets.
+    setSelectedPlan('');
+    updateFormData('selectedPlan', '');
+    setSelectedAddOns([]);
+
     // setFormData(INITIAL_FORM_DATA);
   }, [formData]);
 
@@ -231,7 +231,7 @@ export default function QuoteDetailPage() {
   // Memoized computed values with early returns
   const currentPlan = useMemo(() => {
     if (!selectedPlan) return null;
-    return PLANS.find((p) => p.id === selectedPlan) || null;
+    return allplans.find((p) => p.id === selectedPlan) || null;
   }, [selectedPlan]);
 
   const totalPremium = useMemo(() => {
@@ -256,7 +256,6 @@ export default function QuoteDetailPage() {
       setFormData((prev) => {
         //Addon case
         if (field === 'addon' && addOnId) {
-          // console.log(`Updating add-on ${addOnId} with option ${value}`);
           if (remove) {
             const newData: QuoteForm = {
               ...prev,
@@ -312,7 +311,7 @@ export default function QuoteDetailPage() {
 
         // Home type logic
         if (quoteField === 'homeType') {
-          if (value === 'landed') newData.unitType = '';
+          if (value === 'landed') newData.unitType = 'landed';
           else if (value === 'hdb') newData.unitType = '4-Room';
           else if (value === 'condo') newData.unitType = '3-Room';
         }
@@ -363,12 +362,8 @@ export default function QuoteDetailPage() {
           if (storedData) {
             const parsedData = JSON.parse(storedData);
 
-            // console.log('storedData =', parsedData);
-
             // setSelectedAddOns(parsedData.addons || INITIAL_FORM_DATA.addons);
-            console.log(`singpass Data = ${JSON.stringify(parsedData)}`);
-            console.log(`personalInfo Data = ${JSON.stringify(personalInfo)}`);
-            console.log(`singpass Data email = ${parsedData.email.value}`);
+
             const newData = INITIAL_PERSONAL_INFO;
             newData.policyHolderEmail = parsedData?.email.value || '';
             newData.policyHolderMobileNumber =
@@ -399,9 +394,6 @@ export default function QuoteDetailPage() {
   );
 
   useEffect(() => {
-    console.log(
-      `personalFormData changed: ${JSON.stringify(personalInfoData)}`,
-    );
     setPersonalInfoErrors((prev) => {
       const newErrors = { ...prev };
       Object.keys(personalInfoData).forEach((key) => {
@@ -554,7 +546,11 @@ export default function QuoteDetailPage() {
       // Add building and worldwide FPA from add-ons to payload
       addOnsToUse.forEach((addOn) => {
         if (addOn.id === 'building' && addOn.selectedOption) {
-          payload.building = addOn.selectedOption;
+          const value =
+            ADD_ONS.find((addon) => addon.id === addOn.id)?.options?.find(
+              (o) => o.label === addOn.selectedOption,
+            )?.value || '0';
+          payload.building = `${value?.replace('$', 'SGD')}`;
         } else if (addOn.id === 'worldwide-fpa' && addOn.selectedOption) {
           payload.worldwideFpa = addOn.selectedOption;
         }
@@ -587,8 +583,9 @@ export default function QuoteDetailPage() {
   useEffect(() => {
     // Only recalc after base quote exists
     if (!showPlans) return;
-
-    recalculateWithAddOns(selectedAddOns);
+    if (showAddOns) {
+      recalculateWithAddOns(selectedAddOns);
+    }
   }, [selectedAddOns, showPlans, recalculateWithAddOns]);
 
   // 🔒 PROTECTED - Quote calculation with timeout management
@@ -601,8 +598,6 @@ export default function QuoteDetailPage() {
     setIsLoading(true);
 
     const payload = buildPayload();
-
-    console.log(`payload set to quote = ${JSON.stringify(payload)}`);
 
     getPremiumCalc(payload)
       .then((res) => {

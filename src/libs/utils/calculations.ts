@@ -119,8 +119,8 @@ export const calculateTotalPremium = (
   let total = getBasePlanPrice(selectedPlan);
 
   // Add coverage-based premium
-  const coveragePremium = calculateCoveragePremium(customizationData);
-  total += coveragePremium;
+  // const coveragePremium = calculateCoveragePremium(customizationData);
+  // total += coveragePremium;
 
   if (ADD_ONS && Array.isArray(ADD_ONS)) {
     selectedAddOns.forEach((selectedAddOn) => {
@@ -137,6 +137,8 @@ export const calculateTotalPremium = (
       }
     });
   }
+
+  total *= 1.09;
 
   return total;
 };
@@ -149,6 +151,7 @@ export const calculateOriginalTotal = (
   if (!selectedPlan) return 0;
 
   let total = selectedPlan.originalPrice;
+  console.log(`total = ${total}`);
 
   if (ADD_ONS && Array.isArray(ADD_ONS)) {
     selectedAddOns.forEach((selectedAddOn) => {
@@ -165,6 +168,7 @@ export const calculateOriginalTotal = (
       }
     });
   }
+  console.log(`total calc = ${total}`);
 
   return total;
 };

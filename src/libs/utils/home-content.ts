@@ -14,7 +14,7 @@ export const validateQuoteForm = (formData: QuoteForm): Partial<QuoteForm> => {
   }
 
   // Validate unit type (only if not landed property)
-  if (formData.homeType !== 'landed' && !formData.unitType) {
+  if (formData.homeType !== 'landed property' && !formData.unitType) {
     errors.unitType = 'Unit type is required';
   }
 

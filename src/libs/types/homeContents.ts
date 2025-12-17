@@ -96,6 +96,7 @@ export interface AddOn {
   price: number;
   details?: string;
   hasOptions?: boolean;
+  hasList?: boolean;
   options?: AddOnOption[];
   iconName?: string;
   popular?: boolean;
@@ -144,7 +145,7 @@ export interface OwnershipType {
 
 // Home types
 export interface HomeType {
-  value: 'landed' | 'hdb' | 'condo';
+  value: 'landed property' | 'hdb' | 'condo';
   label: string;
   description?: string;
 }

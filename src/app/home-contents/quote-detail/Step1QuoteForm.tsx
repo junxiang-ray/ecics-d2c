@@ -251,6 +251,9 @@ const Step1QuoteForm = memo<Step1Props>(
                 className='col-span-1 space-y-4 lg:col-span-2'
                 onChange={(value) => {
                   updateFormData('homeType', value);
+                  if (value === 'landed property') {
+                    updateFormData('unitType', 'landed');
+                  }
                   if (showPlans) {
                     resetFormData();
                   }
@@ -261,7 +264,7 @@ const Step1QuoteForm = memo<Step1Props>(
               ></OptionSelector>
 
               {/* Unit Type - Only show for non-landed properties */}
-              {formData.homeType !== 'landed' && (
+              {formData.homeType !== 'landed property' && (
                 <div className='space-y-3'>
                   <Label className='flex items-center gap-2 text-base font-semibold text-gray-700 sm:text-lg'>
                     <Building className='size-5 text-[#02ADEF]' />
@@ -1047,7 +1050,9 @@ const Step1QuoteForm = memo<Step1Props>(
               </p>
             </div>
 
-            <div className='mb-8 grid grid-cols-1  sm:mb-12 sm:gap-6 md:grid-cols-2 lg:grid-cols-2'>
+            <div
+              className={`mb-8 grid grid-cols-1  sm:mb-12 sm:gap-6 ${formData.homeType !== 'landed property' ? 'md:grid-cols-1 lg:grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-2'}`}
+            >
               {ADD_ONS.map((addOn) => {
                 const isSelected = selectedAddOns.some(
                   (item) => item.id === addOn.id,
@@ -1055,6 +1060,19 @@ const Step1QuoteForm = memo<Step1Props>(
                 const selectedOption = selectedAddOns.find(
                   (item) => item.id === addOn.id,
                 )?.selectedOption;
+                let displayPrice = 0;
+                if (addOn.id === 'building') {
+                  if (formData.homeType !== 'landed property') {
+                    return;
+                  }
+                  displayPrice =
+                    planData.find((plan) => plan.id === selectedPlan)
+                      ?.buildingCoverageWithDiscount || 0;
+                } else {
+                  displayPrice =
+                    planData.find((plan) => plan.id === selectedPlan)
+                      ?.worldwideFpaWithDiscount || 0;
+                }
 
                 return (
                   <AddOnCard
@@ -1066,6 +1084,7 @@ const Step1QuoteForm = memo<Step1Props>(
                     onOptionChange={(option) =>
                       onAddOnOptionChange(addOn.id, option)
                     }
+                    displayPrice={displayPrice}
                   />
                 );
               })}

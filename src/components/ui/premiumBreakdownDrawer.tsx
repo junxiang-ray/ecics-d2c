@@ -120,7 +120,9 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
     return total + addOn.price;
   }, 0);
 
-  const subtotalBeforePromo = planPrice + coveragePremium + addOnTotal;
+  // hide coverage premium
+  // const subtotalBeforePromo = planPrice + coveragePremium + addOnTotal;
+  const subtotalBeforePromo = planPrice + addOnTotal;
   const promoDiscount =
     promoStatus.status === 'applied'
       ? (subtotalBeforePromo * (promoStatus.discount || 0)) / 100
@@ -236,6 +238,22 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                 </span>
               </div>
               <div className='flex items-start justify-between'>
+                <span className='text-sm text-gray-600'>
+                  Home Content Coverage
+                </span>
+                <span className='text-right text-sm font-medium text-[#303030]'>
+                  {getHomeContentCoverageLabel()}
+                </span>
+              </div>
+              <div className='flex items-start justify-between'>
+                <span className='text-sm text-gray-600'>
+                  Renovation Coverage
+                </span>
+                <span className='text-right text-sm font-medium text-[#303030]'>
+                  {getRenovationCoverageLabel()}
+                </span>
+              </div>
+              <div className='flex items-start justify-between'>
                 <span className='text-sm text-gray-600'>Policy Start Date</span>
                 <span className='text-right text-sm font-medium text-[#303030]'>
                   {formatDate(formData.policyStartDate)}
@@ -258,7 +276,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
           </div>
 
           {/* Coverage Section */}
-          {coveragePremium > 0 && (
+          {/* {coveragePremium > 0 && (
             <div className='mb-6'>
               <h3 className='mb-3 text-base font-bold text-[#303030]'>
                 Coverage
@@ -330,7 +348,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                 )}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* ISP Call - Coverage Section (from selectedPlan.coverage, amount under label) */}
           {/* {selectedPlan?.coverage &&

@@ -15,7 +15,7 @@ export async function getCalcHomeContents(
 ) {
   try {
     const map = data.resultMap;
-    console.log(map);
+    console.log(`data map = ${map}`);
 
     // use to map IDs in result map. if it doesnt exist, fallback to KEYS
     const getId = (mapKey: string, fallbackKey: string) => {
@@ -56,7 +56,8 @@ export async function getCalcHomeContents(
       {
         id: '1-year',
         name: '1 Year',
-        originalPrice: getQuoteRes.data.cells[response.year1Premb4GSTNoAddOn],
+        originalPrice:
+          getQuoteRes.data.cells[response.year1Premb4GSTNoAddOnDiscounted],
         discountedPrice:
           getQuoteRes.data.cells[response.year1Premb4GSTNoAddOnDiscounted], // No discount for 1-year
         discount: 0,
@@ -154,7 +155,8 @@ export async function getCalcHomeContents(
       {
         id: '3-year',
         name: '3 Year',
-        originalPrice: getQuoteRes.data.cells[response.year3Premb4GSTNoAddOn],
+        originalPrice:
+          getQuoteRes.data.cells[response.year3Premb4GSTNoAddOnDiscounted],
         discountedPrice:
           getQuoteRes.data.cells[response.year3Premb4GSTNoAddOnDiscounted], // No discount for 1-year
         discount: 0,

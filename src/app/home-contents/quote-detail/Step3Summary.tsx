@@ -213,7 +213,7 @@ const Step3Summary = memo<Step3Props>(
               </div>
 
               {/* Only show unit type for non-landed properties */}
-              {formData.homeType !== 'landed' && (
+              {formData.homeType !== 'landed property' && (
                 <div>
                   <Label className='font-semibold text-gray-700'>
                     Unit Type

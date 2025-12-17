@@ -19,7 +19,7 @@ export const HOME_OWNERSHIP_TYPES: OwnershipType[] = [
 
 export const HOME_TYPES: HomeType[] = [
   {
-    value: 'landed',
+    value: 'landed property',
     label: 'Landed Property',
     description: 'Terrace, semi-detached, detached, shophouse',
   },
