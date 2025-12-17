@@ -588,6 +588,7 @@ export default function QuoteDetailPage() {
     }
   }, [selectedAddOns, showPlans, recalculateWithAddOns]);
 
+  //#region HANDLE GET QUOTE
   // 🔒 PROTECTED - Quote calculation with timeout management
   const handleCalculateQuote = useCallback(() => {
     const newErrors = validateQuoteForm(formData);
@@ -622,7 +623,7 @@ export default function QuoteDetailPage() {
         console.log('ERROR GENERATING QUOTE:', err);
       });
   }, [formData, scrollToElement, buildPayload]);
-
+  //#endregion
   // 🔒 PROTECTED - Plan selection with customization revelation
   const handlePlanSelect = useCallback(
     (planId: string) => {

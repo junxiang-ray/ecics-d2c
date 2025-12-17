@@ -531,6 +531,34 @@ export async function getQuoteForHomeContent(
       `Generating quote for home content with data: ${JSON.stringify(data)}`,
     );
 
+    ///Expected Payload u can use this for testing
+    // const testPayload = {
+    //   "product_id": "M000000000052",
+    //   "insured_address_line1": "50 ang mo kio ave+5",
+    //   "insured_address_line2": "50 ang mo kio ave+5",
+    //   "insured_address_line3": "Singapore",
+    //   "insured_post_code": "560050",
+    //   "proposer_name": "Jane",
+    //   "proposer_nric": "S7682949G",
+    //   "proposer_date_of_birth": "1985-09-10",
+    //   "proposer_gender": "F",
+    //   "proposer_marital_status": "M",
+    //   "policy_period": "3 Years",
+    //   "promo_code": "HOME40",
+    //   "building_si": "200000",
+    //   "renovations_si": "30000",
+    //   "family_pa_si": "100000",
+    //   "contents_si": "40000",
+    //   "selected_plan": "3 Years",
+    //   "homeOwnership": "owner",
+    //   "homeType": "Landed",
+    //   "unitType": "Landed",
+    //   "startDate": "2025-12-18",
+    //   "coverageRenovation": "30000",
+    //   "coverageHomeContents": "40000",
+    //   "__finalize": 0,
+    // }
+
     const payloadData = {
       product_id: process.env.PRODUCT_HOMECONTENT_ID || '',
       homeOwnership: data.homeOwnership,
