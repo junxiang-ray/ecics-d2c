@@ -316,7 +316,7 @@ const Step4Success = memo<Step4Props>(
                 </div>
               </div>
 
-              {/* Mailing Address - Only show if different */}
+              {/* Mailing Address - Only show if different  OLD CODE
               {personalInfoData.mailingAddressDifferent === 'yes' &&
                 personalInfoData.mailingAddressLine1 && (
                   <div className='rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4'>
@@ -343,7 +343,43 @@ const Step4Success = memo<Step4Props>(
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
+
+              <div className='rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4'>
+                <h4 className='font-heading mb-3 font-medium text-gray-900'>
+                  Mailing Address
+                </h4>
+                <div className='space-y-1 text-sm text-gray-700'>
+                  <div className='font-body'>
+                    {personalInfoData.mailingAddressLine1
+                      ? personalInfoData.mailingAddressLine1
+                      : personalInfoData.addressLine1}
+                    {personalInfoData.mailingAddressLine2 ||
+                      (personalInfoData.addressLine2 && (
+                        <>
+                          <br />
+                          {personalInfoData.mailingAddressLine2
+                            ? personalInfoData.mailingAddressLine2
+                            : personalInfoData.addressLine2}
+                        </>
+                      ))}
+                    {personalInfoData.mailingAddressLine3 ||
+                      (personalInfoData.addressLine3 && (
+                        <>
+                          <br />
+                          {personalInfoData.mailingAddressLine3
+                            ? personalInfoData.mailingAddressLine3
+                            : personalInfoData.addressLine3}
+                        </>
+                      ))}
+                    <br />
+                    Singapore{' '}
+                    {personalInfoData.mailingPostalCode
+                      ? personalInfoData.mailingPostalCode
+                      : personalInfoData.postalCode}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Key Benefits for Home Content Insurance */}

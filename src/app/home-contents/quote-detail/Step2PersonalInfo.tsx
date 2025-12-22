@@ -20,7 +20,11 @@ import { Label } from '@/components/ui/label';
 import { PremiumSummary } from '@/components/ui/premiumSummary';
 import { Select } from '@/components/ui/select';
 
-import { NATIONALITIES } from '@/constants/home.content.constants';
+import {
+  GENDER,
+  MARITAL_STATUS,
+  NATIONALITIES,
+} from '@/constants/home.content.constants';
 
 interface Step2PersonalInfoProps {
   personalInfoData: PersonalInfoForm;
@@ -268,31 +272,55 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               )}
             </div>
 
-            {/* Nationality */}
+            {/* Nationality - changed to Gender*/}
             <div className='col-span-1 mb-4'>
               <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
-                Nationality <span className='text-red-500'>*</span>
+                Gender <span className='text-red-500'>*</span>
               </Label>
               <Select
-                options={NATIONALITIES}
-                defaultValue={personalInfoData.policyHolderNationality}
+                options={GENDER}
+                defaultValue={personalInfoData.policyHolderGender}
                 onChange={(value) =>
-                  updatePersonalInfoData('policyHolderNationality', value)
+                  updatePersonalInfoData('policyHolderGender', value)
                 }
                 disabled={myInfoData.isLoading || isMyInfoRetrieved}
-                placeholder='Select your nationality'
+                placeholder='Select your Gender'
                 className='h-12 text-base sm:h-14'
               />
-              {personalInfoErrors.policyHolderNationality && (
+              {personalInfoErrors.policyHolderGender && (
                 <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
                   <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
                     !
                   </span>
-                  {personalInfoErrors.policyHolderNationality}
+                  {personalInfoErrors.policyHolderGender}
                 </p>
               )}
             </div>
 
+            {/* Phone Number */}
+            <div className='col-span-1 mb-4'>
+              <Label className='text-base font-semibold text-gray-700 sm:text-lg'>
+                Marital Status <span className='text-red-500'>*</span>
+              </Label>
+              <Select
+                options={MARITAL_STATUS}
+                defaultValue={personalInfoData.policayHolderMaritalStatus}
+                onChange={(value) =>
+                  updatePersonalInfoData('policayHolderMaritalStatus', value)
+                }
+                disabled={myInfoData.isLoading || isMyInfoRetrieved}
+                placeholder='Select your Marital Status'
+                className='h-12 text-base sm:h-14'
+              />
+              {personalInfoErrors.policayHolderMaritalStatus && (
+                <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
+                  <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
+                    !
+                  </span>
+                  {personalInfoErrors.policayHolderMaritalStatus}
+                </p>
+              )}
+            </div>
             {/* Phone Number */}
             <div className='col-span-1 mb-4'>
               <Label className='text-base font-semibold text-gray-700 sm:text-lg'>

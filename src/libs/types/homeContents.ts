@@ -18,6 +18,8 @@ export interface PersonalInfoForm {
   policyHolderFullName: string;
   policyHolderNricFin: string;
   policyHolderNationality: string;
+  policyHolderGender: string;
+  policayHolderMaritalStatus: string;
   policyHolderMobileNumber: string;
   policyHolderEmail: string;
   policyHolderDateOfBirth: string;
@@ -180,6 +182,7 @@ export interface CustomizationData {
 
 ///ENDPOIN
 export interface HomeContentResponse {
+  status: string;
   message: string;
   data: any;
 }
@@ -227,6 +230,47 @@ export interface HomeContentQuoteCreationPayload {
   building?: string;
   worldwideFpa?: string;
   resultMap?: HomeContentResultMap;
+}
+
+//Save Quote
+export interface HomeContentQuoteSavePayload {
+  key: string;
+  proposerDetails: HomeContentProposerDetailsMap;
+  planDetails: HomeContentPlanDetailsMap;
+  __finalize: number;
+}
+
+interface HomeContentProposerDetailsMap {
+  addressLine1: string;
+  addressLine2: string;
+  addressLine3: string;
+  postCode: string;
+  name: string;
+  nric: string;
+  dob: string;
+  gender: string;
+  maritalStatus: string;
+  mobile: string;
+  email: string;
+  differentMailingAddress: string;
+  mailingAddress1: string;
+  mailingAddress2: string;
+  mailingAddress3: string;
+  mailingPostCode: string;
+}
+
+interface HomeContentPlanDetailsMap {
+  homeOwnership: string;
+  homeType: string;
+  unitType: string;
+  homeContentCoverage: string;
+  renovationsCoverage: string;
+  buildingCoverage: string;
+  wpaCoverage: string;
+  policyPeriod: string;
+  promoCode: string;
+  selectedPlan: string;
+  startDate: string;
 }
 
 export interface HomeContentQuote {

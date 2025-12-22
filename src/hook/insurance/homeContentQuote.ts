@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { HomeContentQuoteCreationPayload } from '@/libs/types/homeContents';
+import {
+  HomeContentQuoteCreationPayload,
+  HomeContentQuoteSavePayload,
+} from '@/libs/types/homeContents';
 
 import homecontents from '@/api/base-service/homecontents';
 
@@ -19,7 +22,7 @@ export const useGetHomeContentQuote = (key: string) => {
 
 export const useGenerateHomeContentsQuote = () => {
   const generateHomeContentQuote = async (
-    data: HomeContentQuoteCreationPayload | any,
+    data: HomeContentQuoteSavePayload,
   ) => {
     const res = await homecontents.generateHomeContentQuote(data);
     return res.data.data;

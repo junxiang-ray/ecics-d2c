@@ -6,6 +6,7 @@ import { DataFromSingpass } from '@/libs/types/quote';
 
 import {
   CustomizationData,
+  HomeContentQuoteSavePayload,
   MyInfoData,
   PersonalInfoForm,
   PromoCodeStatus,
@@ -85,10 +86,10 @@ export default function QuoteDetailPage() {
   }, [currentStep]);
 
   //generate quote
-  // const { mutateAsync: generateHomeContentQuote, isPending } =
-  //   useGenerateHomeContentsQuote();
+  const { mutateAsync: generateHomeContentQuote } =
+    useGenerateHomeContentsQuote();
 
-  const { mutateAsync: getPremiumCalc, isPending } = useGetPremiumCalc();
+  const { mutateAsync: getPremiumCalc } = useGetPremiumCalc();
 
   useEffect(() => {
     const keyQuote = generateKeyAndAttachToUrl(initKey);
@@ -641,6 +642,57 @@ export default function QuoteDetailPage() {
     [scrollToElement],
   );
 
+  const handleSaveQuote = useCallback(() => {
+    const payload: HomeContentQuoteSavePayload = {
+      key: key,
+      proposerDetails: {
+        addressLine1: personalInfoData.addressLine1,
+        addressLine2: personalInfoData.addressLine2 || '',
+        addressLine3: personalInfoData.addressLine3 || '',
+        postCode: personalInfoData.postalCode,
+        name: personalInfoData.policyHolderFullName,
+        nric: personalInfoData.policyHolderNricFin,
+        dob: personalInfoData.policyHolderDateOfBirth,
+        gender: 'M',
+        maritalStatus: 'M',
+        mobile: personalInfoData.policyHolderMobileNumber,
+        email: personalInfoData.policyHolderEmail,
+        differentMailingAddress:
+          personalInfoData.mailingAddressDifferent.toUpperCase(),
+        mailingAddress1: personalInfoData.mailingAddressLine1,
+        mailingAddress2: personalInfoData.mailingAddressLine2 || '',
+        mailingAddress3: personalInfoData.mailingAddressLine3 || '',
+        mailingPostCode: personalInfoData.mailingPostalCode,
+      },
+      planDetails: {
+        homeOwnership: 'Owner',
+        homeType: 'Landed Property',
+        unitType: 'Landed',
+        homeContentCoverage: '40000',
+        renovationsCoverage: '30000',
+        buildingCoverage: '200000',
+        wpaCoverage: '100000',
+        policyPeriod: '3 Years',
+        promoCode: 'HOME40',
+        selectedPlan: '3 Years',
+        startDate: '2025-12-31',
+      },
+
+      __finalize: 1,
+    };
+
+    generateHomeContentQuote(payload).then((res) => {
+      console.log(`quote res = ${JSON.stringify(res)}`);
+      if (res.status === '0') {
+        setCurrentStep(3);
+        setVisitedSteps((prev) => new Set(prev).add(3));
+        scrollToTop();
+      } else {
+        console.log('Quote save failed');
+      }
+    });
+  }, [isLoading]);
+
   // Handler for continuing from customization to add-ons
   const handleCustomizationComplete = useCallback(() => {
     setShowAddOns(true);
@@ -735,9 +787,7 @@ export default function QuoteDetailPage() {
       setPersonalInfoErrors(newErrors);
 
       if (isFormValid(newErrors)) {
-        setCurrentStep(3);
-        setVisitedSteps((prev) => new Set(prev).add(3));
-        scrollToTop();
+        handleSaveQuote();
       }
     }
   }, [

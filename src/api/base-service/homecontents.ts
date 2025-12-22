@@ -1,5 +1,6 @@
 import {
   HomeContentQuoteCreationPayload,
+  HomeContentQuoteSavePayload,
   HomeContentResponse,
 } from '@/libs/types/homeContents';
 
@@ -12,7 +13,7 @@ export default {
   getHomeContentQuoteByKey(key: string) {
     return baseClient.get<HomeContentResponse>(`${API_GET_QUOTE_BY_KEY}` + key);
   },
-  generateHomeContentQuote(data: HomeContentQuoteCreationPayload) {
+  generateHomeContentQuote(data: HomeContentQuoteSavePayload) {
     return baseClient.post<HomeContentResponse>('/b2c_hc/quote', data);
   },
   getProductDetails() {

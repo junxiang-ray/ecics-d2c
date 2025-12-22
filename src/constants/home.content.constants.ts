@@ -244,6 +244,15 @@ export const NATIONALITIES = [
   'Other',
 ] as const;
 
+export const GENDER = ['Male', 'Female'] as const;
+
+export const MARITAL_STATUS = [
+  'Single',
+  'Married',
+  'Divorced',
+  'Widowed',
+] as const;
+
 // Simple function that returns just the nationality name
 export const getNationalityDisplay = (nationality: string): string => {
   return nationality;

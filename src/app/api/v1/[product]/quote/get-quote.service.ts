@@ -560,23 +560,47 @@ export async function getQuoteForHomeContent(
     // }
 
     const payloadData = {
-      product_id: process.env.PRODUCT_HOMECONTENT_ID || '',
-      homeOwnership: data.homeOwnership,
-      homeType: data.homeType,
-      unitType: data.unitType,
-      startDate: data.startDate,
-      promoCode: data.promoCode,
-      coverageHomeContents: data.homeContents,
-      coverageRenovation: data.renovations,
-      redirectUrl: '',
-      returnUrl: '',
+      proposerDetails: {
+        addressLine1: data.proposerDetails.addressLine1,
+        addressLine2: data.proposerDetails.addressLine2 || '',
+        addressLine3: data.proposerDetails.addressLine3 || '',
+        postCode: data.proposerDetails.postCode,
+        name: data.proposerDetails.name,
+        nric: data.proposerDetails.nric,
+        dob: data.proposerDetails.dob,
+        gender: data.proposerDetails.gender,
+        maritalStatus: data.proposerDetails.maritalStatus,
+        mobile: data.proposerDetails.mobile,
+        email: data.proposerDetails.email,
+        differentMailingAddress:
+          data.proposerDetails.differentMailingAddress.toUpperCase(),
+        mailingAddress1: data.proposerDetails.mailingAddress1,
+        mailingAddress2: data.proposerDetails.mailingAddress2 || '',
+        mailingAddress3: data.proposerDetails.mailingAddress3 || '',
+        mailingPostCode: data.proposerDetails.mailingPostCode,
+      },
+      planDetails: {
+        homeOwnership: 'Owner',
+        homeType: 'Landed Property',
+        unitType: 'Landed',
+        homeContentCoverage: '40000',
+        renovationsCoverage: '30000',
+        buildingCoverage: '200000',
+        wpaCoverage: '100000',
+        policyPeriod: '3 Years',
+        promoCode: 'HOME40',
+        selectedPlan: '3 Years',
+        startDate: '2025-12-31',
+      },
+
+      __finalize: data.__finalize,
     };
 
     logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
 
     const getQuoteRes = await handleApiCallToISP(
       `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/quote`,
-      payloadData,
+      data,
     );
     logger.info(
       `Response from generate quote for Home Contents: ${JSON.stringify(getQuoteRes)}`,
@@ -596,10 +620,10 @@ export async function getQuoteForHomeContent(
             key: data.key,
           },
         }),
-        data.promoCode
+        data.planDetails.promoCode
           ? prisma.promocode.findFirst({
               where: {
-                code: data.promoCode,
+                code: data.planDetails.promoCode,
                 products: {
                   has: PRODUCT_NAME.HOME_CONTENT,
                 },
@@ -647,6 +671,7 @@ export async function getQuoteForHomeContent(
           },
         });
       } else {
+        logger.info('quote creation');
         quoteInfo = await prisma.quote.create({
           data: quoteData,
           omit: {
@@ -671,8 +696,9 @@ export async function getQuoteForHomeContent(
       }
 
       logger.info(`Quote generated successfully: ${JSON.stringify(quoteInfo)}`);
+      const returnData = { status: '0', data: getQuoteRes };
       return successRes({
-        data: quoteInfo,
+        data: returnData,
         message: 'Quote generated successfully',
       });
     }
