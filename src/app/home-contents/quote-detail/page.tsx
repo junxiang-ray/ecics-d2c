@@ -643,6 +643,18 @@ export default function QuoteDetailPage() {
   );
 
   const handleSaveQuote = useCallback(() => {
+    const maritalStatus_table: Record<string, string> = {
+      Single: 'S',
+      Married: 'M',
+      Divorced: 'D',
+      Widowed: 'W',
+    };
+
+    const gender_table: Record<string, string> = {
+      Male: 'M',
+      Female: 'F',
+    };
+
     const payload: HomeContentQuoteSavePayload = {
       key: key,
       proposerDetails: {
@@ -653,8 +665,9 @@ export default function QuoteDetailPage() {
         name: personalInfoData.policyHolderFullName,
         nric: personalInfoData.policyHolderNricFin,
         dob: personalInfoData.policyHolderDateOfBirth,
-        gender: 'M',
-        maritalStatus: 'M',
+        gender: gender_table[personalInfoData.policyHolderGender],
+        maritalStatus:
+          maritalStatus_table[personalInfoData.policayHolderMaritalStatus],
         mobile: personalInfoData.policyHolderMobileNumber,
         email: personalInfoData.policyHolderEmail,
         differentMailingAddress:
