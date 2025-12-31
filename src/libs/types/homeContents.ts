@@ -108,6 +108,7 @@ export interface AddOn {
 export interface SelectedAddOn {
   id: string;
   selectedOption?: string;
+  price: number;
 }
 
 // Promo codes
@@ -140,14 +141,14 @@ export interface AgeLimit {
 
 // Ownership types
 export interface OwnershipType {
-  value: 'owner' | 'landlord' | 'tenant';
+  value: 'Owner' | 'Landlord' | 'Tenant';
   label: string;
   description?: string;
 }
 
 // Home types
 export interface HomeType {
-  value: 'landed property' | 'hdb' | 'condo';
+  value: 'Landed Property' | 'HDB' | 'Condo/Executive Condo';
   label: string;
   description?: string;
 }
@@ -174,7 +175,7 @@ export interface CoverageOption {
 }
 
 export interface CustomizationData {
-  hdbFireInsurance: 'yes' | 'no' | '';
+  worldwide_fpa: string;
   building: string;
   homeContentCoverageValue: string;
   renovationCoverageValue: string;

@@ -33,6 +33,7 @@ import {
   useGenerateHomeContentsQuote,
   useGetPremiumCalc,
   useGetProductDetails,
+  usePayment,
 } from '@/hook/insurance/homeContentQuote';
 
 import Step1QuoteForm from './Step1QuoteForm';
@@ -52,10 +53,12 @@ import {
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { useAppSelector } from '@/redux/store';
 import { GetUserInfoFromSingpassService } from '@/app/api/v1/singpass/user-info/[product]/singpass-get-user-info.service';
-import { DATA_FROM_SINGPASS } from '@/constants/general.constant';
+import { DATA_FROM_SINGPASS, PRODUCT_TYPE } from '@/constants/general.constant';
 import { useSaveProposal } from '@/hook/insurance/quote';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 export default function QuoteDetailPage() {
+  const router = useRouterWithQuery();
   //#region State Management
   // State management - using pre-computed initial objects
   const [currentStep, setCurrentStep] = useState<number>(() => {
@@ -96,10 +99,6 @@ export default function QuoteDetailPage() {
     setKey(keyQuote);
   }, []);
 
-  // const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
-  //   INITIAL_PERSONAL_INFO,
-  // );
-
   // UI state
   const [showPlans, setShowPlans] = useState(false);
   const [allplans, setAllPlans] = useState(() => {
@@ -108,6 +107,7 @@ export default function QuoteDetailPage() {
         const storedData = localStorage.getItem('plans');
         if (storedData) {
           const parsedData = JSON.parse(storedData);
+          console.log(`stored allplans = ${JSON.stringify(parsedData)}`);
 
           return PLANS;
         }
@@ -172,7 +172,7 @@ export default function QuoteDetailPage() {
   ///stores updated data in local storage.
   useEffect(() => {
     console.log(`formData changed: ${JSON.stringify(formData)}`);
-    localStorage.setItem('quoteFormData', JSON.stringify(formData));
+    saveToLocalStorage({ quoteFormData: JSON.stringify(formData) });
     if (formData.quoteStep >= 1) {
       setShowPlans(true);
     }
@@ -233,7 +233,7 @@ export default function QuoteDetailPage() {
   const currentPlan = useMemo(() => {
     if (!selectedPlan) return null;
     return allplans.find((p) => p.id === selectedPlan) || null;
-  }, [selectedPlan]);
+  }, [selectedPlan, formData, selectedAddOns, allplans]);
 
   const totalPremium = useMemo(() => {
     if (!currentPlan) return 0;
@@ -245,13 +245,14 @@ export default function QuoteDetailPage() {
       undefined,
       formData.coverageOptions,
     );
-  }, [currentPlan, selectedAddOns, promoStatus, formData]);
+  }, [currentPlan]);
 
   const updateFormData = useCallback(
     (
       field: keyof QuoteForm | keyof CustomizationData | 'addon',
       value: string,
       addOnId?: string,
+      price?: number,
       remove?: boolean,
     ) => {
       setFormData((prev) => {
@@ -275,7 +276,10 @@ export default function QuoteDetailPage() {
                     ? { ...item, selectedOption: value }
                     : item,
                 )
-              : [...prev.addons, { id: addOnId, selectedOption: value }],
+              : [
+                  ...prev.addons,
+                  { id: addOnId, selectedOption: value, price: 0 },
+                ],
           };
 
           return newData;
@@ -353,19 +357,15 @@ export default function QuoteDetailPage() {
   const homeContentInfo = useAppSelector(
     (state) => state.ecicsUserInfo?.userInfo,
   );
-  const personalInfo = homeContentInfo ? JSON.parse(homeContentInfo) : null;
 
   const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
     () => {
       if (typeof window !== 'undefined') {
         try {
-          const storedData = sessionStorage.getItem(DATA_FROM_SINGPASS);
+          let storedData = sessionStorage.getItem(DATA_FROM_SINGPASS);
           if (storedData) {
             const parsedData = JSON.parse(storedData);
-
-            // setSelectedAddOns(parsedData.addons || INITIAL_FORM_DATA.addons);
-
-            const newData = INITIAL_PERSONAL_INFO;
+            const newData = { ...INITIAL_PERSONAL_INFO };
             newData.policyHolderEmail = parsedData?.email.value || '';
             newData.policyHolderMobileNumber =
               parsedData?.mobileno.nbr.value || '';
@@ -383,13 +383,38 @@ export default function QuoteDetailPage() {
             newData.postalCode = parsedData?.regadd?.postal?.value || '';
             return newData;
           } else {
-            console.log(`singpass Data not found`);
+            storedData = sessionStorage.getItem('INFO_DATA');
+            if (storedData) {
+              const parsedData = JSON.parse(storedData);
+              const newData: PersonalInfoForm = { ...INITIAL_PERSONAL_INFO };
+              newData.policyHolderEmail = parsedData?.policyHolderEmail || '';
+              newData.policyHolderMobileNumber =
+                parsedData?.policyHolderMobileNumber || '';
+              newData.addressLine1 = parsedData?.addressLine1 || '';
+              newData.addressLine2 = parsedData?.addressLine2 || '';
+              newData.policyHolderFullName =
+                parsedData?.policyHolderFullName || '';
+              newData.policyHolderNationality =
+                parsedData?.policyHolderNationality || '';
+              newData.policyHolderNricFin =
+                parsedData?.policyHolderNricFin || '';
+              newData.policyHolderDateOfBirth =
+                parsedData?.policyHolderDateOfBirth || '';
+              newData.postalCode = parsedData?.postalCode || '';
+              newData.policyHolderGender =
+                parsedData?.policyHolderGender || 'M';
+              newData.policayHolderMaritalStatus =
+                parsedData?.policayHolderMaritalStatus || '';
+              return newData;
+            } else {
+              return INITIAL_PERSONAL_INFO;
+            }
           }
         } catch (error) {
           console.error('Failed to parse saved form data:', error);
         }
       }
-
+      console.log('setting Default Data');
       return INITIAL_PERSONAL_INFO;
     },
   );
@@ -405,38 +430,30 @@ export default function QuoteDetailPage() {
   }, [personalInfoData]);
 
   const updatePersonalInfoData = useCallback(
-    (field: keyof PersonalInfoForm, value: string) => {
+    <K extends keyof PersonalInfoForm>(
+      field: K,
+      value: PersonalInfoForm[K],
+    ) => {
       setPersonalInfoData((prev) => {
-        // Early return if value hasn't changed
-        if (prev[field] === value) return prev;
+        const next = { ...prev, [field]: value };
 
-        const newData = { ...prev, [field]: value };
-
-        // 🔒 PROTECTED - Business logic for insurer selection
-        if (field === 'previousInsurerName' && value !== 'Other') {
-          newData.otherInsurerName = '';
-        }
-
-        // Business logic for mailing address
         if (field === 'mailingAddressDifferent' && value === 'no') {
-          newData.mailingAddressLine1 = '';
-          newData.mailingAddressLine2 = '';
-          newData.mailingAddressLine3 = '';
-          newData.mailingPostalCode = '';
+          next.mailingAddressLine1 = '';
+          next.mailingAddressLine2 = '';
+          next.mailingAddressLine3 = '';
+          next.mailingPostalCode = '';
         }
 
-        return newData;
+        return next;
       });
 
-      // Clear errors efficiently
-      if (personalInfoErrors[field]) {
-        setPersonalInfoErrors((prev) => {
-          const { [field]: _, ...rest } = prev;
-          return rest;
-        });
-      }
+      setPersonalInfoErrors((prev) => {
+        if (!prev[field]) return prev;
+        const { [field]: _, ...rest } = prev;
+        return rest;
+      });
     },
-    [personalInfoErrors],
+    [],
   );
   //#endregion
 
@@ -567,12 +584,12 @@ export default function QuoteDetailPage() {
     async (newAddOns: SelectedAddOn[]) => {
       const payload = buildPayload(newAddOns);
       console.log(
-        `recalculating with add-ons, payload = ${JSON.stringify(payload)}`,
+        `recalculating with add-ons, payload = ${JSON.stringify(newAddOns)}`,
       );
 
       try {
         const res = await getPremiumCalc(payload);
-        console.log(`add-on recalculation response = ${JSON.stringify(res)}`);
+        // console.log(`add-on recalculation response = ${JSON.stringify(res)}`);
         setAllPlans(res);
       } catch (err) {
         console.log('ERROR RECALCULATING PREMIUM WITH ADD-ONS:', err);
@@ -603,7 +620,7 @@ export default function QuoteDetailPage() {
 
     getPremiumCalc(payload)
       .then((res) => {
-        console.log(`res = ${JSON.stringify(res)}`);
+        // console.log(`res = ${JSON.stringify(res)}`);
         // const returns = JSON.parse(res);
         // console.log(`cells = ${JSON.stringify(res.data.cells)}`);
         // setAllPlans(res);
@@ -611,6 +628,7 @@ export default function QuoteDetailPage() {
         setIsLoading(false);
         updateFormData('quoteStep', '1');
         setAllPlans(res);
+        saveToLocalStorage({ plans: res });
 
         const timeoutId = setTimeout(() => {
           const scrollTimeoutId = setTimeout(() => {
@@ -641,70 +659,76 @@ export default function QuoteDetailPage() {
     },
     [scrollToElement],
   );
+  const maritalStatus_table: Record<string, string> = {
+    Single: 'S',
+    Married: 'M',
+    Divorced: 'D',
+    Widowed: 'W',
+  };
 
-  const handleSaveQuote = useCallback(() => {
-    const maritalStatus_table: Record<string, string> = {
-      Single: 'S',
-      Married: 'M',
-      Divorced: 'D',
-      Widowed: 'W',
-    };
+  const gender_table: Record<string, string> = {
+    Male: 'M',
+    Female: 'F',
+  };
 
-    const gender_table: Record<string, string> = {
-      Male: 'M',
-      Female: 'F',
-    };
+  const handleSaveQuote = useCallback(
+    (personalInfo: PersonalInfoForm) => {
+      const payload: HomeContentQuoteSavePayload = {
+        key: key,
+        proposerDetails: {
+          addressLine1: personalInfo.addressLine1,
+          addressLine2: personalInfo.addressLine2 || '',
+          addressLine3: personalInfo.addressLine3 || '',
+          postCode: personalInfo.postalCode,
+          name: personalInfo.policyHolderFullName,
+          nric: personalInfo.policyHolderNricFin,
+          dob: personalInfo.policyHolderDateOfBirth,
+          gender: gender_table[personalInfo.policyHolderGender],
+          maritalStatus:
+            maritalStatus_table[personalInfo.policayHolderMaritalStatus],
+          mobile: personalInfo.policyHolderMobileNumber,
+          email: personalInfo.policyHolderEmail,
+          differentMailingAddress:
+            personalInfo.mailingAddressDifferent.toUpperCase(),
+          mailingAddress1: personalInfo.mailingAddressLine1,
+          mailingAddress2: personalInfo.mailingAddressLine2 || '',
+          mailingAddress3: personalInfo.mailingAddressLine3 || '',
+          mailingPostCode: personalInfo.mailingPostalCode,
+        },
+        planDetails: {
+          homeOwnership: formData.ownership,
+          homeType: formData.homeType,
+          unitType: formData.unitType,
+          homeContentCoverage:
+            formData.coverageOptions.homeContentCoverageValue,
+          renovationsCoverage: formData.coverageOptions.renovationCoverageValue,
+          buildingCoverage: formData.coverageOptions.building,
+          wpaCoverage: formData.coverageOptions.worldwide_fpa,
+          policyPeriod: formData.selectedPlan,
+          promoCode: formData.promoCode == '' ? 'NA' : formData.promoCode,
+          selectedPlan: formData.selectedPlan,
+          startDate: formData.policyStartDate,
+        },
 
-    const payload: HomeContentQuoteSavePayload = {
-      key: key,
-      proposerDetails: {
-        addressLine1: personalInfoData.addressLine1,
-        addressLine2: personalInfoData.addressLine2 || '',
-        addressLine3: personalInfoData.addressLine3 || '',
-        postCode: personalInfoData.postalCode,
-        name: personalInfoData.policyHolderFullName,
-        nric: personalInfoData.policyHolderNricFin,
-        dob: personalInfoData.policyHolderDateOfBirth,
-        gender: gender_table[personalInfoData.policyHolderGender],
-        maritalStatus:
-          maritalStatus_table[personalInfoData.policayHolderMaritalStatus],
-        mobile: personalInfoData.policyHolderMobileNumber,
-        email: personalInfoData.policyHolderEmail,
-        differentMailingAddress:
-          personalInfoData.mailingAddressDifferent.toUpperCase(),
-        mailingAddress1: personalInfoData.mailingAddressLine1,
-        mailingAddress2: personalInfoData.mailingAddressLine2 || '',
-        mailingAddress3: personalInfoData.mailingAddressLine3 || '',
-        mailingPostCode: personalInfoData.mailingPostalCode,
-      },
-      planDetails: {
-        homeOwnership: 'Owner',
-        homeType: 'Landed Property',
-        unitType: 'Landed',
-        homeContentCoverage: '40000',
-        renovationsCoverage: '30000',
-        buildingCoverage: '200000',
-        wpaCoverage: '100000',
-        policyPeriod: '3 Years',
-        promoCode: 'HOME40',
-        selectedPlan: '3 Years',
-        startDate: '2025-12-31',
-      },
+        __finalize: 1,
+      };
 
-      __finalize: 1,
-    };
+      console.log(`generate quote with this ${JSON.stringify(payload)}`);
 
-    generateHomeContentQuote(payload).then((res) => {
-      console.log(`quote res = ${JSON.stringify(res)}`);
-      if (res.status === '0') {
-        setCurrentStep(3);
-        setVisitedSteps((prev) => new Set(prev).add(3));
-        scrollToTop();
-      } else {
-        console.log('Quote save failed');
-      }
-    });
-  }, [isLoading]);
+      generateHomeContentQuote(payload).then((res) => {
+        console.log(`quote res = ${JSON.stringify(res)}`);
+        saveToLocalStorage({ proposal_data: res.data.data });
+        if (res.status === '0') {
+          setCurrentStep(3);
+          setVisitedSteps((prev) => new Set(prev).add(3));
+          scrollToTop();
+        } else {
+          console.log('Quote save failed');
+        }
+      });
+    },
+    [isLoading],
+  );
 
   // Handler for continuing from customization to add-ons
   const handleCustomizationComplete = useCallback(() => {
@@ -719,26 +743,31 @@ export default function QuoteDetailPage() {
 
   // 🔒 PROTECTED - Add-on toggle - ISP recalculation
   const handleAddOnToggle = useCallback(
-    (addOnId: string) => {
+    (addOnId: string, price: number) => {
+      console.log(`toggle with price ${price}`);
       setSelectedAddOns((prev) => {
         const existingIndex = prev.findIndex((item) => item.id === addOnId);
         let newAddOns: SelectedAddOn[];
 
         if (existingIndex >= 0) {
           // Remove add-on
-          updateFormData('addon', '', addOnId, true);
+          updateFormData('addon', '', addOnId, 0, true);
           newAddOns = prev.filter((_, index) => index !== existingIndex);
+          console.log(`toggle addon newAddons = ${JSON.stringify(newAddOns)}`);
+          setSelectedAddOns(newAddOns);
         } else {
           // Add add-on with default option
           const addOn = ADD_ONS.find((a) => a.id === addOnId);
           const newAddOn: SelectedAddOn = {
             id: addOnId,
             ...(addOn?.hasOptions && {
-              selectedOption: addOn.options?.[0]?.value,
+              selectedOption: '',
             }),
+            price: 0,
           };
           newAddOns = [...prev, newAddOn];
-          updateFormData('addon', '', addOnId, false);
+          setSelectedAddOns(newAddOns);
+          updateFormData('addon', '', addOnId, price, false);
         }
         return newAddOns;
       });
@@ -747,16 +776,24 @@ export default function QuoteDetailPage() {
   );
 
   const handleAddOnOptionChange = useCallback(
-    (addOnId: string, option: string) => {
+    async (addOnId: string, option: string, price: number) => {
       setSelectedAddOns((prev) => {
-        const newAddOns = prev.map((item) =>
-          item.id === addOnId ? { ...item, selectedOption: option } : item,
-        );
+        let finalPrice = 0;
+        if (addOnId === 'building') {
+          finalPrice = currentPlan?.buildingCoverageWithDiscount || 0;
+        } else {
+          finalPrice = currentPlan?.worldwideFpaWithDiscount || 0;
+        }
 
-        updateFormData('addon', option, addOnId);
+        const newAddOns = prev.map((item) =>
+          item.id === addOnId
+            ? { ...item, selectedOption: option, price: finalPrice }
+            : item,
+        );
 
         return newAddOns;
       });
+      updateFormData('addon', option, addOnId);
     },
     [updateFormData],
   );
@@ -798,9 +835,12 @@ export default function QuoteDetailPage() {
     } else if (currentStep === 2) {
       const newErrors = validatePersonalInfoForm(personalInfoData);
       setPersonalInfoErrors(newErrors);
-
       if (isFormValid(newErrors)) {
-        handleSaveQuote();
+        console.log(
+          `personalInfoData on Save Quote ${JSON.stringify(personalInfoData)}`,
+        );
+        saveToSessionStorage({ INFO_DATA: JSON.stringify(personalInfoData) });
+        handleSaveQuote(personalInfoData);
       }
     }
   }, [
@@ -817,16 +857,84 @@ export default function QuoteDetailPage() {
 
   //#region Payment
   const {
+    mutate: payment,
+    data: dataPayment,
+    isPending: isPendingPay,
+  } = usePayment();
+
+  const {
     mutateAsync: saveProposal,
     isSuccess,
     isPending: isPendingSave,
     isError,
   } = useSaveProposal();
 
+  useEffect(() => {
+    if (isSuccess) {
+      payment(key);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    console.log(`dataPayment = ${dataPayment}`);
+    if (dataPayment?.paymentlink) {
+      router.push(dataPayment.paymentlink);
+    }
+  }, [dataPayment]);
+
   const handleMakePayment = useCallback(() => {
-    // saveProposal()
-    setCurrentStep(4);
-    scrollToTop();
+    console.log(
+      `personalData on make payment: ${JSON.stringify(personalInfoData)}`,
+    );
+    saveProposal({
+      data: {
+        key: key,
+        homeContentPayload: {
+          key: key,
+          proposerDetails: {
+            addressLine1: personalInfoData.addressLine1,
+            addressLine2: personalInfoData.addressLine2,
+            addressLine3: personalInfoData.addressLine3,
+            postCode: personalInfoData.postalCode,
+            name: personalInfoData.policyHolderFullName,
+            nric: personalInfoData.policyHolderNricFin,
+            dob: personalInfoData.policyHolderDateOfBirth,
+            gender: gender_table[personalInfoData.policyHolderGender],
+            maritalStatus:
+              maritalStatus_table[personalInfoData.policayHolderMaritalStatus],
+            mobile: personalInfoData.policyHolderMobileNumber,
+            email: personalInfoData.policyHolderEmail,
+            differentMailingAddress: personalInfoData.mailingAddressDifferent,
+            mailingAddress1: personalInfoData.mailingAddressLine1,
+            mailingAddress2: personalInfoData.mailingAddressLine2,
+            mailingAddress3: personalInfoData.mailingAddressLine3,
+            mailingPostCode: personalInfoData.mailingPostalCode,
+          },
+          planDetails: {
+            homeOwnership: formData.ownership,
+            homeType: formData.homeType,
+            unitType: formData.unitType,
+            homeContentCoverage:
+              formData.coverageOptions.homeContentCoverageValue,
+            renovationsCoverage:
+              formData.coverageOptions.renovationCoverageValue,
+            buildingCoverage: formData.coverageOptions.building,
+            wpaCoverage: formData.coverageOptions.worldwide_fpa,
+            policyPeriod: formData.selectedPlan,
+            promoCode: formData.promoCode,
+            selectedPlan: formData.selectedPlan,
+            startDate: formData.policyStartDate,
+          },
+          __finalize: 1,
+        },
+      },
+      productType: PRODUCT_NAME.HOME_CONTENT,
+    }).then((res) => {
+      if (res.status === 1) {
+        setCurrentStep(4);
+        scrollToTop();
+      }
+    });
   }, [scrollToTop]);
   //#endregion
   const handleBack = useCallback(() => {
@@ -888,6 +996,7 @@ export default function QuoteDetailPage() {
       hasViewedCustomization={hasViewedCustomization}
       setHasViewedCustomization={setHasViewedCustomization}
       onAddOnOptionChange={handleAddOnOptionChange}
+      totalPremium={totalPremium}
     />,
     <Step2PersonalInfo
       key='Step 2'

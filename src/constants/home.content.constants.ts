@@ -8,28 +8,28 @@ import {
 
 // Basic constants - loaded immediately
 export const HOME_OWNERSHIP_TYPES: OwnershipType[] = [
-  { value: 'owner', label: 'Owner', description: 'Living In' },
+  { value: 'Owner', label: 'Owner', description: 'Living In' },
   {
-    value: 'landlord',
+    value: 'Landlord',
     label: 'Landlord',
     description: 'Renting out partially/fully',
   },
-  { value: 'tenant', label: 'Tenant', description: 'Renting from landlord' },
+  { value: 'Tenant', label: 'Tenant', description: 'Renting from landlord' },
 ];
 
 export const HOME_TYPES: HomeType[] = [
   {
-    value: 'landed property',
+    value: 'Landed Property',
     label: 'Landed Property',
     description: 'Terrace, semi-detached, detached, shophouse',
   },
   {
-    value: 'hdb',
+    value: 'HDB',
     label: 'HDB Flat',
     description: 'Housing Development Board apartment',
   },
   {
-    value: 'condo',
+    value: 'Condo/Executive Condo',
     label: 'Condo/Executive Condo',
     description: 'Condominium or executive condominium',
   },
@@ -40,16 +40,32 @@ export const UNIT_TYPES: UnitType[] = [
   {
     value: '1-Room/Studio',
     label: '1-room/Studio',
-    homeTypes: ['hdb', 'condo'],
+    homeTypes: ['HDB', 'Condo/Executive Condo'],
   },
-  { value: '2-Room', label: '2-Room', homeTypes: ['hdb', 'condo'] },
-  { value: '3-Room', label: '3-Room', homeTypes: ['hdb', 'condo'] },
-  { value: '4-Room', label: '4-Room', homeTypes: ['hdb', 'condo'] },
-  { value: '5-Room', label: '5-Room', homeTypes: ['hdb', 'condo'] },
+  {
+    value: '2-Room',
+    label: '2-Room',
+    homeTypes: ['HDB', 'Condo/Executive Condo'],
+  },
+  {
+    value: '3-Room',
+    label: '3-Room',
+    homeTypes: ['HDB', 'Condo/Executive Condo'],
+  },
+  {
+    value: '4-Room',
+    label: '4-Room',
+    homeTypes: ['HDB', 'Condo/Executive Condo'],
+  },
+  {
+    value: '5-Room',
+    label: '5-Room',
+    homeTypes: ['HDB', 'Condo/Executive Condo'],
+  },
   {
     value: 'Executive/Multi-generation',
     label: 'Executive/Multi-generation',
-    homeTypes: ['hdb'],
+    homeTypes: ['HDB'],
   },
   // { value: 'landed-single', label: 'Single Story', homeTypes: ['landed'] },
   // { value: 'landed-double', label: 'Double Story', homeTypes: ['landed'] },
@@ -79,7 +95,7 @@ export const COLORS = {
 // Core data - Home Content Insurance plans
 export const PLANS: InsurancePlan[] = [
   {
-    id: '1-year',
+    id: '1 Year',
     name: '1 Year',
     originalPrice: 250,
     discountedPrice: 250, // No discount for 1-year
@@ -129,8 +145,8 @@ export const PLANS: InsurancePlan[] = [
     highlights: ['Full coverage', 'Annual renewal', 'Flexible terms'],
   },
   {
-    id: '3-year',
-    name: '3 Year',
+    id: '3 Years',
+    name: '3 Years',
     originalPrice: 675, // 3 years worth at $225/year (10% discount applied)
     discountedPrice: 675,
     totalPricePlanB4GST: 675,

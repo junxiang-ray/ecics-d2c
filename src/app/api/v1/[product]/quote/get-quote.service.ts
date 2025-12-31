@@ -531,6 +531,23 @@ export async function getQuoteForHomeContent(
       `Generating quote for home content with data: ${JSON.stringify(data)}`,
     );
 
+    // const ownershipTable: Record<string,string> = {
+    //   "owner":"Owner",
+    //   "landlord": "Landlord",
+    //   "tenant":"Tenant"
+    // };
+
+    // const hometypeTable: Record<string,string> = {
+    //   "landed property": "Landed Property",
+    //   "hdb": "HDB",
+    //   "condo": "Condo/Executive Condo",
+    // }
+
+    // const policyNameTable : Record<string,string>= {
+    //   "3-year": "3 years",
+    //   "1-year": "1 year"
+    // }
+
     ///Expected Payload u can use this for testing
     // const testPayload = {
     //   "product_id": "M000000000052",
@@ -558,6 +575,18 @@ export async function getQuoteForHomeContent(
     //   "coverageHomeContents": "40000",
     //   "__finalize": 0,
     // }
+    let redirectUrl = '';
+    let returnBaseUrl = '';
+    if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE) {
+      redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE}?key=${data.key}`;
+    } else {
+      redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/home-contents/quote-detail?key=${data.key}`;
+    }
+    if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+      returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+    } else {
+      returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+    }
 
     const payloadData = {
       proposerDetails: {
@@ -580,19 +609,20 @@ export async function getQuoteForHomeContent(
         mailingPostCode: data.proposerDetails.mailingPostCode,
       },
       planDetails: {
-        homeOwnership: 'Owner',
-        homeType: 'Landed Property',
-        unitType: 'Landed',
-        homeContentCoverage: '40000',
-        renovationsCoverage: '30000',
-        buildingCoverage: '200000',
-        wpaCoverage: '100000',
-        policyPeriod: '3 Years',
-        promoCode: 'HOME40',
-        selectedPlan: '3 Years',
-        startDate: '2025-12-31',
+        homeOwnership: data.planDetails.homeOwnership,
+        homeType: data.planDetails.homeType,
+        unitType: data.planDetails.unitType,
+        homeContentCoverage: data.planDetails.homeContentCoverage,
+        renovationsCoverage: data.planDetails.renovationsCoverage,
+        buildingCoverage: data.planDetails.buildingCoverage,
+        wpaCoverage: data.planDetails.wpaCoverage,
+        policyPeriod: data.planDetails.policyPeriod,
+        promoCode: data.planDetails.promoCode,
+        selectedPlan: data.planDetails.selectedPlan,
+        startDate: data.planDetails.startDate,
       },
-
+      redirectUrl: redirectUrl,
+      returnUrl: returnBaseUrl,
       __finalize: data.__finalize,
     };
 
@@ -600,7 +630,7 @@ export async function getQuoteForHomeContent(
 
     const getQuoteRes = await handleApiCallToISP(
       `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/quote`,
-      data,
+      payloadData,
     );
     logger.info(
       `Response from generate quote for Home Contents: ${JSON.stringify(getQuoteRes)}`,

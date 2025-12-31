@@ -13,6 +13,7 @@ export function Select({
   placeholder = 'Select an option',
   className,
   onChange,
+  value,
   defaultValue,
   disabled = false,
 }: {
@@ -21,11 +22,12 @@ export function Select({
   className?: string;
   onChange?: (value: string) => void;
   defaultValue?: string;
+  value?: string;
   disabled?: boolean;
 }) {
   return (
     <AntdSelect
-      value={defaultValue}
+      value={value ?? defaultValue}
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}

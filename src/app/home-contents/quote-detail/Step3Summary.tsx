@@ -248,7 +248,7 @@ const Step3Summary = memo<Step3Props>(
                       Sum Insured
                     </h4>
                     <div className='space-y-1.5'>
-                      {customizationData.hdbFireInsurance !== 'yes' && (
+                      {customizationData.building !== 'yes' && (
                         <div className='flex items-center justify-between text-sm'>
                           <span className='text-gray-600'>
                             Building Coverage
@@ -552,14 +552,6 @@ const Step3Summary = memo<Step3Props>(
                       ).toLocaleString()}
                     </span>
                   </div>
-                  <div className='flex items-start justify-between gap-3'>
-                    <span className='min-w-0 flex-1 break-words text-sm text-[#303030]'>
-                      HDB Fire Insurance
-                    </span>
-                    <span className='flex-shrink-0 whitespace-nowrap text-sm font-medium capitalize text-[#303030]'>
-                      {customizationData.hdbFireInsurance}
-                    </span>
-                  </div>
                 </div>
               </div>
             )}
@@ -675,7 +667,10 @@ const Step3Summary = memo<Step3Props>(
             totalPremium={totalPremium}
             promoStatus={promoStatus}
             currentStep={currentStep}
-            onNext={onMakePayment}
+            onNext={() => {
+              console.log(`PREMIUM SUM: ${JSON.stringify(personalInfoData)}`);
+              onMakePayment();
+            }}
             onBack={onBack}
             formData={formData}
             customizationData={customizationData}

@@ -26,8 +26,10 @@ import {
 
 import {
   saveQuoteProposalDTO,
+  saveQuoteProposalForHomeContentDTO,
   saveQuoteProposalForMaidDTO,
 } from './save-proposal.dto';
+import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
 
 //#region Car
 
@@ -416,11 +418,10 @@ export async function saveProposalForMotorcycle(
 //#region Home Content
 /// save proposal for home content
 export async function saveProposalForHomeContents(
-  currData: saveQuoteProposalDTO,
+  currData: saveQuoteProposalForHomeContentDTO,
 ) {
-  const { key, selected_plan, selected_addons, add_named_driver_info } =
-    currData;
-
+  const { key, homeContentPayload } = currData;
+  logger.info(`currData here is = ${JSON.stringify(homeContentPayload)}`);
   const quoteInfo = await prisma.quote.findFirst({
     where: {
       key: key,
@@ -440,14 +441,19 @@ export async function saveProposalForHomeContents(
     return ErrNotFound('Quote not found');
   }
 
+  // return successRes({
+  //   message: 'Proposal saved successfully',
+  //   data: quoteInfo,
+  // });
+
   const { quote_id, proposal_id } = quoteInfo;
 
   let redirectUrl = '';
   let returnBaseUrl = '';
-  if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE) {
-    redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_MOTORCYCLE_WEBSITE}?key=${key}`;
+  if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE) {
+    redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE}?key=${key}`;
   } else {
-    redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/motorcycle/summary?key=${key}`;
+    redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/home-contents/quote-detail?key=${key}`;
   }
 
   if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
@@ -459,27 +465,47 @@ export async function saveProposalForHomeContents(
   const payload: any = {
     quoteId: quote_id,
     proposalId: proposal_id,
-    applicantInfo: {
-      nric: getPlanIdfromTitle(quoteInfo, selected_plan),
-      dob: getOptionalBenefitCodes(selected_addons),
-      name: getPersonalInfo(quoteInfo),
-      nationality: getVehicleInfo(quoteInfo),
-      contactNo: getAdditionalDriverInfo(quoteInfo),
-      email: quoteInfo.company?.name || '',
-      addressline1: true,
-      addressline2: true,
-      addressline3: true,
-      postalCode: true,
+    proposerDetails: {
+      addressLine1: homeContentPayload.proposerDetails.addressLine1,
+      addressLine2: homeContentPayload.proposerDetails.addressLine2 || '',
+      addressLine3: homeContentPayload.proposerDetails.addressLine3 || '',
+      postCode: homeContentPayload.proposerDetails.postCode,
+      name: homeContentPayload.proposerDetails.name,
+      nric: homeContentPayload.proposerDetails.nric,
+      dob: homeContentPayload.proposerDetails.dob,
+      gender: homeContentPayload.proposerDetails.gender,
+      maritalStatus: homeContentPayload.proposerDetails.maritalStatus,
+      mobile: homeContentPayload.proposerDetails.mobile,
+      email: homeContentPayload.proposerDetails.email,
+      differentMailingAddress:
+        homeContentPayload.proposerDetails.differentMailingAddress.toUpperCase(),
+      mailingAddress1: homeContentPayload.proposerDetails.mailingAddress1,
+      mailingAddress2: homeContentPayload.proposerDetails.mailingAddress2 || '',
+      mailingAddress3: homeContentPayload.proposerDetails.mailingAddress3 || '',
+      mailingPostCode: homeContentPayload.proposerDetails.mailingPostCode,
     },
-    planId: '1year',
-    selectedCoverage: [],
-    finalize: false,
+    planDetails: {
+      homeOwnership: homeContentPayload.planDetails.homeOwnership,
+      homeType: homeContentPayload.planDetails.homeType,
+      unitType: homeContentPayload.planDetails.unitType,
+      homeContentCoverage: homeContentPayload.planDetails.homeContentCoverage,
+      renovationsCoverage: homeContentPayload.planDetails.renovationsCoverage,
+      buildingCoverage: homeContentPayload.planDetails.buildingCoverage,
+      wpaCoverage: homeContentPayload.planDetails.wpaCoverage,
+      policyPeriod: homeContentPayload.planDetails.policyPeriod,
+      promoCode: homeContentPayload.planDetails.promoCode,
+      selectedPlan: homeContentPayload.planDetails.selectedPlan,
+      startDate: homeContentPayload.planDetails.startDate,
+    },
+    finalize: 1,
+    redirectUrl: redirectUrl,
+    returnUrl: returnBaseUrl,
   };
 
   logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
 
   const resSaveProposal = await handleApiCallToISP(
-    `/${MOTORCYCLE_INSURANCE.PREFIX_ENDPOINT}/proposal`,
+    `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/proposal`,
     payload,
   );
   logger.info(
@@ -500,8 +526,6 @@ export async function saveProposalForHomeContents(
     data: {
       data: {
         ...(quoteData && typeof quoteData === 'object' ? quoteData : {}),
-        selected_addons: selected_addons,
-        add_named_driver_info: add_named_driver_info,
       },
       quote_finalize_from_ISP: resSaveProposal,
       is_finalized: true,

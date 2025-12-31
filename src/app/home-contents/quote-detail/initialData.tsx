@@ -13,15 +13,15 @@ const TOMORROW_DATE = new Date(Date.now() + 86400000)
 
 // Pre-computed initial state objects to prevent recreation
 const INITIAL_FORM_DATA: QuoteForm = {
-  ownership: 'owner',
-  homeType: 'hdb',
+  ownership: 'Owner',
+  homeType: 'HDB',
   unitType: '4-Room',
   policyStartDate: TOMORROW_DATE,
   promoCode: '',
   selectedPlan: '',
   coverageOptions: {
-    hdbFireInsurance: 'yes', // Default to "Yes" - most common case
-    building: '100000', // Default $100,000 (smallest option)
+    worldwide_fpa: 'NA', // Default to "Yes" - most common case
+    building: 'NA', // Default $100,000 (smallest option)
     homeContentCoverageValue: '40000', // Default $30,000 (smallest option)
     renovationCoverageValue: '30000', // Default $10,000 (smallest option)
   },

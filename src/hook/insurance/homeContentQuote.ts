@@ -81,3 +81,17 @@ export const useSaveHomeContentQuote = () => {
     mutationKey: ['save-homecontent-quote'],
   });
 };
+
+export const usePayment = () => {
+  const payment = async (key: string) => {
+    const res = await homecontents.payment({
+      key,
+      product_type: 'home_contents',
+    });
+    return res.data.data;
+  };
+  return useMutation({
+    mutationFn: payment,
+    mutationKey: ['payload'],
+  });
+};

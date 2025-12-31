@@ -66,16 +66,6 @@ export const calculateCoveragePremium = (
 
   let coveragePremium = 0;
 
-  // Building coverage (only if HDB Fire Insurance is 'no')
-  if (
-    customizationData.hdbFireInsurance === 'no' &&
-    customizationData.building
-  ) {
-    const buildingAmount = parseFloat(customizationData.building);
-    coveragePremium +=
-      (buildingAmount / 1000) * COVERAGE_PRICING.BUILDING_RATE_PER_1000;
-  }
-
   // Home content coverage (required)
   if (customizationData.homeContentCoverageValue) {
     const homeContentAmount = parseFloat(
@@ -122,24 +112,47 @@ export const calculateTotalPremium = (
   // const coveragePremium = calculateCoveragePremium(customizationData);
   // total += coveragePremium;
 
-  if (ADD_ONS && Array.isArray(ADD_ONS)) {
-    selectedAddOns.forEach((selectedAddOn) => {
-      const addOn = ADD_ONS.find((a: any) => a.id === selectedAddOn.id);
-      if (addOn) {
-        if (addOn.hasOptions && selectedAddOn.selectedOption) {
-          const option = addOn.options?.find(
-            (o: any) => o.value === selectedAddOn.selectedOption,
-          );
-          total += option?.price || addOn.price;
-        } else {
-          total += addOn.price;
-        }
-      }
-    });
-  }
+  selectedAddOns.forEach((selectedAddOn) => {
+    // console.log(`PRICES OF ADDONS = ${selectedAddOn.price}`);
+    // const addOn = ADD_ONS.find((a: any) => a.id === selectedAddOn.id);
+    // if (addOn) {
+    //   if (addOn.hasOptions && selectedAddOn.selectedOption) {
+    //     const option = addOn.options?.find(
+    //       (o: any) => o.value === selectedAddOn.selectedOption,
+    //     );
+    //     total += option?.price || addOn.price;
+    //   } else {
+    //     total += addOn.price;
+    //   }
+    // }
+    if (selectedAddOn.id === 'building') {
+      total += selectedPlan.buildingCoverageWithDiscount || 0;
+    } else if (selectedAddOn.id === 'worldwide-fpa') {
+      console.log('I calculate ', selectedPlan.worldwideFpaWithDiscount);
+      total += selectedPlan.worldwideFpaWithDiscount || 0;
+    }
+  });
 
   total *= 1.09;
 
+  return total;
+};
+
+export const calculateAddOnTotal = (
+  selectedPlan: InsurancePlan | null,
+  selectedAddOns: SelectedAddOn[],
+) => {
+  if (!selectedPlan) return 0;
+
+  let total = 0;
+  selectedAddOns.forEach((selectedAddOn) => {
+    if (selectedAddOn.id === 'building') {
+      total += selectedPlan.buildingCoverageWithDiscount || 0;
+    } else if (selectedAddOn.id === 'worldwide-fpa') {
+      console.log('I calculate ', selectedPlan.worldwideFpaWithDiscount);
+      total += selectedPlan.worldwideFpaWithDiscount || 0;
+    }
+  });
   return total;
 };
 
@@ -151,7 +164,7 @@ export const calculateOriginalTotal = (
   if (!selectedPlan) return 0;
 
   let total = selectedPlan.originalPrice;
-  console.log(`total = ${total}`);
+  // console.log(`total = ${total}`);
 
   if (ADD_ONS && Array.isArray(ADD_ONS)) {
     selectedAddOns.forEach((selectedAddOn) => {
@@ -168,7 +181,7 @@ export const calculateOriginalTotal = (
       }
     });
   }
-  console.log(`total calc = ${total}`);
+  // console.log(`total calc = ${total}`);
 
   return total;
 };

@@ -28,7 +28,7 @@ export async function POST(
       return saveProposalForMaid(body);
     case PRODUCT_NAME.MOTORCYCLE:
       return saveProposalForMotorcycle(body);
-    case 'b2c_hc':
+    case PRODUCT_NAME.HOME_CONTENT:
       return saveProposalForHomeContents(body);
     default:
       return NextResponse.json(

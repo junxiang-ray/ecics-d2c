@@ -72,13 +72,14 @@ interface Step1Props {
   onCalculateQuote: () => void;
   onPlanSelect: (planId: string) => void;
   onCustomizationComplete: () => void;
-  onAddOnToggle: (addOnId: string) => void;
-  onAddOnOptionChange: (addOnId: string, option: string) => void;
+  onAddOnToggle: (addOnId: string, price: number) => void;
+  onAddOnOptionChange: (addOnId: string, option: string, price: number) => void;
   onNext: () => void;
   onBack: () => void;
   currentStep: number;
   hasViewedCustomization: boolean;
   setHasViewedCustomization: (viewed: boolean) => void;
+  totalPremium: number;
 }
 
 const Step1QuoteForm = memo<Step1Props>(
@@ -108,6 +109,7 @@ const Step1QuoteForm = memo<Step1Props>(
     currentStep,
     hasViewedCustomization,
     setHasViewedCustomization,
+    totalPremium,
   }) => {
     // Ref for the customization section
     const customizationRef = useRef<HTMLDivElement>(null);
@@ -149,17 +151,7 @@ const Step1QuoteForm = memo<Step1Props>(
     const currentPlan = useMemo(() => {
       if (!planData || !Array.isArray(planData) || !selectedPlan) return null;
       return planData.find((p) => p.id === selectedPlan) || null;
-    }, [selectedPlan]);
-
-    const totalPremium = useMemo(() => {
-      return calculateTotalPremium(
-        currentPlan || null,
-        selectedAddOns,
-        promoStatus,
-        undefined,
-        customizationData,
-      );
-    }, [currentPlan, selectedAddOns, promoStatus, customizationData]);
+    }, [selectedPlan, planData]);
 
     const isCalculateQuoteDisabled = useMemo(() => {
       return isLoading;
@@ -335,7 +327,6 @@ const Step1QuoteForm = memo<Step1Props>(
                     }
                   }}
                   className='h-14 w-full text-lg'
-                  disabled={!customizationData.hdbFireInsurance}
                 />
 
                 {/* {errors.unitType && (
@@ -379,7 +370,6 @@ const Step1QuoteForm = memo<Step1Props>(
                       }
                     }}
                     className='h-14 w-full text-lg'
-                    disabled={!customizationData.hdbFireInsurance}
                   />
                   {/* {errors.policyStartDate && (
                   <p className='mt-1 flex items-center gap-1 text-xs text-red-500 sm:text-sm'>
@@ -776,267 +766,6 @@ const Step1QuoteForm = memo<Step1Props>(
           </div>
         )}
 
-        {/* Customization Section */}
-        {showCustomization && (
-          <div
-            ref={customizationRef}
-            id='customization-section'
-            className='animate-in fade-in duration-500'
-          >
-            <div className='mb-16 text-center'>
-              <h2 className='mb-2 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-4xl font-bold text-gray-800 text-transparent sm:mb-4'>
-                Customise Your Plan
-              </h2>
-              <p className='mx-auto max-w-[800px]  text-base leading-relaxed text-gray-600 sm:text-xl'>
-                Adjust your coverage amounts to match your specific needs and
-                get a personalized quote.
-              </p>
-            </div>
-
-            <Card className='mb-16 overflow-hidden border-0 shadow-xl'>
-              <CardHeader className='from-[#02ADEF]/8 border-b border-gray-100 bg-gradient-to-r via-blue-50/80 to-indigo-50/50 p-8'>
-                <div className='mb-3 flex items-center gap-4'>
-                  <div className='rounded-xl bg-[#02ADEF]/10 p-3'>
-                    <Building className='size-6 text-[#02ADEF]' />
-                  </div>
-                  <div>
-                    <h3 className='m-0 mb-1 text-[28px] font-bold text-gray-800'>
-                      Coverage Amounts
-                    </h3>
-                    <p className='m-0 text-base text-gray-600'>
-                      Select the coverage amounts that best suit your home and
-                      belongings
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className='p-8 sm:p-10'>
-                {/* HDB Fire Insurance Question HIDDEN FOR NOW */}
-                {/* <div className='mb-6 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/50 p-3 sm:mb-8 sm:p-4 md:p-6 lg:mb-12'>
-                  <div className='mb-3 sm:mb-4 md:mb-6'>
-                    <Label className='mb-2 flex items-start gap-2 text-sm font-semibold text-gray-700 sm:mb-3 sm:items-center sm:gap-3 sm:text-base lg:text-lg'>
-                      <Shield className='mt-0.5 size-4 flex-shrink-0 text-[#02ADEF] sm:mt-0 sm:size-5' />
-                      <span className='text-[14px] leading-tight'>
-                        Are you currently insured under HDB Fire Insurance?{' '}
-                        <span className='text-red-500'>*</span>
-                      </span>
-                    </Label>
-                    <p className='mb-3 pl-6 text-[12px] leading-snug text-gray-600 sm:mb-4 sm:pl-8 sm:text-sm'>
-                      Please indicate if you currently have HDB Fire Insurance
-                      coverage before customizing your coverage amounts.
-                    </p>
-
-                    <div className='grid grid-cols-2 gap-2.5 sm:gap-3 lg:gap-4'>
-                      <Button
-                        type='button'
-                        variant={
-                          customizationData.hdbFireInsurance === 'yes'
-                            ? 'default'
-                            : 'outline'
-                        }
-                        className={cn(
-                          'flex h-11 items-center justify-center rounded-lg px-2.5 text-xs font-semibold leading-tight transition-all duration-200 sm:h-12 sm:px-3 sm:text-sm lg:h-14 lg:px-4 lg:text-lg',
-                          'touch-target min-h-[44px]', // Ensure 44px touch target for accessibility
-                          customizationData.hdbFireInsurance === 'yes'
-                            ? 'border-[#52c41a] bg-[#52c41a] text-white shadow-lg hover:bg-[#52c41a]/90'
-                            : 'border-gray-200 bg-white text-gray-700 hover:border-[#02ADEF]/50 hover:bg-blue-50/50',
-                        )}
-                        onClick={() =>
-                          updateCustomizationData('hdbFireInsurance', 'yes')
-                        }
-                      >
-                        <CheckCircle
-                          className={cn(
-                            'mr-1 size-3.5 flex-shrink-0 sm:mr-1.5 sm:size-4 lg:mr-2 lg:size-5',
-                            customizationData.hdbFireInsurance === 'yes'
-                              ? 'text-white'
-                              : 'text-gray-400',
-                          )}
-                        />
-                        <span className='text-left text-xs sm:text-sm lg:text-base'>
-                          Yes
-                        </span>
-                      </Button>
-
-                      <Button
-                        type='button'
-                        variant={
-                          customizationData.hdbFireInsurance === 'no'
-                            ? 'default'
-                            : 'outline'
-                        }
-                        className={cn(
-                          'flex h-11 items-center justify-center rounded-lg px-2.5 text-xs font-semibold leading-tight transition-all duration-200 sm:h-12 sm:px-3 sm:text-sm lg:h-14 lg:px-4 lg:text-lg',
-                          'touch-target min-h-[44px]', // Ensure 44px touch target for accessibility
-                          customizationData.hdbFireInsurance === 'no'
-                            ? 'border-[#52c41a] bg-[#52c41a] text-white shadow-lg hover:bg-[#52c41a]/90'
-                            : 'border-gray-200 bg-white text-gray-700 hover:border-[#02ADEF]/50 hover:bg-blue-50/50',
-                        )}
-                        onClick={() =>
-                          updateCustomizationData('hdbFireInsurance', 'no')
-                        }
-                      >
-                        <X
-                          className={cn(
-                            'mr-1 size-3.5 flex-shrink-0 sm:mr-1.5 sm:size-4 lg:mr-2 lg:size-5',
-                            customizationData.hdbFireInsurance === 'no'
-                              ? 'text-white'
-                              : 'text-gray-400',
-                          )}
-                        />
-                        <span className='text-left text-xs sm:text-sm lg:text-base'>
-                          No
-                        </span>
-                      </Button>
-                    </div>
-                  </div>
-                </div>  */}
-                {/* Coverage Selection - disabled until HDB Fire insurance is answered */}
-                {!customizationData.hdbFireInsurance && (
-                  <div className='mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4'>
-                    <div className='flex items-center gap-2 text-yellow-800'>
-                      <AlertCircle className='size-5' />
-                      <p className='font-medium'>
-                        Please answer the HDB Fire Insurance question above to
-                        continue with coverage selection.
-                      </p>
-                    </div>
-                  </div>
-                )}
-                <div
-                  className={cn(
-                    // grid ensures equal height when items-stretch is present
-                    'grid grid-cols-1 items-stretch gap-8 transition-all duration-300',
-                    customizationData.hdbFireInsurance === 'yes'
-                      ? 'lg:grid-cols-2'
-                      : 'lg:grid-cols-3',
-                    !customizationData.hdbFireInsurance &&
-                      'pointer-events-none opacity-50',
-                  )}
-                >
-                  {/* Building Coverage - Hidden when HDB Fire Insurance is 'yes' */}
-                  {customizationData.hdbFireInsurance !== 'yes' && (
-                    <div className='flex w-full flex-col justify-between space-y-4 rounded-lg bg-white p-4'>
-                      <Label className='flex items-center gap-3 text-lg font-semibold text-gray-700'>
-                        <Home className='size-5 text-[#02ADEF]' />
-                        Building Coverage{' '}
-                        <span className='text-red-500'>*</span>
-                      </Label>
-
-                      <p className='mb-3 text-sm text-gray-600'>
-                        Cover repair or reconstruction costs of any part of your
-                        building damaged by unforeseen events
-                      </p>
-
-                      <Select
-                        options={BUILDING_COVERAGE_OPTIONS.map(
-                          (opt) => opt.label,
-                        )}
-                        defaultValue={
-                          BUILDING_COVERAGE_OPTIONS.find(
-                            (opt) => opt.value === customizationData.building,
-                          )?.label
-                        }
-                        onChange={(label) => {
-                          const selected = BUILDING_COVERAGE_OPTIONS.find(
-                            (opt) => opt.label === label,
-                          );
-                          if (selected) {
-                            updateCustomizationData('building', selected.value);
-                          }
-                        }}
-                        className='h-14 px-6 text-lg'
-                        disabled={!customizationData.hdbFireInsurance}
-                      />
-                    </div>
-                  )}
-
-                  {/* Home Content Coverage */}
-                  <div className='flex w-full flex-col justify-between space-y-2 rounded-lg bg-white sm:space-y-4 sm:p-4'>
-                    <Label className='flex items-center gap-2 text-base font-semibold text-gray-700 sm:gap-3 sm:text-lg'>
-                      <Shield className='size-5 text-[#02ADEF]' />
-                      Home Content Coverage{' '}
-                      <span className='text-red-500'>*</span>
-                    </Label>
-
-                    <p className='mb-6 text-sm text-gray-600 sm:text-base'>
-                      Cover loss or damage to your home contents including the
-                      cost of removing debris
-                    </p>
-
-                    <Select
-                      options={HOME_CONTENT_COVERAGE_OPTIONS.map(
-                        (option) => option.label,
-                      )}
-                      defaultValue={
-                        HOME_CONTENT_COVERAGE_OPTIONS.find(
-                          (option) =>
-                            option.value ===
-                            customizationData.homeContentCoverageValue,
-                        )?.label
-                      }
-                      onChange={(label) => {
-                        const selected = HOME_CONTENT_COVERAGE_OPTIONS.find(
-                          (option) => option.label === label,
-                        );
-                        if (selected)
-                          updateCustomizationData(
-                            'homeContentCoverageValue',
-                            selected.value,
-                          );
-                      }}
-                      className='h-14 w-full text-lg'
-                      disabled={!customizationData.hdbFireInsurance}
-                    />
-                  </div>
-
-                  {/* Renovation Coverage */}
-                  <div className='flex w-full flex-col justify-between space-y-2 rounded-lg bg-white sm:space-y-4 sm:p-4'>
-                    <Label className='flex items-center gap-2 text-base font-semibold text-gray-700 sm:gap-3 sm:text-lg'>
-                      <Briefcase className='size-5 text-[#02ADEF]' />
-                      Renovation Coverage
-                    </Label>
-
-                    <p className='mb-6 text-sm text-gray-600 sm:text-base'>
-                      Cover repair costs of renovation in case of damage due to
-                      insured perils
-                    </p>
-
-                    <Select
-                      options={RENOVATION_COVERAGE_OPTIONS.map(
-                        (option) => option.label,
-                      )}
-                      defaultValue={
-                        RENOVATION_COVERAGE_OPTIONS.find(
-                          (option) =>
-                            option.value ===
-                            customizationData.renovationCoverageValue,
-                        )?.label
-                      }
-                      onChange={(label) => {
-                        const selected = RENOVATION_COVERAGE_OPTIONS.find(
-                          (option) => option.label === label,
-                        );
-                        if (selected)
-                          updateCustomizationData(
-                            'renovationCoverageValue',
-                            selected.value,
-                          );
-                      }}
-                      className='h-14 w-full text-lg'
-                      disabled={!customizationData.hdbFireInsurance}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Common Benefits Section */}
-            {/* Continue Button */}
-          </div>
-        )}
-
         {/* Add-ons Section */}
         {showAddOns && (
           <div id='addons-section' className='animate-in fade-in duration-500'>
@@ -1080,9 +809,9 @@ const Step1QuoteForm = memo<Step1Props>(
                     addOn={addOn}
                     isSelected={isSelected}
                     selectedOption={selectedOption}
-                    onToggle={() => onAddOnToggle(addOn.id)}
+                    onToggle={() => onAddOnToggle(addOn.id, displayPrice)}
                     onOptionChange={(option) =>
-                      onAddOnOptionChange(addOn.id, option)
+                      onAddOnOptionChange(addOn.id, option, displayPrice)
                     }
                     displayPrice={displayPrice}
                   />

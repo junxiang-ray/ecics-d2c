@@ -1,3 +1,8 @@
+import {
+  HomeContentQuoteCreationPayload,
+  HomeContentQuoteSavePayload,
+} from './homeContents';
+
 export type MaritalStatusType = 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED';
 export type GenderType = 'MALE' | 'FEMALE';
 export interface QuoteResponse {
@@ -265,11 +270,12 @@ export interface QuoteCreationPayload {
 
 export interface ProposalPayload {
   key: string;
-  selected_plan: string;
-  selected_addons: Record<string, string>;
+  selected_plan?: string;
+  selected_addons?: Record<string, string>;
   personal_info?: PersonalPayload;
   maid_info?: MaidInfo;
   add_named_driver_info?: AddNamedDriverInfo[];
+  homeContentPayload?: HomeContentQuoteSavePayload;
 }
 
 export interface QuoteInfo {

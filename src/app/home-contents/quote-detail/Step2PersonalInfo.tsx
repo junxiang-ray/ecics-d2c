@@ -279,7 +279,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </Label>
               <Select
                 options={GENDER}
-                defaultValue={personalInfoData.policyHolderGender}
+                value={personalInfoData.policyHolderGender}
                 onChange={(value) =>
                   updatePersonalInfoData('policyHolderGender', value)
                 }
@@ -304,7 +304,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </Label>
               <Select
                 options={MARITAL_STATUS}
-                defaultValue={personalInfoData.policayHolderMaritalStatus}
+                value={personalInfoData.policayHolderMaritalStatus}
                 onChange={(value) =>
                   updatePersonalInfoData('policayHolderMaritalStatus', value)
                 }

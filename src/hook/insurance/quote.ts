@@ -48,6 +48,7 @@ export const useSaveProposal = () => {
     data: ProposalPayload;
     productType: ProductTypeWeb;
   }) => {
+    console.log(`data = ${JSON.stringify(data)}`);
     const res = await insurance.saveProposal(data, productType);
     return res.data.data;
   };

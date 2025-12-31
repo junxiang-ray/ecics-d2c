@@ -8,7 +8,10 @@ import {
   QuoteForm,
   SelectedAddOn,
 } from '@/libs/types/homeContents';
-import { calculateCoveragePremium } from '@/libs/utils/calculations';
+import {
+  calculateAddOnTotal,
+  calculateCoveragePremium,
+} from '@/libs/utils/calculations';
 
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import {
@@ -107,18 +110,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
   // Calculate coverage premium
   const coveragePremium = calculateCoveragePremium(customizationData);
 
-  const addOnTotal = selectedAddOns.reduce((total, selectedAddOn) => {
-    const addOn = ADD_ONS.find((a) => a.id === selectedAddOn.id);
-    if (!addOn) return total;
-
-    if (addOn.hasOptions && selectedAddOn.selectedOption && addOn.options) {
-      const selectedOption = addOn.options.find(
-        (opt) => opt.value === selectedAddOn.selectedOption,
-      );
-      return total + (selectedOption?.price || addOn.price);
-    }
-    return total + addOn.price;
-  }, 0);
+  const addOnTotal = calculateAddOnTotal(selectedPlan, selectedAddOns);
 
   // hide coverage premium
   // const subtotalBeforePromo = planPrice + coveragePremium + addOnTotal;
@@ -176,8 +168,9 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
       {/* Drawer */}
       <div
         className={`
-          drawer-content fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-md rounded-t-[20px]
-          bg-white shadow-2xl transition-transform duration-300 ease-out
+          drawer-content fixed bottom-0 left-0 right-0 z-50 mx-auto flex max-w-md
+          flex-col overflow-hidden rounded-t-[20px] bg-white shadow-2xl
+          transition-transform duration-300 ease-out
           ${isOpen ? 'translate-y-0' : 'translate-y-full'}
         `}
         role='dialog'
@@ -210,7 +203,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
         </div>
 
         {/* Content */}
-        <div className='flex-1 overflow-y-auto px-4 py-6'>
+        <div className='min-h-0 flex-1 overflow-y-auto px-4 py-6'>
           {/* Policy Details Section */}
           <div className='mb-6 rounded-lg border border-blue-100 bg-blue-50/50 p-4'>
             <h3 className='mb-3 text-base font-bold text-[#303030]'>
@@ -275,126 +268,6 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
             </div>
           </div>
 
-          {/* Coverage Section */}
-          {/* {coveragePremium > 0 && (
-            <div className='mb-6'>
-              <h3 className='mb-3 text-base font-bold text-[#303030]'>
-                Coverage
-              </h3>
-              <div className='space-y-3'>
-                {customizationData?.hdbFireInsurance === 'no' &&
-                  customizationData?.building && (
-                    <div className='flex items-start justify-between'>
-                      <div className='flex-1 pr-4'>
-                        <div className='mb-1 text-sm leading-tight text-[#303030]'>
-                          Building Coverage
-                        </div>
-                        <div className='text-xs text-gray-500'>
-                          {getBuildingCoverageLabel()}
-                        </div>
-                      </div>
-                      <span className='text-sm font-medium text-[#080808]'>
-                        SGD{' '}
-                        {(
-                          (parseFloat(customizationData.building) / 1000) *
-                          0.5
-                        ).toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-
-                {customizationData?.homeContentCoverageValue && (
-                  <div className='flex items-start justify-between'>
-                    <div className='flex-1 pr-4'>
-                      <div className='mb-1 text-sm leading-tight text-[#303030]'>
-                        Home Content Coverage
-                      </div>
-                      <div className='text-xs text-gray-500'>
-                        {getHomeContentCoverageLabel()}
-                      </div>
-                    </div>
-                    <span className='text-sm font-medium text-[#080808]'>
-                      SGD{' '}
-                      {(
-                        (parseFloat(
-                          customizationData.homeContentCoverageValue,
-                        ) /
-                          1000) *
-                        0.8
-                      ).toFixed(2)}
-                    </span>
-                  </div>
-                )}
-
-                {customizationData?.renovationCoverageValue && (
-                  <div className='flex items-start justify-between'>
-                    <div className='flex-1 pr-4'>
-                      <div className='mb-1 text-sm leading-tight text-[#303030]'>
-                        Renovation Coverage
-                      </div>
-                      <div className='text-xs text-gray-500'>
-                        {getRenovationCoverageLabel()}
-                      </div>
-                    </div>
-                    <span className='text-sm font-medium text-[#080808]'>
-                      SGD{' '}
-                      {(
-                        (parseFloat(customizationData.renovationCoverageValue) /
-                          1000) *
-                        0.6
-                      ).toFixed(2)}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )} */}
-
-          {/* ISP Call - Coverage Section (from selectedPlan.coverage, amount under label) */}
-          {/* {selectedPlan?.coverage &&
-            (() => {
-              const renovations = selectedPlan.coverage?.renovations;
-              const contents = selectedPlan.coverage?.contents;
-
-              const items: Array<{ label: string; value: string }> = [];
-              if (contents && contents !== 'Not Covered') {
-                items.push({ label: 'Home Content Coverage', value: contents });
-              }
-              if (renovations && renovations !== 'Not Covered') {
-                items.push({
-                  label: 'Renovation Coverage',
-                  value: renovations,
-                });
-              }
-
-              if (items.length === 0) return null;
-
-              return (
-                <div className='mb-6'>
-                  <h3 className='mb-3 text-base font-bold text-[#303030]'>
-                    Coverage
-                  </h3>
-                  <div className='space-y-3'>
-                    {items.map((item) => (
-                      <div
-                        key={item.label}
-                        className='flex items-start justify-between'
-                      >
-                        <div className='flex-1 pr-4'>
-                          <div className='mb-1 text-sm leading-tight text-[#303030]'>
-                            {item.label}
-                          </div>
-                          <div className='text-xs text-gray-500'>
-                            {item.value}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()} */}
-
           {/* Add-ons Section */}
           {selectedAddOns.length > 0 && (
             <div className='mb-6'>
@@ -403,24 +276,12 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
               </h3>
               <div className='space-y-3'>
                 {selectedAddOns.map((selectedAddOn) => {
-                  const addOn = ADD_ONS.find((a) => a.id === selectedAddOn.id);
-                  if (!addOn) return null;
-
-                  let price = addOn.price;
-                  let displayName = addOn.name;
-
-                  if (
-                    addOn.hasOptions &&
-                    selectedAddOn.selectedOption &&
-                    addOn.options
-                  ) {
-                    const selectedOption = addOn.options.find(
-                      (opt) => opt.value === selectedAddOn.selectedOption,
-                    );
-                    if (selectedOption) {
-                      price = selectedOption.price;
-                      displayName = `${addOn.name}`;
-                    }
+                  let price = selectedAddOn.price;
+                  const displayName = selectedAddOn.id;
+                  if (selectedAddOn.id === 'building') {
+                    price = selectedPlan.buildingCoverageWithDiscount || 0;
+                  } else {
+                    price = selectedPlan.worldwideFpaWithDiscount || 0;
                   }
 
                   return (
@@ -432,7 +293,7 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
                         <div className='mb-1 text-sm leading-tight text-[#303030]'>
                           {displayName}
                         </div>
-                        {addOn.hasOptions && selectedAddOn.selectedOption && (
+                        {selectedAddOn.selectedOption && (
                           <div className='text-xs text-gray-500'>
                             ${selectedAddOn.selectedOption} Coverage
                           </div>
@@ -447,87 +308,6 @@ export const PremiumBreakdownDrawer: React.FC<PremiumBreakdownDrawerProps> = ({
               </div>
             </div>
           )}
-
-          {/* ISP Call Add-ons Section (from selectedAddOns with discounted prices from selectedPlan) */}
-          {/* {selectedAddOns.length > 0 &&
-            selectedPlan &&
-            (() => {
-              const building = selectedAddOns.find((a) => a.id === 'building');
-              const worldwideFpa = selectedAddOns.find(
-                (a) => a.id === 'worldwide-fpa',
-              );
-
-              // Compose items present in selectedAddOns
-              const items: Array<{
-                id: 'building' | 'worldwide-fpa';
-                label: string;
-                optionText?: string;
-                amount?: number | string;
-              }> = [];
-
-              if (building) {
-                items.push({
-                  id: 'building',
-                  label: 'Building Coverage',
-                  optionText: building.selectedOption
-                    ? `SGD ${building.selectedOption}`
-                    : undefined,
-                  amount: selectedPlan.buildingCoverageWithDiscount,
-                });
-              }
-
-              if (worldwideFpa) {
-                items.push({
-                  id: 'worldwide-fpa',
-                  label: 'Worldwide Family Personal Accident',
-                  optionText: worldwideFpa.selectedOption
-                    ? `SGD ${worldwideFpa.selectedOption}`
-                    : undefined,
-                  amount: selectedPlan.worldwideFpaWithDiscount,
-                });
-              }
-
-              console.log(
-                'Price of worldwide FPA:',
-                selectedPlan.worldwideFpaNoDiscount,
-              );
-
-              // If neither is selected, render nothing
-              if (items.length === 0) return null;
-
-              return (
-                <div className='mb-6'>
-                  <h3 className='mb-3 text-base font-bold text-[#303030]'>
-                    Add-ons
-                  </h3>
-                  <div className='space-y-3'>
-                    {items.map((item) => (
-                      <div
-                        key={item.id}
-                        className='flex items-start justify-between'
-                      >
-                        <div className='flex-1 pr-4'>
-                          <div className='mb-1 text-sm leading-tight text-[#303030]'>
-                            {item.label}
-                          </div>
-                          {item.optionText && (
-                            <div className='text-xs text-gray-500'>
-                              {item.optionText}
-                            </div>
-                          )}
-                          <div className='text-xs text-gray-500'>
-                            {typeof item.amount === 'number'
-                              ? `SGD ${item.amount.toFixed(2)}`
-                              : String(item.amount)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()} */}
-
           {/* Separator */}
           <div className='my-6 border-t border-gray-200' />
 
