@@ -32,7 +32,6 @@ import { PLANS } from '@/constants/home.content.constants';
 import {
   useGenerateHomeContentsQuote,
   useGetPremiumCalc,
-  useGetProductDetails,
   usePayment,
 } from '@/hook/insurance/homeContentQuote';
 
@@ -95,6 +94,7 @@ export default function QuoteDetailPage() {
   const { mutateAsync: getPremiumCalc } = useGetPremiumCalc();
 
   useEffect(() => {
+    console.log('GENERATING KEY');
     const keyQuote = generateKeyAndAttachToUrl(initKey);
     setKey(keyQuote);
   }, []);
@@ -106,8 +106,8 @@ export default function QuoteDetailPage() {
       try {
         const storedData = localStorage.getItem('plans');
         if (storedData) {
+          console.log(`stored allplans = ${JSON.stringify(storedData)}`);
           const parsedData = JSON.parse(storedData);
-          console.log(`stored allplans = ${JSON.stringify(parsedData)}`);
 
           return PLANS;
         }
@@ -358,63 +358,53 @@ export default function QuoteDetailPage() {
     (state) => state.ecicsUserInfo?.userInfo,
   );
 
+  const hydratePersonalInfo = (
+    base: PersonalInfoForm,
+    data: any,
+  ): PersonalInfoForm => ({
+    ...base,
+    policyHolderEmail: data?.email?.value ?? data?.policyHolderEmail ?? '',
+    policyHolderMobileNumber:
+      data?.mobileno?.nbr?.value ?? data?.policyHolderMobileNumber ?? '',
+    addressLine1:
+      data?.regadd?.block?.value && data?.regadd?.street?.value
+        ? `${data.regadd.block.value} ${data.regadd.street.value}`
+        : (data?.addressLine1 ?? ''),
+    addressLine2: data?.regadd?.building?.value ?? data?.addressLine2 ?? '',
+    policyHolderFullName: data?.name?.value ?? data?.policyHolderFullName ?? '',
+    policyHolderNationality:
+      data?.nationality?.desc ?? data?.policyHolderNationality ?? '',
+    policyHolderNricFin: data?.uinfin?.value ?? data?.policyHolderNricFin ?? '',
+    policyHolderDateOfBirth:
+      data?.dob?.value ?? data?.policyHolderDateOfBirth ?? '',
+    postalCode: data?.regadd?.postal?.value ?? data?.postalCode ?? '',
+    policyHolderGender: data?.policyHolderGender ?? 'M',
+    policayHolderMaritalStatus: data?.policayHolderMaritalStatus ?? '',
+  });
+
   const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
     () => {
-      if (typeof window !== 'undefined') {
-        try {
-          let storedData = sessionStorage.getItem(DATA_FROM_SINGPASS);
-          if (storedData) {
-            const parsedData = JSON.parse(storedData);
-            const newData = { ...INITIAL_PERSONAL_INFO };
-            newData.policyHolderEmail = parsedData?.email.value || '';
-            newData.policyHolderMobileNumber =
-              parsedData?.mobileno.nbr.value || '';
-            newData.addressLine1 =
-              parsedData?.regadd?.block?.value &&
-              parsedData?.regadd?.street?.value
-                ? `${parsedData.regadd.block.value} ${parsedData.regadd.street.value}`
-                : '';
-            newData.addressLine2 = parsedData?.regadd?.building?.value || '';
-            newData.policyHolderFullName = parsedData?.name?.value || '';
-            newData.policyHolderNationality =
-              parsedData?.nationality?.desc || '';
-            newData.policyHolderNricFin = parsedData?.uinfin?.value || '';
-            newData.policyHolderDateOfBirth = parsedData?.dob?.value || '';
-            newData.postalCode = parsedData?.regadd?.postal?.value || '';
-            return newData;
-          } else {
-            storedData = sessionStorage.getItem('INFO_DATA');
-            if (storedData) {
-              const parsedData = JSON.parse(storedData);
-              const newData: PersonalInfoForm = { ...INITIAL_PERSONAL_INFO };
-              newData.policyHolderEmail = parsedData?.policyHolderEmail || '';
-              newData.policyHolderMobileNumber =
-                parsedData?.policyHolderMobileNumber || '';
-              newData.addressLine1 = parsedData?.addressLine1 || '';
-              newData.addressLine2 = parsedData?.addressLine2 || '';
-              newData.policyHolderFullName =
-                parsedData?.policyHolderFullName || '';
-              newData.policyHolderNationality =
-                parsedData?.policyHolderNationality || '';
-              newData.policyHolderNricFin =
-                parsedData?.policyHolderNricFin || '';
-              newData.policyHolderDateOfBirth =
-                parsedData?.policyHolderDateOfBirth || '';
-              newData.postalCode = parsedData?.postalCode || '';
-              newData.policyHolderGender =
-                parsedData?.policyHolderGender || 'M';
-              newData.policayHolderMaritalStatus =
-                parsedData?.policayHolderMaritalStatus || '';
-              return newData;
-            } else {
-              return INITIAL_PERSONAL_INFO;
-            }
-          }
-        } catch (error) {
-          console.error('Failed to parse saved form data:', error);
-        }
+      if (typeof window === 'undefined') {
+        return INITIAL_PERSONAL_INFO;
       }
-      console.log('setting Default Data');
+      console.log('setting Personal Info Data');
+      try {
+        const singpass = sessionStorage.getItem(DATA_FROM_SINGPASS);
+        if (singpass) {
+          return hydratePersonalInfo(
+            INITIAL_PERSONAL_INFO,
+            JSON.parse(singpass),
+          );
+        }
+
+        const saved = sessionStorage.getItem('INFO_DATA');
+        if (saved) {
+          return hydratePersonalInfo(INITIAL_PERSONAL_INFO, JSON.parse(saved));
+        }
+      } catch (err) {
+        console.error('Failed to parse saved form data:', err);
+      }
+
       return INITIAL_PERSONAL_INFO;
     },
   );

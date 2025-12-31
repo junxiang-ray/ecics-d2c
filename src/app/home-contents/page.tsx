@@ -37,7 +37,7 @@ export default function HomeContentPage() {
           promo_code: promoCode,
           partner_code: partnerCode,
         });
-
+        console.log('CALLING');
         const response = await getProductDetails();
 
         // Save result map to local storage
@@ -54,14 +54,7 @@ export default function HomeContentPage() {
     };
 
     init();
-  }, [
-    getProductDetails,
-    router,
-    basePath,
-    queryString,
-    promoCode,
-    partnerCode,
-  ]);
+  }, []);
 
   return (
     <div className='flex h-screen w-full items-center justify-center'>
