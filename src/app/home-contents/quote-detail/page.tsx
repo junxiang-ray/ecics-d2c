@@ -123,7 +123,6 @@ export default function QuoteDetailPage() {
   const [hasViewedCustomization, setHasViewedCustomization] = useState(false);
 
   // Selections
-  const [selectedPlan, setSelectedPlan] = useState('');
   const [selectedAddOns, setSelectedAddOns] = useState<SelectedAddOn[]>([]);
 
   // Errors
@@ -177,7 +176,6 @@ export default function QuoteDetailPage() {
       setShowPlans(true);
     }
     if (formData.quoteStep >= 2) {
-      setSelectedPlan(formData.selectedPlan);
       setShowAddOns(true);
     }
     // if (formData.quoteStep >= 3) {
@@ -192,7 +190,6 @@ export default function QuoteDetailPage() {
     setShowCustomization(false);
     setShowAddOns(false);
     updateFormData('quoteStep', '0'); // remember to reset the step so that the page properly resets.
-    setSelectedPlan('');
     updateFormData('selectedPlan', '');
     setSelectedAddOns([]);
 
@@ -231,9 +228,9 @@ export default function QuoteDetailPage() {
 
   // Memoized computed values with early returns
   const currentPlan = useMemo(() => {
-    if (!selectedPlan) return null;
-    return allplans.find((p) => p.id === selectedPlan) || null;
-  }, [selectedPlan, formData, selectedAddOns, allplans]);
+    if (!formData.selectedPlan) return null;
+    return allplans.find((p) => p.id === formData.selectedPlan) || null;
+  }, [formData.selectedPlan, allplans]);
 
   const totalPremium = useMemo(() => {
     if (!currentPlan) return 0;
@@ -382,34 +379,37 @@ export default function QuoteDetailPage() {
     policayHolderMaritalStatus: data?.policayHolderMaritalStatus ?? '',
   });
 
+  //Init
   const [personalInfoData, setPersonalInfoData] = useState<PersonalInfoForm>(
-    () => {
-      if (typeof window === 'undefined') {
-        return INITIAL_PERSONAL_INFO;
-      }
-      console.log('setting Personal Info Data');
-      try {
-        const singpass = sessionStorage.getItem(DATA_FROM_SINGPASS);
-        if (singpass) {
-          return hydratePersonalInfo(
-            INITIAL_PERSONAL_INFO,
-            JSON.parse(singpass),
-          );
-        }
-
-        const saved = sessionStorage.getItem('INFO_DATA');
-        if (saved) {
-          return hydratePersonalInfo(INITIAL_PERSONAL_INFO, JSON.parse(saved));
-        }
-      } catch (err) {
-        console.error('Failed to parse saved form data:', err);
-      }
-
-      return INITIAL_PERSONAL_INFO;
-    },
+    INITIAL_PERSONAL_INFO,
   );
 
+  ///Set Data
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const singpass = sessionStorage.getItem(DATA_FROM_SINGPASS);
+      if (singpass) {
+        setPersonalInfoData(
+          hydratePersonalInfo(INITIAL_PERSONAL_INFO, JSON.parse(singpass)),
+        );
+        return;
+      }
+
+      const saved = sessionStorage.getItem('INFO_DATA');
+      if (saved) {
+        setPersonalInfoData(
+          hydratePersonalInfo(INITIAL_PERSONAL_INFO, JSON.parse(saved)),
+        );
+      }
+    } catch (err) {
+      console.error('Failed to hydrate personal info', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log('Setting');
     setPersonalInfoErrors((prev) => {
       const newErrors = { ...prev };
       Object.keys(personalInfoData).forEach((key) => {
@@ -480,12 +480,12 @@ export default function QuoteDetailPage() {
         let canProceed = false;
 
         if (targetStep === 2) {
-          if (!selectedPlan) return;
+          if (!formData.selectedPlan) return;
           const newErrors = validateQuoteForm(formData);
           setErrors(newErrors);
           canProceed = isFormValid(newErrors);
         } else if (targetStep === 3) {
-          if (!selectedPlan || !visitedSteps.has(2)) return;
+          if (!formData.selectedPlan || !visitedSteps.has(2)) return;
           if (currentStep === 2) {
             const newErrors = validatePersonalInfoForm(personalInfoData);
             setPersonalInfoErrors(newErrors);
@@ -502,14 +502,7 @@ export default function QuoteDetailPage() {
         }
       }
     },
-    [
-      currentStep,
-      visitedSteps,
-      selectedPlan,
-      formData,
-      personalInfoData,
-      scrollToTop,
-    ],
+    [currentStep, visitedSteps, formData, personalInfoData, scrollToTop],
   );
 
   //#region Singpass Retrieve
@@ -636,7 +629,6 @@ export default function QuoteDetailPage() {
   // 🔒 PROTECTED - Plan selection with customization revelation
   const handlePlanSelect = useCallback(
     (planId: string) => {
-      setSelectedPlan(planId);
       setShowAddOns(true);
       updateFormData('selectedPlan', planId);
       updateFormData('quoteStep', '2');
@@ -717,7 +709,7 @@ export default function QuoteDetailPage() {
         }
       });
     },
-    [isLoading],
+    [isLoading, formData],
   );
 
   // Handler for continuing from customization to add-ons
@@ -788,6 +780,7 @@ export default function QuoteDetailPage() {
     [updateFormData],
   );
 
+  //#region HANDLE NEXT
   // 🔒 PROTECTED - Navigation handlers with progressive sub-steps
   const handleNext = useCallback(() => {
     if (currentStep === 1) {
@@ -796,7 +789,7 @@ export default function QuoteDetailPage() {
 
       if (!isFormValid(newErrors)) return;
 
-      if (!selectedPlan) {
+      if (!formData.selectedPlan) {
         const timeoutId = setTimeout(() => {
           scrollToElement('#plans-section');
         }, 100);
@@ -836,7 +829,6 @@ export default function QuoteDetailPage() {
   }, [
     currentStep,
     formData,
-    selectedPlan,
     personalInfoData,
     showCustomization,
     showAddOns,
@@ -844,6 +836,7 @@ export default function QuoteDetailPage() {
     scrollToTop,
     scrollToElement,
   ]);
+  //#endregion
 
   //#region Payment
   const {
@@ -866,16 +859,12 @@ export default function QuoteDetailPage() {
   }, [isSuccess]);
 
   useEffect(() => {
-    console.log(`dataPayment = ${dataPayment}`);
     if (dataPayment?.paymentlink) {
       router.push(dataPayment.paymentlink);
     }
   }, [dataPayment]);
 
   const handleMakePayment = useCallback(() => {
-    console.log(
-      `personalData on make payment: ${JSON.stringify(personalInfoData)}`,
-    );
     saveProposal({
       data: {
         key: key,
@@ -925,7 +914,7 @@ export default function QuoteDetailPage() {
         scrollToTop();
       }
     });
-  }, [scrollToTop]);
+  }, [scrollToTop, formData, personalInfoData]);
   //#endregion
   const handleBack = useCallback(() => {
     if (currentStep > 1 && currentStep < 4) {
@@ -971,7 +960,6 @@ export default function QuoteDetailPage() {
       showPlans={showPlans}
       showCustomization={showCustomization}
       showAddOns={showAddOns}
-      selectedPlan={selectedPlan}
       selectedAddOns={selectedAddOns}
       customizationData={formData.coverageOptions}
       updateCustomizationData={updateFormData}
@@ -1047,7 +1035,7 @@ export default function QuoteDetailPage() {
         currentStep: currentStep,
         onStepClick: handleStepClick,
         visitedSteps: visitedSteps,
-        selectedPlan: selectedPlan,
+        selectedPlan: formData.selectedPlan,
       }}
       steps={steps}
       currentStep={currentStep}

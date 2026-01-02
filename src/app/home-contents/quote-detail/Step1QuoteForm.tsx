@@ -61,7 +61,6 @@ interface Step1Props {
   showPlans: boolean;
   showCustomization: boolean;
   showAddOns: boolean;
-  selectedPlan: string;
   selectedAddOns: SelectedAddOn[];
   customizationData: CustomizationData;
   updateCustomizationData: (
@@ -94,7 +93,6 @@ const Step1QuoteForm = memo<Step1Props>(
     showPlans,
     showCustomization,
     showAddOns,
-    selectedPlan,
     selectedAddOns,
     customizationData,
     updateCustomizationData,
@@ -149,9 +147,10 @@ const Step1QuoteForm = memo<Step1Props>(
     }, [formData.policyStartDate]);
 
     const currentPlan = useMemo(() => {
-      if (!planData || !Array.isArray(planData) || !selectedPlan) return null;
-      return planData.find((p) => p.id === selectedPlan) || null;
-    }, [selectedPlan, planData]);
+      if (!planData || !Array.isArray(planData) || !formData.selectedPlan)
+        return null;
+      return planData.find((p) => p.id === formData.selectedPlan) || null;
+    }, [formData, planData]);
 
     const isCalculateQuoteDisabled = useMemo(() => {
       return isLoading;
@@ -567,7 +566,7 @@ const Step1QuoteForm = memo<Step1Props>(
                     onSelect={() => {
                       onPlanSelect(plan.id);
                     }}
-                    isSelected={selectedPlan === plan.id}
+                    isSelected={formData.selectedPlan === plan.id}
                     promoStatus={promoStatus}
                     customizationData={customizationData}
                   />
@@ -795,11 +794,11 @@ const Step1QuoteForm = memo<Step1Props>(
                     return;
                   }
                   displayPrice =
-                    planData.find((plan) => plan.id === selectedPlan)
+                    planData.find((plan) => plan.id === formData.selectedPlan)
                       ?.buildingCoverageWithDiscount || 0;
                 } else {
                   displayPrice =
-                    planData.find((plan) => plan.id === selectedPlan)
+                    planData.find((plan) => plan.id === formData.selectedPlan)
                       ?.worldwideFpaWithDiscount || 0;
                 }
 
