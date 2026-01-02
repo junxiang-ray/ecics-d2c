@@ -7,6 +7,7 @@ import { DataFromSingpass } from '@/libs/types/quote';
 import {
   CustomizationData,
   HomeContentQuoteSavePayload,
+  InsurancePlan,
   MyInfoData,
   PersonalInfoForm,
   PromoCodeStatus,
@@ -94,22 +95,22 @@ export default function QuoteDetailPage() {
   const { mutateAsync: getPremiumCalc } = useGetPremiumCalc();
 
   useEffect(() => {
-    console.log('GENERATING KEY');
     const keyQuote = generateKeyAndAttachToUrl(initKey);
     setKey(keyQuote);
   }, []);
 
   // UI state
+  ///Sets plans as visible
   const [showPlans, setShowPlans] = useState(false);
+  ///Gets plans stored in local storage or uses default plans.
   const [allplans, setAllPlans] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
         const storedData = localStorage.getItem('plans');
         if (storedData) {
-          console.log(`stored allplans = ${JSON.stringify(storedData)}`);
           const parsedData = JSON.parse(storedData);
-
-          return PLANS;
+          const newData: InsurancePlan[] = parsedData;
+          return newData;
         }
       } catch (error) {
         console.error('Failed to parse saved form data:', error);
@@ -117,9 +118,13 @@ export default function QuoteDetailPage() {
     }
     return PLANS;
   });
+  ///Shows customization UI
   const [showCustomization, setShowCustomization] = useState(false);
+  ///Shows addons
   const [showAddOns, setShowAddOns] = useState(false);
+  ///Sets Loading circle for Calculate Quote Button
   const [isLoading, setIsLoading] = useState(false);
+  //Marks customization as viewed and enables next button
   const [hasViewedCustomization, setHasViewedCustomization] = useState(false);
 
   // Selections
@@ -574,6 +579,8 @@ export default function QuoteDetailPage() {
         const res = await getPremiumCalc(payload);
         // console.log(`add-on recalculation response = ${JSON.stringify(res)}`);
         setAllPlans(res);
+        //save to local storage
+        saveToLocalStorage({ plans: JSON.stringify(res) });
       } catch (err) {
         console.log('ERROR RECALCULATING PREMIUM WITH ADD-ONS:', err);
       }
@@ -603,10 +610,6 @@ export default function QuoteDetailPage() {
 
     getPremiumCalc(payload)
       .then((res) => {
-        // console.log(`res = ${JSON.stringify(res)}`);
-        // const returns = JSON.parse(res);
-        // console.log(`cells = ${JSON.stringify(res.data.cells)}`);
-        // setAllPlans(res);
         setShowPlans(true);
         setIsLoading(false);
         updateFormData('quoteStep', '1');
@@ -838,7 +841,7 @@ export default function QuoteDetailPage() {
   ]);
   //#endregion
 
-  //#region Payment
+  //#region Proposal & Payment
   const {
     mutate: payment,
     data: dataPayment,
@@ -916,6 +919,7 @@ export default function QuoteDetailPage() {
     });
   }, [scrollToTop, formData, personalInfoData]);
   //#endregion
+
   const handleBack = useCallback(() => {
     if (currentStep > 1 && currentStep < 4) {
       setCurrentStep(currentStep - 1);

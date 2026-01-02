@@ -420,8 +420,7 @@ const Step1QuoteForm = memo<Step1Props>(
                 </h3>
                 <p className='m-0 text-base text-gray-600'>
                   Apply your promo code to get additional discounts on your
-                  insurance premium (For testing, use 123 for the valid promo
-                  code)
+                  insurance premium
                 </p>
               </div>
               <div className='flex flex-col gap-4 sm:flex-row'>

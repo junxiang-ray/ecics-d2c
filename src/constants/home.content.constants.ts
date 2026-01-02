@@ -79,8 +79,8 @@ export const POLICY_DURATIONS = [
 ];
 
 export const PROMO_CODES = {
-  VALID_CODE: '123',
-  DISCOUNT_PERCENTAGE: 10,
+  VALID_CODE: 'HOME40',
+  DISCOUNT_PERCENTAGE: 40,
 } as const;
 
 export const COLORS = {
