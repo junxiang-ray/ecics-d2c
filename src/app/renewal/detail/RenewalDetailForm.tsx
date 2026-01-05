@@ -54,7 +54,7 @@ const schema = z.object({
   address_line1: z.string().min(1, 'Address is required'),
   address_line2: z.string().optional(),
   address_line3: z.string().optional(),
-  postal: z.string().min(4, 'Postal code required'),
+  postal: z.string().optional(),
 });
 
 export type RenewalFormData = z.infer<typeof schema>;
