@@ -28,7 +28,12 @@ const PolicyHolderContent = () => {
         { label: 'NRIC', name: 'nric', disabled: true },
         { label: 'Date of Birth', name: 'dob', disabled: true },
         { label: 'Gender', name: 'gender', isDropdown: true, disabled: true },
-        { label: 'Marital Status', name: 'marital_status', isDropdown: true },
+        {
+          label: 'Marital Status',
+          name: 'marital_status',
+          isDropdown: true,
+          disabled: true,
+        },
         {
           label: 'Driving Experience',
           name: 'driv_exp',
@@ -39,10 +44,15 @@ const PolicyHolderContent = () => {
     {
       title: 'Full Address',
       fields: [
-        { label: 'Address Line 1', name: 'address_line1', isRequired: true },
-        { label: 'Address Line 2', name: 'address_line2' },
-        { label: 'Address Line 3', name: 'address_line3' },
-        { label: 'Postal Code', name: 'postal', isRequired: true },
+        {
+          label: 'Address Line 1',
+          name: 'address_line1',
+          isRequired: true,
+          disabled: true,
+        },
+        { label: 'Address Line 2', name: 'address_line2', disabled: true },
+        { label: 'Address Line 3', name: 'address_line3', disabled: true },
+        { label: 'Postal Code', name: 'postal', disabled: true },
       ],
     },
     {
