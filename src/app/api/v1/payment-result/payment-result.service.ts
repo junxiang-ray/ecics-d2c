@@ -29,6 +29,7 @@ export async function handlePaymentResult(data: paymentDTO) {
         email: true,
         name: true,
         promo_code: true,
+        data: true,
       },
     });
 
@@ -47,7 +48,20 @@ export async function handlePaymentResult(data: paymentDTO) {
 
     logger.info(`Quote updated to paid: ${JSON.stringify(quoteInfo)}`);
 
-    if (quoteInfo.is_electric_model && quoteInfo.email && quoteInfo.name) {
+    type QuoteVehicleSelected = {
+      vehicle_info_selected?: { vehicle_make?: string };
+    };
+    const vehicleMakeSelected =
+      (quoteInfo?.data as QuoteVehicleSelected)?.vehicle_info_selected
+        ?.vehicle_make || null;
+    logger.info(`Vehicle make selected: ${vehicleMakeSelected}`);
+
+    if (
+      vehicleMakeSelected &&
+      vehicleMakeSelected.toUpperCase() === 'TESLA' &&
+      quoteInfo.email &&
+      quoteInfo.name
+    ) {
       await sendMail({
         to: quoteInfo.email,
         subject:
