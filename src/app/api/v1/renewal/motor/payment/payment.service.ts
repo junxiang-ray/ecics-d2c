@@ -11,6 +11,11 @@ export async function paymentPolicyFromISP(data: paymentPolicyDTO) {
       email_address: data.email_address,
       contact_no: data.contact_no,
       proposal_id: data.proposal_id,
+      address_line1: data.address_line1,
+      address_line2: data.address_line2,
+      address_line3: data.address_line3,
+      postal: data.postal,
+      maritalstatuscode: data.marital_status_code,
     };
 
     const paymentPolicyRes = await handleApiCallToISP(

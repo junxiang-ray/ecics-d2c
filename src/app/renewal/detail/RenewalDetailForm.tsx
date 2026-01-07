@@ -26,6 +26,7 @@ import RenewalPeriodContent from '@/app/renewal/detail/card/RenewalPeriodContent
 import VehicleDetailsContent from '@/app/renewal/detail/card/VehicleDetailsContent';
 
 import AdditionalNamedDriversContent from './card/AdditionalNamedDriversContent';
+import { REGEX_VALUES } from '@/app/api/utils/regex';
 
 const schema = z.object({
   name: z
@@ -54,7 +55,7 @@ const schema = z.object({
   address_line1: z.string().min(1, 'Address is required'),
   address_line2: z.string().optional(),
   address_line3: z.string().optional(),
-  postal: z.string().optional(),
+  postal: z.string().regex(REGEX_VALUES.POSTAL_CODE, 'Invalid postal code'),
 });
 
 export type RenewalFormData = z.infer<typeof schema>;
