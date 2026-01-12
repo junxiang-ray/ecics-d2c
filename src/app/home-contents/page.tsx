@@ -8,6 +8,7 @@ import { ROUTES } from '@/constants/routes';
 import { useAppDispatch } from '@/redux/store';
 import { saveToLocalStorage } from '@/libs/utils/utils';
 import { useGetProductDetails } from '@/hook/insurance/homeContentQuote';
+import { query } from 'winston';
 
 export default function HomeContentPage() {
   const router = useRouter();

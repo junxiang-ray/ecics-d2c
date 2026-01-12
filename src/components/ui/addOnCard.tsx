@@ -53,6 +53,8 @@ export const AddOnCard = memo<AddOnCardProps>(
     //   return addOn.price;
     // }, [addOn.hasOptions, addOn.options, addOn.price, selectedOption]);
 
+    const isBtnDisabled = isSelected && !selectedOption;
+
     return (
       <div className='group relative'>
         {/* Popular Badge */}
@@ -109,6 +111,7 @@ export const AddOnCard = memo<AddOnCardProps>(
             </div>
 
             {/* Options Section */}
+
             {isSelected && addOn.options?.length && (
               <>
                 {/* BUTTON OPTIONS */}
@@ -122,7 +125,10 @@ export const AddOnCard = memo<AddOnCardProps>(
                       {addOn.options.map((option) => (
                         <button
                           key={option.value}
-                          onClick={() => onOptionChange?.(option.value)}
+                          onClick={() => {
+                            onOptionChange?.(option.value);
+                            // setIsClicked(true);
+                          }}
                           className={cn(
                             'border border-gray-300 transition-all duration-200',
                             'touch-target h-14 text-xs font-medium',
@@ -176,6 +182,7 @@ export const AddOnCard = memo<AddOnCardProps>(
             <div className='mt-4 flex justify-center'>
               <Button
                 onClick={onToggle}
+                disabled={isBtnDisabled}
                 className={cn(
                   'flex h-8 w-full items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-300',
                   isSelected
