@@ -24,14 +24,10 @@ export const useGenerateHomeContentsQuote = () => {
   const generateHomeContentQuote = async (
     data: HomeContentQuoteSavePayload,
   ) => {
-    try {
-      const res = await homecontents.generateHomeContentQuote(data);
-      console.log('res output', res.data);
-    } catch (error) {
-      console.log('something wrong', error);
-    }
+    const res = await homecontents.generateHomeContentQuote(data);
+    console.log('res output', res.data);
+    return res.data;
   };
-
   return useMutation({
     mutationFn: generateHomeContentQuote,
     mutationKey: ['generate-homecontent-quote'],

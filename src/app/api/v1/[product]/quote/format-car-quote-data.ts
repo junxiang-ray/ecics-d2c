@@ -5,6 +5,7 @@ import {
   mappedAddonPremiums,
   mappedPlanPremiums,
 } from '@/app/api/utils/quote.helpers';
+import { Prisma } from '@prisma/client';
 
 export async function formatCarQuoteInfo(
   quoteInfo: any,
@@ -92,7 +93,8 @@ export async function formatCarQuoteInfo(
     orderBy: [{ is_recommended: 'desc' }, { id: 'asc' }],
   });
 
-  plans.forEach((plan) => {
+  type PlanWithRelations = (typeof plans)[number];
+  plans.forEach((plan: PlanWithRelations) => {
     if (plan.code && plan.code in mappedPlanValues) {
       plan.premium_with_gst = mappedPlanValues[plan.code];
       plan.add_ons_included_in_this_plan =
