@@ -223,7 +223,7 @@ const PolicyDetailForm = ({
   }, []);
 
   const maxPolicyStartDate = useMemo(() => {
-    return dayjs().add(26, 'month');
+    return dayjs().add(90, 'day');
   }, []);
 
   useEffect(() => {
