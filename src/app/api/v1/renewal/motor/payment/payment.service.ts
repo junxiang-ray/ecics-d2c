@@ -19,9 +19,9 @@ export async function paymentPolicyFromISP(data: paymentPolicyDTO) {
       payloadData,
     );
 
-    logger.info(
-      `Payment policy response from ISP: ${JSON.stringify(paymentPolicyRes)}`,
-    );
+    // logger.info(
+    //   `Payment policy response from ISP: ${JSON.stringify(paymentPolicyRes)}`,
+    // );
 
     if (paymentPolicyRes.status === 0) {
       return successRes({

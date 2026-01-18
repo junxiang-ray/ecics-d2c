@@ -40,7 +40,7 @@ export async function getCalcHomeContents(
       },
     };
 
-    logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
+    // logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
     ///Change to use .env file
     const getQuoteRes = await handleApiCallToISP(
       `/product/calc/M000000000052/premium_calc`,

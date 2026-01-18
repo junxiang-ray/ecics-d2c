@@ -5,7 +5,6 @@ import {
   mappedAddonPremiums,
   mappedPlanPremiums,
 } from '@/app/api/utils/quote.helpers';
-import { Prisma } from '@prisma/client';
 
 export async function formatCarQuoteInfo(
   quoteInfo: any,
@@ -93,6 +92,7 @@ export async function formatCarQuoteInfo(
     orderBy: [{ is_recommended: 'desc' }, { id: 'asc' }],
   });
 
+  console.log('plans result', plans);
   type PlanWithRelations = (typeof plans)[number];
   plans.forEach((plan: PlanWithRelations) => {
     if (plan.code && plan.code in mappedPlanValues) {

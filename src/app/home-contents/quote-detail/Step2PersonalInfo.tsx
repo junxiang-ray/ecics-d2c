@@ -304,20 +304,20 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
               </Label>
               <Select
                 options={MARITAL_STATUS}
-                value={personalInfoData.policayHolderMaritalStatus}
+                value={personalInfoData.policyHolderMaritalStatus}
                 onChange={(value) =>
-                  updatePersonalInfoData('policayHolderMaritalStatus', value)
+                  updatePersonalInfoData('policyHolderMaritalStatus', value)
                 }
                 disabled={myInfoData.isLoading || isMyInfoRetrieved}
                 placeholder='Select your Marital Status'
                 className='h-12 text-base sm:h-14'
               />
-              {personalInfoErrors.policayHolderMaritalStatus && (
+              {personalInfoErrors.policyHolderMaritalStatus && (
                 <p className='mt-2 flex items-center gap-2 text-sm text-red-500'>
                   <span className='flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white'>
                     !
                   </span>
-                  {personalInfoErrors.policayHolderMaritalStatus}
+                  {personalInfoErrors.policyHolderMaritalStatus}
                 </p>
               )}
             </div>

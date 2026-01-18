@@ -18,6 +18,7 @@ import {
   generateQuoteDTO,
   generateQuoteForMaidDTO,
 } from './get-quote.dto';
+import { LoginSingpassService } from '../../singpass/login/[product]/singpass-login.service';
 ///ADD NEW PRODUCTS HERE
 export async function getQuoteForCar(data: generateQuoteDTO) {
   try {
@@ -527,9 +528,9 @@ export async function getQuoteForHomeContent(
   data: generateHomeContentQuoteDTO,
 ) {
   try {
-    logger.info(
-      `Generating quote for home content with data: ${JSON.stringify(data)}`,
-    );
+    // logger.info(
+    //   `Generating quote for home content with data: ${JSON.stringify(data)}`,
+    // );
 
     // const ownershipTable: Record<string,string> = {
     //   "owner":"Owner",
@@ -551,6 +552,17 @@ export async function getQuoteForHomeContent(
     ///Expected Payload u can use this for testing
     // const testPayload = {
     //   "product_id": "M000000000052",
+    //   "homeOwnership": "owner",
+    //   "homeType": "Landed",
+    //   "unitType": "Landed",
+    //   "contents_si": "40000",
+    //   "renovations_si": "30000",
+    //   "building_si": "200000",
+    //   "family_pa_si": "100000",
+    //   "selected_plan": "3 Years",
+    //   "policy_period": "3 Years",
+    //   "startDate": "2025-12-18",
+    //   "promo_code": "HOME40",
     //   "insured_address_line1": "50 ang mo kio ave+5",
     //   "insured_address_line2": "50 ang mo kio ave+5",
     //   "insured_address_line3": "Singapore",
@@ -560,25 +572,19 @@ export async function getQuoteForHomeContent(
     //   "proposer_date_of_birth": "1985-09-10",
     //   "proposer_gender": "F",
     //   "proposer_marital_status": "M",
-    //   "policy_period": "3 Years",
-    //   "promo_code": "HOME40",
-    //   "building_si": "200000",
-    //   "renovations_si": "30000",
-    //   "family_pa_si": "100000",
-    //   "contents_si": "40000",
-    //   "selected_plan": "3 Years",
-    //   "homeOwnership": "owner",
-    //   "homeType": "Landed",
-    //   "unitType": "Landed",
-    //   "startDate": "2025-12-18",
+    //   "proposer_mobile": "87333334",
+    //   "email": "tester@gmail.com",
     //   "coverageRenovation": "30000",
     //   "coverageHomeContents": "40000",
     //   "__finalize": 0,
-    // }
+    // };
+
     let redirectUrl = '';
     let returnBaseUrl = '';
     if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE) {
+      //redirecting url for the payment
       redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE}?key=${data.key}`;
+      logger.info(`check inside v1/product/get-quote.service`, redirectUrl);
     } else {
       redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/home-contents/quote-detail?key=${data.key}`;
     }
@@ -602,13 +608,14 @@ export async function getQuoteForHomeContent(
         mobile: data.proposerDetails.mobile,
         email: data.proposerDetails.email,
         differentMailingAddress:
-          data.proposerDetails.differentMailingAddress.toUpperCase(),
-        mailingAddress1: data.proposerDetails.mailingAddress1,
+          data.proposerDetails.differentMailingAddress.toUpperCase(), //why change to
+        mailingAddress1: data.proposerDetails.mailingAddress1 || '',
         mailingAddress2: data.proposerDetails.mailingAddress2 || '',
         mailingAddress3: data.proposerDetails.mailingAddress3 || '',
         mailingPostCode: data.proposerDetails.mailingPostCode,
       },
       planDetails: {
+        // productId: data.planDetails.productId,
         homeOwnership: data.planDetails.homeOwnership,
         homeType: data.planDetails.homeType,
         unitType: data.planDetails.unitType,
@@ -627,6 +634,10 @@ export async function getQuoteForHomeContent(
     };
 
     logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
+    logger.info(`[DEBUG] date ${payloadData.proposerDetails.dob}`);
+    logger.info(
+      ` [DEBUG] HOMECONTENT PREFIX ENDPOINT  ${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}`,
+    );
 
     const getQuoteRes = await handleApiCallToISP(
       `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/quote`,
@@ -635,9 +646,9 @@ export async function getQuoteForHomeContent(
     logger.info(
       `Response from generate quote for Home Contents: ${JSON.stringify(getQuoteRes)}`,
     );
-
     if (getQuoteRes.status === 0) {
       const quoteInfoRes = getQuoteRes.data;
+      logger.info(`quoteInfoRes ${JSON.stringify(quoteInfoRes)}, null, 2`);
       // const planMaidData = await formatMaidQuoteInfo(quoteInfoRes, data);
       // logger.info(`Formatted quote data: ${JSON.stringify(planMaidData)}`);
 
@@ -733,8 +744,16 @@ export async function getQuoteForHomeContent(
       });
     }
 
+    //else if the status failed by default
+    logger.info(`[DEBUG] GET QUOTE RESP STATUS >> ${getQuoteRes.status}`);
+    // return ErrFromISPRes(
+    //   getQuoteRes?.txt || 'Error generate quote for home content', getQuoteRes.status
+    // );
+
+    //modified Error Response
     return ErrFromISPRes(
-      getQuoteRes?.txt || 'Error generate quote for home content',
+      getQuoteRes?.txt || 'ISP validation failed',
+      getQuoteRes?.status,
     );
   } catch (error) {
     logger.error(`Error generate quote for home content: ${error}`);

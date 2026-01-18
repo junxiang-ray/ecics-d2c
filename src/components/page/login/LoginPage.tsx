@@ -23,7 +23,7 @@ const LoginPage = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch(); //creates an action obj send it the store
 
   const productType: ProductType = pathname.startsWith('/maid')
     ? ProductType.MAID

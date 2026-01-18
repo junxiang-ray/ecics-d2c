@@ -19,7 +19,7 @@ export interface PersonalInfoForm {
   policyHolderNricFin: string;
   policyHolderNationality: string;
   policyHolderGender: string;
-  policayHolderMaritalStatus: string;
+  policyHolderMaritalStatus: string;
   policyHolderMobileNumber: string;
   policyHolderEmail: string;
   policyHolderDateOfBirth: string;
@@ -36,6 +36,10 @@ export interface PersonalInfoForm {
   otherInsurerName: string;
   payNowAccountDifferent: 'yes' | 'no';
   payNowAccount: string;
+}
+
+export interface backendValidation {
+  invalidNRIC: boolean;
 }
 
 // MyInfo integration

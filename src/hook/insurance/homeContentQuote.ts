@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-
+// import logger from '@/app/api/libs/logger';
 import {
   HomeContentQuoteCreationPayload,
   HomeContentQuoteSavePayload,
@@ -25,7 +25,8 @@ export const useGenerateHomeContentsQuote = () => {
     data: HomeContentQuoteSavePayload,
   ) => {
     const res = await homecontents.generateHomeContentQuote(data);
-    console.log('res output', res.data);
+    // console.log("[ DEBUG ]res status >> ", res.status);
+    // console.log('res output', res.data);
     return res.data;
   };
   return useMutation({
@@ -36,7 +37,6 @@ export const useGenerateHomeContentsQuote = () => {
 
 export const useGetProductDetails = () => {
   const getProductDetails = async () => {
-    console.log('I am Here');
     const res = await homecontents.getProductDetails();
     return res.data.data;
   };

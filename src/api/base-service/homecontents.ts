@@ -19,8 +19,7 @@ export default {
     return baseClient.get<HomeContentResponse>(`${API_GET_QUOTE_BY_KEY}` + key);
   },
   generateHomeContentQuote(data: HomeContentQuoteSavePayload) {
-    console.log('getting the base client post');
-    return baseClient.post<HomeContentResponse>('/b2c_hc/quote', data);
+    return baseClient.post<HomeContentResponse>('/b2c_hc/quote', data); //TRIGGER FOR THE BACKEND CALL
   },
   getProductDetails() {
     return baseClient.post<HomeContentResponse>('/b2c_hc/details');

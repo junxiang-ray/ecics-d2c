@@ -34,7 +34,7 @@ const INITIAL_PERSONAL_INFO: PersonalInfoForm = {
   policyHolderNricFin: '',
   policyHolderNationality: 'Singaporean',
   policyHolderGender: 'Male',
-  policayHolderMaritalStatus: '',
+  policyHolderMaritalStatus: '',
   policyHolderMobileNumber: '',
   policyHolderEmail: '',
   policyHolderDateOfBirth: '',

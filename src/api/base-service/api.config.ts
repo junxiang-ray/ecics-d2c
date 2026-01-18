@@ -30,11 +30,12 @@ baseClient.interceptors.response.use(
     if (status === 500 || status === 503) {
       window.location.href = `${ROUTES.API_ERROR}?status=${status}&message=${encodeURIComponent(message)}`;
     }
-    if (error.response) {
-      console.error('API Error:', error.response.data);
-    } else {
-      console.error('Network Error:', error.message);
-    }
+    //only for debugging on the console
+    // if (error.response) {
+    //   console.error('API Error:', error.response.data);
+    // } else {
+    //   console.error('Network Error:', error.message);
+    // }
     return Promise.reject(error);
   },
 );

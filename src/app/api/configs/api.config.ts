@@ -66,16 +66,68 @@ apiServer.interceptors.response.use(
   },
 );
 
+function flattenBody(body: any) {
+  const { proposerDetails, planDetails } = body;
+
+  return {
+    //the product id is included in the isp
+    ownership: planDetails.homeOwnership,
+    property_type: planDetails.homeType,
+    unit_type: planDetails.unitType,
+    contents_si: planDetails.homeContentCoverage,
+    renovations_si: planDetails.renovationsCoverage,
+    building_si: planDetails.buildingCoverage,
+    family_pa_si: planDetails.wpaCoverage,
+    selected_plan: planDetails.selectedPlan,
+    policy_period: planDetails.policyPeriod,
+    policy_start_date: planDetails.startDate,
+    promo_code: planDetails.promoCode,
+
+    insured_address_line1: proposerDetails.addressLine1,
+    insured_address_line2: proposerDetails.addressLine2,
+    insured_address_line3: proposerDetails.addressLine3,
+    insured_post_code: proposerDetails.postCode,
+
+    proposer_name: proposerDetails.name,
+    proposer_nric: proposerDetails.nric,
+    proposer_date_of_birth: proposerDetails.dob,
+    proposer_gender: proposerDetails.gender,
+    proposer_marital_status: proposerDetails.maritalStatus,
+    proposer_mobile: proposerDetails.mobile,
+    email: proposerDetails.email,
+
+    different_mailing_address: proposerDetails.differentMailingAddress,
+    mailing_address_line1: proposerDetails.mailingAddress1,
+    mailing_address_line2: proposerDetails.mailingAddress2,
+    mailing_address_line3: proposerDetails.mailingAddress3,
+    mailing_post_code: proposerDetails.mailingPostCode,
+    __finalize: body.__finalize,
+  };
+}
+
 export async function handleApiCallToISP(endpoint: string, body: any) {
   const url = `${process.env.ISP_API_URL}${endpoint}`;
+  logger.info(`[DEBUG] url debug ${url}`);
+  logger.info(`[DEBUG] endpoint debug ${endpoint}`);
+
+  // logger.info(`[DEEEBUG] type of dob ${body.proposerDetails.do}`)
   const headers = { 'In-Auth-Token': token };
   try {
+    logger.info(`[DEBUG] TOKEN PRINT OUT ${token}`);
+
+    // const ispBody = flattenBody(body);
+    // logger.info(`[OUTPUT] flattend body ${ispBody}`);
+    //don't need to flatten cuz the isp side has already done
+    // logger.info(`payload date data ${body.proposerDetails.dob}`);
+    // logger.info(`type of dob and start date ${typeof(body.proposerDetails.dob)}`)
     logger.info(
-      `Calling ISP service ${url} with body: ${JSON.stringify(body)}`,
+      `Calling ISP service ${url} with body: ${JSON.stringify(body, null, 2)}`,
     );
-    let response = await axios.post(url, body, { headers });
+    //BODY IS NOT UNDEFINED UNTIL HERE (BODY HAS DATA)
+    let response = await axios.post(url, body, { headers }); //authentication check to the ISP
+    //it failed here
     logger.info(
-      `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data)}`,
+      `InsillionService.handleApiCall: [FAILING POINT] Response from ${url}: ${JSON.stringify(response.data, null, 2)}`,
     );
 
     // Check if token is expired
@@ -92,6 +144,9 @@ export async function handleApiCallToISP(endpoint: string, body: any) {
         `InsillionService.handleApiCall: Retrying ${url} with new token: ${token}`,
       );
 
+      logger.info(
+        `[DEBUG ANOTHER FAILING POINT]  BEFORE GETTING RESP FROM INSILLION ${body}`,
+      );
       response = await axios.post(url, body, {
         headers: { 'In-Auth-Token': token },
       });
@@ -127,6 +182,7 @@ export async function handleGetApiCallToISP(endpoint: string) {
       response.data.status === TOKEN_EXPIRED_STATUS ||
       response.data.status === TOKEN_NOT_FOUND_STATUS
     ) {
+      logger.info(` << TOKEN REFRESHING UPON EXPIRATION >>`);
       logger.info(
         `InsillionService.handleApiCall: Token ${token} is expired or not found. Refreshing token...`,
       );
@@ -139,9 +195,9 @@ export async function handleGetApiCallToISP(endpoint: string) {
       response = await axios.get(url, {
         headers: { 'In-Auth-Token': token },
       });
-      // logger.info(
-      //   `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data)}`,
-      // );
+      logger.info(
+        `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data, null, 2)}`,
+      );
     }
 
     return response.data;

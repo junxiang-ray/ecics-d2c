@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-
+import logger from '@/app/api/libs/logger';
 import { STATUS_CODE } from './status.code';
 
 type BaseResponse = {
@@ -47,12 +47,17 @@ export class ConflictError extends HttpError {
   }
 }
 
-export function ErrFromISPRes(message: string, status?: number | string) {
-  const res: BaseResponse = {
-    message,
-    status: status,
-  };
-  return NextResponse.json(res, { status: STATUS_CODE.ERROR_FROM_ISP });
+export function ErrFromISPRes(message: string, ispStatus?: number | string) {
+  logger.info(`Error From ISP Response is called`);
+
+  return NextResponse.json(
+    {
+      message,
+      ispStatus,
+      success: false,
+    },
+    { status: STATUS_CODE.ERROR_FROM_ISP },
+  );
 }
 
 export function ErrBadRequest(message: string) {

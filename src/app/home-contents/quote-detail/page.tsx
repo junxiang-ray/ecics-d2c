@@ -19,6 +19,7 @@ import {
   isFormValid,
   validatePersonalInfoForm,
   validateQuoteForm,
+  existNRIC,
 } from '@/libs/utils/home-content';
 import {
   generateKeyAndAttachToUrl,
@@ -56,6 +57,7 @@ import { GetUserInfoFromSingpassService } from '@/app/api/v1/singpass/user-info/
 import { DATA_FROM_SINGPASS, PRODUCT_TYPE } from '@/constants/general.constant';
 import { useSaveProposal } from '@/hook/insurance/quote';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { validateNRIC } from '@/libs/utils/validation-utils';
 
 export default function QuoteDetailPage() {
   const router = useRouterWithQuery();
@@ -317,8 +319,11 @@ export default function QuoteDetailPage() {
         }
 
         // Home type logic
+        console.log('[DEBUG] HOME TYPE VALUE CHECK', value);
+        console.log('[DEBUG] quote field VALUE CHECK', quoteField);
         if (quoteField === 'homeType') {
-          if (value === 'landed') newData.unitType = 'landed';
+          if (value === 'Landed Property')
+            newData.unitType = 'Landed'; //value checked with Landed Property
           else if (value === 'hdb') newData.unitType = '4-Room';
           else if (value === 'condo') newData.unitType = '3-Room';
         }
@@ -331,6 +336,7 @@ export default function QuoteDetailPage() {
         if (quoteField === 'coverageOptions')
           newData.coverageOptions = JSON.parse(value);
 
+        // console.log("[DEBUG] newData before returned", newData);
         return newData;
       });
 
@@ -381,7 +387,7 @@ export default function QuoteDetailPage() {
       data?.dob?.value ?? data?.policyHolderDateOfBirth ?? '',
     postalCode: data?.regadd?.postal?.value ?? data?.postalCode ?? '',
     policyHolderGender: data?.policyHolderGender ?? 'M',
-    policayHolderMaritalStatus: data?.policayHolderMaritalStatus ?? '',
+    policyHolderMaritalStatus: data?.policyHolderMaritalStatus ?? '',
   });
 
   //Init
@@ -483,7 +489,7 @@ export default function QuoteDetailPage() {
 
       if (targetStep === currentStep + 1) {
         let canProceed = false;
-
+        console.log('validation check for quote form called');
         if (targetStep === 2) {
           if (!formData.selectedPlan) return;
           const newErrors = validateQuoteForm(formData);
@@ -493,6 +499,7 @@ export default function QuoteDetailPage() {
           if (!formData.selectedPlan || !visitedSteps.has(2)) return;
           if (currentStep === 2) {
             const newErrors = validatePersonalInfoForm(personalInfoData);
+            console.log('errors for form prior validation', newErrors);
             setPersonalInfoErrors(newErrors);
             canProceed = isFormValid(newErrors);
           } else {
@@ -670,7 +677,7 @@ export default function QuoteDetailPage() {
           dob: personalInfo.policyHolderDateOfBirth,
           gender: gender_table[personalInfo.policyHolderGender],
           maritalStatus:
-            maritalStatus_table[personalInfo.policayHolderMaritalStatus],
+            maritalStatus_table[personalInfo.policyHolderMaritalStatus],
           mobile: personalInfo.policyHolderMobileNumber,
           email: personalInfo.policyHolderEmail,
           differentMailingAddress:
@@ -700,17 +707,30 @@ export default function QuoteDetailPage() {
 
       console.log(`generate quote with this ${JSON.stringify(payload)}`);
 
-      generateHomeContentQuote(payload).then((res) => {
-        console.log(`quote res = ${JSON.stringify(res)}`);
-        saveToLocalStorage({ proposal_data: res.data.data });
-        if (res.status === '0') {
-          setCurrentStep(3);
-          setVisitedSteps((prev) => new Set(prev).add(3));
-          scrollToTop();
-        } else {
-          console.log('Quote save failed');
-        }
-      });
+      generateHomeContentQuote(payload)
+        .then((res) => {
+          console.log(`quote res = ${JSON.stringify(res)}`);
+          saveToLocalStorage({ proposal_data: res.data.data });
+          console.log('[`FRONTEND `DEBUG] >> ', res.data.status);
+          if (res.data.status === '0') {
+            setCurrentStep(3);
+            setVisitedSteps((prev) => new Set(prev).add(3));
+            scrollToTop();
+          } else {
+            console.log('Quote save failed');
+          }
+        })
+        .catch((error) => {
+          // console.warn("INVALID CREDENTIALS", error.status);
+          if (error?.status === 422) {
+            const newErrors = existNRIC({ invalidNRIC: true }); //check if the NRIC is a working/valid one from ISP
+            console.log('errors after form validation', newErrors);
+            setPersonalInfoErrors((prev) => ({
+              ...prev,
+              ...newErrors,
+            }));
+          }
+        });
     },
     [isLoading, formData],
   );
@@ -819,7 +839,7 @@ export default function QuoteDetailPage() {
       setVisitedSteps((prev) => new Set(prev).add(2));
       scrollToTop();
     } else if (currentStep === 2) {
-      const newErrors = validatePersonalInfoForm(personalInfoData);
+      const newErrors = validatePersonalInfoForm(personalInfoData); //nric temporarily taken in as (valid NRIC) before validation from isp
       setPersonalInfoErrors(newErrors);
       if (isFormValid(newErrors)) {
         console.log(
@@ -883,7 +903,7 @@ export default function QuoteDetailPage() {
             dob: personalInfoData.policyHolderDateOfBirth,
             gender: gender_table[personalInfoData.policyHolderGender],
             maritalStatus:
-              maritalStatus_table[personalInfoData.policayHolderMaritalStatus],
+              maritalStatus_table[personalInfoData.policyHolderMaritalStatus],
             mobile: personalInfoData.policyHolderMobileNumber,
             email: personalInfoData.policyHolderEmail,
             differentMailingAddress: personalInfoData.mailingAddressDifferent,
@@ -911,12 +931,16 @@ export default function QuoteDetailPage() {
         },
       },
       productType: PRODUCT_NAME.HOME_CONTENT,
-    }).then((res) => {
-      if (res.status === 1) {
-        setCurrentStep(4);
-        scrollToTop();
-      }
-    });
+    })
+      .then((res) => {
+        if (res.status === 1) {
+          setCurrentStep(4);
+          scrollToTop();
+        }
+      })
+      .catch((error) => {
+        console.log('error caught for making payment after proposal', error);
+      });
   }, [scrollToTop, formData, personalInfoData]);
   //#endregion
 

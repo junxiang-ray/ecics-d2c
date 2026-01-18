@@ -46,7 +46,7 @@ export default function HomeContentPage() {
           hc_result_map: JSON.stringify(response),
         });
 
-        console.log(`response from details: ${JSON.stringify(response)}`);
+        // console.log(`response from details: ${JSON.stringify(response)}`);
 
         router.push(`${basePath}${queryString ? `?${queryString}` : ''}`);
       } catch (error) {

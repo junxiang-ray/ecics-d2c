@@ -1,4 +1,9 @@
-import { PersonalInfoForm, QuoteForm } from '../types/homeContents';
+import { boolean } from 'zod';
+import {
+  PersonalInfoForm,
+  QuoteForm,
+  backendValidation,
+} from '../types/homeContents';
 
 export const validateQuoteForm = (formData: QuoteForm): Partial<QuoteForm> => {
   const errors: Partial<QuoteForm> = {};
@@ -14,7 +19,11 @@ export const validateQuoteForm = (formData: QuoteForm): Partial<QuoteForm> => {
   }
 
   // Validate unit type (only if not landed property)
-  if (formData.homeType !== 'landed property' && !formData.unitType) {
+  if (
+    formData.homeType !== 'Landed Property' &&
+    formData.unitType === 'Landed'
+  ) {
+    console.log('[DEBUG] inside validation check');
     errors.unitType = 'Unit type is required';
   }
 
@@ -79,6 +88,10 @@ export const validatePersonalInfoForm = (
     }
   }
 
+  //marital status check
+  if (!formData.policyHolderMaritalStatus)
+    errors.policyHolderMaritalStatus = 'Please enter your marital status';
+
   // Mobile number validation
   if (!formData.policyHolderMobileNumber?.trim()) {
     errors.policyHolderMobileNumber = 'Mobile number is required';
@@ -128,6 +141,16 @@ export const validatePersonalInfoForm = (
     errors.otherInsurerName = 'Other insurer name is required';
   }
 
+  return errors;
+};
+
+//not a valid/working nric(after checking with from isp)
+export const existNRIC = (backEndValidate: backendValidation) => {
+  const errors: Partial<PersonalInfoForm> = {};
+
+  if (backEndValidate.invalidNRIC) {
+    errors.policyHolderNricFin = 'NRIC/ FIN does not exist or is invalid';
+  }
   return errors;
 };
 

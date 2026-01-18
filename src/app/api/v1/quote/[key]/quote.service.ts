@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 
 export async function getQuoteByKey(key: string) {
   try {
+    console.log('getQuoteByKey');
     const quote = await prisma.quote.findFirst({
       where: {
         key,
