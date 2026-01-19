@@ -23,6 +23,8 @@ import { InputField } from '@/components/ui/form/inputfield';
 import { SingpassDownModal } from '@/components/page/login/SingpassDownModal';
 import { clearUser } from '@/redux/slices/portalUser.slice';
 import { useGetUserProfile } from '@/hook/user-profile/user-profile';
+import { getCookie } from '@/libs/utils/utils';
+import { COOKIE_NAME } from '@/constants/general.constant';
 
 const FORM_ITEM = {
   EMAIL: 'email',
@@ -44,7 +46,8 @@ const LoginPage = (): JSX.Element => {
   const [form] = Form.useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const signoutFlg = useRef(searchParams.get('signout')).current;
+  // const signoutFlg = useRef(searchParams.get('signout')).current;
+  const signoutFlg = searchParams.get('signout');
 
   const dispatch = useAppDispatch();
 
@@ -95,9 +98,23 @@ const LoginPage = (): JSX.Element => {
     setIsVerifying(false);
   }, [userProfileQuery.isError]);
 
-  const onSubmitSigninRenewal = (values: FormValues): Promise<void> => {
-    // todo: Impl logic call Api login by email
-    return new Promise((resolve, reject) => reject());
+  // const onSubmitSigninRenewal = (values: FormValues): Promise<void> => {
+  //   // todo: Impl logic call Api login by email
+  //   return new Promise((resolve, reject) => reject());
+  // };
+  const onSubmitSigninRenewal = async (values: FormValues) => {
+    try {
+      await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      // 🔥 FORCE PROFILE QUERY TO RUN AGAIN
+      userProfileQuery.refetch();
+    } catch {
+      setErrMsg('Login failed');
+    }
   };
 
   const hideModalSingpassDown = useCallback<() => void>(

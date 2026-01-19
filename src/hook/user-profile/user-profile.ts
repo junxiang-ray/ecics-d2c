@@ -12,23 +12,31 @@ import { getCookie } from '@/libs/utils/utils';
 import { PortalAuthorization } from '@/libs/types/auth';
 import { COOKIE_NAME } from '@/constants/general.constant';
 
+// export const getNric = async (): Promise<string> => {
+//   const decryptedStr = await decryptValue(
+//     getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION) ?? '',
+//     process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
+//   );
+
+//   if (!decryptedStr) return '';
+
+//   return parseJSON<PortalAuthorization>(decryptedStr)?.nric ?? '';
+// };
 export const getNric = async (): Promise<string> => {
-  const decryptedStr = await decryptValue(
-    getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION) ?? '',
-    process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
-  );
-
-  if (!decryptedStr) return '';
-
-  return parseJSON<PortalAuthorization>(decryptedStr)?.nric ?? '';
+  console.log('🔥 TEMP getNric BYPASS');
+  return 'TEST_NRIC';
 };
 
 export const useGetUserProfile = (enabled = true) => {
   const fetchUserProfile = async (): Promise<UserProfileResponse> => {
+    console.log('🔥 fetchUserProfile start');
+
     const nric = await getNric();
     if (!nric) throw new Error('Unauthorized!');
 
     const resp = await user.getUserProfile(nric);
+    console.log('🔥 fetchUserProfile got response');
+
     return resp?.data;
   };
 
