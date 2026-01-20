@@ -54,6 +54,7 @@ import {
   REG_YEAR_OPTIONS,
 } from './options';
 import { PromoCodeField } from '../components/PromoCode';
+import { RESTRICTED_VEHICLE_MAKES } from '@/constants/general.constant';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -649,7 +650,7 @@ const SingpassPolicyDetailForm = ({
     // Check blocked by make (Lexus, Suzuki) + currentYear
     const currentYear = dayjs().year();
     if (
-      (make.toLowerCase() === 'lexus' || make.toLowerCase() === 'suzuki') &&
+      RESTRICTED_VEHICLE_MAKES.includes(make.toLocaleLowerCase()) &&
       Number(extractYear(regDateStr)) === currentYear
     ) {
       setIsBlockedByMakeYear(true);

@@ -40,6 +40,7 @@ import {
   ECICS_USER_INFO,
   PARTNER_CODE,
   PROMO_CODE,
+  RESTRICTED_VEHICLE_MAKES,
 } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { emailRegex, phoneRegex } from '@/constants/validation.constant';
@@ -303,7 +304,7 @@ const ReviewInfoDetail = () => {
       const make = vehicle?.make?.value?.toLowerCase();
 
       if (
-        (make === 'lexus' || make === 'suzuki') &&
+        RESTRICTED_VEHICLE_MAKES.includes(make) &&
         Number(extractYear(regDateStr)) === currentYear
       ) {
         descriptions.push(
