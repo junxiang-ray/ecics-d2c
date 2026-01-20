@@ -1,3 +1,4 @@
+import { RESTRICTED_VEHICLE_MAKES } from '@/constants/general.constant';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
@@ -13,7 +14,7 @@ export const useBlockedByMakeYear = (
     const normalizedMake = vehicle_make.toLowerCase();
 
     const blocked =
-      (normalizedMake === 'lexus' || normalizedMake === 'suzuki') &&
+      RESTRICTED_VEHICLE_MAKES.includes(normalizedMake) &&
       regYear === currentYear;
 
     if (blocked) {
