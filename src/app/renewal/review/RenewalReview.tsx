@@ -48,7 +48,6 @@ const RenewalReview = () => {
       proposal_id: renewalQuote?.proposal_id,
       address_line1: renewal?.insured_info?.address?.address_line1,
       address_line2: renewal?.insured_info?.address?.address_line2,
-      address_line3: renewal?.insured_info?.address?.address_line3,
       postal: renewal?.insured_info?.address?.postal,
       marital_status_code: renewal?.insured_info?.marital_status,
     };
