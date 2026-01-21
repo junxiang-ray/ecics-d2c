@@ -26,7 +26,7 @@ import RenewalDetailForm, {
   RenewalFormData,
 } from '@/app/renewal/detail/RenewalDetailForm';
 import ModalPremiumRenewal from '@/app/renewal/modal/ModalPremiumRenewal';
-import { GST_RATE } from '@/constants/general.constant';
+import { COUNTRY_SINGAPORE, GST_RATE } from '@/constants/general.constant';
 import { ROUTES } from '@/constants/routes';
 import { useGetRenewalContent } from '@/hook/cms/verify';
 import { usePostEditRenewal } from '@/hook/renewal/renewalQuote';
@@ -117,6 +117,7 @@ const RenewalDetail = () => {
     address_line1: renewal?.insured_info?.address?.address_line1 ?? '',
     address_line2: renewal?.insured_info?.address?.address_line2 ?? '',
     address_line3: renewal?.insured_info?.address?.address_line3 ?? '',
+    country: COUNTRY_SINGAPORE,
     postal: renewal?.insured_info?.address?.postal ?? '',
     email: renewal?.insured_info?.email ?? '',
     contact_no: renewal?.insured_info?.contact_no ?? '',

@@ -26,3 +26,5 @@ export const PRODUCT_TYPE = 'product';
 export const VALUE_TITLE_DOC = 'List of Authorised Workshops';
 // Blocked vehicle makes
 export const RESTRICTED_VEHICLE_MAKES = ['lexus', 'suzuki', 'toyota'];
+// Country Singapore
+export const COUNTRY_SINGAPORE = 'SINGAPORE';
