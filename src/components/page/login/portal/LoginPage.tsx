@@ -95,10 +95,38 @@ const LoginPage = (): JSX.Element => {
     setIsVerifying(false);
   }, [userProfileQuery.isError]);
 
-  const onSubmitSigninRenewal = (values: FormValues): Promise<void> => {
-    // todo: Impl logic call Api login by email
-    return new Promise((resolve, reject) => reject());
+  const onSubmitSigninRenewal = async (
+    values: FormValues,
+  ): Promise<void> => {
+    try {
+      setErrMsg(null);
+      console.log('LOGIN ROUTE HIT');
+
+      const res = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // 🔑 critical
+        body: JSON.stringify({
+          type: 'email',
+          email: values.email,
+          password: values.password,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.message || 'Login failed');
+      }
+      console.log(res)
+      router.push(ROUTES.PORTAL.HOME.ROOT);
+
+    } catch (err: any) {
+      setErrMsg(err.message || 'Login failed');
+    }
   };
+
 
   const hideModalSingpassDown = useCallback<() => void>(
     () => setSingpassMaintain(false),

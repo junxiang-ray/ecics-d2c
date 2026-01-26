@@ -42,6 +42,7 @@ const userSlice = createSlice({
     },
     clearUser: () => {
       removeCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
+      removeCookie('pd');
       return { ...initialState };
     },
   },

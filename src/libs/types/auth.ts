@@ -1,5 +1,24 @@
 import { DataFromSingpass } from '@/libs/types/quote';
 
+export interface PortalAuthPayload {
+  nric: string;
+  accessToken?: string;
+  code: string | null;
+  code_verifier: string | null;
+}
+
+export interface PolicyPayload {
+  policies: Array<{
+    POLICY_NUMBER: string;
+    INSDNAME: string;
+    POL_EXPDATE: string;
+    summary: any;
+  }>;
+  timestamp: string;
+  nric: string;
+}
+
+
 export interface LoginData {
   state: string;
   nonce: string;
@@ -31,6 +50,8 @@ export type NRICResponse = {
   data: string;
   message: string;
 };
+
+
 
 export interface SavePersonalInfoPayload {
   key: string;

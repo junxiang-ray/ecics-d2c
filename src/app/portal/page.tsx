@@ -27,46 +27,99 @@ const Page = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
   const retriveNRICMutation = useRetriveNricSingpass();
 
-  const [auth, setAuth] = useState<Record<string, any>>();
+  const [auth, setAuth] = useState<Record<string, any> | null>(null);
+  const [authInitialized, setAuthInitialized] = useState(false);
+
   const singpassCodeRef = useRef(searchParams.get('code'));
-  const userInfoQuery = useGetUserProfile(auth?.nric != null);
+
+  const userInfoQuery = useGetUserProfile(!!auth?.nric);
   const userResp = userInfoQuery.data;
 
-  useEffect(() => {
-    if (userResp?.data) dispatch(setUser(userResp.data));
-  }, [userResp]);
 
+  // const userInfoQuery = useGetUserProfile(!!auth?.nric);
+  console.log('🔍 PROFILE DEBUG:', {
+    enabled: !!auth?.nric,
+    isError: userInfoQuery.isError,
+    error: userInfoQuery.error,
+    isFetching: userInfoQuery.isFetching,
+    nric: auth?.nric
+  });
+
+  /* -------------------------------
+   * Hydrate auth from _pa
+   * ------------------------------- */
   useEffect(() => {
     (async () => {
       const decryptedStr = await decryptValue(
-        getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION) ||
-          sessionStorage.getItem(COOKIE_NAME.PORTAL_AUTHORIZATION) ||
-          '',
+        getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION) ?? '',
         process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
       );
-      setAuth(parseJSON(decryptedStr ?? '') || {});
+
+      setAuth(parseJSON(decryptedStr ?? '') || null);
+      setAuthInitialized(true);
     })();
   }, []);
 
+
   useEffect(() => {
-    router.push(pathname);
-    if (!auth || auth?.nric || retriveNRICMutation.isPending) return;
+    if (!auth) return;
 
-    if (singpassCodeRef.current == null && !auth.nric)
+    console.log('🔐 AUTH DEBUG:', {
+      nric: auth.nric,
+      accessToken: auth.accessToken,
+    });
+  }, [auth]);
+
+  /* -------------------------------
+   * Populate Redux once authenticated
+   * ------------------------------- */
+  useEffect(() => {
+    if (userResp?.data) {
+      dispatch(setUser(userResp.data));
+    }
+  }, [userResp, dispatch]);
+
+  /* -------------------------------
+   * CORE AUTH LOGIC (FIXED)
+   * ------------------------------- */
+  useEffect(() => {
+    if (!authInitialized) return;
+
+    // ✅ AUTHENTICATED (EMAIL OR SINGPASS) → DO NOTHING
+    if (auth?.nric) {
+      // router.push(pathname);
+      return;
+    }
+
+    // ⛔ BELOW THIS LINE IS **SINGPASS ONLY**
+
+    if (retriveNRICMutation.isPending) return;
+
+    if (!singpassCodeRef.current && auth?.code) {
       singpassCodeRef.current = auth.code;
+    }
 
-    if (singpassCodeRef.current) return requestNRIC();
+    if (singpassCodeRef.current) {
+      return requestNRIC();
+    }
 
+    // ❌ Truly unauthenticated
     signOut();
-  }, [singpassCodeRef.current, auth]);
+  }, [auth, authInitialized, retriveNRICMutation.isPending, pathname]);
 
+  /* -------------------------------
+   * Profile error → sign out
+   * ------------------------------- */
   useEffect(() => {
     if (!userInfoQuery.isError) return;
 
     showErrorNoti('Unauthorized');
-    setTimeout(() => signOut(), 500);
+    setTimeout(signOut, 500);
   }, [userInfoQuery.isError]);
 
+  /* -------------------------------
+   * Helpers
+   * ------------------------------- */
   const showErrorNoti = (message: string) => {
     notification.error({
       key: Date.now(),
@@ -78,7 +131,7 @@ const Page = (): JSX.Element | null => {
     });
   };
 
-  const requestNRIC = (): void => {
+  const requestNRIC = () => {
     const payload: UserInfoPayload = {
       code: singpassCodeRef.current ?? '',
       code_verifier: auth?.code_verifier,
@@ -87,22 +140,23 @@ const Page = (): JSX.Element | null => {
     retriveNRICMutation.mutate(payload, {
       onSuccess: async ({ data: nric } = { data: '', message: '' }) => {
         const verifiedAuth = { ...auth, code: payload.code, nric };
+
         const encrypted = await encryptValue(
           stringifyJSON(verifiedAuth),
           process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
         );
-        setCookie<string>({
+
+        setCookie({
           name: COOKIE_NAME.PORTAL_AUTHORIZATION,
           value: encrypted,
           expireAfter: { days: 30 },
         });
+
         setAuth(verifiedAuth);
       },
       onError: () => {
         showErrorNoti('Error');
-        setTimeout(() => {
-          signOut();
-        }, 1500);
+        setTimeout(signOut, 1500);
       },
     });
   };
@@ -112,7 +166,8 @@ const Page = (): JSX.Element | null => {
   };
 
   if (auth?.nric) return null;
-
   return <Loading />;
 };
+
 export default Page;
+
