@@ -10,7 +10,7 @@ import {
 } from '@/libs/types/homeContents';
 import { calculateOriginalTotal } from '@/libs/utils/calculations';
 
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
 
 import { PremiumBreakdownDrawer } from './premiumBreakdownDrawer';
