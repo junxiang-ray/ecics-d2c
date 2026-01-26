@@ -4,11 +4,11 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 
-import { ROUTES } from '@/constants/routes';
-import { useAppDispatch } from '@/redux/store';
 import { saveToLocalStorage } from '@/libs/utils/utils';
+
+import { ROUTES } from '@/constants/routes';
 import { useGetProductDetails } from '@/hook/insurance/homeContentQuote';
-import { query } from 'winston';
+import { useAppDispatch } from '@/redux/store';
 
 export default function HomeContentPage() {
   const router = useRouter();

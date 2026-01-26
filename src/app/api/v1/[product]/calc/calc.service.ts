@@ -1,14 +1,14 @@
-import { handleApiCallToISP } from '@/app/api/configs/api.config';
-import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
-import { ErrFromISPRes } from '@/app/api/core/error.response';
-import { successRes } from '@/app/api/core/success.response';
-import logger from '@/app/api/libs/logger';
 import {
   HomeContentQuoteCreationPayload,
   InsurancePlan,
 } from '@/libs/types/homeContents';
+
+import { handleApiCallToISP } from '@/app/api/configs/api.config';
+import { ErrFromISPRes } from '@/app/api/core/error.response';
+import { successRes } from '@/app/api/core/success.response';
+import logger from '@/app/api/libs/logger';
+
 import { KEYS, response } from './payload';
-import { get } from 'http';
 
 export async function getCalcHomeContents(
   data: HomeContentQuoteCreationPayload,
@@ -40,7 +40,7 @@ export async function getCalcHomeContents(
       },
     };
 
-    // logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
+    logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
     ///Change to use .env file
     const getQuoteRes = await handleApiCallToISP(
       `/product/calc/M000000000052/premium_calc`,
@@ -249,6 +249,9 @@ export async function getCalcHomeContents(
           ],
       },
     ];
+
+    logger.info(`plans debug for discount 1 YEAR ${plans[0].discountedPrice}`);
+    logger.info(`plans debug for discount 3 YEAR ${plans[1].discountedPrice}`);
 
     if (getQuoteRes.status === 0) {
       return successRes({

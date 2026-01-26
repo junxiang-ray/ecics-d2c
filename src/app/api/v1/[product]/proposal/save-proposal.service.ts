@@ -3,6 +3,7 @@ import {
   CAR_INSURANCE,
   PLAN_ADDON_CONFIG,
 } from '@/app/api/constants/car.insurance';
+import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
 import { MAID_INSURANCE } from '@/app/api/constants/maid.insurance';
 import { MOTORCYCLE_INSURANCE } from '@/app/api/constants/motorcycle.insurance';
 import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
@@ -29,7 +30,6 @@ import {
   saveQuoteProposalForHomeContentDTO,
   saveQuoteProposalForMaidDTO,
 } from './save-proposal.dto';
-import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
 
 //#region Car
 

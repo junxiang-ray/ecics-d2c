@@ -1,8 +1,7 @@
-import { boolean } from 'zod';
 import {
+  backendValidation,
   PersonalInfoForm,
   QuoteForm,
-  backendValidation,
 } from '../types/homeContents';
 
 export const validateQuoteForm = (formData: QuoteForm): Partial<QuoteForm> => {
@@ -30,21 +29,21 @@ export const validateQuoteForm = (formData: QuoteForm): Partial<QuoteForm> => {
   // Validate policy start date
   if (!formData.policyStartDate) {
     errors.policyStartDate = 'Policy start date is required';
-  } else {
-    const startDate = new Date(formData.policyStartDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+    // } else {
+    //   const startDate = new Date(formData.policyStartDate);
+    //   const today = new Date();
+    //   today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
 
-    const thirtyDaysFromNow = new Date();
-    thirtyDaysFromNow.setDate(today.getDate() + 30);
-    thirtyDaysFromNow.setHours(23, 59, 59, 999); // Set to end of day
+    //   const thirtyDaysFromNow = new Date();
+    //   thirtyDaysFromNow.setDate(today.getDate() + 30);
+    //   thirtyDaysFromNow.setHours(23, 59, 59, 999); // Set to end of day
 
-    if (startDate < today) {
-      errors.policyStartDate = 'Policy start date cannot be in the past';
-    } else if (startDate > thirtyDaysFromNow) {
-      errors.policyStartDate =
-        'Policy start date cannot be more than 30 days from today';
-    }
+    // if (startDate < today) {
+    //   errors.policyStartDate = 'Policy start date cannot be in the past';
+    // } else if (startDate > thirtyDaysFromNow) {
+    //   errors.policyStartDate =
+    //     'Policy start date cannot be more than 30 days from today';
+    // }
   }
 
   return errors;
@@ -131,6 +130,13 @@ export const validatePersonalInfoForm = (
     } else if (!/^\d{6}$/.test(formData.mailingPostalCode)) {
       errors.mailingPostalCode = 'Please enter a valid 6-digit postal code';
     }
+  }
+
+  //validate for Paynow if the option is chosen
+  if (formData.payNowAccountDifferent === 'yes') {
+    if (!formData.payNowAccount)
+      errors.payNowAccount = 'Paynow number cannot be empty.';
+    return errors;
   }
 
   // Previous insurer validation (optional)

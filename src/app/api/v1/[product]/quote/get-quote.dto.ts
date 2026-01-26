@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { REGEX_VALUES } from '@/app/api/utils/regex';
-import homecontents from '@/api/base-service/homecontents';
 
 export const generateQuoteSchema = z.object({
   key: z.string().min(5, 'Key must be at least 5 characters long'),
@@ -137,6 +136,8 @@ export const generateQuoteForHomeContentSchema = z.object({
     mailingAddress2: z.string().optional(),
     mailingAddress3: z.string().optional(),
     mailingPostCode: z.string(),
+    payNowAccountDifferent: z.string(),
+    payNowAccount: z.string(),
   }),
   planDetails: z.object({
     homeOwnership: z.string(),

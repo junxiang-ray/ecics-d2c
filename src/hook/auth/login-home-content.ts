@@ -15,7 +15,6 @@ import {
   PARTNER_CODE,
   PROMO_CODE,
 } from '@/constants/general.constant';
-
 import { updateEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
 import { useAppDispatch } from '@/redux/store';
 

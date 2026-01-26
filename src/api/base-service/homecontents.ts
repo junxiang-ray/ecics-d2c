@@ -11,7 +11,6 @@ import {
 } from '@/constants/api.constant';
 
 import baseClient from './api.config';
-import logger from '@/app/api/libs/logger';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {

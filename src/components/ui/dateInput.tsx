@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 interface DateInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   error?: boolean;
+  flowstep: number;
   onChange?: (value: string) => void;
 }
 
@@ -18,12 +19,29 @@ export const DateInput = memo(
         [onChange],
       );
 
+      const today = new Date();
+      const tempDay = today;
+
+      //output date validation to the users to show from today's date
+      const minDate =
+        props.flowstep === 1
+          ? today.toISOString().split('T')[0]
+          : props.flowstep === 2
+            ? ''
+            : props.min;
+
+      tempDay.setMonth(today.getMonth() + 3);
+      const maxDate = tempDay.toISOString().split('T')[0];
+      const safeValue = value && minDate && minDate < value ? minDate : value;
+
       return (
         <div className='relative'>
           <input
             type='date'
             disabled={disabled}
-            value={value || ''}
+            min={minDate}
+            max={maxDate}
+            value={safeValue || ''}
             onChange={handleChange}
             ref={ref}
             style={{ WebkitAppearance: 'none' }} // hides native icon

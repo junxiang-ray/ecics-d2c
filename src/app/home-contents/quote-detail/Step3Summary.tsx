@@ -2,6 +2,7 @@
 import { DollarSign, Edit, Shield, User } from 'lucide-react';
 import { memo } from 'react';
 
+//#endregion
 import {
   CustomizationData,
   InsurancePlan,
@@ -29,7 +30,6 @@ import {
   HOME_TYPES,
   UNIT_TYPES,
 } from '@/constants/home.content.constants';
-//#endregion
 
 interface SummarySection {
   title: string;
@@ -74,6 +74,7 @@ const SummarySection = memo<SummarySection>(
 SummarySection.displayName = 'SummarySection';
 
 interface Step3Props {
+  btnDisable: boolean;
   formData: QuoteForm;
   personalInfoData: PersonalInfoForm;
   selectedPlan: InsurancePlan | null;
@@ -92,6 +93,7 @@ interface Step3Props {
 
 const Step3Summary = memo<Step3Props>(
   ({
+    btnDisable,
     formData,
     personalInfoData,
     selectedPlan,
@@ -171,8 +173,11 @@ const Step3Summary = memo<Step3Props>(
       if (onEditPropertyInfo) onEditPropertyInfo();
     };
 
+    console.log(`{customizatin data .building ${customizationData?.building}`);
+    // console.log(`step3 disableBtn ${isRead}`);
     return (
       <>
+        {console.log('BUTTON DISABLED FROM STEP 3}=', btnDisable)};
         <div className='mb-12 text-center'>
           <h2 className='mb-4 text-[clamp(28px,5vw,40px)] font-bold text-gray-800'>
             Summary & Review
@@ -182,7 +187,6 @@ const Step3Summary = memo<Step3Props>(
             to payment
           </p>
         </div>
-
         {/* Policy Details & Coverage Combined */}
         <SummarySection
           title='Policy Details & Coverage'
@@ -248,7 +252,7 @@ const Step3Summary = memo<Step3Props>(
                       Sum Insured
                     </h4>
                     <div className='space-y-1.5'>
-                      {customizationData.building !== 'yes' && (
+                      {customizationData.building === 'yes' && (
                         <div className='flex items-center justify-between text-sm'>
                           <span className='text-gray-600'>
                             Building Coverage
@@ -346,7 +350,6 @@ const Step3Summary = memo<Step3Props>(
             </div>
           </div>
         </SummarySection>
-
         {/* Policy Holder Details */}
         <SummarySection
           title='Policyholder Information'
@@ -485,7 +488,6 @@ const Step3Summary = memo<Step3Props>(
             )}
           </div>
         </SummarySection>
-
         {/* Premium Breakdown - Updated with $ icon */}
         <SummarySection
           title='Premium Breakdown'
@@ -528,6 +530,7 @@ const Step3Summary = memo<Step3Props>(
                     </span>
                     <span className='flex-shrink-0 whitespace-nowrap text-sm font-medium text-[#303030]'>
                       ${parseInt(customizationData.building).toLocaleString()}
+                      <p>{`building coverage ${customizationData.building}`}</p>
                     </span>
                   </div>
                   <div className='flex items-start justify-between gap-3'>
@@ -658,10 +661,10 @@ const Step3Summary = memo<Step3Props>(
             </div>
           </div>
         </SummarySection>
-
         {/* Standardized Premium Summary */}
         {selectedPlan && (
           <PremiumSummary
+            disableBtn={btnDisable}
             selectedPlan={selectedPlan}
             selectedAddOns={selectedAddOns}
             totalPremium={totalPremium}

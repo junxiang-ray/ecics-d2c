@@ -11,6 +11,20 @@ import {
   SelectedAddOn,
 } from '../types/homeContents';
 
+export interface PricingInfo {
+  displayPrice: number;
+  originalPrice: number;
+  showDiscount: boolean;
+
+  discountPercentage: number;
+
+  // NEW (what PlanCard needs)
+  totalSavings: number;
+  totalDiscountPercentage: number;
+  hasPromo: boolean;
+  hasDurationDiscount: boolean;
+}
+
 // Helper function to calculate expiry date
 // Insurance policies end 1 day before the anniversary date
 // E.g., Start: 15/10/2025 → End: 14/10/2026 (for 1-year policy)
@@ -311,46 +325,54 @@ export const getPlanPricingInfo = (
   promoStatus: PromoCodeStatus,
   policyDuration?: string,
 ) => {
+  console.log('getPlanPricingInfo', plan);
+
   if (!plan)
     return {
       displayPrice: 0,
       originalPrice: 0,
       showDiscount: false,
       discountPercentage: 0,
+      totalSavings: 0,
+      totalDiscountPercentage: 0,
+      hasPromo: false,
+      hasDurationDiscount: false,
     };
 
-  let basePrice = plan.originalPrice;
+  const originalPrice = plan.originalPrice;
+  let priceAfterDuration = originalPrice;
   let showDurationDiscount = false;
 
   // Apply duration discount for 3-year policies
   if (policyDuration === '36') {
-    basePrice = adjustPremiumForDuration(basePrice, policyDuration);
+    priceAfterDuration = adjustPremiumForDuration(
+      originalPrice,
+      policyDuration,
+    );
     showDurationDiscount = true;
   }
 
   const hasValidPromo =
     promoStatus?.status === 'applied' && promoStatus.discount;
 
+  let displayPrice = priceAfterDuration;
   if (hasValidPromo) {
-    // Show promo discounted price
-    const discountPercentage = promoStatus.discount || 0;
-    const discountedPrice = basePrice * (1 - discountPercentage / 100);
-
-    return {
-      displayPrice: discountedPrice,
-      originalPrice: plan.originalPrice,
-      showDiscount: true,
-      discountPercentage,
-      showDurationDiscount,
-    };
-  } else {
-    // Show base price (with duration discount if applicable)
-    return {
-      displayPrice: basePrice,
-      originalPrice: plan.originalPrice,
-      showDiscount: showDurationDiscount,
-      discountPercentage: showDurationDiscount ? 10 : 0,
-      showDurationDiscount,
-    };
+    displayPrice = priceAfterDuration * (1 - (promoStatus.discount ?? 0) / 100);
   }
+  const totalSavings = Math.max(originalPrice - displayPrice, 0);
+  const totalDiscountPercentage =
+    originalPrice > 0
+      ? ((originalPrice - displayPrice) / originalPrice) * 100
+      : 0;
+
+  return {
+    displayPrice,
+    originalPrice,
+    showDiscount: totalSavings > 0,
+    discountPercentage: Math.round(totalDiscountPercentage),
+    totalSavings,
+    totalDiscountPercentage,
+    hasValidPromo,
+    showDurationDiscount,
+  };
 };

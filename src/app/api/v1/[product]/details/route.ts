@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { PRODUCT_NAME } from '@/app/api/constants/product';
 import logger from '@/app/api/libs/logger';
+
 import { getDetailsHomeContents } from './get-details.service';
 
 export async function POST(

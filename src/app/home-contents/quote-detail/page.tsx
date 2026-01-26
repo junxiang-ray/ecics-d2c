@@ -1,9 +1,8 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import { DataFromSingpass } from '@/libs/types/quote';
 
+// import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import {
   CustomizationData,
   HomeContentQuoteSavePayload,
@@ -16,10 +15,10 @@ import {
 } from '@/libs/types/homeContents';
 import { calculateTotalPremium } from '@/libs/utils/calculations';
 import {
+  existNRIC,
   isFormValid,
   validatePersonalInfoForm,
   validateQuoteForm,
-  existNRIC,
 } from '@/libs/utils/home-content';
 import {
   generateKeyAndAttachToUrl,
@@ -29,37 +28,36 @@ import {
 
 import QuoteDetail from '@/components/page/insurance/quote-detail/QuoteDetailPage';
 
+import { PRODUCT_NAME } from '@/app/api/constants/product';
+import { DATA_FROM_SINGPASS } from '@/constants/general.constant';
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import { PLANS } from '@/constants/home.content.constants';
+import {
+  usePostPersonalInfoHomeContent,
+  useRequestLoginHomeContent,
+} from '@/hook/auth/login-home-content';
 import {
   useGenerateHomeContentsQuote,
   useGetPremiumCalc,
   usePayment,
 } from '@/hook/insurance/homeContentQuote';
+import { useSaveProposal } from '@/hook/insurance/quote';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { useAppSelector } from '@/redux/store';
 
+import {
+  INITIAL_FORM_DATA,
+  INITIAL_MYINFO_DATA,
+  INITIAL_PERSONAL_INFO,
+  INITIAL_PROMO_STATUS,
+} from './initialData';
 import Step1QuoteForm from './Step1QuoteForm';
 import Step2PersonalInfo from './Step2PersonalInfo';
 import Step3Summary from './Step3Summary';
 import Step4Success from './Step4Success';
-import {
-  INITIAL_PERSONAL_INFO,
-  INITIAL_PROMO_STATUS,
-  INITIAL_MYINFO_DATA,
-  INITIAL_FORM_DATA,
-} from './initialData';
-import {
-  usePostPersonalInfoHomeContent,
-  useRequestLoginHomeContent,
-} from '@/hook/auth/login-home-content';
-import { PRODUCT_NAME } from '@/app/api/constants/product';
-import { useAppSelector } from '@/redux/store';
-import { GetUserInfoFromSingpassService } from '@/app/api/v1/singpass/user-info/[product]/singpass-get-user-info.service';
-import { DATA_FROM_SINGPASS, PRODUCT_TYPE } from '@/constants/general.constant';
-import { useSaveProposal } from '@/hook/insurance/quote';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { validateNRIC } from '@/libs/utils/validation-utils';
 
 export default function QuoteDetailPage() {
+  const [readTillEndOfPage, setReadTillEndOfPage] = useState(false);
   const router = useRouterWithQuery();
   //#region State Management
   // State management - using pre-computed initial objects
@@ -153,11 +151,14 @@ export default function QuoteDetailPage() {
     if (typeof window !== 'undefined') {
       try {
         const storedData = localStorage.getItem('quoteFormData');
+        // console.log(`storedData for quoteFormData ${storedData}`);
         if (storedData) {
           const parsedData = JSON.parse(storedData);
 
           setSelectedAddOns(parsedData.addons || INITIAL_FORM_DATA.addons);
-
+          console.log(
+            `check at line [161] ${JSON.stringify(INITIAL_FORM_DATA, null, 2)}`,
+          );
           return {
             ...INITIAL_FORM_DATA,
             ...parsedData,
@@ -177,17 +178,21 @@ export default function QuoteDetailPage() {
   });
   ///stores updated data in local storage.
   useEffect(() => {
-    console.log(`formData changed: ${JSON.stringify(formData)}`);
+    console.log('promo status debug', promoStatus.status);
+    console.log(`formData changed: ${JSON.stringify(formData, null, 2)}`);
     saveToLocalStorage({ quoteFormData: JSON.stringify(formData) });
+    // console.log(`show plans ${showPlans}`);
+    // console.log(`show quote step ${formData.quoteStep}`);
     if (formData.quoteStep >= 1) {
       setShowPlans(true);
     }
+
     if (formData.quoteStep >= 2) {
       setShowAddOns(true);
     }
     // if (formData.quoteStep >= 3) {
     //   setShowAddOns(true);
-    //   // scrollToBottom();
+    //   scrollToBottom();
     // }
   }, [formData]);
 
@@ -198,7 +203,7 @@ export default function QuoteDetailPage() {
     setShowAddOns(false);
     updateFormData('quoteStep', '0'); // remember to reset the step so that the page properly resets.
     updateFormData('selectedPlan', '');
-    setSelectedAddOns([]);
+    setSelectedAddOns([]); //WHY EMPTY HERE?
 
     // setFormData(INITIAL_FORM_DATA);
   }, [formData]);
@@ -319,8 +324,8 @@ export default function QuoteDetailPage() {
         }
 
         // Home type logic
-        console.log('[DEBUG] HOME TYPE VALUE CHECK', value);
-        console.log('[DEBUG] quote field VALUE CHECK', quoteField);
+        // console.log('[DEBUG] HOME TYPE VALUE CHECK', value);
+        // console.log('[DEBUG] quote field VALUE CHECK', quoteField);
         if (quoteField === 'homeType') {
           if (value === 'Landed Property')
             newData.unitType = 'Landed'; //value checked with Landed Property
@@ -339,6 +344,8 @@ export default function QuoteDetailPage() {
         // console.log("[DEBUG] newData before returned", newData);
         return newData;
       });
+
+      //handling of the btn disable
 
       // --- Clear errors only for top-level QuoteForm fields ---
       if (
@@ -420,7 +427,6 @@ export default function QuoteDetailPage() {
   }, []);
 
   useEffect(() => {
-    console.log('Setting');
     setPersonalInfoErrors((prev) => {
       const newErrors = { ...prev };
       Object.keys(personalInfoData).forEach((key) => {
@@ -486,7 +492,6 @@ export default function QuoteDetailPage() {
         scrollToTop();
         return;
       }
-
       if (targetStep === currentStep + 1) {
         let canProceed = false;
         console.log('validation check for quote form called');
@@ -686,6 +691,8 @@ export default function QuoteDetailPage() {
           mailingAddress2: personalInfo.mailingAddressLine2 || '',
           mailingAddress3: personalInfo.mailingAddressLine3 || '',
           mailingPostCode: personalInfo.mailingPostalCode,
+          payNowAccountDifferent: personalInfo.payNowAccountDifferent,
+          payNowAccount: personalInfo.payNowAccount,
         },
         planDetails: {
           homeOwnership: formData.ownership,
@@ -704,9 +711,9 @@ export default function QuoteDetailPage() {
 
         __finalize: 1,
       };
-
       console.log(`generate quote with this ${JSON.stringify(payload)}`);
 
+      //prepare for triggering the call to the backend
       generateHomeContentQuote(payload)
         .then((res) => {
           console.log(`quote res = ${JSON.stringify(res)}`);
@@ -724,13 +731,13 @@ export default function QuoteDetailPage() {
           // console.warn("INVALID CREDENTIALS", error.status);
           if (error?.status === 422) {
             const newErrors = existNRIC({ invalidNRIC: true }); //check if the NRIC is a working/valid one from ISP
-            console.log('errors after form validation', newErrors);
             setPersonalInfoErrors((prev) => ({
               ...prev,
               ...newErrors,
             }));
           }
         });
+      console.log(`.catch personal info errors ${personalInfoErrors}`);
     },
     [isLoading, formData],
   );
@@ -749,7 +756,6 @@ export default function QuoteDetailPage() {
   // 🔒 PROTECTED - Add-on toggle - ISP recalculation
   const handleAddOnToggle = useCallback(
     (addOnId: string, price: number) => {
-      console.log(`toggle with price ${price}`);
       setSelectedAddOns((prev) => {
         const existingIndex = prev.findIndex((item) => item.id === addOnId);
         let newAddOns: SelectedAddOn[];
@@ -803,9 +809,11 @@ export default function QuoteDetailPage() {
     [updateFormData],
   );
 
-  //#region HANDLE NEXT
+  /*---------------- HANDLING OF NEXT STEP (BAR PROGRESS) THROUGHOUT HOME CONTENTS ----------------*/
+
   // 🔒 PROTECTED - Navigation handlers with progressive sub-steps
   const handleNext = useCallback(() => {
+    console.log(`current step ${currentStep}`);
     if (currentStep === 1) {
       const newErrors = validateQuoteForm(formData);
       setErrors(newErrors);
@@ -846,7 +854,8 @@ export default function QuoteDetailPage() {
           `personalInfoData on Save Quote ${JSON.stringify(personalInfoData)}`,
         );
         saveToSessionStorage({ INFO_DATA: JSON.stringify(personalInfoData) });
-        handleSaveQuote(personalInfoData);
+        handleSaveQuote(personalInfoData); //if current step is 2, call out to handle the processing of saving personal info data
+        // handleSavePayNow(personalInfoData.payNowAccount);
       }
     }
   }, [
@@ -868,6 +877,11 @@ export default function QuoteDetailPage() {
     isPending: isPendingPay,
   } = usePayment();
 
+  const handleBtnDisable =
+    formData.addons[0] && formData.addons[0].selectedOption === ''
+      ? true
+      : false;
+
   const {
     mutateAsync: saveProposal,
     isSuccess,
@@ -883,7 +897,9 @@ export default function QuoteDetailPage() {
 
   useEffect(() => {
     if (dataPayment?.paymentlink) {
+      console.log(`payment link ${dataPayment?.paymentlink}`);
       router.push(dataPayment.paymentlink);
+      //after pushing doesn't reroute back anymore to the success page
     }
   }, [dataPayment]);
 
@@ -911,6 +927,8 @@ export default function QuoteDetailPage() {
             mailingAddress2: personalInfoData.mailingAddressLine2,
             mailingAddress3: personalInfoData.mailingAddressLine3,
             mailingPostCode: personalInfoData.mailingPostalCode,
+            payNowAccountDifferent: personalInfoData.payNowAccountDifferent,
+            payNowAccount: personalInfoData.payNowAccount,
           },
           planDetails: {
             homeOwnership: formData.ownership,
@@ -933,6 +951,7 @@ export default function QuoteDetailPage() {
       productType: PRODUCT_NAME.HOME_CONTENT,
     })
       .then((res) => {
+        //never reached here the page got pushed with router
         if (res.status === 1) {
           setCurrentStep(4);
           scrollToTop();
@@ -974,10 +993,32 @@ export default function QuoteDetailPage() {
   }, [scrollToElement]);
   //#endregion
 
+  // console.log("current step now", currentStep);
+  useEffect(() => {
+    if (currentStep !== 3) return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+      const res = Math.abs(scrollHeight - clientHeight - scrollTop) <= 1;
+      const isRead = res ? false : true;
+      setReadTillEndOfPage(isRead);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentStep]);
+
+  // console.log("read till end of page", readTillEndOfPage);
+
   //#region STEPS
   const steps = [
     <Step1QuoteForm
       key='Step 1'
+      btnDisable={handleBtnDisable}
       formData={formData}
       planData={allplans}
       updateFormData={updateFormData}
@@ -1023,6 +1064,7 @@ export default function QuoteDetailPage() {
     />,
     <Step3Summary
       key='Step 3'
+      btnDisable={readTillEndOfPage}
       formData={formData}
       personalInfoData={personalInfoData}
       selectedPlan={currentPlan}

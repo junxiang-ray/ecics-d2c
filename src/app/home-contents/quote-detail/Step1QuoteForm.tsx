@@ -6,7 +6,7 @@ import {
   Home,
   X,
 } from 'lucide-react';
-import { Briefcase, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
@@ -18,7 +18,6 @@ import {
 } from '@/libs/types/homeContents';
 import {
   calculateExpiryDate,
-  calculateTotalPremium,
   validatePromoCode,
 } from '@/libs/utils/calculations';
 import { cn } from '@/libs/utils/utils';
@@ -41,7 +40,6 @@ import { Select } from '@/components/ui/select';
 
 import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import {
-  BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,
   HOME_OWNERSHIP_TYPES,
   HOME_TYPES,
@@ -51,6 +49,7 @@ import {
 } from '@/constants/home.content.constants';
 
 interface Step1Props {
+  btnDisable: boolean;
   formData: QuoteForm;
   planData: InsurancePlan[];
   updateFormData: (field: keyof QuoteForm, value: string) => void;
@@ -83,6 +82,7 @@ interface Step1Props {
 
 const Step1QuoteForm = memo<Step1Props>(
   ({
+    btnDisable,
     formData,
     planData,
     updateFormData,
@@ -109,9 +109,26 @@ const Step1QuoteForm = memo<Step1Props>(
     setHasViewedCustomization,
     totalPremium,
   }) => {
+    console.log(
+      'plan promocode debug in frontend [YEAR 1]',
+      JSON.stringify(planData[0].discount),
+    );
+    console.log(
+      'plan promocode debug ',
+      JSON.stringify(planData[0].discountedPrice),
+    );
+
+    console.log(
+      'plan promocode debug in frontend [YEAR 3]',
+      JSON.stringify(planData[1].discount),
+    );
+    console.log(
+      'plan promocode debug ',
+      JSON.stringify(planData[1].discountedPrice),
+    );
+
     // Ref for the customization section
     const customizationRef = useRef<HTMLDivElement>(null);
-
     // Intersection Observer to detect when customization section is viewed
     useEffect(() => {
       if (!showCustomization || hasViewedCustomization) return;
@@ -157,6 +174,7 @@ const Step1QuoteForm = memo<Step1Props>(
     }, [isLoading]);
 
     const availableUnitTypes = useMemo(() => {
+      // if(UNIT_TYPES[0].value) ===
       return UNIT_TYPES.filter((unit) =>
         unit.homeTypes.includes(formData.homeType),
       );
@@ -165,7 +183,10 @@ const Step1QuoteForm = memo<Step1Props>(
     // Memoized handlers
     const handleApplyPromo = useCallback(() => {
       const result = validatePromoCode(formData.promoCode);
+      console.log('formData promoCode', formData.promoCode);
+      console.log('validatedPromoCode result', result);
       setPromoStatus(result);
+      console.log('plan data status [STEP1]', result.status);
     }, [formData.promoCode, setPromoStatus]);
 
     const handlePromoCodeClear = useCallback(() => {
@@ -189,12 +210,49 @@ const Step1QuoteForm = memo<Step1Props>(
       );
     }
 
+    const finalUnitType = () => {
+      if (formData.unitType === '' && formData.homeType !== 'Landed Property') {
+        updateFormData('unitType', availableUnitTypes[3]?.value);
+        return availableUnitTypes[3]?.value || '';
+      }
+    };
+
     const labelToValueMap = Object.fromEntries(
       availableUnitTypes.map(({ label, value }) => [label, value]),
     );
 
+    const updatePromoStatus = (code_stat: string, value: string) => {
+      if (code_stat === 'applying') updateFormData('promoCode', value);
+    };
+
+    //filtering the addons if hometype is landed
+    const visibleCard =
+      formData.homeType === 'Landed Property'
+        ? ADD_ONS
+        : ADD_ONS.filter((item) => item.id === 'worldwide-fpa');
+
+    //not sure whether to pre-compute for the discounted price calculation
+    // Precompute displayPrice for all add-ons
+    // const addOnPriceMap = useMemo(() => {
+    //   if (!formData.selectedPlan) return {};
+
+    //   const plan = planData.find((p) => p.id === formData.selectedPlan);
+    //   if (!plan) return {};
+
+    //   const map: Record<string, number> = {};
+    //   ADD_ONS.forEach((addOn) => {
+    //     if (addOn.id === 'building') {
+    //       map[addOn.id] = formData.homeType !== 'landed property' ? 0 : plan.buildingCoverageWithDiscount || 0;
+    //     } else {
+    //       map[addOn.id] = plan.worldwideFpaWithDiscount || 0;
+    //     }
+    //   });
+    //   return map;
+    // }, [ADD_ONS, formData.selectedPlan, formData.homeType, planData]);
+
     return (
       <>
+        {console.log('visible card lenght', visibleCard.length)}
         {/* Quote Form */}
         <Card className='mb-8 overflow-hidden border-0 shadow-xl'>
           <CardHeader className='from-[#02ADEF]/8 border-b border-gray-100 bg-gradient-to-r via-blue-50/80 to-indigo-50/50 p-5 sm:p-8'>
@@ -239,12 +297,16 @@ const Step1QuoteForm = memo<Step1Props>(
                 labelIcon={<Home className='size-5 text-[#02ADEF]' />}
                 label='Type of Home'
                 options={HOME_TYPES}
-                className='col-span-1 space-y-4 lg:col-span-2'
+                className='col-span-1 space-y-4 lg:col-span-2 '
                 onChange={(value) => {
                   updateFormData('homeType', value);
-                  if (value === 'landed property') {
+                  if (value === 'Landed Property')
                     updateFormData('unitType', 'landed');
-                  }
+                  else
+                    updateFormData(
+                      'unitType',
+                      availableUnitTypes[3]?.label || '',
+                    );
                   if (showPlans) {
                     resetFormData();
                   }
@@ -255,7 +317,7 @@ const Step1QuoteForm = memo<Step1Props>(
               ></OptionSelector>
 
               {/* Unit Type - Only show for non-landed properties */}
-              {formData.homeType !== 'landed property' && (
+              {formData.homeType !== 'Landed Property' && (
                 <div className='space-y-3'>
                   <Label className='flex items-center gap-2 text-base font-semibold text-gray-700 sm:text-lg'>
                     <Building className='size-5 text-[#02ADEF]' />
@@ -263,11 +325,9 @@ const Step1QuoteForm = memo<Step1Props>(
                   </Label>
 
                   <Select
-                    defaultValue={
-                      availableUnitTypes.find(
-                        (u) => u.value === formData.unitType,
-                      )?.label
-                    }
+                    // defaultValue={unitTypeString}
+                    defaultValue={formData.unitType}
+                    value={finalUnitType()}
                     placeholder='Select unit type'
                     onChange={(label) => {
                       // Map the label back to the corresponding value
@@ -388,6 +448,7 @@ const Step1QuoteForm = memo<Step1Props>(
                   Policy Start Date <span className='text-red-500'>*</span>
                 </Label>
                 <DateInput
+                  flowstep={1}
                   value={formData.policyStartDate}
                   onChange={(value: string) => {
                     updateFormData('policyStartDate', value);
@@ -429,8 +490,8 @@ const Step1QuoteForm = memo<Step1Props>(
                     type='text'
                     placeholder='Enter promo code'
                     value={formData.promoCode}
-                    onChange={(e) =>
-                      updateFormData('promoCode', e.target.value)
+                    onChange={
+                      (e) => updatePromoStatus('applying', e.target.value) //don't call the formData to update directly, cuz it checks for promoCode validation directly also
                     }
                     className={cn(
                       'h-12 w-full rounded-xl border-2 px-4 transition-all duration-200 sm:h-14 sm:px-6',
@@ -595,7 +656,7 @@ const Step1QuoteForm = memo<Step1Props>(
                       </span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className='overflow-x-auto overflow-y-auto px-6 pb-6 pt-4'>
+                  <AccordionContent className='overflow-x-auto overflow-y-auto'>
                     <div className='w-full overflow-x-auto'>
                       <table className='w-full min-w-[600px] border-collapse'>
                         <thead>
@@ -778,15 +839,21 @@ const Step1QuoteForm = memo<Step1Props>(
             </div>
 
             <div
-              className={`mb-8 grid grid-cols-1  sm:mb-12 sm:gap-6 ${formData.homeType !== 'landed property' ? 'md:grid-cols-1 lg:grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-2'}`}
+              className={`mb-8 grid grid-cols-1  sm:mb-12 sm:gap-6
+                ${formData.homeType !== 'Landed Property' ? 'md:grid-cols-1 lg:grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-2'}`}
             >
               {ADD_ONS.map((addOn) => {
+                console.log('selexted addons', selectedAddOns);
+                console.log('add on length', visibleCard.length);
+                console.log('visible all', addOn);
+
                 const isSelected = selectedAddOns.some(
                   (item) => item.id === addOn.id,
                 );
                 const selectedOption = selectedAddOns.find(
                   (item) => item.id === addOn.id,
                 )?.selectedOption;
+
                 let displayPrice = 0;
                 if (addOn.id === 'building') {
                   if (formData.homeType !== 'landed property') {
@@ -796,6 +863,7 @@ const Step1QuoteForm = memo<Step1Props>(
                     planData.find((plan) => plan.id === formData.selectedPlan)
                       ?.buildingCoverageWithDiscount || 0;
                 } else {
+                  //if addon is for landed-property show to add on for the landed property
                   displayPrice =
                     planData.find((plan) => plan.id === formData.selectedPlan)
                       ?.worldwideFpaWithDiscount || 0;
@@ -815,6 +883,29 @@ const Step1QuoteForm = memo<Step1Props>(
                   />
                 );
               })}
+
+              {/* {ADD_ONS.map((addOn) => {
+              const isSelected = selectedAddOns.some((item) => item.id === addOn.id);
+              const selectedOption = selectedAddOns.find((item) => item.id === addOn.id)
+                ?.selectedOption;
+              
+              console.log("selectionOption check", selectedOption);
+              const displayPrice = addOnPriceMap[addOn.id] || 0;
+
+              return (
+                <AddOnCard
+                  key={addOn.id}
+                  addOn={addOn}
+                  isSelected={isSelected}
+                  selectedOption={selectedOption}
+                  onToggle={() => onAddOnToggle(addOn.id, displayPrice)}
+                  onOptionChange={(option) =>
+                    onAddOnOptionChange(addOn.id, option, displayPrice)
+                  }
+                  displayPrice={displayPrice}
+                />
+              );
+            })} */}
             </div>
             <br />
           </div>
@@ -823,6 +914,7 @@ const Step1QuoteForm = memo<Step1Props>(
         {/* Premium Summary - Show when plan is selected */}
         {currentPlan && (
           <PremiumSummary
+            disableBtn={btnDisable}
             selectedPlan={currentPlan}
             selectedAddOns={selectedAddOns}
             totalPremium={totalPremium}

@@ -7,7 +7,7 @@ import {
 } from '@/app/api/utils/quote.helpers';
 
 export async function formatCarQuoteInfo(
-  quoteInfo: any,
+  quoteInfo: any, //response from after the quotation
   data: any,
 ): Promise<any[]> {
   const mappedPlanValues = mappedPlanPremiums(quoteInfo);

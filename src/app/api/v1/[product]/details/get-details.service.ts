@@ -1,12 +1,7 @@
-import {
-  handleApiCallToISP,
-  handleGetApiCallToISP,
-} from '@/app/api/configs/api.config';
-import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
+import { handleGetApiCallToISP } from '@/app/api/configs/api.config';
 import { ErrFromISPRes } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
-import { InsurancePlan } from '@/libs/types/homeContents';
 
 export async function getDetailsHomeContents() {
   try {

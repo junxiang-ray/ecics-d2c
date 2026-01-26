@@ -1,6 +1,3 @@
-import { Building } from 'lucide-react';
-import build from 'next/dist/build';
-
 // use as fallback
 export const KEYS = {
   homeOwnership: '0_3_2',

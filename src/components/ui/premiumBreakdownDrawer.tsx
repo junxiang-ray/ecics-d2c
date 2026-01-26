@@ -13,7 +13,6 @@ import {
   calculateCoveragePremium,
 } from '@/libs/utils/calculations';
 
-import { ADD_ONS } from '@/constants/home.content.addon.constants';
 import {
   BUILDING_COVERAGE_OPTIONS,
   HOME_CONTENT_COVERAGE_OPTIONS,

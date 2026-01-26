@@ -37,7 +37,7 @@ export async function handlePaymentResult(data: paymentDTO) {
       return result;
     }
 
-    await prisma.quote.update({
+    const quoteUpdate = await prisma.quote.update({
       where: { id: quoteInfo.id },
       data: {
         is_paid: true,

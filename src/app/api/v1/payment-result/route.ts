@@ -22,6 +22,9 @@ export async function POST(req: NextRequest) {
   const data = paymentResultDTOSchema.parse(body);
   const result = await handlePaymentResult(data);
 
+  logger.info(
+    `return payment result src/app/v1 ${JSON.stringify(result, null, 2)}`,
+  );
   return successRes({
     message: 'Payment result processed successfully',
     data: result,

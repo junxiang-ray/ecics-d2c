@@ -127,7 +127,6 @@ model ProductType {
   @@map("product_type")
 }
 
-
 model Company {
   id         Int      @id @default(autoincrement())
   name       String

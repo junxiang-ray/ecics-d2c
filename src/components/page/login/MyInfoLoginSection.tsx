@@ -10,10 +10,10 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useRequestLogin } from '@/hook/auth/login';
+import { useRequestLoginHomeContent } from '@/hook/auth/login-home-content';
 import { useRequestLoginMaid } from '@/hook/auth/login-maid';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { useRequestLoginHomeContent } from '@/hook/auth/login-home-content';
 
 interface MyInfoLoginSectionProps {
   promoCode?: string;

@@ -195,7 +195,7 @@ export function OptionSelector({
 
                     {/* Show description when provided, even in single-column compact variant */}
                     {opt.description && (
-                      <p className='m-0 mt-1 text-2xs leading-normal text-gray-500'>
+                      <p className='text-3xs m-0 mt-1 leading-normal text-gray-500'>
                         {opt.description}
                       </p>
                     )}
@@ -209,7 +209,7 @@ export function OptionSelector({
                   {opt.description && (
                     <span
                       className={cn(
-                        'text-sm',
+                        'text-xs',
                         isSelected ? 'text-blue-100' : 'text-gray-500',
                       )}
                     >

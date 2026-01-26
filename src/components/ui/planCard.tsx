@@ -22,6 +22,15 @@ interface PlanCardProps {
   customizationData?: CustomizationData;
 }
 
+interface PricingInfo {
+  displayPrice: number;
+  originalPrice: number;
+  totalSavings: number;
+  totalDiscountPercentage: number;
+  showDiscount: boolean;
+  hasPromo: boolean;
+}
+
 export const PlanCard = memo<PlanCardProps>(
   ({ plan, isSelected, onSelect, promoStatus, customizationData }) => {
     const { id, name, features, isPopular } = plan;
@@ -41,12 +50,31 @@ export const PlanCard = memo<PlanCardProps>(
     }, [id, onSelect]);
 
     const pricingInfo = useMemo(() => {
+      //if promostatus code is applied first and calucate quote is second, get the plan.discountedPrice as display price
+      //else promostatus is applied after calculating code, calculate using all the frontend calculations
+      // if(promoStatus?.status === "applied" && )
+
       return getPlanPricingInfo(plan, promoStatus || { status: 'none' });
     }, [plan, promoStatus]);
 
-    const { displayPrice, originalPrice, showDiscount, discountPercentage } =
-      pricingInfo;
+    // const { displayPrice, originalPrice, showDiscount, discountPercentage } =
+    //   pricingInfo;
 
+    const {
+      displayPrice,
+      originalPrice,
+      totalSavings,
+      totalDiscountPercentage,
+      showDiscount,
+    } = pricingInfo;
+
+    console.log('pricing info', pricingInfo);
+    console.log("what's inside plan in [PLAN CARD]", plan);
+    console.log('plan card promo status [PLAN CARD]', promoStatus?.status);
+    console.log(
+      'pricing info promo_status from step1',
+      pricingInfo.displayPrice,
+    );
     const savingsInfo = useMemo(() => {
       const yearMatch = id?.match(/(\d+)-year/);
       if (!yearMatch) return null;
@@ -61,13 +89,17 @@ export const PlanCard = memo<PlanCardProps>(
     }, [id, displayPrice]);
 
     if (!id) return null;
-
+    console.log('------- PLAN CARD --------');
+    // console.log("plan card", originalPrice);
+    // console.log("display price", displayPrice);
+    // console.log("discount price", showDiscount);
+    console.log('plancard promostatus', promoStatus?.status);
     return (
       <div
         data-plan-card
         className={twMerge(
           clsx(
-            'group relative cursor-pointer rounded-xl border-2 bg-white p-6 transition-all duration-300 hover:shadow-lg',
+            'border-1 group relative cursor-pointer rounded-xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-lg',
             isSelected
               ? 'border-[#02ADEF] shadow-lg ring-4 ring-[#02ADEF]/20'
               : 'border-gray-200 hover:border-[#02ADEF]/50',
@@ -142,9 +174,9 @@ export const PlanCard = memo<PlanCardProps>(
                 );
               })()}
 
-            {showDiscount && !savingsInfo && discountPercentage > 0 && (
+            {showDiscount && !savingsInfo && totalDiscountPercentage > 0 && (
               <span className='rounded bg-green-100 px-2 py-1 text-sm font-semibold text-green-700'>
-                {discountPercentage}% OFF
+                {totalDiscountPercentage}% OFF
               </span>
             )}
           </div>

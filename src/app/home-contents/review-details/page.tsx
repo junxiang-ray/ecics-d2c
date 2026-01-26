@@ -1,13 +1,12 @@
 'use client';
 
+import { LoadingOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';
-
-import { LoadingOutlined } from '@ant-design/icons';
+import { ROUTES } from '@/constants/routes';
 import { usePostUserInfoHomeContent } from '@/hook/auth/login-home-content';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { ROUTES } from '@/constants/routes';
 
 export default function ReviewInfoDetailPage() {
   const router = useRouterWithQuery();

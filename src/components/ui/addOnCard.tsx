@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/cardNew';
 import { Label } from '@/components/ui/label';
-import { OptionSelector } from './optionSelector';
 import { Select } from '@/components/ui/select';
 
 interface AddOnCardProps {
@@ -69,14 +68,14 @@ export const AddOnCard = memo<AddOnCardProps>(
 
         <Card
           className={cn(
-            'relative shadow-md transition-all duration-1000 ease-in-out group-hover:-translate-y-1 group-hover:shadow-lg',
+            'shadow-Policy start date cannot be more than 30 days from today relative transition-all duration-1000 ease-in-out group-hover:-translate-y-1 group-hover:shadow-lg',
             'border-2 bg-white',
             isSelected
               ? 'max-h-[1000px] border-[#02ADEF] shadow-lg ring-2 ring-[#02ADEF]/20'
               : 'max-h-[320px] border-gray-200 hover:border-gray-300',
           )}
         >
-          <CardContent className='flex flex-col p-5 pb-8'>
+          <CardContent className='flex flex-col border-0 p-5 pb-8'>
             {/* Header */}
             <div className='mb-3 flex items-start justify-between'>
               <div className='flex min-w-0 flex-1 items-center gap-3'>

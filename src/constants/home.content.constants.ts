@@ -19,11 +19,6 @@ export const HOME_OWNERSHIP_TYPES: OwnershipType[] = [
 
 export const HOME_TYPES: HomeType[] = [
   {
-    value: 'Landed Property',
-    label: 'Landed Property',
-    description: 'Terrace, semi-detached, detached, shophouse',
-  },
-  {
     value: 'HDB',
     label: 'HDB Flat',
     description: 'Housing Development Board apartment',
@@ -32,6 +27,11 @@ export const HOME_TYPES: HomeType[] = [
     value: 'Condo/Executive Condo',
     label: 'Condo/Executive Condo',
     description: 'Condominium or executive condominium',
+  },
+  {
+    value: 'Landed Property',
+    label: 'Landed Property',
+    description: 'Terrace, semi-detached, detached, shophouse',
   },
 ];
 

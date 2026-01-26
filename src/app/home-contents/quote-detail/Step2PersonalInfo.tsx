@@ -20,11 +20,7 @@ import { Label } from '@/components/ui/label';
 import { PremiumSummary } from '@/components/ui/premiumSummary';
 import { Select } from '@/components/ui/select';
 
-import {
-  GENDER,
-  MARITAL_STATUS,
-  NATIONALITIES,
-} from '@/constants/home.content.constants';
+import { GENDER, MARITAL_STATUS } from '@/constants/home.content.constants';
 
 interface Step2PersonalInfoProps {
   personalInfoData: PersonalInfoForm;
@@ -249,6 +245,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
                 Date of Birth <span className='text-red-500'>*</span>
               </Label>
               <DateInput
+                flowstep={2}
                 value={personalInfoData.policyHolderDateOfBirth}
                 onChange={(value) =>
                   updatePersonalInfoData('policyHolderDateOfBirth', value)
@@ -694,6 +691,7 @@ const Step2PersonalInfo = memo<Step2PersonalInfoProps>(
         {/* Premium Summary */}
         {selectedPlan && (
           <PremiumSummary
+            disableBtn
             selectedPlan={selectedPlan}
             selectedAddOns={selectedAddOns}
             totalPremium={totalPremium}

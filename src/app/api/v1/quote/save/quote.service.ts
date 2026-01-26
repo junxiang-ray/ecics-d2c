@@ -141,9 +141,9 @@ export async function saveQuote(data: saveQuoteDTO) {
     data: {
       quote_id: data.quote_id,
       quote_no: data.quote_no,
-      policy_id: data.policy_id,
+      policy_id: data?.policy_id || '', //added the ''
       product_id: data.product_id,
-      proposal_id: data.proposal_id,
+      proposal_id: data?.proposal_id || '', //added the ''
       phone: data.data.personal_info.phone,
       email: data.data.personal_info.email,
       name: data?.data?.personal_info?.name || '',

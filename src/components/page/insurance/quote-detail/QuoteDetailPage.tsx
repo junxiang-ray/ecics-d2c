@@ -2,7 +2,9 @@
 //#region Imports
 import { X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { cn } from '@/libs/utils/utils';
 
 // Utils
 import {
@@ -17,7 +19,6 @@ import { Dialog, DialogTitle } from '@/components/ui/dialog';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useRequestLog } from '@/hook/insurance/quote';
-import { cn } from '@/libs/utils/utils';
 
 //#endregion
 
@@ -31,6 +32,7 @@ const QuoteDetail = ({
   progressStepperData,
   steps,
   currentStep,
+  // onStepClick
 }: QuoteDetailProps) => {
   //#region State Management
   // State management - using pre-computed initial objects

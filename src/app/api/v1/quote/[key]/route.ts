@@ -19,6 +19,5 @@ export const GET = async (
   }
 
   const result = await getQuoteByKey(key);
-  console.log('result after the backend fetching', result);
   return successRes(result);
 };

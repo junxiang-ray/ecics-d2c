@@ -1,7 +1,4 @@
-import {
-  HomeContentQuoteCreationPayload,
-  HomeContentQuoteSavePayload,
-} from './homeContents';
+import { HomeContentQuoteSavePayload } from './homeContents';
 
 export type MaritalStatusType = 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED';
 export type GenderType = 'MALE' | 'FEMALE';

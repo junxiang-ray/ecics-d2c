@@ -262,6 +262,8 @@ interface HomeContentProposerDetailsMap {
   mailingAddress2: string;
   mailingAddress3: string;
   mailingPostCode: string;
+  payNowAccountDifferent: string;
+  payNowAccount: string;
 }
 
 interface HomeContentPlanDetailsMap {

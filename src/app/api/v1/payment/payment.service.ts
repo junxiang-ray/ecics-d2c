@@ -1,11 +1,11 @@
 import { paymentDTO } from './payment.dto';
 import { handleApiCallToISP } from '../../configs/api.config';
 import { CAR_INSURANCE } from '../../constants/car.insurance';
+import { HOMECONTENT_INSURANCE } from '../../constants/homecontent.insurance';
 import { MOTORCYCLE_INSURANCE } from '../../constants/motorcycle.insurance';
 import { ErrFromISPRes, ErrNotFound } from '../../core/error.response';
 import logger from '../../libs/logger';
 import { prisma } from '../../libs/prisma';
-import { HOMECONTENT_INSURANCE } from '../../constants/homecontent.insurance';
 
 export async function handlePayment(data: paymentDTO) {
   try {
@@ -50,7 +50,7 @@ export async function handlePayment(data: paymentDTO) {
       `/${CAR_INSURANCE.PREFIX_ENDPOINT}/payment`,
       payloadData,
     );
-    logger.info(`Response from payment: ${JSON.stringify(resPayment)}`);
+    // logger.info(`Response from payment: ${JSON.stringify(resPayment)}`);
 
     if (resPayment.status !== 0) {
       logger.error(
@@ -98,7 +98,7 @@ export async function handleMotorcyclePayment(data: paymentDTO) {
       `/${MOTORCYCLE_INSURANCE.PREFIX_ENDPOINT}/payment`,
       payloadData,
     );
-    logger.info(`Response from payment: ${JSON.stringify(resPayment)}`);
+    // logger.info(`Response from payment: ${JSON.stringify(resPayment)}`);
 
     if (resPayment.status !== 0) {
       logger.error(
@@ -146,7 +146,8 @@ export async function handleHomeContentPayment(data: paymentDTO) {
     } else {
       returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
     }
-
+    logger.info(`redirectURL check in the v1/payment: ${redirectUrl}`);
+    logger.info(`returnBase url check in the v1/payment : ${returnBaseUrl}`);
     const payloadData = {
       quoteId: quoteInfo.quote_id,
       proposalId: quoteInfo.proposal_id,
@@ -160,7 +161,7 @@ export async function handleHomeContentPayment(data: paymentDTO) {
       `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/payment`,
       payloadData,
     );
-    logger.info(`Response from payment: ${JSON.stringify(resPayment)}`);
+    logger.info(`Response from payment hi: ${JSON.stringify(resPayment)}`);
 
     if (resPayment.status !== 0) {
       logger.error(

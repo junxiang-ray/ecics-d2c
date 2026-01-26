@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { PremiumBreakdownDrawer } from './premiumBreakdownDrawer';
 
 interface PremiumSummaryProps {
+  disableBtn: boolean;
   selectedPlan: InsurancePlan;
   selectedAddOns: SelectedAddOn[];
   totalPremium: number;
@@ -31,6 +32,7 @@ interface PremiumSummaryProps {
 
 export const PremiumSummary = memo<PremiumSummaryProps>(
   ({
+    disableBtn,
     selectedPlan,
     selectedAddOns,
     totalPremium,
@@ -78,6 +80,9 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
         observer.disconnect();
       };
     }, [currentStep, showAddOns]);
+    console.log(
+      `[DEBUG] formData quoteStep check ${JSON.stringify(formData, null, 2)}`,
+    );
 
     // Calculate if we should show original price
     const originalTotal = calculateOriginalTotal(selectedPlan, selectedAddOns);
@@ -104,6 +109,10 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
 
     return (
       <>
+        {console.log(
+          'PARENT render disabled {disableBtn from premiumSummary}=',
+          disableBtn,
+        )}
         <div className='premium-summary-backdrop fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white'>
           <div className='mx-auto max-w-7xl'>
             {/* Mobile Optimized Layout - ONLY SHOW ON MOBILE */}
@@ -176,10 +185,14 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
                   <Button
                     onClick={onNext}
                     disabled={
-                      currentStep === 1 &&
-                      showAddOns &&
-                      !hasAddOnsSectionBeenVisible
+                      (currentStep == 1 || (currentStep == 3 && showAddOns)) &&
+                      disableBtn
                     }
+                    // disabled={
+                    //   currentStep === 1 &&
+                    //   showAddOns &&
+                    //   hasAddOnsSectionBeenVisible
+                    // }
                     size='sm'
                     className={`${getButtonStyles()} h-9 min-w-[80px] px-4 text-sm
                            font-semibold shadow-md transition-all duration-200 hover:shadow-lg`}
@@ -254,10 +267,14 @@ export const PremiumSummary = memo<PremiumSummaryProps>(
                 <Button
                   onClick={onNext}
                   disabled={
-                    currentStep === 1 &&
-                    showAddOns &&
-                    !hasAddOnsSectionBeenVisible
+                    (currentStep == 1 || (currentStep == 3 && showAddOns)) &&
+                    disableBtn
                   }
+                  // disabled={
+                  //   currentStep === 1 &&
+                  //   showAddOns &&
+                  //   !hasAddOnsSectionBeenVisible
+                  // }
                   className={`${getButtonStyles()} touch-target h-12 flex-shrink-0
                          px-6 font-semibold shadow-lg transition-all duration-200 hover:shadow-xl`}
                 >

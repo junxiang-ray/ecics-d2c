@@ -1,10 +1,10 @@
 //#region Initial Form Data
 
 import {
-  QuoteForm,
-  PersonalInfoForm,
   MyInfoData,
+  PersonalInfoForm,
   PromoCodeStatus,
+  QuoteForm,
 } from '@/libs/types/homeContents';
 
 const TOMORROW_DATE = new Date(Date.now() + 86400000)
@@ -63,8 +63,8 @@ const INITIAL_PROMO_STATUS: PromoCodeStatus = { status: 'none' };
 
 export {
   INITIAL_FORM_DATA,
-  INITIAL_PERSONAL_INFO,
   INITIAL_MYINFO_DATA,
+  INITIAL_PERSONAL_INFO,
   INITIAL_PROMO_STATUS,
 };
 //#endregion

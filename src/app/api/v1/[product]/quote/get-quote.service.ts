@@ -18,7 +18,6 @@ import {
   generateQuoteDTO,
   generateQuoteForMaidDTO,
 } from './get-quote.dto';
-import { LoginSingpassService } from '../../singpass/login/[product]/singpass-login.service';
 ///ADD NEW PRODUCTS HERE
 export async function getQuoteForCar(data: generateQuoteDTO) {
   try {
@@ -648,7 +647,7 @@ export async function getQuoteForHomeContent(
     );
     if (getQuoteRes.status === 0) {
       const quoteInfoRes = getQuoteRes.data;
-      logger.info(`quoteInfoRes ${JSON.stringify(quoteInfoRes)}, null, 2`);
+      logger.info(`quoteInfoRes ${(JSON.stringify(quoteInfoRes), null, 2)}`);
       // const planMaidData = await formatMaidQuoteInfo(quoteInfoRes, data);
       // logger.info(`Formatted quote data: ${JSON.stringify(planMaidData)}`);
 

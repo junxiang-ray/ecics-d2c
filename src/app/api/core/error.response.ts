@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+
 import logger from '@/app/api/libs/logger';
+
 import { STATUS_CODE } from './status.code';
 
 type BaseResponse = {
