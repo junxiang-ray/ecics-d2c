@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { ErrBadRequest } from '@/app/api/core/error.response';
+import { NextRequest } from 'next/server';
+
 import logger from '@/app/api/libs/logger';
+
 import { retrieveNRICFromSingpass } from './retrieve-nric-singpass.service';
 
 export const POST = async (req: NextRequest) => {

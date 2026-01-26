@@ -1,9 +1,11 @@
 'use client';
 
 import { Drawer, Modal } from 'antd';
-import { PrimaryButton } from '@/components/ui/buttons';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
+
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
+import { PrimaryButton } from '@/components/ui/buttons';
+
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
 
 function WarningPaymentModal({
   visible,

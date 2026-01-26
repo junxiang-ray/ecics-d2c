@@ -8,7 +8,6 @@ import {
   formatBooleanToYesNo,
   formatCurrency,
   formatCurrencyString,
-  getMatchedVehicleModel,
   getPlanGroupPrefix,
 } from '@/libs/utils/utils';
 

@@ -24,6 +24,7 @@ import SelfDeclarationConfirmModal from './components/SelfDeclarationConfirmModa
 import { ProductType } from '../basic-detail/options';
 
 export interface FormatPlan extends Plan {
+  //where is this inheriting from?
   discount: number;
   currentPrice: number;
   promoCode: string;

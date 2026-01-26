@@ -1,10 +1,10 @@
-import { prisma } from '@/app/api/libs/prisma';
-import { savePersonalInfoDTO } from './personal-info.dto';
 import logger from '@/app/api/libs/logger';
 import { sendMail } from '@/app/api/libs/mailer';
 import { generateQuoteEmail } from '@/app/api/libs/mailer/templates';
-import { ErrBadRequest } from '@/app/api/core/error.response';
+import { prisma } from '@/app/api/libs/prisma';
 import { capitalizeFirstLetter } from '@/app/api/utils/text.helpers';
+
+import { savePersonalInfoDTO } from './personal-info.dto';
 
 export async function savePersonalInfo(data: savePersonalInfoDTO) {
   try {

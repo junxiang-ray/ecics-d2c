@@ -5,8 +5,8 @@ import { normalizeName } from '@/libs/utils/utils';
 import renewal from '@/api/base-service/renewal';
 import verify from '@/api/cms-service/verify';
 import { ProductTypeWeb } from '@/app/api/constants/product';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { updateRenewalQuote } from '@/redux/slices/renewalQuote.slice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 
 type EditRenewalParams = {
   productType: ProductTypeWeb;

@@ -1,3 +1,9 @@
+/**
+ * This file is used to call
+ * *** GetQuote, Quote, Generate Quote
+ * *** SaveProposal, Proposal, Save Proposal
+ */
+
 import {
   useMutation,
   UseMutationResult,
@@ -42,7 +48,11 @@ export const useSaveProposal = () => {
     data: ProposalPayload;
     productType: ProductTypeWeb;
   }) => {
+    console.log(
+      `hook's useSaveProposal data = ${JSON.stringify(data, null, 2)}`,
+    );
     const res = await insurance.saveProposal(data, productType);
+    console.log(`insurance saved Proposal ${JSON.stringify(res, null, 2)}`);
     return res.data.data;
   };
   return useMutation({

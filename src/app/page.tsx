@@ -11,6 +11,7 @@ import { ROUTES, STEP_TO_ROUTE } from '@/constants/routes';
 import { useGetQuote } from '@/hook/insurance/quote';
 
 export default function Home() {
+  console.log('Home page loaded');
   const router = useRouter();
   const searchParams = useSearchParams();
   const key = searchParams.get('key') || '';

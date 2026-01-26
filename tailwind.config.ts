@@ -12,6 +12,10 @@ const config: Config = {
       fontFamily: {
         primary: ['Inter', 'sans-serif'],
       },
+      fontSize: {
+        '2.5xl': '1.75rem',
+        '2xs': '0.65625rem',
+      },
       colors: {
         primary: {
           DEFAULT: '#02adef',
@@ -34,6 +38,9 @@ const config: Config = {
         'coupon-red': '#C80F1E',
         'green-promo': '#2ECC71',
         'red-logo': '#F4333D',
+        // styles added
+        'brand-green': '#52C41A',
+        'brand-orange': '#F49D00',
       },
       animation: {
         'slide-up': 'slide-up 0.3s ease-out',

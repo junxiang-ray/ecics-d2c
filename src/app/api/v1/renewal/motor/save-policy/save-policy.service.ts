@@ -1,10 +1,8 @@
-import { MOTOR_RENEWAL } from '@/app/api/constants/motor.renewal';
-import { handleApiCallToISP } from '@/app/api/configs/api.config';
-import logger from '@/app/api/libs/logger';
-import { ErrFromISPRes } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
-import { savePolicyDTO } from './save-policy.dto';
+import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
+
+import { savePolicyDTO } from './save-policy.dto';
 
 export async function savePolicyFromISP(bodyData: savePolicyDTO) {
   try {

@@ -49,6 +49,7 @@ export const generateQuoteSchema = z.object({
 
 export type generateQuoteDTO = z.infer<typeof generateQuoteSchema>;
 
+//#region maidQuote schema gen
 export const generateQuoteForMaidSchema = z.object({
   key: z.string().min(5, 'Key must be at least 5 characters long'),
   maid_type: z.string(),
@@ -64,6 +65,9 @@ export const generateQuoteForMaidSchema = z.object({
 export type generateQuoteForMaidDTO = z.infer<
   typeof generateQuoteForMaidSchema
 >;
+//#endregion
+
+//#region motorcycleQuote schema gen
 
 export const generateQuoteForMotorcycleSchema = z.object({
   key: z.string().min(5, 'Key must be at least 5 characters long'),
@@ -109,3 +113,50 @@ export const generateQuoteForMotorcycleSchema = z.object({
     vehicle_finance_by: z.number(),
   }),
 });
+//#endregion
+
+//#region HomeContentQuote gen
+
+export const generateQuoteForHomeContentSchema = z.object({
+  key: z.string().min(5, 'Key must be at least 5 characters long'),
+  proposerDetails: z.object({
+    addressLine1: z.string(),
+    addressLine2: z.string().optional(),
+    addressLine3: z.string().optional(),
+    postCode: z.string(),
+    name: z.string(),
+    nric: z.string(),
+    dob: z.string(),
+    gender: z.string(),
+    maritalStatus: z.string(),
+    mobile: z.string(),
+    email: z.string(),
+    differentMailingAddress: z.string(),
+    mailingAddress1: z.string(),
+    mailingAddress2: z.string().optional(),
+    mailingAddress3: z.string().optional(),
+    mailingPostCode: z.string(),
+    payNowAccountDifferent: z.string(),
+    payNowAccount: z.string(),
+  }),
+  planDetails: z.object({
+    homeOwnership: z.string(),
+    homeType: z.string(),
+    unitType: z.string(),
+    homeContentCoverage: z.number(),
+    renovationsCoverage: z.number(),
+    buildingCoverage: z.string(),
+    wpaCoverage: z.string(),
+    policyPeriod: z.string(),
+    promoCode: z.string(),
+    selectedPlan: z.string(),
+    startDate: z.string(),
+  }),
+  __finalize: z.number(),
+});
+
+export type generateHomeContentQuoteDTO = z.infer<
+  typeof generateQuoteForHomeContentSchema
+>;
+
+//#endregion

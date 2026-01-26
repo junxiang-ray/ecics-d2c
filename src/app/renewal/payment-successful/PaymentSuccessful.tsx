@@ -19,13 +19,13 @@ import {
   StarIcon,
   TickIcon,
 } from '@/components/icons/renewal-icons';
+import { PrimaryButton } from '@/components/ui/buttons';
 
+import { ECICS_URL } from '@/constants/general.constant';
 import { useGetRenewalPaymentSuccess } from '@/hook/insurance/renewal';
 import { useAppSelector } from '@/redux/store';
 
 import ImportantDoc from './ImportantDoc';
-import { PrimaryButton } from '@/components/ui/buttons';
-import { ECICS_URL } from '@/constants/general.constant';
 
 const StepItem = ({
   number,

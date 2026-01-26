@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
+
+import logger from '@/app/api/libs/logger';
+
 import { paymentResultDTOSchema } from './payment-result.dto';
 import { handlePaymentResult } from './payment-result.service';
-import logger from '@/app/api/libs/logger';
 
 export async function POST(req: NextRequest) {
   logger.info('Callback payment renewal');

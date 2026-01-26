@@ -1,0 +1,378 @@
+import { ADD_ONS } from '@/constants/home.content.addon.constants';
+import {
+  COVERAGE_PRICING,
+  PROMO_CODES,
+} from '@/constants/home.content.constants';
+
+import {
+  CustomizationData,
+  InsurancePlan,
+  PromoCodeStatus,
+  SelectedAddOn,
+} from '../types/homeContents';
+
+export interface PricingInfo {
+  displayPrice: number;
+  originalPrice: number;
+  showDiscount: boolean;
+
+  discountPercentage: number;
+
+  // NEW (what PlanCard needs)
+  totalSavings: number;
+  totalDiscountPercentage: number;
+  hasPromo: boolean;
+  hasDurationDiscount: boolean;
+}
+
+// Helper function to calculate expiry date
+// Insurance policies end 1 day before the anniversary date
+// E.g., Start: 15/10/2025 → End: 14/10/2026 (for 1-year policy)
+export const calculateExpiryDate = (
+  startDate: string,
+  duration: string,
+): string => {
+  if (!startDate) return '';
+
+  const start = new Date(startDate);
+  const months = parseInt(duration);
+
+  // Add months to the start date
+  const expiry = new Date(start);
+  expiry.setMonth(expiry.getMonth() + months);
+
+  // Subtract 1 day to follow insurance convention
+  // Policy ends the day before the anniversary
+  expiry.setDate(expiry.getDate() - 1);
+
+  return expiry.toISOString().split('T')[0];
+};
+
+// Helper function to format date for display
+export const formatDateForDisplay = (dateString: string): string => {
+  if (!dateString) return '';
+
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+
+// Helper function to adjust premium based on policy duration (3-year gets discount)
+export const adjustPremiumForDuration = (
+  basePremium: number,
+  duration: string,
+): number => {
+  if (duration === '36') {
+    // 3-year policy gets 10% discount
+    return basePremium * 0.9;
+  }
+  return basePremium;
+};
+
+// Calculate premium based on coverage amounts selected
+export const calculateCoveragePremium = (
+  customizationData?: CustomizationData,
+): number => {
+  if (!customizationData) return 0;
+
+  let coveragePremium = 0;
+
+  // Home content coverage (required)
+  if (customizationData.homeContentCoverageValue) {
+    const homeContentAmount = parseFloat(
+      customizationData.homeContentCoverageValue,
+    );
+    coveragePremium +=
+      (homeContentAmount / 1000) * COVERAGE_PRICING.HOME_CONTENT_RATE_PER_1000;
+  }
+
+  // Renovation coverage (optional)
+  if (customizationData.renovationCoverageValue) {
+    const renovationAmount = parseFloat(
+      customizationData.renovationCoverageValue,
+    );
+    coveragePremium +=
+      (renovationAmount / 1000) * COVERAGE_PRICING.RENOVATION_RATE_PER_1000;
+  }
+
+  return coveragePremium;
+};
+
+// Get base plan price based on promo status and policy duration
+export const getBasePlanPrice = (plan: InsurancePlan): number => {
+  if (!plan) return 0;
+
+  return plan.originalPrice;
+};
+
+// Calculate total premium including coverage, add-ons and promo discounts
+export const calculateTotalPremium = (
+  selectedPlan: InsurancePlan | null,
+  selectedAddOns: SelectedAddOn[],
+  promoStatus: PromoCodeStatus,
+  policyDuration?: string,
+  customizationData?: CustomizationData,
+): number => {
+  if (!selectedPlan) return 0;
+
+  // Get base plan price (original price with duration and promo discounts if applicable)
+  // Policy duration will be determined by plan structure in the future
+  let total = getBasePlanPrice(selectedPlan);
+
+  // Add coverage-based premium
+  // const coveragePremium = calculateCoveragePremium(customizationData);
+  // total += coveragePremium;
+
+  selectedAddOns.forEach((selectedAddOn) => {
+    // console.log(`PRICES OF ADDONS = ${selectedAddOn.price}`);
+    // const addOn = ADD_ONS.find((a: any) => a.id === selectedAddOn.id);
+    // if (addOn) {
+    //   if (addOn.hasOptions && selectedAddOn.selectedOption) {
+    //     const option = addOn.options?.find(
+    //       (o: any) => o.value === selectedAddOn.selectedOption,
+    //     );
+    //     total += option?.price || addOn.price;
+    //   } else {
+    //     total += addOn.price;
+    //   }
+    // }
+    if (selectedAddOn.id === 'building') {
+      total += selectedPlan.buildingCoverageWithDiscount || 0;
+    } else if (selectedAddOn.id === 'worldwide-fpa') {
+      console.log('I calculate ', selectedPlan.worldwideFpaWithDiscount);
+      total += selectedPlan.worldwideFpaWithDiscount || 0;
+    }
+  });
+
+  total *= 1.09;
+
+  return total;
+};
+
+export const calculateAddOnTotal = (
+  selectedPlan: InsurancePlan | null,
+  selectedAddOns: SelectedAddOn[],
+) => {
+  if (!selectedPlan) return 0;
+
+  let total = 0;
+  selectedAddOns.forEach((selectedAddOn) => {
+    if (selectedAddOn.id === 'building') {
+      total += selectedPlan.buildingCoverageWithDiscount || 0;
+    } else if (selectedAddOn.id === 'worldwide-fpa') {
+      console.log('I calculate ', selectedPlan.worldwideFpaWithDiscount);
+      total += selectedPlan.worldwideFpaWithDiscount || 0;
+    }
+  });
+  return total;
+};
+
+// Calculate original total (without any discounts but with add-ons)
+export const calculateOriginalTotal = (
+  selectedPlan: InsurancePlan | null,
+  selectedAddOns: SelectedAddOn[],
+): number => {
+  if (!selectedPlan) return 0;
+
+  let total = selectedPlan.originalPrice;
+  // console.log(`total = ${total}`);
+
+  if (ADD_ONS && Array.isArray(ADD_ONS)) {
+    selectedAddOns.forEach((selectedAddOn) => {
+      const addOn = ADD_ONS.find((a: any) => a.id === selectedAddOn.id);
+      if (addOn) {
+        if (addOn.hasOptions && selectedAddOn.selectedOption) {
+          const option = addOn.options?.find(
+            (o: any) => o.value === selectedAddOn.selectedOption,
+          );
+          total += option?.price || addOn.price;
+        } else {
+          total += addOn.price;
+        }
+      }
+    });
+  }
+  // console.log(`total calc = ${total}`);
+
+  return total;
+};
+
+// Calculate subtotal with promo applied (for premium breakdown)
+export const calculateSubtotal = (
+  selectedPlan: InsurancePlan | null,
+  selectedAddOns: SelectedAddOn[],
+  promoStatus: PromoCodeStatus,
+): number => {
+  if (!selectedPlan) return 0;
+
+  let subtotal = selectedPlan.originalPrice;
+
+  if (ADD_ONS && Array.isArray(ADD_ONS)) {
+    selectedAddOns.forEach((selectedAddOn) => {
+      const addOn = ADD_ONS.find((a: any) => a.id === selectedAddOn.id);
+      if (addOn) {
+        if (addOn.hasOptions && selectedAddOn.selectedOption) {
+          const option = addOn.options?.find(
+            (o: any) => o.value === selectedAddOn.selectedOption,
+          );
+          subtotal += option?.price || addOn.price;
+        } else {
+          subtotal += addOn.price;
+        }
+      }
+    });
+  }
+
+  // Apply promo discount if valid
+  if (promoStatus.status === 'applied' && promoStatus.discount) {
+    subtotal = subtotal * (1 - promoStatus.discount / 100);
+  }
+
+  return subtotal;
+};
+
+// Validate promo code
+export const validatePromoCode = (code: string): PromoCodeStatus => {
+  if (!code.trim()) {
+    return {
+      status: 'invalid',
+      message: 'Please enter a promo code',
+    };
+  }
+
+  // Add null check for PROMO_CODES
+  if (!PROMO_CODES || typeof PROMO_CODES.VALID_CODE !== 'string') {
+    return {
+      status: 'invalid',
+      message: 'Promo code validation unavailable. Please try again.',
+    };
+  }
+
+  const trimmedCode = code.trim();
+
+  if (trimmedCode === PROMO_CODES.VALID_CODE) {
+    return {
+      status: 'applied',
+      code: trimmedCode,
+      discount: PROMO_CODES.DISCOUNT_PERCENTAGE,
+      message: `Promo code applied successfully! ${PROMO_CODES.DISCOUNT_PERCENTAGE}% discount added.`,
+    };
+  } else {
+    // Provide more specific error messages
+    if (trimmedCode.length < 3) {
+      return {
+        status: 'invalid',
+        message: 'Promo code must be at least 3 characters long.',
+      };
+    } else if (trimmedCode.length > 20) {
+      return {
+        status: 'invalid',
+        message: 'Promo code cannot exceed 20 characters.',
+      };
+    } else {
+      return {
+        status: 'invalid',
+        message:
+          'Invalid promo code. Please check and try again. (For testing, use "123")',
+      };
+    }
+  }
+};
+
+// Get selected add-on details for display
+export const getSelectedAddOnDetails = (selectedAddOns: SelectedAddOn[]) => {
+  if (!ADD_ONS || !Array.isArray(ADD_ONS)) {
+    return [];
+  }
+
+  return selectedAddOns
+    .map((selectedAddOn) => {
+      const addOn = ADD_ONS.find((a: any) => a.id === selectedAddOn.id);
+      if (!addOn) return null;
+
+      let price = addOn.price;
+      let name = addOn.name;
+
+      if (addOn.hasOptions && selectedAddOn.selectedOption) {
+        const option = addOn.options?.find(
+          (o: any) => o.value === selectedAddOn.selectedOption,
+        );
+        if (option) {
+          price = option.price;
+          name = `${addOn.name} (${option.label})`;
+        }
+      }
+
+      return { name, price };
+    })
+    .filter(Boolean);
+};
+
+// Calculate base total (original price with add-ons, before any discounts)
+export const calculateBaseTotal = (
+  selectedPlan: InsurancePlan | null,
+  selectedAddOns: SelectedAddOn[],
+): number => {
+  return calculateOriginalTotal(selectedPlan, selectedAddOns);
+};
+
+// Get pricing display info for plan cards
+export const getPlanPricingInfo = (
+  plan: InsurancePlan,
+  promoStatus: PromoCodeStatus,
+  policyDuration?: string,
+) => {
+  console.log('getPlanPricingInfo', plan);
+
+  if (!plan)
+    return {
+      displayPrice: 0,
+      originalPrice: 0,
+      showDiscount: false,
+      discountPercentage: 0,
+      totalSavings: 0,
+      totalDiscountPercentage: 0,
+      hasPromo: false,
+      hasDurationDiscount: false,
+    };
+
+  const originalPrice = plan.originalPrice;
+  let priceAfterDuration = originalPrice;
+  let showDurationDiscount = false;
+
+  // Apply duration discount for 3-year policies
+  if (policyDuration === '36') {
+    priceAfterDuration = adjustPremiumForDuration(
+      originalPrice,
+      policyDuration,
+    );
+    showDurationDiscount = true;
+  }
+
+  const hasValidPromo =
+    promoStatus?.status === 'applied' && promoStatus.discount;
+
+  let displayPrice = priceAfterDuration;
+  if (hasValidPromo) {
+    displayPrice = priceAfterDuration * (1 - (promoStatus.discount ?? 0) / 100);
+  }
+  const totalSavings = Math.max(originalPrice - displayPrice, 0);
+  const totalDiscountPercentage =
+    originalPrice > 0
+      ? ((originalPrice - displayPrice) / originalPrice) * 100
+      : 0;
+
+  return {
+    displayPrice,
+    originalPrice,
+    showDiscount: totalSavings > 0,
+    discountPercentage: Math.round(totalDiscountPercentage),
+    totalSavings,
+    totalDiscountPercentage,
+    hasValidPromo,
+    showDurationDiscount,
+  };
+};

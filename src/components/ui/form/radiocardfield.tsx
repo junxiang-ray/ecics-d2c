@@ -1,4 +1,4 @@
-import { RadioProps, Card } from 'antd';
+import { Card, RadioProps } from 'antd';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 

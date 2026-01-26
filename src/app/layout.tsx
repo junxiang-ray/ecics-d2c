@@ -6,7 +6,6 @@ import { Suspense } from 'react';
 
 import '@/styles/app.scss';
 
-import { NavigationConfirmProvider } from '@/providers/NavigationConfirmProvider';
 import { ReactQueryProvider } from '@/providers/react-query';
 import ReduxProvider from '@/redux/store/ReduxProvider';
 

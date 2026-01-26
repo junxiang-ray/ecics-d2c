@@ -20,15 +20,15 @@ import {
   DropdownOption,
   LongOptionDropdownField,
 } from '@/components/ui//form/dropdownfield';
-import { PrimaryButton, SecondaryButton } from '@/components/ui/buttons';
+import { PrimaryButton } from '@/components/ui/buttons';
 import { DatePickerField } from '@/components/ui/form/datepicker';
 import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
+import { RadioCardField } from '@/components/ui/form/radiocardfield';
 import { RadioField } from '@/components/ui/form/radiofield';
 
 import { QuoteModal } from '@/app/motor/insurance/basic-detail/modal/QuoteModal';
 import {
-  HELPER_TYPE_OPTIONS,
   HelperTypeValue,
   NumberClaim,
   POLICY_DURATION_OPTIONS,
@@ -43,8 +43,7 @@ import { emailRegex, phoneRegex } from '@/constants/validation.constant';
 import { useGetNationality } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
-import { SelectField } from '@/components/ui/form/selectfield';
-import { RadioCardField } from '@/components/ui/form/radiocardfield';
+
 import { HELPER_TYPE_CARD_OPTIONS, HELPER_VALUE_INFO } from './options';
 
 dayjs.extend(isSameOrAfter);
@@ -593,7 +592,7 @@ const PolicyDetailForm = ({
       </div>
 
       <div
-        className={`fixed bottom-0 w-full border-[1px] border-gray-100 bg-white px-2 shadow-md shadow-gray-200`}
+        className='fixed bottom-0 w-full border-[1px] border-gray-100 bg-white px-2 shadow-md shadow-gray-200'
         style={{ zIndex: 100 }}
       >
         <div className='mx-auto w-full max-w-[1200px]'>

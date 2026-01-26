@@ -1,10 +1,12 @@
 import { PrismaClient } from '@prisma/client';
+
 import logger from '@/app/api/libs/logger';
 
 const prisma = new PrismaClient();
 
 export async function getQuoteByKey(key: string) {
   try {
+    console.log('getQuoteByKey');
     const quote = await prisma.quote.findFirst({
       where: {
         key,

@@ -1,7 +1,7 @@
 // utils/logger.ts
+import fs from 'fs';
 import winston from 'winston';
 import 'winston-daily-rotate-file';
-import fs from 'fs';
 
 // Use /tmp/logs on Vercel; fallback to env or 'logs' locally
 const logDir =

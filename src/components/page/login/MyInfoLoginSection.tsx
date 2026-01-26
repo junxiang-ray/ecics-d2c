@@ -10,6 +10,7 @@ import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { ROUTES } from '@/constants/routes';
 import { useRequestLogin } from '@/hook/auth/login';
+import { useRequestLoginHomeContent } from '@/hook/auth/login-home-content';
 import { useRequestLoginMaid } from '@/hook/auth/login-maid';
 import { useRequestLog } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
@@ -30,6 +31,7 @@ const MyInfoLoginSection = ({
   const [isUserActive, setIsUserActive] = useState(false);
   const isMaid = productType === ProductType.MAID;
   const isMotorcycle = productType === ProductType.MOTORCYCLE;
+  const isHomeContents = productType === ProductType.HOMECONTENTS;
   const [isShowSingpassDownModal, setIsShowSingpassDownModal] = useState(false);
 
   const { mutate: requestLogin } = useRequestLogin(PRODUCT_NAME.CAR, {
@@ -44,18 +46,33 @@ const MyInfoLoginSection = ({
     },
   });
 
+  const { mutate: requestLoginHomeContents } = useRequestLoginHomeContent(
+    PRODUCT_NAME.HOME_CONTENT,
+    {
+      onError: () => {
+        setIsShowSingpassDownModal(true);
+      },
+    },
+  );
+
   const { mutate: requestLog } = useRequestLog(
     isMaid
       ? PRODUCT_NAME.MAID
       : isMotorcycle
         ? PRODUCT_NAME.MOTORCYCLE
-        : PRODUCT_NAME.CAR,
+        : isHomeContents
+          ? PRODUCT_NAME.MAID /// NEED TO CHANGE THIS LATER
+          : PRODUCT_NAME.CAR,
   );
 
   const handleLogin = () => {
     setIsUserActive(true);
     {
-      isMaid ? requestLoginMaid() : requestLogin();
+      isMaid
+        ? requestLoginMaid()
+        : isHomeContents
+          ? requestLoginHomeContents()
+          : requestLogin();
     }
     requestLog();
   };
@@ -68,7 +85,9 @@ const MyInfoLoginSection = ({
       ? ROUTES.INSURANCE_MAID.BASIC_DETAIL_MANUAL
       : isMotorcycle
         ? ROUTES.INSURANCE_MOTORCYCLE.BASIC_DETAIL_MANUAL
-        : ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
+        : isHomeContents
+          ? ROUTES.INSURANCE_HOMECONTENTS.BASIC_DETAIL_MANUAL
+          : ROUTES.INSURANCE.BASIC_DETAIL_MANUAL;
 
     const queryParams = new URLSearchParams();
     if (promoCode) queryParams.append('promo_code', promoCode);

@@ -1,6 +1,7 @@
-import { prisma } from '@/app/api/libs/prisma';
-import { retrieveQuoteDTO } from './retrieve-quote.dto';
 import logger from '@/app/api/libs/logger';
+import { prisma } from '@/app/api/libs/prisma';
+
+import { retrieveQuoteDTO } from './retrieve-quote.dto';
 
 export async function retrieveQuote(data: retrieveQuoteDTO) {
   logger.info(`Quote retrieved with key ${data.key} and phone ${data.phone}`);

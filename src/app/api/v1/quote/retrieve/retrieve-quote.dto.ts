@@ -1,5 +1,6 @@
-import { REGEX_VALUES } from '@/app/api/utils/regex';
 import { z } from 'zod';
+
+import { REGEX_VALUES } from '@/app/api/utils/regex';
 
 export const retrieveQuoteDTOSchema = z.object({
   key: z.string().min(1, 'Key is required'),

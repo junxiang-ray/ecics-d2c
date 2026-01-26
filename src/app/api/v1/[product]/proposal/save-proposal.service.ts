@@ -3,29 +3,14 @@ import {
   CAR_INSURANCE,
   PLAN_ADDON_CONFIG,
 } from '@/app/api/constants/car.insurance';
+import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
 import { MAID_INSURANCE } from '@/app/api/constants/maid.insurance';
+import { MOTORCYCLE_INSURANCE } from '@/app/api/constants/motorcycle.insurance';
 import { ErrFromISPRes, ErrNotFound } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
 import { prisma } from '@/app/api/libs/prisma';
-import { convertDate, convertDateDash } from '@/app/api/utils/date.helper';
-import {
-  applyAddlDriverLogic,
-  applyLouAndCcLogic,
-  mappingAddonByPlan,
-  mappingAddonForMaid,
-  mappingMotorcycleAddonByPlan,
-} from '@/app/api/utils/quote.helpers';
-
-import {
-  saveQuoteProposalDTO,
-  saveQuoteProposalForMaidDTO,
-} from './save-proposal.dto';
-import {
-  MOTORCYCLE_INSURANCE,
-  MOTORCYCLE_PLAN_ADDON_CONFIG,
-} from '@/app/api/constants/motorcycle.insurance';
-
+import { convertDate } from '@/app/api/utils/date.helper';
 import {
   getAdditionalDriverInfo,
   getOptionalBenefitCodes,
@@ -33,6 +18,20 @@ import {
   getPlanIdfromTitle,
   getVehicleInfo,
 } from '@/app/api/utils/motorcycle.quote.util';
+import {
+  applyAddlDriverLogic,
+  applyLouAndCcLogic,
+  mappingAddonByPlan,
+  mappingAddonForMaid,
+} from '@/app/api/utils/quote.helpers';
+
+import {
+  saveQuoteProposalDTO,
+  saveQuoteProposalForHomeContentDTO,
+  saveQuoteProposalForMaidDTO,
+} from './save-proposal.dto';
+
+//#region Car
 
 export async function saveProposalForCar(data: saveQuoteProposalDTO) {
   const { key, selected_plan, selected_addons, add_named_driver_info } = data;
@@ -186,6 +185,9 @@ export async function saveProposalForCar(data: saveQuoteProposalDTO) {
     data: resSaveProposal.data,
   });
 }
+//#endregion
+
+//#region Maid
 
 export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
   const { key, selected_plan, selected_addons, personal_info, maid_info } =
@@ -311,12 +313,14 @@ export async function saveProposalForMaid(data: saveQuoteProposalForMaidDTO) {
     data: resSaveProposal.data,
   });
 }
+//#endregion
+
+//#region Motorcycle
 
 /// save proposal for motorcycle
 export async function saveProposalForMotorcycle(
   currData: saveQuoteProposalDTO,
 ) {
-  console.log(`currData at saveProposal = ${JSON.stringify(currData)}`);
   const { key, selected_plan, selected_addons, add_named_driver_info } =
     currData;
 
@@ -409,3 +413,130 @@ export async function saveProposalForMotorcycle(
     data: resSaveProposal.data,
   });
 }
+//#endregion
+
+//#region Home Content
+/// save proposal for home content
+export async function saveProposalForHomeContents(
+  currData: saveQuoteProposalForHomeContentDTO,
+) {
+  const { key, homeContentPayload } = currData;
+  logger.info(`currData here is = ${JSON.stringify(homeContentPayload)}`);
+  const quoteInfo = await prisma.quote.findFirst({
+    where: {
+      key: key,
+    },
+    select: {
+      quote_id: true,
+      proposal_id: true,
+      policy_id: true,
+      data: true,
+      id: true,
+      company: true,
+      company_name_other: true,
+    },
+  });
+
+  if (!quoteInfo) {
+    return ErrNotFound('Quote not found');
+  }
+
+  // return successRes({
+  //   message: 'Proposal saved successfully',
+  //   data: quoteInfo,
+  // });
+
+  const { quote_id, proposal_id } = quoteInfo;
+
+  let redirectUrl = '';
+  let returnBaseUrl = '';
+  if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE) {
+    redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE}?key=${key}`;
+  } else {
+    redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/home-contents/quote-detail?key=${key}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+    returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+  } else {
+    returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+  }
+
+  const payload: any = {
+    quoteId: quote_id,
+    proposalId: proposal_id,
+    proposerDetails: {
+      addressLine1: homeContentPayload.proposerDetails.addressLine1,
+      addressLine2: homeContentPayload.proposerDetails.addressLine2 || '',
+      addressLine3: homeContentPayload.proposerDetails.addressLine3 || '',
+      postCode: homeContentPayload.proposerDetails.postCode,
+      name: homeContentPayload.proposerDetails.name,
+      nric: homeContentPayload.proposerDetails.nric,
+      dob: homeContentPayload.proposerDetails.dob,
+      gender: homeContentPayload.proposerDetails.gender,
+      maritalStatus: homeContentPayload.proposerDetails.maritalStatus,
+      mobile: homeContentPayload.proposerDetails.mobile,
+      email: homeContentPayload.proposerDetails.email,
+      differentMailingAddress:
+        homeContentPayload.proposerDetails.differentMailingAddress.toUpperCase(),
+      mailingAddress1: homeContentPayload.proposerDetails.mailingAddress1,
+      mailingAddress2: homeContentPayload.proposerDetails.mailingAddress2 || '',
+      mailingAddress3: homeContentPayload.proposerDetails.mailingAddress3 || '',
+      mailingPostCode: homeContentPayload.proposerDetails.mailingPostCode,
+    },
+    planDetails: {
+      homeOwnership: homeContentPayload.planDetails.homeOwnership,
+      homeType: homeContentPayload.planDetails.homeType,
+      unitType: homeContentPayload.planDetails.unitType,
+      homeContentCoverage: homeContentPayload.planDetails.homeContentCoverage,
+      renovationsCoverage: homeContentPayload.planDetails.renovationsCoverage,
+      buildingCoverage: homeContentPayload.planDetails.buildingCoverage,
+      wpaCoverage: homeContentPayload.planDetails.wpaCoverage,
+      policyPeriod: homeContentPayload.planDetails.policyPeriod,
+      promoCode: homeContentPayload.planDetails.promoCode,
+      selectedPlan: homeContentPayload.planDetails.selectedPlan,
+      startDate: homeContentPayload.planDetails.startDate,
+    },
+    finalize: 1,
+    redirectUrl: redirectUrl,
+    returnUrl: returnBaseUrl,
+  };
+
+  logger.info(`Payload for save proposal: ${JSON.stringify(payload)}`);
+
+  const resSaveProposal = await handleApiCallToISP(
+    `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/proposal`,
+    payload,
+  );
+  logger.info(
+    `Response from save proposal: ${JSON.stringify(resSaveProposal)}`,
+  );
+
+  if (resSaveProposal.status !== 0) {
+    return ErrFromISPRes('Failed to save proposal');
+  }
+
+  // Update the quote in the database
+  const quoteData = quoteInfo.data;
+
+  await prisma.quote.update({
+    where: {
+      id: quoteInfo.id,
+    },
+    data: {
+      data: {
+        ...(quoteData && typeof quoteData === 'object' ? quoteData : {}),
+      },
+      quote_finalize_from_ISP: resSaveProposal,
+      is_finalized: true,
+      payment_id: resSaveProposal.data?.paymentId || '',
+    },
+  });
+
+  return successRes({
+    message: 'Proposal saved successfully',
+    data: resSaveProposal.data,
+  });
+}
+
+//#endregion
