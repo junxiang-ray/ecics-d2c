@@ -46,6 +46,10 @@ const RenewalReview = () => {
       email_address: renewal?.insured_info?.email,
       contact_no: renewal?.insured_info?.contact_no,
       proposal_id: renewalQuote?.proposal_id,
+      address_line1: renewal?.insured_info?.address?.address_line1,
+      address_line2: renewal?.insured_info?.address?.address_line2,
+      postal: renewal?.insured_info?.address?.postal,
+      marital_status_code: renewal?.insured_info?.marital_status,
     };
     const productType = PRODUCT_NAME.MOTOR;
     // Coverage Includes
