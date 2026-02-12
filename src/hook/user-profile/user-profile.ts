@@ -1,15 +1,15 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
+
+import { PortalAuthorization } from '@/libs/types/auth';
 import {
   UserProfileResponse,
   UserProfileUpdatePayload,
 } from '@/libs/types/user-profile';
-
-import { useMutation, useQuery } from '@tanstack/react-query';
-
-import user from '@/api/base-service/user';
 import { decryptValue, parseJSON } from '@/libs/utils/secureStorage-utils';
 import { getCookie } from '@/libs/utils/utils';
-import { PortalAuthorization } from '@/libs/types/auth';
+
+import user from '@/api/base-service/user';
 import { COOKIE_NAME } from '@/constants/general.constant';
 
 export const getNric = async (): Promise<string> => {
@@ -28,7 +28,11 @@ export const useGetUserProfile = (enabled = true) => {
     const nric = await getNric();
     if (!nric) throw new Error('Unauthorized!');
 
-    const resp = await user.getUserProfile(nric);
+    // const resp = await user.getUserProfile(nric);
+    const resp = await user.getUserProfile();
+
+    console.log('🧪 MOCK PROFILE RESPONSE:', resp.data);
+
     return resp?.data;
   };
 

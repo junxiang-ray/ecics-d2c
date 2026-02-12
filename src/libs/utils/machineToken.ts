@@ -1,77 +1,137 @@
-// libs/utils/machineToken.ts - 🚨 FIXED DUPLICATE REFRESH
+// libs/utils/machineToken.ts - 🚨 FIXED DUPLICATE REFRESH & NEXT.JS SINGLETON
 class CognitoMachineTokenManager {
   private token: string | null = null;
-  private expiresAt: number = 0;
-  private refreshPromise: Promise<string> | null = null; // 🔑 DEDUPE LOCK
+  private expiresAt = 0;
+  private refreshPromise: Promise<string> | null = null;
+  private instanceId = Math.random().toString(36).substring(7);
 
   async getToken(): Promise<string> {
+    console.log(`[Instance ${this.instanceId}] 🔍 getToken called`, {
+      hasToken: !!this.token,
+      expiresAt: this.expiresAt
+        ? new Date(this.expiresAt).toLocaleTimeString()
+        : 'none',
+      now: new Date(Date.now()).toLocaleTimeString(),
+    });
+
     // ✅ IMMEDIATE RETURN if valid
     if (this.isValid()) {
-      console.log('✅ Using cached token');
-      return this.token!;
+      console.log(`[Instance ${this.instanceId}] ✅ Using cached token`);
+      // Safe because isValid() checks this.token is not null
+      return this.token as string;
     }
 
     // 🔑 DEDUPE: If already refreshing, WAIT for it
     if (this.refreshPromise) {
-      console.log('⏳ Token refresh in progress, waiting...');
-      return this.refreshPromise; // Wait, don't duplicate!
+      console.log(
+        `[Instance ${this.instanceId}] ⏳ Token refresh in progress, waiting...`,
+      );
+      return this.refreshPromise;
     }
 
-    console.log('🔄 Starting NEW token refresh...');
-    this.refreshPromise = this.fetchMachineToken(); // Single refresh
-    
+    console.log(
+      `[Instance ${this.instanceId}] 🔄 Starting NEW token refresh...`,
+    );
+    this.refreshPromise = this.fetchMachineToken();
+
     try {
       this.token = await this.refreshPromise;
-      console.log('✅ Token refreshed, expires:', new Date(this.expiresAt).toLocaleString());
-      return this.token!;
+      console.log(
+        `[Instance ${this.instanceId}] ✅ Token refreshed, expires:`,
+        new Date(this.expiresAt).toLocaleString(),
+      );
+      // Safe because fetchMachineToken returns string
+      return this.token as string;
     } finally {
-      this.refreshPromise = null; // Release lock
+      this.refreshPromise = null;
+      console.log(`[Instance ${this.instanceId}] 🧹 Refresh promise cleared`);
     }
   }
 
   private isValid(): boolean {
     const buffer = 5 * 60 * 1000; // 5min buffer
-    const valid = !!this.token && Date.now() < (this.expiresAt - buffer);
-    console.log('🔍 Token valid check:', {
+    const valid = !!this.token && Date.now() < this.expiresAt - buffer;
+    console.log(`[Instance ${this.instanceId}] 🔍 Token valid check:`, {
       hasToken: !!this.token,
-      expiresAt: new Date(this.expiresAt).toLocaleTimeString(),
+      expiresAt: this.expiresAt
+        ? new Date(this.expiresAt).toLocaleTimeString()
+        : 'none',
       now: new Date(Date.now()).toLocaleTimeString(),
       bufferMs: buffer,
-      valid
+      valid,
     });
     return valid;
   }
 
   private async fetchMachineToken(): Promise<string> {
-    const tokenUrl = `https://ap-southeast-13elwe1ija.auth.ap-southeast-1.amazoncognito.com/oauth2/token`;
-    
+    // ✅ Validate all required env vars
+    const tokenUrl = process.env.COGNITO_MACHINE_AUTH_URL;
+    const clientId = process.env.COGNITO_MACHINE_CLIENT_ID;
+    const clientSecret = process.env.COGNITO_MACHINE_CLIENT_SECRET;
+    const scope = process.env.COGNITO_MACHINE_SCOPE;
+
+    if (!tokenUrl || !clientId || !clientSecret || !scope) {
+      throw new Error(
+        'Missing required Cognito machine token environment variables',
+      );
+    }
+
+    console.log(
+      `[Instance ${this.instanceId}] 🌐 Fetching token from Cognito...`,
+    );
+
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         grant_type: 'client_credentials',
-        client_id: process.env.COGNITO_MACHINE_CLIENT_ID!,
-        client_secret: process.env.COGNITO_MACHINE_CLIENT_SECRET!,
-        scope: 'default-m2m-resource-server-wbcwoh/read',
+        client_id: clientId,
+        client_secret: clientSecret,
+        scope: scope,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Token fetch failed:', response.status, errorText);
+      console.error(
+        `[Instance ${this.instanceId}] ❌ Token fetch failed:`,
+        response.status,
+        errorText,
+      );
       throw new Error(`Machine token failed: ${response.status}`);
     }
 
     const data = await response.json();
-    this.expiresAt = Date.now() + (data.expires_in * 1000);
-    
-    console.log('📊 Token details:', {
+
+    // Set expiresAt BEFORE token to avoid race condition
+    this.expiresAt = Date.now() + data.expires_in * 1000;
+    this.token = data.access_token;
+
+    console.log(`[Instance ${this.instanceId}] 📊 Token stored:`, {
       expiresIn: data.expires_in,
-      validUntil: new Date(this.expiresAt).toLocaleString()
+      validUntil: new Date(this.expiresAt).toLocaleString(),
+      tokenPreview: this.token?.substring(0, 20) + '...',
     });
-    
+
     return data.access_token;
   }
 }
 
-export const machineTokenManager = new CognitoMachineTokenManager();
+// Use globalThis to ensure single instance across hot reloads and requests
+const globalForManager = globalThis as unknown as {
+  machineTokenManager?: CognitoMachineTokenManager;
+};
+
+export const machineTokenManager =
+  globalForManager.machineTokenManager ?? new CognitoMachineTokenManager();
+
+// Store in global for reuse (dev mode only to avoid memory leaks in prod)
+if (process.env.NODE_ENV !== 'production') {
+  globalForManager.machineTokenManager = machineTokenManager;
+  console.log('🌍 Stored machineTokenManager in globalThis (dev mode)');
+}
+
+console.log(
+  '🏭 machineTokenManager instance created:',
+  (machineTokenManager as any).instanceId,
+);

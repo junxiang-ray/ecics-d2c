@@ -1,6 +1,6 @@
 import { Policy, PolicyStatus, PolicyTag } from '@/libs/types/policy';
 import { formatNumber } from '@/libs/utils/utils';
-import { formatDateString } from '@/libs/utils/dayjs';
+// import { formatDateString } from '@/libs/utils/dayjs';
 import { getPolicyStatusTag } from '@/libs/utils/policy';
 
 import Card from './PolicyCard';
@@ -13,6 +13,10 @@ interface Props {
 
 const PolicyDetail = ({ data }: Props): JSX.Element | null => {
   if (!data) return null;
+  // console.log('🧾 POLICY DETAIL INPUT', {
+  //   policy_status: data.policy_status,
+  //   tags: data.tags,
+  // });
 
   const renderTags = (
     policyStatus?: PolicyStatus,

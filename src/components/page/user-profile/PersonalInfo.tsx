@@ -87,7 +87,9 @@ const PersonalInfo = (): JSX.Element => {
       [FORM_ITEM.GENDER]: user?.gender,
       [FORM_ITEM.MARITAL_STATUS]: user?.marital_status,
       [FORM_ITEM.EMAIL]: user?.email,
-      [FORM_ITEM.PHONE]: formatPhoneNumber(user?.phone ?? ''),
+      [FORM_ITEM.PHONE]: formatPhoneNumber(
+        user?.phone ? `+65${user.phone.replace(/^\+65/, '')}` : '',
+      ),
       [FORM_ITEM.ADDRESS_1]: user?.address?.address_line_1,
       [FORM_ITEM.ADDRESS_2]: user?.address?.address_line_2,
       [FORM_ITEM.ADDRESS_3]: user?.address?.address_line_3,
@@ -95,7 +97,7 @@ const PersonalInfo = (): JSX.Element => {
     },
   });
   const {
-    formState: { isValid },
+    // formState: { isValid },
     getValues,
     reset,
     handleSubmit,

@@ -5,6 +5,10 @@ export interface PortalAuthPayload {
   accessToken?: string;
   code: string | null;
   code_verifier: string | null;
+  email?: string;
+  cognito_sub?: string;
+  phone?: string;
+  accessTokenExpiresAt?: number; // Add this
 }
 
 export interface PolicyPayload {
@@ -17,7 +21,6 @@ export interface PolicyPayload {
   timestamp: string;
   nric: string;
 }
-
 
 export interface LoginData {
   state: string;
@@ -44,14 +47,13 @@ export type PortalAuthorization = Partial<{
   code_verifier: string;
   state: string;
   code: string;
+  email: string;
 }>;
 
 export type NRICResponse = {
   data: string;
   message: string;
 };
-
-
 
 export interface SavePersonalInfoPayload {
   key: string;

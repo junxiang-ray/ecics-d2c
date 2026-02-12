@@ -1,3 +1,4 @@
+//src/components/page/user-profile/ChangePassword.tsx
 'use client';
 
 import { REGEX } from '@/constants/validation.constant';
@@ -6,10 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 
 import {
-  CheckCircleOutlined,
+  // CheckCircleOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
-  MehOutlined,
+  // MehOutlined,
 } from '@ant-design/icons';
 import { Button, Divider, Form, Input, notification } from 'antd';
 import PasswordRequirements from './components/PasswordRequirements';
@@ -48,7 +49,7 @@ const ChangePassword = (): JSX.Element => {
 
   const {
     handleSubmit,
-    control,
+    // control,
     getValues,
     reset,
     formState: { isValid },
@@ -88,7 +89,7 @@ const ChangePassword = (): JSX.Element => {
             >
               <Controller
                 name={FORM_ITEM.PASSWORD_NEW}
-                render={({ field, fieldState }) => (
+                render={({ field, fieldState: _fieldstate }) => (
                   <Form.Item label='Change Password'>
                     <Input.Password
                       placeholder='Enter new password'
@@ -101,7 +102,7 @@ const ChangePassword = (): JSX.Element => {
               />
               <Controller
                 name={FORM_ITEM.PASSWORD_CONFIRM}
-                render={({ field, fieldState }) => (
+                render={({ field, fieldState: _fieldState }) => (
                   <Form.Item label='Confirm New Password'>
                     <Input.Password
                       placeholder='Enter new password'

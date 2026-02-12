@@ -69,7 +69,8 @@ export const API_ANNOUNCEMENT_GET = '/announcements';
 
 export const API_PROMOTION_GET = '/current-promotions';
 
-export const API_POLICY_GET = '/policies';
+// export const API_POLICY_GET = '/policies';
+export const API_POLICY_GET = '/policy/list';
 
 export const API_CLAIM_GET = '/claims';
 

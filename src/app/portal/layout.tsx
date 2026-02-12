@@ -14,13 +14,28 @@ interface Props {
 const PortalLayout = ({ children }: Props): React.ReactNode => {
   const pathname = usePathname();
 
-  if (pathname === ROUTES.PORTAL.LOGIN)
+  // Public routes that don't need auth gate
+  const publicRoutes = [
+    ROUTES.PORTAL.LOGIN,
+    '/portal/signup',
+    '/portal/singpass/mock-callback',
+    '/portal/singpass/callback', // Add this!
+
+    // add any other public routes
+  ];
+
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname?.startsWith(route),
+  );
+
+  if (isPublicRoute) {
     return (
       <>
         <ReduxSyncWatcher />
         {children}
       </>
     );
+  }
 
   return (
     <>

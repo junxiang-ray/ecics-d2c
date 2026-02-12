@@ -1,3 +1,4 @@
+//src\components\page\login\portal\LoginPage.tsx
 'use client';
 
 import { ROUTES } from '@/constants/routes';
@@ -10,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch } from '@/redux/store';
 import { useRequestSignInSingpass } from '@/hook/auth/login-portal';
 
-import { Button, Divider, Form, Spin } from 'antd';
+import { Button, Divider, Form, Spin, notification } from 'antd';
 import {
   EyeInvisibleOutlined,
   EyeOutlined,
@@ -23,6 +24,10 @@ import { InputField } from '@/components/ui/form/inputfield';
 import { SingpassDownModal } from '@/components/page/login/SingpassDownModal';
 import { clearUser } from '@/redux/slices/portalUser.slice';
 import { useGetUserProfile } from '@/hook/user-profile/user-profile';
+import Image from 'next/image';
+
+// ✅ MFA modal (logic only – no layout impact)
+import ModalVerify from '@/app/renewal/profile/ModalVerify';
 
 const FORM_ITEM = {
   EMAIL: 'email',
@@ -52,22 +57,36 @@ const LoginPage = (): JSX.Element => {
     resolver: zodResolver(schema),
     mode: 'onChange',
   });
+
   const {
     handleSubmit,
     formState: { errors },
+    getValues,
   } = methods;
 
   const [isVerifying, setIsVerifying] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [errMsg, setErrMsg] = useState<string | null>(null); // todo:
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   const [singpassMaintain, setSingpassMaintain] = useState(false);
+
+  // 🔐 MFA state
+  const [isOtpOpen, setIsOtpOpen] = useState(false);
+  const [mfaSession, setMfaSession] = useState<string | null>(null);
+  const [loginEmail, setLoginEmail] = useState<string | null>(null);
+
+  // ⏱️ Resend cooldown state
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [isResending, setIsResending] = useState(false);
 
   const isSignOut = signoutFlg === 'true';
 
   const singpassLoginMutation = useRequestSignInSingpass({
     onError: () => setSingpassMaintain(true),
   });
+
   const userProfileQuery = useGetUserProfile(!isSignOut);
+
+  /* ---------------- lifecycle (unchanged) ---------------- */
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined;
@@ -78,62 +97,160 @@ const LoginPage = (): JSX.Element => {
       }, 1500);
 
       if (!isSignOut) return;
-
       dispatch(clearUser());
     }
     return () => clearTimeout(timeout);
-  }, [signoutFlg]);
+  }, [signoutFlg, router, isSignOut, dispatch]);
 
   useEffect(() => {
-    if (userProfileQuery.isSuccess) router.push(ROUTES.PORTAL.HOME.ROOT);
-  }, [userProfileQuery.isSuccess]);
+    if (userProfileQuery.isSuccess) {
+      router.push(ROUTES.PORTAL.HOME.ROOT);
+    }
+  }, [userProfileQuery.isSuccess, router]);
 
   useEffect(() => {
     if (!userProfileQuery.isError) return;
-
     dispatch(clearUser());
     setIsVerifying(false);
-  }, [userProfileQuery.isError]);
+  }, [userProfileQuery.isError, dispatch]);
 
-  const onSubmitSigninRenewal = async (
-    values: FormValues,
-  ): Promise<void> => {
+  // ⏱️ Countdown timer for resend cooldown
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  /* ---------------- login step 1 ---------------- */
+
+  const onSubmitSigninRenewal = async (values: FormValues) => {
     try {
       setErrMsg(null);
-      console.log('LOGIN ROUTE HIT');
 
       const res = await fetch('/api/v1/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // 🔑 critical
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
-          type: 'email',
           email: values.email,
           password: values.password,
         }),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err?.message || 'Login failed');
-      }
-      console.log(res)
-      router.push(ROUTES.PORTAL.HOME.ROOT);
+      const data = await res.json();
 
+      if (!res.ok) {
+        throw new Error(data?.message || 'Login failed');
+      }
+
+      // 🔐 MFA required
+      if (data.status === 'MFA_REQUIRED') {
+        setMfaSession(data.session);
+        setLoginEmail(values.email);
+        setIsOtpOpen(true);
+        // Start cooldown immediately when MFA modal opens
+        setResendCooldown(60);
+        return;
+      }
+
+      router.push(ROUTES.PORTAL.HOME.ROOT);
     } catch (err: any) {
       setErrMsg(err.message || 'Login failed');
     }
   };
 
+  /* ---------------- login step 2 (OTP) ---------------- */
 
-  const hideModalSingpassDown = useCallback<() => void>(
+  const handleVerifyOtp = async (code: string) => {
+    try {
+      if (!mfaSession || !loginEmail) {
+        throw new Error('Missing MFA session');
+      }
+
+      const res = await fetch('/api/v1/auth/login/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: loginEmail,
+          code,
+          session: mfaSession,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || 'Invalid verification code');
+      }
+
+      setIsOtpOpen(false);
+      router.push(ROUTES.PORTAL.HOME.ROOT);
+    } catch (err: any) {
+      setErrMsg(err.message || 'OTP verification failed');
+    }
+  };
+
+  /* ---------------- resend OTP ---------------- */
+
+  const handleResendOtp = async () => {
+    // Get email from form if not set in state, or use loginEmail
+    const emailToUse = loginEmail || getValues(FORM_ITEM.EMAIL);
+
+    if (!emailToUse) {
+      notification.error({
+        message: 'Error',
+        description: 'Email not found. Please try logging in again.',
+      });
+      return;
+    }
+
+    if (resendCooldown > 0) return; // Still in cooldown
+
+    try {
+      setIsResending(true);
+
+      const res = await fetch('/api/v1/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailToUse }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || 'Failed to resend code');
+      }
+
+      notification.success({
+        message: 'Code resent',
+        description: 'Please check your email for the new verification code.',
+      });
+
+      // Reset cooldown to 60 seconds
+      setResendCooldown(60);
+    } catch (err: any) {
+      notification.error({
+        message: 'Failed to resend',
+        description: err.message || 'Please try again later.',
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const hideModalSingpassDown = useCallback(
     () => setSingpassMaintain(false),
     [],
   );
 
   const isShowBtnLoading = singpassLoginMutation.isPending;
+
+  /* ---------------- RENDER ---------------- */
 
   return (
     <>
@@ -142,25 +259,26 @@ const LoginPage = (): JSX.Element => {
         style={{ backgroundImage: "url('/img-error.png')" }}
       >
         <div className='z-2 relative flex flex-col items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white p-6 shadow-lg md:max-w-[480px]'>
-          <img src='/ecics.svg' alt='ecics' />
+          <Image src='/ecics.svg' alt='ecics' width={120} height={40} />
+
           <p className='font-heading text-foreground mb-0 mt-6 text-4xl font-bold'>
             Client Portal
           </p>
+
           <p className='mb-5 text-xl text-[#717182]'>
             Local & Homegrown since 1975
           </p>
+
           <Button
-            className='shadow- w-full rounded-lg bg-[#F4333D] py-5 text-center font-semibold text-white'
+            className='w-full rounded-lg bg-[#F4333D] py-5 text-center font-semibold text-white'
             onClick={() => singpassLoginMutation.mutate()}
             loading={isShowBtnLoading}
           >
             Log in with Singpass
           </Button>
-          <div className='flex w-full flex-row items-center justify-center gap-6'>
-            <Divider className='font-body my-2 border-gray-200 text-gray-500'>
-              or continue with email
-            </Divider>
-          </div>
+
+          <Divider>or continue with email</Divider>
+
           <FormProvider {...methods}>
             <Form
               form={form}
@@ -172,7 +290,7 @@ const LoginPage = (): JSX.Element => {
             >
               <Form.Item
                 name={FORM_ITEM.EMAIL}
-                validateStatus={errors[FORM_ITEM.EMAIL] ? 'error' : ''}
+                validateStatus={errors.email ? 'error' : ''}
               >
                 <InputField
                   name={FORM_ITEM.EMAIL}
@@ -180,18 +298,16 @@ const LoginPage = (): JSX.Element => {
                   placeholder='Enter your email address'
                   autoComplete='email'
                   isRequired
-                  prefix={
-                    <MailOutlined size={16} className='mr-2 text-gray-400' />
-                  }
-                  autoFocus
+                  prefix={<MailOutlined className='mr-2 text-gray-400' />}
                 />
-                <p id='email-help' className='font-body text-xs text-gray-400'>
+                <p className='text-xs text-gray-400'>
                   We'll use this to send you important updates
                 </p>
               </Form.Item>
+
               <Form.Item
                 name={FORM_ITEM.PASSWORD}
-                validateStatus={errors[FORM_ITEM.PASSWORD] ? 'error' : ''}
+                validateStatus={errors.password ? 'error' : ''}
               >
                 <InputField
                   type={showPassword ? 'text' : 'password'}
@@ -200,41 +316,36 @@ const LoginPage = (): JSX.Element => {
                   isRequired
                   placeholder='Enter your password'
                   autoComplete='new-password'
-                  prefix={
-                    <LockOutlined size={18} className='mr-2 text-gray-400' />
-                  }
+                  prefix={<LockOutlined className='mr-2 text-gray-400' />}
                   suffix={
                     showPassword ? (
                       <EyeInvisibleOutlined
-                        size={18}
-                        className='mr-2 cursor-pointer text-gray-400'
+                        className='cursor-pointer'
                         onClick={() => setShowPassword(false)}
                       />
                     ) : (
                       <EyeOutlined
-                        size={18}
-                        className='mr-2 cursor-pointer text-gray-400'
+                        className='cursor-pointer'
                         onClick={() => setShowPassword(true)}
                       />
                     )
                   }
                 />
-                <p
-                  id='password-help'
-                  className='font-body text-xs text-gray-400'
-                >
+                <p className='text-xs text-gray-400'>
                   Your password is encrypted and stored securely
                 </p>
               </Form.Item>
+
               {errMsg && (
-                <div className='mt-2 flex w-full flex-row items-start gap-2 rounded-lg border border-[#FFC9C9] bg-[#FEF2F2] p-2 font-normal text-[#E7000B]'>
-                  <InfoCircleOutlined className='mt-1' />
+                <div className='mt-2 flex gap-2 rounded-lg border border-red-200 bg-red-50 p-2 text-red-600'>
+                  <InfoCircleOutlined />
                   <p>{errMsg}</p>
                 </div>
               )}
+
               <PrimaryButton
                 htmlType='submit'
-                className='w-full bg-[#02ADEF] px-1 py-2 font-normal leading-4 text-white'
+                className='w-full bg-[#02ADEF]'
                 loading={isShowBtnLoading}
               >
                 Sign in
@@ -244,14 +355,28 @@ const LoginPage = (): JSX.Element => {
         </div>
       </div>
 
+      {/* 🔐 MFA Modal with resend functionality */}
+      <ModalVerify
+        isOpen={isOtpOpen}
+        onClose={setIsOtpOpen}
+        title='Verify your login'
+        destinationLabel={loginEmail || 'your email'}
+        onVerify={handleVerifyOtp}
+        onResend={handleResendOtp}
+        resendCooldown={resendCooldown}
+        isResending={isResending}
+      />
+
       <SingpassDownModal
         visible={singpassMaintain}
         onExit={hideModalSingpassDown}
       />
+
       {(isVerifying || userProfileQuery.isFetching) && (
-        <Spin className='pointer-events-none' fullscreen delay={150} />
+        <Spin fullscreen delay={150} />
       )}
     </>
   );
 };
+
 export default LoginPage;

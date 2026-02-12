@@ -6,7 +6,7 @@ import { PortalAuthPayload } from '@/libs/types/auth';
 export async function POST(req: Request) {
   const body = await req.json();
 
-  // ✅ Validate env var
+  // ✅ Validate env vars
   const FASTIFY_API_URL = process.env.FASTIFY_API_URL;
   const COOKIE_PASSPHRASE = process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE;
 
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const backendRes = await fetch(`${FASTIFY_API_URL}/api/auth/login`, {
+  const backendRes = await fetch(`${FASTIFY_API_URL}/api/auth/login/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -28,21 +28,12 @@ export async function POST(req: Request) {
 
   if (!backendRes.ok) {
     return NextResponse.json(
-      { message: data?.message || 'Login failed' },
+      { message: data?.message || 'OTP verification failed' },
       { status: backendRes.status },
     );
   }
 
-  // 🔐 MFA required → return directly
-  if (data.status === 'MFA_REQUIRED') {
-    return NextResponse.json({
-      status: data.status,
-      challenge: data.challenge,
-      session: data.session,
-    });
-  }
-
-  // ✅ Non-MFA login (fallback / future-proof)
+  // ✅ MFA completed → issue portal auth cookie
   const portalAuthPayload: PortalAuthPayload = {
     nric: data.user.nric,
     cognito_sub: data.user.cognito_sub,

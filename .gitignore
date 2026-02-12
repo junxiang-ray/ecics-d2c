@@ -37,3 +37,9 @@ next-env.d.ts
 
 # log
 /logs
+
+# Lint output files
+lint-results.txt
+lint-results.json
+lint-report.html
+lint-*.txt

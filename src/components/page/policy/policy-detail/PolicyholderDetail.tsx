@@ -1,4 +1,7 @@
+'use client';
+
 import { PolicyHolder } from '@/libs/types/policy';
+import { useAppSelector } from '@/redux/store';
 
 import Card from './PolicyCard';
 import UserOutlined from '@/assets/icons/renewal/policy-holder.svg';
@@ -8,6 +11,8 @@ interface Props {
 }
 
 const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
+  const user = useAppSelector((state) => state.portalUserInfo.user);
+
   if (!data) return null;
 
   const row = (
@@ -32,7 +37,7 @@ const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
   return (
     <Card
       title='Policyholder'
-      subTitle='Policyholder information'
+      subTitle='Policyholder Information'
       icon={<UserOutlined width='21' height='21' />}
     >
       <>
@@ -43,8 +48,9 @@ const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
           {row('Full Name', data.name)}
           {row('Marital Status', data.marital_status, 'capitalize')}
           {row('Mobile Number', data.mobile)}
-          {row('Email', data.email)}
+          {row('Email', user?.email ?? data.email)}
         </div>
+
         <div className='font-heading mb-4 font-semibold text-gray-900'>
           Address Information
         </div>
@@ -52,10 +58,11 @@ const PolicyholderDetail = ({ data }: Props): JSX.Element | null => {
           {row('Address Line 1', data.address?.address_line_1)}
           {row('Address Line 2', data.address?.address_line_2)}
           {row('Address Line 3', data.address?.address_line_3)}
-          {row('Postal Code', data.address.postal_code)}
+          {row('Postal Code', data.address?.postal_code)}
         </div>
       </>
     </Card>
   );
 };
+
 export default PolicyholderDetail;

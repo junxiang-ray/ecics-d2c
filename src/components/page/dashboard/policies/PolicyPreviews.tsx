@@ -1,10 +1,11 @@
+// src/components/page/dashboard/policies/policypreviews.tsx
 'use client';
 
 import {
   PolicyStatus,
   PolicyTag,
   Policy,
-  PolicyPayload,
+  // PolicyPayload,
 } from '@/libs/types/policy';
 import { ROUTES } from '@/constants/routes';
 
@@ -24,7 +25,7 @@ const PolicyPreviews = (): React.ReactNode => {
   }>({});
 
   const router = useRouter();
-  const { data, isFetching, refetch } = usePoliciePreviews(
+  const { data, isFetching } = usePoliciePreviews(
     payload.policyStatus,
     payload.tags,
   );
@@ -88,7 +89,7 @@ const PolicyPreviews = (): React.ReactNode => {
     useRef({
       right: (
         <button
-          className='ml-auto whitespace-nowrap border-b-2 border-transparent px-2 pb-4 font-body font-medium text-[#02ADEF] transition-colors hover:border-[#02ADEF] hover:text-[#02ADEF]/80'
+          className='font-body ml-auto whitespace-nowrap border-b-2 border-transparent px-2 pb-4 font-medium text-[#02ADEF] transition-colors hover:border-[#02ADEF] hover:text-[#02ADEF]/80'
           onClick={() => router.push(ROUTES.PORTAL.POLICIES.ROOT)}
         >
           View all
@@ -110,7 +111,7 @@ const PolicyPreviews = (): React.ReactNode => {
   return (
     <div className='mb-12'>
       <Tabs
-        className='mb-6 [&_.ant-tabs-ink-bar]:bg-[#02ADEF] [&_.ant-tabs-nav-list]:gap-6 [&_.ant-tabs-nav]:m-0 [&_.ant-tabs-tab-active]:font-semibold [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-[#02ADEF] [&_.ant-tabs-tab:hover]:text-gray-900 [&_.ant-tabs-tab]:m-0 [&_.ant-tabs-tab]:cursor-pointer [&_.ant-tabs-tab]:select-none [&_.ant-tabs-tab]:px-2 [&_.ant-tabs-tab]:px-2 [&_.ant-tabs-tab]:pb-4 [&_.ant-tabs-tab]:pt-0 [&_.ant-tabs-tab]:font-body [&_.ant-tabs-tab]:text-gray-600 [&_.ant-tabs-tab]:transition-colors'
+        className='[&_.ant-tabs-tab]:font-body mb-6 [&_.ant-tabs-ink-bar]:bg-[#02ADEF] [&_.ant-tabs-nav-list]:gap-6 [&_.ant-tabs-nav]:m-0 [&_.ant-tabs-tab-active]:font-semibold [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-[#02ADEF] [&_.ant-tabs-tab:hover]:text-gray-900 [&_.ant-tabs-tab]:m-0 [&_.ant-tabs-tab]:cursor-pointer [&_.ant-tabs-tab]:select-none [&_.ant-tabs-tab]:px-2 [&_.ant-tabs-tab]:px-2 [&_.ant-tabs-tab]:pb-4 [&_.ant-tabs-tab]:pt-0 [&_.ant-tabs-tab]:text-gray-600 [&_.ant-tabs-tab]:transition-colors'
         items={tabItems}
         tabBarExtraContent={extraContent}
         onChange={(activeKey) => onTabChange(activeKey as TabKey)}

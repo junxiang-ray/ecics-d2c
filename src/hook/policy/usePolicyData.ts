@@ -1,7 +1,12 @@
-// hooks/policy/usePolicyData.ts
 'use client';
+
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hook/auth/useAuth';
+import { PolicyStatus, PolicyTag } from '@/libs/types/policy';
+
+/* ─────────────────────────────────────────────
+ * Backend (RAW) policy type – mirrors API
+ * ───────────────────────────────────────────── */
 
 export interface PolicySummary {
   POLICY_NUMBER: string;
@@ -27,74 +32,93 @@ export interface PolicySummary {
           tags: string;
         };
       };
-      vehicle_details: {
-        status: string;
-        data: {
-          registration_number: string;
-          make_model: string;
-          chassis_number: string;
-          engine_motor_number: string;
-          capacity: number;
-          registration_year: number;
-          hire_purchase_company: string;
-        };
-      };
-      excess_text: {
-        status: string;
-        data: {
-          policy_excess: Array<{
-            title: string;
-            subtitle: string;
-            value: string;
-          }>;
-          additional_excess: Array<{
-            title: string;
-            subtitle: string;
-            value: string;
-          }>;
-        };
-      };
-      lower_text: {
-        status: string;
-        data: {
-          endorsements: Record<string, string>;
-        };
-      };
-      policy_clauses: {
-        status: string;
-        data: {
-          clauses: Array<{
-            seq_no: number;
-            code: string;
-            title: string;
-          }>;
-        };
-      };
-      insured_drivers: {
-        status: string;
-        data: {
-          named_drivers: Array<{
-            sequence: number;
-            name: string;
-            nric: string;
-            date_of_birth: string;
-            marital_status: string;
-            gender: string;
-            driving_experience: number;
-          }>;
-        };
-      };
+      vehicle_details: any;
+      excess_text: any;
+      lower_text: any;
+      policy_clauses: any;
+      insured_drivers: any;
     };
   };
 }
 
-// hooks/policy/usePolicyData.ts - FIXED RESPONSE HANDLING
+/* ─────────────────────────────────────────────
+ * Normalized (UI) policy types
+ * ───────────────────────────────────────────── */
+
+// Extract raw policy_details.data
+type RawPolicyDetails =
+  PolicySummary['summary']['data']['policy_details']['data'];
+
+// Replace policy_status + tags correctly
+type NormalizedPolicyDetails = Omit<
+  RawPolicyDetails,
+  'policy_status' | 'tags'
+> & {
+  policy_status: PolicyStatus;
+  tags?: PolicyTag;
+};
+
+// Full normalized policy shape
+export type NormalizedPolicySummary = Omit<PolicySummary, 'summary'> & {
+  summary: Omit<PolicySummary['summary'], 'data'> & {
+    data: Omit<PolicySummary['summary']['data'], 'policy_details'> & {
+      policy_details: {
+        status: string;
+        data: NormalizedPolicyDetails;
+      };
+    };
+  };
+};
+
+/* ─────────────────────────────────────────────
+ * Helpers
+ * ───────────────────────────────────────────── */
+
+const MS_IN_DAY = 1000 * 60 * 60 * 24;
+
+function computePolicyStatus(
+  backendStatus: string,
+  startDate: string,
+  endDate: string,
+): PolicyStatus {
+  if (backendStatus?.toLowerCase() === 'cancelled') {
+    return 'cancelled';
+  }
+
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (now < start) return 'pending';
+  if (now > end) return 'expired';
+  return 'active';
+}
+
+function computePolicyTag(
+  status: PolicyStatus,
+  endDate: string,
+): PolicyTag | undefined {
+  if (status !== 'active') return undefined;
+
+  const now = new Date();
+  const end = new Date(endDate);
+
+  const diffInDays = (end.getTime() - now.getTime()) / MS_IN_DAY;
+
+  return diffInDays <= 60 ? 'pending_renewal' : undefined;
+}
+
+/* ─────────────────────────────────────────────
+ * Hook
+ * ───────────────────────────────────────────── */
+
 export function usePolicyData() {
   const { auth, initialized } = useAuth();
 
-  return useQuery<PolicySummary[]>({
+  return useQuery<NormalizedPolicySummary[]>({
     queryKey: ['policies', auth?.nric],
-    queryFn: async (): Promise<PolicySummary[]> => {
+
+    queryFn: async (): Promise<NormalizedPolicySummary[]> => {
       const response = await fetch('/api/v1/policy/list', {
         method: 'POST',
         credentials: 'include',
@@ -102,30 +126,59 @@ export function usePolicyData() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
         throw new Error(`Policy fetch failed: ${response.status}`);
       }
 
-      const data = await response.json();
-      
-      // 🔥 DEBUG: Log raw response
-      console.log('🔍 RAW API RESPONSE:', {
-        isArray: Array.isArray(data),
-        hasData: !!data?.data,
-        keys: data && typeof data === 'object' ? Object.keys(data) : null,
-        count: data?.length || data?.data?.length || 0
-      });
+      const raw = await response.json();
 
-      // ✅ Handle both array + wrapped responses
-      return Array.isArray(data) ? data : 
-             Array.isArray(data?.data) ? data.data : 
-             data?.policies || [];
+      const policies: PolicySummary[] = Array.isArray(raw)
+        ? raw
+        : Array.isArray(raw?.data)
+          ? raw.data
+          : raw?.policies || [];
+      return policies.map((policy): NormalizedPolicySummary => {
+        const details = policy.summary.data.policy_details.data;
+
+        const computedStatus = computePolicyStatus(
+          details.policy_status,
+          details.start_date,
+          details.end_date,
+        );
+
+        const computedTag = computePolicyTag(computedStatus, details.end_date);
+
+        console.log('🧪 NORMALIZED POLICY', {
+          policyNo: details.policy_number,
+          start: details.start_date,
+          end: details.end_date,
+          computedStatus,
+          computedTag,
+          rawStatus: details.policy_status,
+        });
+
+        return {
+          ...policy,
+          summary: {
+            ...policy.summary,
+            data: {
+              ...policy.summary.data,
+              policy_details: {
+                ...policy.summary.data.policy_details,
+                data: {
+                  ...details,
+                  policy_status: computedStatus,
+                  tags: computedTag,
+                },
+              },
+            },
+          },
+        };
+      });
     },
+
     enabled: !!auth?.nric && initialized,
     staleTime: 30 * 60 * 1000,
     gcTime: 24 * 60 * 60 * 1000,
     retry: 1,
   });
 }
-
-

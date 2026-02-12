@@ -13,11 +13,14 @@
     "format": "prettier --plugins=prettier-plugin-tailwindcss -w .",
     "format:check": "prettier --plugins=prettier-plugin-tailwindcss -c .",
     "postbuild": "next-sitemap --config next-sitemap.config.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint:staged": "git diff --cached --name-only | grep -E '\\.(ts|tsx|js|jsx)$' | xargs eslint",
+    "lint:staged:fix": "git diff --cached --name-only | grep -E '\\.(ts|tsx|js|jsx)$' | xargs eslint --fix"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
     "@ant-design/nextjs-registry": "^1.0.2",
+    "@aws-sdk/client-cognito-identity-provider": "^3.982.0",
     "@hookform/resolvers": "^5.0.1",
     "@ncdai/react-wheel-picker": "^1.0.14",
     "@next/font": "^14.2.15",

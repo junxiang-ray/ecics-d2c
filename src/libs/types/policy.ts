@@ -35,13 +35,13 @@ export type VehicleInfo = Vehicle & {
   chassis_no: string;
   vehicle_usage: string;
   hire_purchase_company: string;
-  company: Company;
+  company?: Company;
 };
 
 type ExcessDetail = {
   name: string;
   description?: string;
-  amount: number;
+  amount: string;
 };
 
 export type Excess = {
@@ -57,10 +57,24 @@ export type PolicyHolder = {
   address: Address;
 };
 
-type Maid = MaidInfo &
-  MaidPersonalInfo & {
-    coverage_details: CoverageDetail[];
-  };
+// Follow MOCK_DATA structure
+// type Maid = MaidInfo &
+//   MaidPersonalInfo & {
+//     coverage_details: CoverageDetail[];
+//   };
+
+export type Maid = {
+  id: string;
+  name: string;
+  date_of_birth: string;
+  gender: string | null;
+  phone_number?: string;
+  nationality: string;
+  passport_number: string;
+  fin?: string;
+  forgeign_id_number?: string;
+  coverage_details: CoverageDetail[];
+};
 
 type SubCoverageDetail = {
   letter: string;
@@ -75,6 +89,12 @@ type CoverageDetail = {
   amount?: number;
   notes?: string;
   sub_details?: SubCoverageDetail[];
+};
+
+export type PolicyClause = {
+  seq_no: number;
+  code: string;
+  title: string;
 };
 
 export type Policy = {
@@ -94,10 +114,17 @@ export type Policy = {
   policy_status: PolicyStatus;
   tags?: PolicyTag;
   policy_holder: PolicyHolder;
-  maid_info: Maid;
-  drivers: DriverInfo[];
-  vehicle: VehicleInfo;
-  excess: Excess;
+  maid_info?: Maid;
+  drivers?: DriverInfo[];
+  vehicle?: VehicleInfo;
+  excess?: Excess;
+  lower_text?: {
+    endorsements: Record<string, string>;
+  };
+
+  policy_clauses?: {
+    clauses: PolicyClause[];
+  };
 };
 
 export type PolicySummary = {

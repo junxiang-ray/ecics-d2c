@@ -1,10 +1,11 @@
+//src\app\portal\page.tsx
 'use client';
 
 import Loading from '@/app/portal/loading';
 import { notification } from 'antd';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useRetriveNricSingpass } from '@/hook/auth/login-portal';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   decryptValue,
   encryptValue,
@@ -35,92 +36,14 @@ const Page = (): JSX.Element | null => {
   const userInfoQuery = useGetUserProfile(!!auth?.nric);
   const userResp = userInfoQuery.data;
 
-
-  // const userInfoQuery = useGetUserProfile(!!auth?.nric);
-  console.log('🔍 PROFILE DEBUG:', {
-    enabled: !!auth?.nric,
-    isError: userInfoQuery.isError,
-    error: userInfoQuery.error,
-    isFetching: userInfoQuery.isFetching,
-    nric: auth?.nric
-  });
-
   /* -------------------------------
-   * Hydrate auth from _pa
+   * Helpers (defined first with useCallback)
    * ------------------------------- */
-  useEffect(() => {
-    (async () => {
-      const decryptedStr = await decryptValue(
-        getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION) ?? '',
-        process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
-      );
+  const signOut = useCallback(() => {
+    router.replace(ROUTES.PORTAL.LOGOUT);
+  }, [router]);
 
-      setAuth(parseJSON(decryptedStr ?? '') || null);
-      setAuthInitialized(true);
-    })();
-  }, []);
-
-
-  useEffect(() => {
-    if (!auth) return;
-
-    console.log('🔐 AUTH DEBUG:', {
-      nric: auth.nric,
-      accessToken: auth.accessToken,
-    });
-  }, [auth]);
-
-  /* -------------------------------
-   * Populate Redux once authenticated
-   * ------------------------------- */
-  useEffect(() => {
-    if (userResp?.data) {
-      dispatch(setUser(userResp.data));
-    }
-  }, [userResp, dispatch]);
-
-  /* -------------------------------
-   * CORE AUTH LOGIC (FIXED)
-   * ------------------------------- */
-  useEffect(() => {
-    if (!authInitialized) return;
-
-    // ✅ AUTHENTICATED (EMAIL OR SINGPASS) → DO NOTHING
-    if (auth?.nric) {
-      // router.push(pathname);
-      return;
-    }
-
-    // ⛔ BELOW THIS LINE IS **SINGPASS ONLY**
-
-    if (retriveNRICMutation.isPending) return;
-
-    if (!singpassCodeRef.current && auth?.code) {
-      singpassCodeRef.current = auth.code;
-    }
-
-    if (singpassCodeRef.current) {
-      return requestNRIC();
-    }
-
-    // ❌ Truly unauthenticated
-    signOut();
-  }, [auth, authInitialized, retriveNRICMutation.isPending, pathname]);
-
-  /* -------------------------------
-   * Profile error → sign out
-   * ------------------------------- */
-  useEffect(() => {
-    if (!userInfoQuery.isError) return;
-
-    showErrorNoti('Unauthorized');
-    setTimeout(signOut, 500);
-  }, [userInfoQuery.isError]);
-
-  /* -------------------------------
-   * Helpers
-   * ------------------------------- */
-  const showErrorNoti = (message: string) => {
+  const showErrorNoti = useCallback((message: string) => {
     notification.error({
       key: Date.now(),
       type: 'error',
@@ -129,9 +52,9 @@ const Page = (): JSX.Element | null => {
       duration: 3,
       showProgress: true,
     });
-  };
+  }, []);
 
-  const requestNRIC = () => {
+  const requestNRIC = useCallback(() => {
     const payload: UserInfoPayload = {
       code: singpassCodeRef.current ?? '',
       code_verifier: auth?.code_verifier,
@@ -159,15 +82,116 @@ const Page = (): JSX.Element | null => {
         setTimeout(signOut, 1500);
       },
     });
-  };
+  }, [auth, retriveNRICMutation, showErrorNoti, signOut]);
 
-  const signOut = () => {
-    router.push(ROUTES.PORTAL.LOGOUT);
-  };
+  /* -------------------------------
+   * Hydrate auth from _pa
+   * ------------------------------- */
+  useEffect(() => {
+    (async () => {
+      const decryptedStr = await decryptValue(
+        getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION) ?? '',
+        process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
+      );
+
+      setAuth(parseJSON(decryptedStr ?? '') || null);
+      setAuthInitialized(true);
+    })();
+  }, []);
+
+  /* -------------------------------
+   * 🔐 DEFENSIVE COOKIE GUARD (NEW)
+   * ------------------------------- */
+  useEffect(() => {
+    if (!authInitialized) return;
+
+    const hasCookie = !!getCookie(COOKIE_NAME.PORTAL_AUTHORIZATION);
+
+    if (!hasCookie) {
+      router.replace(`${ROUTES.PORTAL.LOGIN}?expired=true`);
+    }
+  }, [authInitialized, pathname, router]);
+
+  /* -------------------------------
+   * Debug auth payload
+   * ------------------------------- */
+  useEffect(() => {
+    if (!auth) return;
+
+    console.log('🔐 AUTH DEBUG:', {
+      nric: auth.nric,
+      accessToken: auth.accessToken,
+      email: auth.email,
+      cognito_sub: auth.cognito_sub,
+    });
+  }, [auth]);
+
+  /* -------------------------------
+   * Populate Redux once authenticated
+   * ------------------------------- */
+  useEffect(() => {
+    if (userResp?.data) {
+      dispatch(setUser(userResp.data));
+    }
+  }, [userResp, dispatch]);
+
+  /* -------------------------------
+   * Token expiry check
+   * ------------------------------- */
+  useEffect(() => {
+    if (!auth?.accessTokenExpiresAt) return;
+
+    const expiresIn = auth.accessTokenExpiresAt - Date.now();
+    if (expiresIn < 5 * 60 * 1000) {
+      // Less than 5 minutes
+      // Refresh token or redirect to login
+      signOut();
+    }
+  }, [auth, signOut]);
+
+  /* -------------------------------
+   * CORE AUTH LOGIC
+   * ------------------------------- */
+  useEffect(() => {
+    if (!authInitialized) return;
+
+    // ✅ Authenticated → allow
+    if (auth?.nric) return;
+
+    // ⛔ Below is Singpass-only flow
+    if (retriveNRICMutation.isPending) return;
+
+    if (!singpassCodeRef.current && auth?.code) {
+      singpassCodeRef.current = auth.code;
+    }
+
+    if (singpassCodeRef.current) {
+      return requestNRIC();
+    }
+
+    // ❌ Truly unauthenticated
+    signOut();
+  }, [
+    auth,
+    authInitialized,
+    retriveNRICMutation.isPending,
+    pathname,
+    requestNRIC,
+    signOut,
+  ]);
+
+  /* -------------------------------
+   * Profile error → sign out
+   * ------------------------------- */
+  useEffect(() => {
+    if (!userInfoQuery.isError) return;
+
+    showErrorNoti('Unauthorized');
+    setTimeout(signOut, 500);
+  }, [userInfoQuery.isError, signOut, showErrorNoti]);
 
   if (auth?.nric) return null;
   return <Loading />;
 };
 
 export default Page;
-
