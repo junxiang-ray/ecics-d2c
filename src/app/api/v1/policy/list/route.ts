@@ -55,7 +55,6 @@ export async function POST(_: NextRequest) {
           'X-User-Token': authPayload.accessToken,
           'Content-Type': 'application/json',
         },
-        // body: JSON.stringify({ icno: 'S1452006F' }),
         body: JSON.stringify({ icno: authPayload.nric }),
       },
     );
