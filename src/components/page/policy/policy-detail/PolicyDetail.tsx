@@ -13,10 +13,6 @@ interface Props {
 
 const PolicyDetail = ({ data }: Props): JSX.Element | null => {
   if (!data) return null;
-  // console.log('🧾 POLICY DETAIL INPUT', {
-  //   policy_status: data.policy_status,
-  //   tags: data.tags,
-  // });
 
   const renderTags = (
     policyStatus?: PolicyStatus,

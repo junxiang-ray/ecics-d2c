@@ -31,8 +31,6 @@ export const useGetUserProfile = (enabled = true) => {
     // const resp = await user.getUserProfile(nric);
     const resp = await user.getUserProfile();
 
-    console.log('🧪 MOCK PROFILE RESPONSE:', resp.data);
-
     return resp?.data;
   };
 

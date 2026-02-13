@@ -40,7 +40,6 @@ export const useRequestLogin = (
       });
     },
     onError: (error, variables, context) => {
-      console.log(error);
       options?.onError?.(error, variables, context);
     },
   });

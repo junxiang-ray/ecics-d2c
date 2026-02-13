@@ -117,13 +117,6 @@ const Page = (): JSX.Element | null => {
    * ------------------------------- */
   useEffect(() => {
     if (!auth) return;
-
-    console.log('🔐 AUTH DEBUG:', {
-      nric: auth.nric,
-      accessToken: auth.accessToken,
-      email: auth.email,
-      cognito_sub: auth.cognito_sub,
-    });
   }, [auth]);
 
   /* -------------------------------

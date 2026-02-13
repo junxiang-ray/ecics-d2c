@@ -5,7 +5,6 @@ import { setCookie } from '@/libs/utils/utils';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { encryptValue, stringifyJSON } from '@/libs/utils/secureStorage-utils';
 import auth from '@/api/singpass-portal-service/auth';
-import { COOKIE_NAME } from '@/constants/general.constant';
 
 export const useRequestSignInByMail = () => {
   const requestSignIn = async (): Promise<any> => {
@@ -69,16 +68,7 @@ export const useRequestSignInSingpass = (
 
 export const useRetriveNricSingpass = () => {
   const retriveNricSingpass = async (payload: UserInfoPayload) => {
-    console.log('🚀 [useRetriveNricSingpass] Starting NRIC retrieval...');
-    console.log('📤 [useRetriveNricSingpass] Payload:', payload);
-
     const resp = await auth.retriveNricSingpass(payload);
-
-    console.log('✅ [useRetriveNricSingpass] Response received:', resp);
-    console.log('📥 [useRetriveNricSingpass] Response data:', resp.data);
-    console.log('📄 [useRetriveNricSingpass] Response status:', resp.status);
-    console.log('📋 [useRetriveNricSingpass] Response headers:', resp.headers);
-
     return resp.data;
   };
 
@@ -86,7 +76,7 @@ export const useRetriveNricSingpass = () => {
     mutationFn: retriveNricSingpass,
     mutationKey: ['retrive-nric-singpass-portal'],
     onSuccess: (data) => {
-      console.log('🎉 [useRetriveNricSingpass] onSuccess - NRIC data:', data);
+      // console.info('🎉 [useRetriveNricSingpass] onSuccess - NRIC data:', data);
     },
     onError: (error) => {
       console.error('❌ [useRetriveNricSingpass] onError:', error);

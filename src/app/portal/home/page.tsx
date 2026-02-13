@@ -11,39 +11,13 @@ import QuickActions from '@/components/page/dashboard/quick-actions/QuickActions
 
 const Home = () => {
   const { data: policies, isLoading, error } = usePolicyData();
-
-  console.log('🔍 Policy Debug:', {
-    isLoading,
-    error: error?.message || null,
-    policiesCount: policies?.length || 0,
-    source: 'React Query cache (24hr)',
-  });
-
   if (isLoading) {
-    console.log('⏳ Loading policies...');
     return <Spin className='pointer-events-none' fullscreen delay={150} />;
   }
 
   if (error) {
-    console.log('❌ Policy error:', error.message);
+    console.warn('❌ Policy error:', error.message);
   }
-
-  if (policies?.length) {
-    console.log('✅ Policies loaded:', policies.length);
-
-    policies.forEach((policy, index) => {
-      console.log(`📋 Policy ${index + 1} FULL OBJECT:`, policy);
-
-      console.log(`📋 Policy ${index + 1} SUMMARY:`, {
-        // Top-level
-        policy
-      
-      });
-    });
-  } else {
-    console.log('ℹ️ No policies found');
-  }
-
 
   return (
     <div>

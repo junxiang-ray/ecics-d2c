@@ -178,29 +178,13 @@ export const mapRealApiPolicyToPolicy = (
     /* =====================================================
      * Status / Tags
      * ===================================================== */
-    // policy_status: normalizePolicyStatus(details.policy_status),
-    // tags: details.tags as PolicyTag,
     policy_status: computedStatus,
     tags: computedTag,
 
     /* =====================================================
      * Policy Holder
      * ===================================================== */
-    // policy_holder: {
-    //   name: apiPolicy.INSDNAME,
-    //   marital_status: normalizeMaritalStatus(
-    //     mainDriver?.marital_status,
-    //   ),
-    //   mobile: '9999999999',
-    //   email: 'DUMMY_DATA_EMAIL',
-    //   address: {
-    //     address_line_1: 'DUMMY_DATA_ADDRESS_LINE_1',
-    //     address_line_2: 'DUMMY_DATA_ADDRESS_LINE_2',
-    //     address_line_3: undefined,
-    //     postal_code: '999999',
-    //   },
-    // },
-
+    // Mapped to User_Profile
     /* =====================================================
      * Drivers (motor only)
      * ===================================================== */
@@ -344,19 +328,6 @@ const normalizePolicyType = (type: string): PolicyType => {
       return 'all';
   }
 };
-
-// const normalizePolicyStatus = (status: string): PolicyStatus => {
-//   switch (status.toLowerCase()) {
-//     case 'active':
-//       return 'active';
-//     case 'expired':
-//       return 'expired';
-//     case 'cancelled':
-//       return 'cancelled';
-//     default:
-//       return 'pending';
-//   }
-// };
 
 const normalizeMaritalStatus = (m?: string): MaritalStatus => {
   switch (m) {
