@@ -1,75 +1,103 @@
+// src/app/api/v1/policy/list/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-
 import { decryptValue, parseJSON } from '@/libs/utils/secureStorage-utils';
-import { PortalAuthPayload } from '@/libs/types/auth';
 import { machineTokenManager } from '@/libs/utils/machineToken';
-import type { PolicySummary } from '@/hook/policy/usePolicyData';
+import {
+  fetchPolicyList,
+  fetchAllPolicySummariesParallel,
+} from '@/libs/utils/policyFetcher';
+import { PortalAuthPayload } from '@/libs/types/auth';
 
 export async function POST(_: NextRequest) {
   try {
-    /* ───────── AUTH ───────── */
+    /* ───────── AUTH (unchanged) ───────── */
     const cookieStore = cookies();
     const paCookie = cookieStore.get('_pa');
 
     if (!paCookie?.value) {
+      return NextResponse.json({ error: 'Missing _pa cookie' }, { status: 401 });
+    }
+
+    const COOKIE_PASSPHRASE = process.env.PORTAL_COOKIE_PASSPHRASE;
+    if (!COOKIE_PASSPHRASE) {
       return NextResponse.json(
-        { error: 'Missing _pa cookie' },
-        { status: 401 },
+        { error: 'Server config error' },
+        { status: 500 }
       );
     }
 
     const encryptedAuth = Buffer.from(paCookie.value, 'base64').toString(
-      'utf8',
+      'utf8'
     );
-    const decryptedAuth = await decryptValue(
-      encryptedAuth,
-      process.env.PORTAL_COOKIE_PASSPHRASE!,
-    );
+    const decryptedAuth = await decryptValue(encryptedAuth, COOKIE_PASSPHRASE);
 
     if (!decryptedAuth) {
       return NextResponse.json(
         { error: 'Auth decryption failed' },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     const authPayload = parseJSON<PortalAuthPayload>(decryptedAuth);
-
     if (!authPayload?.accessToken || !authPayload.nric) {
       return NextResponse.json(
         { error: 'Invalid auth payload' },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
-    /* ───────── FETCH POLICIES ───────── */
+    /* ───────── NEW PARALLEL FLOW ───────── */
+
+    // 1. Get machine token once
     const machineToken = await machineTokenManager.getToken();
 
-    const fastifyRes = await fetch(
-      `${process.env.FASTIFY_API_URL}/api/v1/o3/polmaster/by-icno`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${machineToken}`,
-          'X-User-Token': authPayload.accessToken,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ icno: authPayload.nric }),
-      },
-    );
+    // 2. Fetch lightweight policy list (NEW: no summary embedded)
+    const requestId = Math.random().toString(36).substring(7);
 
-    if (!fastifyRes.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch policies' },
-        { status: fastifyRes.status },
-      );
+    console.time(`fetch-policy-list-${requestId}`);
+    const policyList = await fetchPolicyList(
+      authPayload.nric,
+      authPayload.accessToken
+    );
+    console.timeEnd(`fetch-policy-list-${requestId}`);
+
+
+    if (!policyList.length) {
+      return NextResponse.json({ policies: [] });
     }
 
-    const policies: PolicySummary[] = await fastifyRes.json();
+    console.log(
+      `📋 Found ${policyList.length} policies, fetching summaries in parallel...`
+    );
 
-    /* ───────── RETURN DATA ONLY ───────── */
-    return NextResponse.json({ policies });
+    // 3. Fetch ALL summaries in parallel (NEW ENDPOINT)
+    console.time('fetch-summaries-parallel');
+    const summaryMap = await fetchAllPolicySummariesParallel(
+      policyList,
+      machineToken,
+      5 // concurrency limit
+    );
+    console.timeEnd('fetch-summaries-parallel');
+
+    // 4. Merge into EXACT original response structure
+    const compiledPolicies = policyList.map((item) => {
+      const summary = summaryMap.get(item.POLICY_NUMBER);
+
+      return {
+        POLICY_NUMBER: item.POLICY_NUMBER,
+        INSDNAME: item.INSDNAME,
+        POL_EXPDATE: item.POL_EXPDATE,
+        summary: {
+          policy_type: summary?.policy_type || 'MOTOR',
+          policy_number: item.POLICY_NUMBER,
+          data: summary?.data || {},
+        },
+      };
+    });
+
+    // 5. Return EXACT same structure as original API
+    return NextResponse.json({ policies: compiledPolicies });
   } catch (error) {
     console.error('💥 POLICY LIST ERROR:', error);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

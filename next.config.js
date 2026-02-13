@@ -1,5 +1,7 @@
 // next.config.js
 const nextConfig = {
+  reactStrictMode: false, // ⭐ Added here
+  
   webpack: (config, options) => {
     config.module.rules.push({
       test: /\.svg$/,

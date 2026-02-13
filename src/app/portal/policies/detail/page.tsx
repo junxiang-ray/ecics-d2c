@@ -1,14 +1,12 @@
+// /portal/policies/detail/page.tsx
 'use client';
 
 import { ROUTES } from '@/constants/routes';
-
 import { PolicyType } from '@/libs/types/policy';
-
-import { useContext } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PolicyContext } from '@/components/contexts/PolicyLayoutContext';
+import { usePolicyDetail } from '@/hook/policy/policy';  // ⭐ New import
 
-import { Empty } from 'antd';
+import { Empty, Spin } from 'antd';  // ⭐ Add Spin for loading
 import DownloadOutlined from '@/assets/icons/renewal/download.svg';
 import BackOutlined from '@/assets/icons/renewal/back.svg';
 import PolicyDetail from '@/components/page/policy/policy-detail/PolicyDetail';
@@ -25,9 +23,15 @@ import LowerTextDetail from '@/components/page/policy/policy-detail/LowerTextDet
 const PolicyDetailPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { policyDetail, loading } = useContext(PolicyContext);
+  console.log('🔍 Detail page render, policyNo:', searchParams.get('no'));
 
-  const isNoData = !loading && !policyDetail;
+  // ⭐ Get policyNo from URL
+  const policyNo = searchParams.get('no');
+  
+  // ⭐ Use new hook with cache lookup
+  const { data: policyDetail, isLoading } = usePolicyDetail(policyNo);
+
+  const isNoData = !isLoading && !policyDetail;
 
   const backToPreviousPage = (): void => {
     if (window.history.length > 0) return router.back();
@@ -46,6 +50,11 @@ const PolicyDetailPage = () => {
     );
   const isPendingRenewal =
     !!policyDetail && policyDetail.tags === 'pending_renewal';
+
+  // ⭐ Show loading state
+  if (isLoading) {
+    return <Spin fullscreen delay={150} />;
+  }
 
   return (
     <div>
@@ -70,22 +79,28 @@ const PolicyDetailPage = () => {
           )}
         </div>
       </div>
+      
       {isNoData && <Empty className='my-[5rem]' />}
-      {isVehicle ? (
-        <VehiclePolicyDetail data={policyDetail} />
-      ) : (
-        <PolicyDetail data={policyDetail} />
+      
+      {policyDetail && (
+        <>
+          {isVehicle ? (
+            <VehiclePolicyDetail data={policyDetail} />
+          ) : (
+            <PolicyDetail data={policyDetail} />
+          )}
+          <InsuredMaidDetail data={policyDetail?.maid_info} />
+          <VehicleDetail data={policyDetail?.vehicle} />
+          <PolicyClausesDetail data={policyDetail?.policy_clauses} />
+          <LowerTextDetail data={policyDetail?.lower_text} />
+          <ExcessApplicableDetail data={policyDetail?.excess} />
+          <CoverageDetail data={policyDetail?.maid_info} />
+          <PolicyholderDetail data={policyDetail?.policy_holder} />
+          <DriverDetail data={policyDetail?.drivers} />
+        </>
       )}
-      <InsuredMaidDetail data={policyDetail?.maid_info} />
-      <VehicleDetail data={policyDetail?.vehicle} />
-      <PolicyClausesDetail data={policyDetail?.policy_clauses} />
-      <LowerTextDetail data={policyDetail?.lower_text} />
-
-      <ExcessApplicableDetail data={policyDetail?.excess} />
-      <CoverageDetail data={policyDetail?.maid_info} />
-      <PolicyholderDetail data={policyDetail?.policy_holder} />
-      <DriverDetail data={policyDetail?.drivers} />
     </div>
   );
 };
+
 export default PolicyDetailPage;
