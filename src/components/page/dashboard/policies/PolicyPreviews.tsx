@@ -1,12 +1,6 @@
-// src/components/page/dashboard/policies/policypreviews.tsx
 'use client';
 
-import {
-  PolicyStatus,
-  PolicyTag,
-  Policy,
-  // PolicyPayload,
-} from '@/libs/types/policy';
+import { PolicyStatus, PolicyTag, Policy } from '@/libs/types/policy';
 import { ROUTES } from '@/constants/routes';
 
 import { useState, useRef } from 'react';
@@ -19,34 +13,30 @@ import Card from './PolicyCard';
 type TabKey = 'all' | PolicyStatus | PolicyTag;
 
 const PolicyPreviews = (): React.ReactNode => {
-  const [payload, setPayload] = useState<{
-    policyStatus?: PolicyStatus;
-    tags?: PolicyTag[];
-  }>({});
-
+  const [activeTab, setActiveTab] = useState<TabKey>('all');
   const router = useRouter();
-  const { data, isFetching } = usePoliciePreviews(
-    payload.policyStatus,
-    payload.tags,
+
+  // Convert tab to filter options
+  const getFilterOptions = (tab: TabKey) => {
+    if (tab === 'all') return {};
+    if (tab === 'active') return { policyStatus: 'active' as PolicyStatus };
+    if (tab === 'pending_renewal')
+      return { tags: ['pending_renewal' as PolicyTag] };
+    return {};
+  };
+
+  const { data: policies, isFetching } = usePoliciePreviews(
+    getFilterOptions(activeTab).policyStatus,
+    getFilterOptions(activeTab).tags,
   );
 
-  const policies: Array<Policy | null> =
-    data == null && isFetching
+  const displayPolicies: Array<Policy | null> =
+    isFetching && !policies?.length
       ? [null, null, null]
-      : ((data?.data?.results ?? []) as unknown as Policy[]);
+      : (policies as unknown as Policy[]) || [];
 
   const onTabChange = (tabKey: TabKey): void => {
-    setPayload((prev) => {
-      if (tabKey === 'all') return {};
-
-      if (tabKey === 'active')
-        return { policyStatus: 'active', tags: ['pending', 'renewed'] };
-
-      if (tabKey === 'pending_renewal')
-        return { policyStatus: 'active', tags: ['pending_renewal'] };
-
-      return { ...prev };
-    });
+    setActiveTab(tabKey);
   };
 
   const tabItems = useRef([
@@ -117,9 +107,9 @@ const PolicyPreviews = (): React.ReactNode => {
         onChange={(activeKey) => onTabChange(activeKey as TabKey)}
       />
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3'>
-        {policies?.map((policy, idx) => (
+        {displayPolicies?.map((policy, idx) => (
           <Card
-            key={`${policy?.policy_no}_#_${idx}`}
+            key={`${policy?.policy_no || 'skeleton'}_#_${idx}`}
             data={policy}
             onShowDetail={navigateToDetailScreen}
           />
@@ -128,4 +118,5 @@ const PolicyPreviews = (): React.ReactNode => {
     </div>
   );
 };
+
 export default PolicyPreviews;
