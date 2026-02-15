@@ -14,9 +14,7 @@ module.exports = {
   ],
   rules: {
     'no-unused-vars': 'off',
-    // 'no-console': 'off',
-    'no-console': ['error', { allow: ['warn', 'error'] }],
-
+    'no-console': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
@@ -43,42 +41,42 @@ module.exports = {
     //#endregion  //*======== Unused Import ===========
 
     //#region  //*=========== Import Sort ===========
-    // 'simple-import-sort/exports': 'warn',
-    // 'simple-import-sort/imports': [
-    //   'warn',
-    //   {
-    //     groups: [
-    //       // ext library & side effect imports
-    //       ['^@?\\w', '^\\u0000'],
-    //       // {s}css files
-    //       ['^.+\\.s?css$'],
-    //       // Lib and hooks
-    //       ['^@/lib', '^@/hooks'],
-    //       // static data
-    //       ['^@/data'],
-    //       // components
-    //       ['^@/components', '^@/container'],
-    //       // zustand store
-    //       ['^@/store'],
-    //       // Other imports
-    //       ['^@/'],
-    //       // relative paths up until 3 level
-    //       [
-    //         '^\\./?$',
-    //         '^\\.(?!/?$)',
-    //         '^\\.\\./?$',
-    //         '^\\.\\.(?!/?$)',
-    //         '^\\.\\./\\.\\./?$',
-    //         '^\\.\\./\\.\\.(?!/?$)',
-    //         '^\\.\\./\\.\\./\\.\\./?$',
-    //         '^\\.\\./\\.\\./\\.\\.(?!/?$)',
-    //       ],
-    //       ['^@/types'],
-    //       // other that didnt fit in
-    //       ['^'],
-    //     ],
-    //   },
-    // ],
+    'simple-import-sort/exports': 'warn',
+    'simple-import-sort/imports': [
+      'warn',
+      {
+        groups: [
+          // ext library & side effect imports
+          ['^@?\\w', '^\\u0000'],
+          // {s}css files
+          ['^.+\\.s?css$'],
+          // Lib and hooks
+          ['^@/lib', '^@/hooks'],
+          // static data
+          ['^@/data'],
+          // components
+          ['^@/components', '^@/container'],
+          // zustand store
+          ['^@/store'],
+          // Other imports
+          ['^@/'],
+          // relative paths up until 3 level
+          [
+            '^\\./?$',
+            '^\\.(?!/?$)',
+            '^\\.\\./?$',
+            '^\\.\\.(?!/?$)',
+            '^\\.\\./\\.\\./?$',
+            '^\\.\\./\\.\\.(?!/?$)',
+            '^\\.\\./\\.\\./\\.\\./?$',
+            '^\\.\\./\\.\\./\\.\\.(?!/?$)',
+          ],
+          ['^@/types'],
+          // other that didnt fit in
+          ['^'],
+        ],
+      },
+    ],
     //#endregion  //*======== Import Sort ===========
   },
   globals: {

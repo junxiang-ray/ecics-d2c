@@ -30,8 +30,6 @@ export const useRequestSignInByMail = () => {
   });
 };
 
-// src/hook/auth/login-portal.ts - Updated
-// src/hook/auth/login-portal.ts - Updated useRequestSignInSingpass
 export const useRequestSignInSingpass = (
   options?: UseMutationOptions<any, unknown, void, unknown>,
 ) => {
@@ -51,7 +49,6 @@ export const useRequestSignInSingpass = (
         process.env.NEXT_PUBLIC_PORTAL_COOKIE_PASSPHRASE ?? '',
       );
 
-      // Use separate cookie name!
       setCookie<string>({
         name: 'pa_oauth',
         value: encrypted,
@@ -60,9 +57,7 @@ export const useRequestSignInSingpass = (
 
       window.location.href = url;
     },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context);
-    },
+    ...options,
   });
 };
 

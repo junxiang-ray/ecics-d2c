@@ -39,9 +39,7 @@ export const useRequestLogin = (
         code_verifier: code_verifier,
       });
     },
-    onError: (error, variables, context) => {
-      options?.onError?.(error, variables, context);
-    },
+    ...options,
   });
 };
 

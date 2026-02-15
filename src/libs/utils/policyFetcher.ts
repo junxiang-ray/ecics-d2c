@@ -30,7 +30,7 @@ interface PolicySummaryResponse {
 
 export async function fetchPolicyList(
   nric: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<PolicyListItem[]> {
   const machineToken = await machineTokenManager.getToken();
 
@@ -51,7 +51,7 @@ export async function fetchPolicyList(
 
 export async function fetchPolicySummary(
   policyNumber: string,
-  machineToken: string
+  machineToken: string,
 ): Promise<PolicySummaryResponse> {
   const res = await fetch(
     `${FASTIFY_API_URL}/api/v1/o3/policy/${policyNumber}/summary`,
@@ -60,7 +60,7 @@ export async function fetchPolicySummary(
         Authorization: `Bearer ${machineToken}`,
         'Content-Type': 'application/json',
       },
-    }
+    },
   );
 
   if (!res.ok) {
@@ -78,7 +78,7 @@ export async function fetchPolicySummary(
 export async function fetchAllPolicySummariesParallel(
   policies: PolicyListItem[],
   machineToken: string,
-  concurrency: number = 5
+  concurrency = 5,
 ): Promise<Map<string, PolicySummaryResponse>> {
   const summaryMap = new Map<string, PolicySummaryResponse>();
 
@@ -89,7 +89,7 @@ export async function fetchAllPolicySummariesParallel(
     const batchPromises = batch.map(async (policy) => {
       const summary = await fetchPolicySummary(
         policy.POLICY_NUMBER,
-        machineToken
+        machineToken,
       );
       return { policyNumber: policy.POLICY_NUMBER, summary };
     });
