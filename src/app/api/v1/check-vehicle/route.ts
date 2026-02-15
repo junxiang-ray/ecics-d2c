@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { checkVehicleDTOSchema } from './check-vechicle.dto';
 import { checkVehicleMakeAndModel } from './vehicle.service';
-import { ErrBadRequest, ErrNotFound } from '../../core/error.response';
+import { ErrBadRequest } from '../../core/error.response';
 import logger from '../../libs/logger';
 
 export const GET = async (

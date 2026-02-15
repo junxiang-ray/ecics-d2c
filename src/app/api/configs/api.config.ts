@@ -68,16 +68,22 @@ apiServer.interceptors.response.use(
 
 export async function handleApiCallToISP(endpoint: string, body: any) {
   const url = `${process.env.ISP_API_URL}${endpoint}`;
+  logger.info(`[DEBUG] url debug ${url}`);
+  logger.info(`[DEBUG] endpoint debug ${endpoint}`);
+
+  // logger.info(`[DEEEBUG] type of dob ${body.proposerDetails.do}`)
   const headers = { 'In-Auth-Token': token };
   try {
-    logger.info(
-      `Calling ISP service ${url} with body: ${JSON.stringify(body)}`,
-    );
-    let response = await axios.post(url, body, { headers });
-    logger.info(
-      `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data)}`,
-    );
+    logger.info(`[DEBUG] TOKEN PRINT OUT ${token}`);
 
+    logger.info(
+      `Calling ISP service ${url} with body: ${JSON.stringify(body, null, 2)}`,
+    );
+    //BODY IS NOT UNDEFINED UNTIL HERE (BODY HAS DATA)
+    let response = await axios.post(url, body, { headers }); //authentication check to the ISP
+    logger.info(
+      `: [DEBUG] Response from ${url}: ${JSON.stringify(response.data, null, 2)}`,
+    );
     // Check if token is expired
     if (
       response.data.status === TOKEN_EXPIRED_STATUS ||
@@ -92,11 +98,59 @@ export async function handleApiCallToISP(endpoint: string, body: any) {
         `InsillionService.handleApiCall: Retrying ${url} with new token: ${token}`,
       );
 
+      // logger.info(
+      //   `[DEBUG]  BEFORE GETTING RESP FROM INSILLION ${body}`,
+      // );
       response = await axios.post(url, body, {
         headers: { 'In-Auth-Token': token },
       });
       logger.info(
         `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data)}`,
+      );
+    }
+
+    return response.data;
+  } catch (error) {
+    logger.error(
+      `InsillionService.handleApiCall: Error calling ${url}: `,
+      error,
+    );
+    throw error;
+  }
+}
+
+export async function handleGetApiCallToISP(endpoint: string) {
+  const url = `${process.env.ISP_API_URL}${endpoint}`;
+  const headers = { 'In-Auth-Token': token };
+  try {
+    logger.info(`Calling ISP service ${url}}`);
+    let response = await axios.get(url, {
+      headers: { 'In-Auth-Token': token },
+    });
+    // logger.info(
+    //   `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data)}`,
+    // );
+
+    // Check if token is expired
+    if (
+      response.data.status === TOKEN_EXPIRED_STATUS ||
+      response.data.status === TOKEN_NOT_FOUND_STATUS
+    ) {
+      logger.info(` << TOKEN REFRESHING UPON EXPIRATION >>`);
+      logger.info(
+        `InsillionService.handleApiCall: Token ${token} is expired or not found. Refreshing token...`,
+      );
+
+      await refreshToken();
+      logger.info(
+        `InsillionService.handleApiCall: Retrying ${url} with new token: ${token}`,
+      );
+
+      response = await axios.get(url, {
+        headers: { 'In-Auth-Token': token },
+      });
+      logger.info(
+        `InsillionService.handleApiCall: Response from ${url}: ${JSON.stringify(response.data, null, 2)}`,
       );
     }
 

@@ -12,23 +12,26 @@ import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { PARTNER_CODE, PROMO_CODE } from '@/constants/general.constant';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import NoSingpassLoginSection from './NoSingpassLoginSection';
 import { resetEcicsUserInfo } from '@/redux/slices/ecicsUserInfo.slice';
 import { clearMatchedMakeModel, clearQuote } from '@/redux/slices/quote.slice';
 import { clearUserInfoCar } from '@/redux/slices/userInfoCar.slice';
 import { useAppDispatch } from '@/redux/store';
 
+import NoSingpassLoginSection from './NoSingpassLoginSection';
+
 const LoginPage = () => {
   const { isMobile } = useDeviceDetection();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch(); //creates an action obj send it the store
 
   const productType: ProductType = pathname.startsWith('/maid')
     ? ProductType.MAID
     : pathname.startsWith('/motorcycle')
       ? ProductType.MOTORCYCLE
-      : ProductType.CAR;
+      : pathname.startsWith('/home-contents')
+        ? ProductType.HOMECONTENTS
+        : ProductType.CAR;
 
   const partnerCode = searchParams.get('partner_code') || '';
   const promoCodeDefault = formatPromoCode(searchParams.get('promo_code'));

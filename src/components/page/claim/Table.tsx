@@ -22,7 +22,7 @@ import {
 } from '@/components/contexts/ClaimLayoutContext';
 
 import { Table as AntTable } from 'antd';
-import Badge from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 import ClaimCards from '@/components/page/claim/ClaimCards';
 import CalendarOutlined from '@/assets/icons/add-on/calendar-outlined.svg';
 import EyesOutlined from '@/assets/icons/renewal/eye-open.svg';
@@ -85,7 +85,7 @@ const Table = (): JSX.Element => {
         const tag = getClaimStatusTag(row?.status);
         if (!tag) return <span className='text-gray-400'>—</span>;
 
-        return <Badge bordered color={tag.color} content={tag.label} />;
+        return <Badge color={tag.color} content={tag.label} />;
       },
     },
     {

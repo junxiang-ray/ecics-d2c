@@ -1,15 +1,21 @@
 import { NextRequest } from 'next/server';
 
 import { paymentDTOSchema } from './payment.dto';
-import { handleMotorcyclePayment, handlePayment } from './payment.service';
+import {
+  handleHomeContentPayment,
+  handleMotorcyclePayment,
+  handlePayment,
+} from './payment.service';
 import { successRes } from '../../core/success.response';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const data = paymentDTOSchema.parse(body);
   let result;
-  if (data.product_type) {
+  if (data.product_type === 'motorcycle') {
     result = await handleMotorcyclePayment(data);
+  } else if (data.product_type === 'home_contents') {
+    result = await handleHomeContentPayment(data);
   } else {
     result = await handlePayment(data);
   }

@@ -3,10 +3,7 @@
 import { Form } from 'antd';
 import React from 'react';
 
-import {
-  DropdownOption,
-  LongOptionDropdownField,
-} from '@/components/ui/form/dropdownfield';
+import { DropdownOption } from '@/components/ui/form/dropdownfield';
 import { InputField } from '@/components/ui/form/inputfield';
 
 import { PRODUCT_NAME } from '@/app/api/constants/product';

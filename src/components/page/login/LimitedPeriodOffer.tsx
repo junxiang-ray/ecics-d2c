@@ -2,14 +2,12 @@
 
 import { useState } from 'react';
 
-import CouponIcon from '@/components/icons/CouponIcon';
-import PromoTickIcon from '@/components/icons/PromoTickIcon';
-
 import { PromoCodeResponse } from '@/api/base-service/verify';
 import { ProductType } from '@/app/motor/insurance/basic-detail/options';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import MaidItem from './limited-offer-products/MaidItem';
+
 import CarItem from './limited-offer-products/CarItem';
+import MaidItem from './limited-offer-products/MaidItem';
 import MotorcycleItem from './limited-offer-products/MotorcycleItem';
 
 type LimitedPeriodOfferProps = {

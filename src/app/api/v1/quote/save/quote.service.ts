@@ -1,11 +1,14 @@
-import { saveQuoteDTO } from './quote.dto';
 import logger from '@/app/api/libs/logger';
-import { generateQuoteEmail } from '@/app/api/libs/mailer/templates';
 import { sendMail } from '@/app/api/libs/mailer';
-import { capitalizeFirstLetter } from '@/app/api/utils/text.helpers';
+import { generateQuoteEmail } from '@/app/api/libs/mailer/templates';
 import { prisma } from '@/app/api/libs/prisma';
+import { capitalizeFirstLetter } from '@/app/api/utils/text.helpers';
+
+import { saveQuoteDTO } from './quote.dto';
 
 export async function saveQuote(data: saveQuoteDTO) {
+  //saveQuoteDTO is also the object
+  console.log(`saving the quote here with ${JSON.stringify(data, null, 2)}`);
   const existingQuote = await prisma.quote.findFirst({
     where: {
       key: data.key,
@@ -138,9 +141,9 @@ export async function saveQuote(data: saveQuoteDTO) {
     data: {
       quote_id: data.quote_id,
       quote_no: data.quote_no,
-      policy_id: data.policy_id,
+      policy_id: data?.policy_id || '', //added the ''
       product_id: data.product_id,
-      proposal_id: data.proposal_id,
+      proposal_id: data?.proposal_id || '', //added the ''
       phone: data.data.personal_info.phone,
       email: data.data.personal_info.email,
       name: data?.data?.personal_info?.name || '',

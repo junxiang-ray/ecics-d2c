@@ -1,8 +1,8 @@
-import logger from '@/app/api/libs/logger';
-import { paymentDTO } from './payment-result.dto';
-import { prisma } from '@/app/api/libs/prisma';
 import { successRes } from '@/app/api/core/success.response';
-import { ErrNotFound } from '@/app/api/core/error.response';
+import logger from '@/app/api/libs/logger';
+import { prisma } from '@/app/api/libs/prisma';
+
+import { paymentDTO } from './payment-result.dto';
 
 export async function handlePaymentResult(data: paymentDTO) {
   logger.info(`Handling payment renewal with data: ${JSON.stringify(data)}`);

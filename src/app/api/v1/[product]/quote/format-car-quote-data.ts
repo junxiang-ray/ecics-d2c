@@ -7,7 +7,7 @@ import {
 } from '@/app/api/utils/quote.helpers';
 
 export async function formatCarQuoteInfo(
-  quoteInfo: any,
+  quoteInfo: any, //response from after the quotation
   data: any,
 ): Promise<any[]> {
   const mappedPlanValues = mappedPlanPremiums(quoteInfo);
@@ -92,7 +92,9 @@ export async function formatCarQuoteInfo(
     orderBy: [{ is_recommended: 'desc' }, { id: 'asc' }],
   });
 
-  plans.forEach((plan) => {
+  console.log('plans result', plans);
+  type PlanWithRelations = (typeof plans)[number];
+  plans.forEach((plan: PlanWithRelations) => {
     if (plan.code && plan.code in mappedPlanValues) {
       plan.premium_with_gst = mappedPlanValues[plan.code];
       plan.add_ons_included_in_this_plan =

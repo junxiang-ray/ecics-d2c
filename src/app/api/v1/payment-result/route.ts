@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
-import { successRes } from '../../core/success.response';
+
 import { paymentResultDTOSchema } from './payment-result.dto';
 import { handlePaymentResult } from './payment-result.service';
+import { successRes } from '../../core/success.response';
 import logger from '../../libs/logger';
 
 export async function POST(req: NextRequest) {
@@ -21,6 +22,9 @@ export async function POST(req: NextRequest) {
   const data = paymentResultDTOSchema.parse(body);
   const result = await handlePaymentResult(data);
 
+  logger.info(
+    `return payment result src/app/v1 ${JSON.stringify(result, null, 2)}`,
+  );
   return successRes({
     message: 'Payment result processed successfully',
     data: result,

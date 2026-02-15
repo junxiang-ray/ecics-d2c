@@ -1,9 +1,9 @@
-import { successRes } from '@/app/api/core/success.response';
-import logger from '@/app/api/libs/logger';
-import createSingpassClient from '@/app/api/libs/singpass/singpassClient';
 import axios from 'axios';
 import { compactDecrypt, importJWK, SignJWT } from 'jose';
 import { v4 as uuidv4 } from 'uuid';
+
+import { successRes } from '@/app/api/core/success.response';
+import logger from '@/app/api/libs/logger';
 
 export async function retrieveNRICFromSingpass(
   code: string,

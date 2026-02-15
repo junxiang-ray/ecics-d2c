@@ -12,6 +12,7 @@ import { MAID_QUOTE, MOTOR_QUOTE, MOTORCYCLE_QUOTE } from '@/constants';
 import { useVerifyPromoCode } from '@/hook/insurance/common';
 import { setPromoCodeError } from '@/redux/slices/general.slice';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+
 import { ProductType } from '../basic-detail/options';
 
 interface InputFieldProps extends InputProps {

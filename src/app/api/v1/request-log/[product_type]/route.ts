@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
+
 import { successRes } from '@/app/api/core/success.response';
-import { handleDetectIPAdress } from './quote.service';
 import logger from '@/app/api/libs/logger';
+
+import { handleDetectIPAdress } from './quote.service';
 
 export const GET = async (
   req: NextRequest,

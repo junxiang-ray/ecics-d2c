@@ -25,4 +25,4 @@ export const saveQuoteDTOSchema = z.object({
   product_name: z.string().optional(),
 });
 
-export type saveQuoteDTO = z.infer<typeof saveQuoteDTOSchema>;
+export type saveQuoteDTO = z.infer<typeof saveQuoteDTOSchema>; //exists at compile time

@@ -1,6 +1,8 @@
 import apiServer, { handleApiCallToISP } from '@/app/api/configs/api.config';
 import { CAR_INSURANCE } from '@/app/api/constants/car.insurance';
+import { HOMECONTENT_INSURANCE } from '@/app/api/constants/homecontent.insurance';
 import { MAID_INSURANCE } from '@/app/api/constants/maid.insurance';
+import { MOTORCYCLE_INSURANCE } from '@/app/api/constants/motorcycle.insurance';
 import { PRODUCT_NAME } from '@/app/api/constants/product';
 import { ErrBadRequest, ErrFromISPRes } from '@/app/api/core/error.response';
 import { successRes } from '@/app/api/core/success.response';
@@ -9,11 +11,13 @@ import { prisma } from '@/app/api/libs/prisma';
 import { convertDate, convertDateDash } from '@/app/api/utils/date.helper';
 
 import { formatCarQuoteInfo } from './format-car-quote-data';
-import { formatMotorCycleQuoteInfo } from './format-motorcycle-quote-data';
 import { formatMaidQuoteInfo } from './format-maid-quote.data';
-import { generateQuoteDTO, generateQuoteForMaidDTO } from './get-quote.dto';
-import { start } from 'repl';
-import { MOTORCYCLE_INSURANCE } from '@/app/api/constants/motorcycle.insurance';
+import { formatMotorCycleQuoteInfo } from './format-motorcycle-quote-data';
+import {
+  generateHomeContentQuoteDTO,
+  generateQuoteDTO,
+  generateQuoteForMaidDTO,
+} from './get-quote.dto';
 ///ADD NEW PRODUCTS HERE
 export async function getQuoteForCar(data: generateQuoteDTO) {
   try {
@@ -516,5 +520,242 @@ export async function getQuouteForMaid(data: generateQuoteForMaidDTO) {
   } catch (error) {
     logger.error(`Error generate quote for maid: ${error}`);
     throw new Error('Error generate quote for maid');
+  }
+}
+
+export async function getQuoteForHomeContent(
+  data: generateHomeContentQuoteDTO,
+) {
+  try {
+    // logger.info(
+    //   `Generating quote for home content with data: ${JSON.stringify(data)}`,
+    // );
+
+    // const ownershipTable: Record<string,string> = {
+    //   "owner":"Owner",
+    //   "landlord": "Landlord",
+    //   "tenant":"Tenant"
+    // };
+
+    // const hometypeTable: Record<string,string> = {
+    //   "landed property": "Landed Property",
+    //   "hdb": "HDB",
+    //   "condo": "Condo/Executive Condo",
+    // }
+
+    // const policyNameTable : Record<string,string>= {
+    //   "3-year": "3 years",
+    //   "1-year": "1 year"
+    // }
+
+    ///Expected Payload u can use this for testing
+    // const testPayload = {
+    //   "product_id": "M000000000052",
+    //   "homeOwnership": "owner",
+    //   "homeType": "Landed",
+    //   "unitType": "Landed",
+    //   "contents_si": "40000",
+    //   "renovations_si": "30000",
+    //   "building_si": "200000",
+    //   "family_pa_si": "100000",
+    //   "selected_plan": "3 Years",
+    //   "policy_period": "3 Years",
+    //   "startDate": "2025-12-18",
+    //   "promo_code": "HOME40",
+    //   "insured_address_line1": "50 ang mo kio ave+5",
+    //   "insured_address_line2": "50 ang mo kio ave+5",
+    //   "insured_address_line3": "Singapore",
+    //   "insured_post_code": "560050",
+    //   "proposer_name": "Jane",
+    //   "proposer_nric": "S7682949G",
+    //   "proposer_date_of_birth": "1985-09-10",
+    //   "proposer_gender": "F",
+    //   "proposer_marital_status": "M",
+    //   "proposer_mobile": "87333334",
+    //   "email": "tester@gmail.com",
+    //   "coverageRenovation": "30000",
+    //   "coverageHomeContents": "40000",
+    //   "__finalize": 0,
+    // };
+
+    let redirectUrl = '';
+    let returnBaseUrl = '';
+    if (process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE) {
+      //redirecting url for the payment
+      redirectUrl = `${process.env.NEXT_PUBLIC_REDIRECT_PAYMENT_FOR_HOMECONTENT_WEBSITE}?key=${data.key}`;
+      logger.info(`check inside v1/product/get-quote.service`, redirectUrl);
+    } else {
+      redirectUrl = `https://${process.env.VERCEL_BRANCH_URL}/home-contents/quote-detail?key=${data.key}`;
+    }
+    if (process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL) {
+      returnBaseUrl = process.env.NEXT_PUBLIC_CALLBACK_PAYMENT_URL;
+    } else {
+      returnBaseUrl = `https://${process.env.VERCEL_BRANCH_URL}/api/v1/payment-result`;
+    }
+
+    const payloadData = {
+      proposerDetails: {
+        addressLine1: data.proposerDetails.addressLine1,
+        addressLine2: data.proposerDetails.addressLine2 || '',
+        addressLine3: data.proposerDetails.addressLine3 || '',
+        postCode: data.proposerDetails.postCode,
+        name: data.proposerDetails.name,
+        nric: data.proposerDetails.nric,
+        dob: data.proposerDetails.dob,
+        gender: data.proposerDetails.gender,
+        maritalStatus: data.proposerDetails.maritalStatus,
+        mobile: data.proposerDetails.mobile,
+        email: data.proposerDetails.email,
+        differentMailingAddress:
+          data.proposerDetails.differentMailingAddress.toUpperCase(), //why change to
+        mailingAddress1: data.proposerDetails.mailingAddress1 || '',
+        mailingAddress2: data.proposerDetails.mailingAddress2 || '',
+        mailingAddress3: data.proposerDetails.mailingAddress3 || '',
+        mailingPostCode: data.proposerDetails.mailingPostCode,
+      },
+      planDetails: {
+        // productId: data.planDetails.productId,
+        homeOwnership: data.planDetails.homeOwnership,
+        homeType: data.planDetails.homeType,
+        unitType: data.planDetails.unitType,
+        homeContentCoverage: data.planDetails.homeContentCoverage,
+        renovationsCoverage: data.planDetails.renovationsCoverage,
+        buildingCoverage: data.planDetails.buildingCoverage,
+        wpaCoverage: data.planDetails.wpaCoverage,
+        policyPeriod: data.planDetails.policyPeriod,
+        promoCode: data.planDetails.promoCode,
+        selectedPlan: data.planDetails.selectedPlan,
+        startDate: data.planDetails.startDate,
+      },
+      redirectUrl: redirectUrl,
+      returnUrl: returnBaseUrl,
+      __finalize: data.__finalize,
+    };
+
+    logger.info(`payload data to send ISP ${JSON.stringify(payloadData)}`);
+    logger.info(`[DEBUG] date ${payloadData.proposerDetails.dob}`);
+    logger.info(
+      ` [DEBUG] HOMECONTENT PREFIX ENDPOINT  ${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}`,
+    );
+
+    const getQuoteRes = await handleApiCallToISP(
+      `${HOMECONTENT_INSURANCE.PREFIX_ENDPOINT}/quote`,
+      payloadData,
+    );
+    logger.info(
+      `Response from generate quote for Home Contents: ${JSON.stringify(getQuoteRes)}`,
+    );
+    if (getQuoteRes.status === 0) {
+      const quoteInfoRes = getQuoteRes.data;
+      logger.info(`quoteInfoRes ${(JSON.stringify(quoteInfoRes), null, 2)}`);
+      // const planMaidData = await formatMaidQuoteInfo(quoteInfoRes, data);
+      // logger.info(`Formatted quote data: ${JSON.stringify(planMaidData)}`);
+
+      const [productType, quoteFound, promoCodeInfo] = await Promise.all([
+        prisma.productType.findFirst({
+          where: { name: PRODUCT_NAME.HOME_CONTENT },
+        }),
+        prisma.quote.findFirst({
+          where: {
+            key: data.key,
+          },
+        }),
+        data.planDetails.promoCode
+          ? prisma.promocode.findFirst({
+              where: {
+                code: data.planDetails.promoCode,
+                products: {
+                  has: PRODUCT_NAME.HOME_CONTENT,
+                },
+              },
+            })
+          : null,
+      ]);
+
+      let quoteInfo = null;
+      const quoteData = {
+        quote_id: quoteInfoRes.quoteId,
+        proposal_id: quoteInfoRes.proposalId,
+        quote_res_from_ISP: getQuoteRes,
+        data: {
+          plans: quoteInfoRes.plan,
+        },
+        key: data.key,
+        promo_code_id: promoCodeInfo?.id || null,
+        product_type_id: productType?.id || null,
+        is_finalized: false,
+      };
+      logger.info(`quoteData: ${JSON.stringify(quoteData)}`);
+
+      if (quoteFound) {
+        quoteInfo = await prisma.quote.update({
+          where: { id: quoteFound.id },
+          data: quoteData,
+          omit: {
+            quote_res_from_ISP: true,
+            quote_finalize_from_ISP: true,
+          },
+          include: {
+            promo_code: {
+              select: {
+                code: true,
+                discount: true,
+                start_time: true,
+                end_time: true,
+                description: true,
+                products: true,
+                is_public: true,
+                is_show_count_down: true,
+              },
+            },
+          },
+        });
+      } else {
+        logger.info('quote creation');
+        quoteInfo = await prisma.quote.create({
+          data: quoteData,
+          omit: {
+            quote_res_from_ISP: true,
+            quote_finalize_from_ISP: true,
+          },
+          include: {
+            promo_code: {
+              select: {
+                code: true,
+                discount: true,
+                start_time: true,
+                end_time: true,
+                description: true,
+                products: true,
+                is_public: true,
+                is_show_count_down: true,
+              },
+            },
+          },
+        });
+      }
+
+      logger.info(`Quote generated successfully: ${JSON.stringify(quoteInfo)}`);
+      const returnData = { status: '0', data: getQuoteRes };
+      return successRes({
+        data: returnData,
+        message: 'Quote generated successfully',
+      });
+    }
+
+    //else if the status failed by default
+    logger.info(`[DEBUG] GET QUOTE RESP STATUS >> ${getQuoteRes.status}`);
+    // return ErrFromISPRes(
+    //   getQuoteRes?.txt || 'Error generate quote for home content', getQuoteRes.status
+    // );
+
+    //modified Error Response
+    return ErrFromISPRes(
+      getQuoteRes?.txt || 'ISP validation failed',
+      getQuoteRes?.status,
+    );
+  } catch (error) {
+    logger.error(`Error generate quote for home content: ${error}`);
+    throw new Error('Error generate quote for home content');
   }
 }

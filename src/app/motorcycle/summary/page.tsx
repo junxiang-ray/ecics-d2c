@@ -24,12 +24,11 @@ import {
   SecondaryButton,
 } from '@/components/ui/buttons';
 
-import { ADDON_CARS } from '@/app/motor/insurance/add-on/AddonAdditionalDriver';
 import { useGetQuote, usePostZipFilesDownload } from '@/hook/insurance/quote';
 import { useDeviceDetection } from '@/hook/useDeviceDetection';
 import { useAppSelector } from '@/redux/store';
+
 import { ADDON_MOTORCYCLE } from '../insurance/add-on/AddonAdditionalDriver';
-import { match } from 'assert';
 
 export default function Summary() {
   const searchParams = useSearchParams();

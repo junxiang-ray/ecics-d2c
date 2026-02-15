@@ -33,7 +33,7 @@ import {
 import { DatePickerFieldWheel } from '@/components/ui/form/datepickerfieldwheel';
 import { InputField } from '@/components/ui/form/inputfield';
 
-import { MOTOR_QUOTE, MOTORCYCLE_QUOTE } from '@/constants';
+import { MOTORCYCLE_QUOTE } from '@/constants';
 import { ROUTES } from '@/constants/routes';
 import { usePostCheckVehicle } from '@/hook/insurance/common';
 import { useGetQuote } from '@/hook/insurance/quote';

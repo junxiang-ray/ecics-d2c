@@ -1,8 +1,9 @@
+import * as crypto from 'crypto';
+import { generators } from 'openid-client';
+
 import { successRes } from '@/app/api/core/success.response';
 import logger from '@/app/api/libs/logger';
 import createSingpassClient from '@/app/api/libs/singpass/singpassClient';
-import * as crypto from 'crypto';
-import { generators } from 'openid-client';
 
 export async function LoginSingpassService(product: string) {
   try {

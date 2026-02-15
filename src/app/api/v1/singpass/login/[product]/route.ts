@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+
 import { ErrBadRequest } from '@/app/api/core/error.response';
-import { LoginSingpassService } from './singpass-login.service';
 import logger from '@/app/api/libs/logger';
+
+import { LoginSingpassService } from './singpass-login.service';
 
 export const GET = async (
   req: NextRequest,

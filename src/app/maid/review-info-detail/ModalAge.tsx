@@ -1,11 +1,13 @@
 'use client';
 
 import { Button, Drawer, Modal } from 'antd';
-import { useDeviceDetection } from '@/hook/useDeviceDetection';
-import { PrimaryButton } from '@/components/ui/buttons';
+
 import WarningTriangleIcon from '@/components/icons/WarningTriangleIcon';
-import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
+import { PrimaryButton } from '@/components/ui/buttons';
+
 import { ROUTES } from '@/constants/routes';
+import { useDeviceDetection } from '@/hook/useDeviceDetection';
+import { useRouterWithQuery } from '@/hook/useRouterWithQuery';
 
 interface Props {
   isShowModal: boolean;
