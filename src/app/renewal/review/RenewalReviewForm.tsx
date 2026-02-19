@@ -30,7 +30,6 @@ import {
   MaritalCode,
 } from '@/app/motor/insurance/basic-detail/options';
 import InfoCard from '@/app/renewal/components/InfoCard';
-import { COUNTRY_SINGAPORE } from '@/constants/general.constant';
 
 interface RenewalReviewFormProps {
   renewalContent?: {
@@ -298,7 +297,7 @@ const RenewalReviewForm = ({
         fields: [
           { label: 'Address Line 1', value: insured?.address.address_line1 },
           { label: 'Address Line 2', value: insured?.address.address_line2 },
-          { label: 'Country', value: COUNTRY_SINGAPORE },
+          { label: 'Address Line 3', value: insured?.address.address_line3 },
           { label: 'Postal Code', value: insured?.address.postal },
         ],
       },

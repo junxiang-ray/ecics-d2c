@@ -41,7 +41,7 @@ const PolicyHolderContent = () => {
       fields: [
         { label: 'Address Line 1', name: 'address_line1', isRequired: true },
         { label: 'Address Line 2', name: 'address_line2' },
-        { label: 'Country', name: 'country', disabled: true },
+        { label: 'Address Line 3', name: 'address_line3' },
         { label: 'Postal Code', name: 'postal', isRequired: true },
       ],
     },

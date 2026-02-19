@@ -35,8 +35,6 @@ const LimitedPeriodOffer = ({
       discount={promoCodeData?.data?.discount}
       description={description}
       isMobile={isMobile}
-      startTime={promoCodeData?.data?.start_time}
-      endTime={promoCodeData?.data?.end_time}
     ></MaidItem>
   ) : isMotorcycle ? (
     <MotorcycleItem

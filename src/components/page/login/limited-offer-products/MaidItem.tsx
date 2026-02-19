@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import CouponIcon from '@/components/icons/CouponIcon';
 import PromoTickIcon from '@/components/icons/PromoTickIcon'; // adjust your imports
-import dayjs from 'dayjs';
 
 interface MaidItemProps {
   promoCode: string;
   discount: number;
   description?: string;
   isMobile: boolean;
-  startTime: string;
-  endTime: string;
 }
 
 const MaidItem: React.FC<MaidItemProps> = ({
@@ -17,8 +14,6 @@ const MaidItem: React.FC<MaidItemProps> = ({
   discount,
   description,
   isMobile,
-  startTime,
-  endTime,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -43,8 +38,6 @@ const MaidItem: React.FC<MaidItemProps> = ({
     }
   };
 
-  const formattedPromoCodeRange = `from ${dayjs(startTime, 'YYYY-MM-DD HH:mm:ss.SSS').format('DD MMM YYYY')} – ${dayjs(endTime, 'YYYY-MM-DD HH:mm:ss.SSS').format('DD MMM YYYY')}.`;
-
   const getDescription = () => {
     switch (promoCode.toUpperCase()) {
       case 'BONUS6ME':
@@ -54,7 +47,7 @@ const MaidItem: React.FC<MaidItemProps> = ({
             <span className='font-bold'>
               {discount}% OFF ECICS Maid Insurance + 6ME check-ups
             </span>{' '}
-            (worth up to S$211.20) {formattedPromoCodeRange}
+            (worth up to S$211.20) from 30 Oct – 31 Dec 2025.{' '}
             {/* <span className='font-bold'>
               Protect your helper and your wallet today.
             </span> */}
@@ -68,7 +61,7 @@ const MaidItem: React.FC<MaidItemProps> = ({
               {discount}% OFF ECICS Maid Insurance + 6ME check-ups and Bond
               Waiver
             </span>{' '}
-            (worth up to S$265.70) {formattedPromoCodeRange}
+            (worth up to S$265.70) from 30 Oct – 31 Dec 2025.{' '}
             {/* <span className='font-bold'>
               Exclusive for staff – care smarter and save more.
             </span> */}

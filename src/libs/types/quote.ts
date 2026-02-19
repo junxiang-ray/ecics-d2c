@@ -363,8 +363,8 @@ export interface PersonalPayload {
 export interface PromoCode {
   code: string;
   discount: number;
-  start_time: string;
-  end_time: string;
+  startTime: string;
+  endTime: string;
   description: string;
   products: string[];
   isPublic: boolean;
