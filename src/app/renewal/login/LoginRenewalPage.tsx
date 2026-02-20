@@ -170,7 +170,7 @@ const LoginRenewalPage = () => {
         >
           Log in with Singpass
         </Button>
-        {errorLoginRenewal && (
+        {!!errorLoginRenewal && (
           <div className='mt-2 flex w-full flex-row items-start gap-2 rounded-lg border border-[#FFC9C9] bg-[#FEF2F2] p-2 font-normal text-[#E7000B]'>
             <InfoCircleOutlined className='mt-1' />
             <p>

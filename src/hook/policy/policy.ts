@@ -6,6 +6,6 @@ export { usePolicyData, usePolicyDetail };
 export const usePoliciePreviews = (
   policyStatus?: import('@/libs/types/policy').PolicyStatus,
   tags?: import('@/libs/types/policy').PolicyTag[],
-) => usePolicyData({ policyStatus, tags, limit: 3 });
+) => usePolicyData({ policyStatus, tags, limit: 10 });
 
 export const usePolicies = () => usePolicyData();
