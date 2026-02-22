@@ -11,3 +11,11 @@ export const REGEX = {
   DIGITS: /[0-9]/g,
   SPECIAL_CHARACTER: /[!-/:-@[-`{-~]/g,
 };
+
+// ⭐ For React Hook Form validation (stateless)
+export const REGEX_STATELESS = {
+  UPPERCASE: /[A-Z]/,
+  LOWERCASE: /[a-z]/,
+  DIGITS: /[0-9]/,
+  SPECIAL_CHARACTER: /[!-/:-@[-`{-~]/,
+};

@@ -1,7 +1,8 @@
-//src/hook/policy/usePolicyData.ts
+// src/hook/policy/usePolicyData.ts
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation'; // ⭐ Add this
 import { useAuth } from '@/hook/auth/useAuth';
 import { Policy, PolicyStatus, PolicyTag } from '@/libs/types/policy';
 import policy from '@/api/base-service/policy';
@@ -10,14 +11,41 @@ interface UsePolicyDataOptions {
   policyStatus?: PolicyStatus;
   tags?: PolicyTag[];
   limit?: number;
+  readFromUrl?: boolean; // ⭐ New flag
 }
 
 export function usePolicyData(options?: UsePolicyDataOptions) {
   const { auth, initialized } = useAuth();
-  const { policyStatus, tags, limit } = options || {};
+  const searchParams = useSearchParams(); // ⭐ Read URL here
+
+  const {
+    policyStatus: propStatus,
+    tags: propTags,
+    limit,
+    readFromUrl,
+  } = options || {};
+
+  // ⭐ Read from URL if flag is set, otherwise use props
+  const policyStatus = readFromUrl
+    ? (searchParams.get('status') as PolicyStatus) || undefined
+    : propStatus;
+
+  const tags = readFromUrl
+    ? searchParams.get('tags')
+      ? [searchParams.get('tags') as PolicyTag]
+      : undefined
+    : propTags;
 
   return useQuery<Policy[]>({
-    queryKey: ['policies', 'list', auth?.nric],
+    // ⭐ Include filters in query key
+    queryKey: [
+      'policies',
+      'list',
+      auth?.nric,
+      policyStatus,
+      tags?.join(','),
+      readFromUrl,
+    ],
 
     queryFn: async (): Promise<Policy[]> => {
       const response = await policy.getPolicies({});

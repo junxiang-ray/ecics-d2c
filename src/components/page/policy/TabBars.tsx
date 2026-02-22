@@ -90,7 +90,6 @@ const TabBars = (): JSX.Element => {
 
   return (
     <Tabs
-      // fix here
       className='[&_.ant-tabs-nav-list]:w-full [&_.ant-tabs-nav-list]:overflow-x-auto [&_.ant-tabs-nav-more]:hidden [&_.ant-tabs-tab]:flex-1 [&_.ant-tabs-tab]:justify-center'
       defaultActiveKey={defaultActiveTabKey}
       items={tabItems.map((item) => ({

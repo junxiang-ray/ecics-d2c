@@ -3,31 +3,38 @@
 import { PolicyStatus, PolicyTag, Policy } from '@/libs/types/policy';
 import { ROUTES } from '@/constants/routes';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react'; // ⭐ Added useMemo
 import { useRouter } from 'next/navigation';
 import { usePoliciePreviews } from '@/hook/policy/policy';
 
 import { Tabs } from 'antd';
 import Card from './PolicyCard';
 
-type TabKey = 'all' | PolicyStatus | PolicyTag;
+// ⭐ Added 'expired' to TabKey
+type TabKey = 'all' | 'active' | 'pending_renewal' | 'expired';
 
 const PolicyPreviews = (): React.ReactNode => {
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const router = useRouter();
 
-  // Convert tab to filter options
+  // ⭐ Updated filter options with expired
   const getFilterOptions = (tab: TabKey) => {
     if (tab === 'all') return {};
     if (tab === 'active') return { policyStatus: 'active' as PolicyStatus };
+    if (tab === 'expired') return { policyStatus: 'expired' as PolicyStatus };
     if (tab === 'pending_renewal')
-      return { tags: ['pending_renewal' as PolicyTag] };
+      return {
+        policyStatus: 'active' as PolicyStatus,
+        tags: ['pending_renewal'] as PolicyTag[],
+      };
     return {};
   };
 
+  const filterOptions = useMemo(() => getFilterOptions(activeTab), [activeTab]);
+
   const { data: policies, isFetching } = usePoliciePreviews(
-    getFilterOptions(activeTab).policyStatus,
-    getFilterOptions(activeTab).tags,
+    filterOptions.policyStatus,
+    filterOptions.tags,
   );
 
   const displayPolicies: Array<Policy | null> =
@@ -39,6 +46,7 @@ const PolicyPreviews = (): React.ReactNode => {
     setActiveTab(tabKey);
   };
 
+  // ⭐ Added 'expired' tab
   const tabItems = useRef([
     {
       key: 'all',
@@ -70,6 +78,17 @@ const PolicyPreviews = (): React.ReactNode => {
             Active
           </span>
           Active
+        </label>
+      ),
+    },
+    {
+      key: 'expired',
+      label: (
+        <label className='pointer-events-none m-0 flex flex-col items-center'>
+          <span className='invisible relative block h-0 font-semibold opacity-0'>
+            Expired
+          </span>
+          Expired
         </label>
       ),
     },

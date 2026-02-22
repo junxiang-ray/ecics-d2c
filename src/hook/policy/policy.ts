@@ -1,11 +1,13 @@
 // src/hook/policy/policy.ts
 import { usePolicyData, usePolicyDetail } from './usePolicyData';
+import { PolicyStatus, PolicyTag } from '@/libs/types/policy';
 
 export { usePolicyData, usePolicyDetail };
 
 export const usePoliciePreviews = (
-  policyStatus?: import('@/libs/types/policy').PolicyStatus,
-  tags?: import('@/libs/types/policy').PolicyTag[],
+  policyStatus?: PolicyStatus,
+  tags?: PolicyTag[],
 ) => usePolicyData({ policyStatus, tags, limit: 10 });
 
-export const usePolicies = () => usePolicyData();
+// ⭐ Read filters from URL
+export const usePolicies = () => usePolicyData({ readFromUrl: true });

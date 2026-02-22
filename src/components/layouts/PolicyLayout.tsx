@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Policy, PolicySummary, PolicyType } from '@/libs/types/policy';
 import { usePolicies } from '@/hook/policy/policy';
+import { usePolicyData } from '@/hook/policy/usePolicyData'; // ⭐ Add this import
 import {
   PolicyContext,
   PolicyNo,
@@ -31,23 +32,57 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
     searchParams.get(QUERY_KEY.SEARCH_QUERY) ?? '',
   );
 
-  // ✅ Updated hook usage
+  // ⭐ Filtered policies (reads status/tags from URL automatically)
   const { data: policies = [], isFetching } = usePolicies();
 
-  // ✅ Optional summary computation
+  // ⭐ Unfiltered policies for summary counts
+  const { data: allPolicies = [] } = usePolicyData();
+
+  // ⭐ Compute summary from ALL policies (unfiltered)
   const summary = useMemo<PolicySummary>(() => {
     return {
-      total: policies.length,
-      active: policies.filter((p) => p.policy_status === 'active').length,
-      expired: policies.filter((p) => p.policy_status === 'expired').length,
+      total: allPolicies.length,
+      active: allPolicies.filter((p) => p.policy_status === 'active').length,
+      expired: allPolicies.filter((p) => p.policy_status === 'expired').length,
+      pending_renewal: allPolicies.filter((p) => p.tags === 'pending_renewal')
+        .length,
     } as PolicySummary;
-  }, [policies]);
+  }, [allPolicies]);
+
+  // ⭐ Filter by search query and policy type (client-side only)
+  const filteredPolicies = useMemo(() => {
+    let result = policies;
+
+    // Filter by policy type
+    if (selPolicyType && selPolicyType !== 'all') {
+      result = result.filter((p) => p.policy_type === selPolicyType);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      result = result.filter((p) => {
+        const matchPolicyNo = p.policy_no?.toLowerCase().includes(searchLower);
+        const matchVehicle = p.vehicle?.registration_no
+          ?.toLowerCase()
+          .includes(searchLower);
+        const matchType = p.policy_type_name
+          ?.toLowerCase()
+          .includes(searchLower);
+        return matchPolicyNo || matchVehicle || matchType;
+      });
+    }
+
+    return result;
+  }, [policies, selPolicyType, searchQuery]);
 
   const policyDetail = useMemo<Policy>(() => {
     if (!policyNo) return {} as Policy;
 
-    return policies.find((p) => p.policy_no === policyNo) ?? ({} as Policy);
-  }, [policies, policyNo]);
+    return (
+      filteredPolicies.find((p) => p.policy_no === policyNo) ?? ({} as Policy)
+    );
+  }, [filteredPolicies, policyNo]);
 
   const appendQueryParams = (
     queryParams: { key: QueryKeys; value?: QueryValues }[] = [],
@@ -74,7 +109,7 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
         selPolicyType,
         searchQuery,
         loading: isFetching,
-        policies,
+        policies: filteredPolicies,
         summary,
         policyDetail,
         pushQuery,

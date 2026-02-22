@@ -58,10 +58,22 @@ export const useUpdateUserInfo = () => {
 };
 
 export const useChangePassword = () => {
-  const changePassword = async (password: string): Promise<AxiosResponse> => {
-    const nric = await getNric();
-    const resp = await user.changePassword(nric, password);
-    return resp;
+  const changePassword = async (payload: {
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<Response> => {
+    const resp = await fetch('/api/v1/auth/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      const error = await resp.json();
+      throw new Error(error.message || 'Failed to change password');
+    }
+
+    return resp.json();
   };
 
   return useMutation({
