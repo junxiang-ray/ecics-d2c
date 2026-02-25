@@ -42,6 +42,8 @@ const QUICK_ACTION_ITEMS: ActionCardItem[] = [
   },
 ];
 
+const SUPPORT_URL = 'https://www.ecics.com/contact-us';
+
 const QuickActions = (): React.ReactNode => {
   const overlayPanel = (
     <>
@@ -93,12 +95,20 @@ const QuickActions = (): React.ReactNode => {
           subTitle='Submit claim'
         />
 
-        <Card
-          className='text-green-500'
-          icon={<UserGroupOulined width='21' height='21' />}
-          title='Support'
-          subTitle='Get help'
-        />
+        {/* ⭐ Support card wrapped in anchor tag */}
+        <a
+          href={SUPPORT_URL}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='block'
+        >
+          <Card
+            className='text-green-500'
+            icon={<UserGroupOulined width='21' height='21' />}
+            title='Support'
+            subTitle='Get help'
+          />
+        </a>
       </div>
     </div>
   );

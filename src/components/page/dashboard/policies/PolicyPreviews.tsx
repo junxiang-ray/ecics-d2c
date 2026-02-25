@@ -3,33 +3,46 @@
 import { PolicyStatus, PolicyTag, Policy } from '@/libs/types/policy';
 import { ROUTES } from '@/constants/routes';
 
-import { useState, useRef, useMemo } from 'react'; // ⭐ Added useMemo
+import { useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePoliciePreviews } from '@/hook/policy/policy';
 
 import { Tabs } from 'antd';
 import Card from './PolicyCard';
 
-// ⭐ Added 'expired' to TabKey
-type TabKey = 'all' | 'active' | 'pending_renewal' | 'expired';
+type TabKey = 'all' | PolicyStatus | PolicyTag;
+
+// ⭐ Helper to get display name for empty state
+const getTabDisplayName = (tab: TabKey): string => {
+  switch (tab) {
+    case 'all':
+      return '';
+    case 'active':
+      return 'Active';
+    case 'expired':
+      return 'Expired';
+    case 'pending_renewal':
+      return 'Pending Renewal';
+    default:
+      return '';
+  }
+};
 
 const PolicyPreviews = (): React.ReactNode => {
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const router = useRouter();
 
-  // ⭐ Updated filter options with expired
+  // Convert tab to filter options
   const getFilterOptions = (tab: TabKey) => {
     if (tab === 'all') return {};
     if (tab === 'active') return { policyStatus: 'active' as PolicyStatus };
     if (tab === 'expired') return { policyStatus: 'expired' as PolicyStatus };
     if (tab === 'pending_renewal')
-      return {
-        policyStatus: 'active' as PolicyStatus,
-        tags: ['pending_renewal'] as PolicyTag[],
-      };
+      return { policyStatus: 'active' as PolicyStatus, tags: ['pending_renewal' as PolicyTag] };
     return {};
   };
 
+  // ⭐ Stabilize filter options
   const filterOptions = useMemo(() => getFilterOptions(activeTab), [activeTab]);
 
   const { data: policies, isFetching } = usePoliciePreviews(
@@ -46,7 +59,6 @@ const PolicyPreviews = (): React.ReactNode => {
     setActiveTab(tabKey);
   };
 
-  // ⭐ Added 'expired' tab
   const tabItems = useRef([
     {
       key: 'all',
@@ -117,6 +129,10 @@ const PolicyPreviews = (): React.ReactNode => {
     );
   };
 
+  // ⭐ Check if we should show empty state (not loading and no policies)
+  const showEmptyState = !isFetching && displayPolicies.length === 0;
+  const tabDisplayName = getTabDisplayName(activeTab);
+
   return (
     <div className='mb-12'>
       <Tabs
@@ -125,15 +141,28 @@ const PolicyPreviews = (): React.ReactNode => {
         tabBarExtraContent={extraContent}
         onChange={(activeKey) => onTabChange(activeKey as TabKey)}
       />
-      <div className='grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3'>
-        {displayPolicies?.map((policy, idx) => (
-          <Card
-            key={`${policy?.policy_no || 'skeleton'}_#_${idx}`}
-            data={policy}
-            onShowDetail={navigateToDetailScreen}
-          />
-        ))}
-      </div>
+      
+      {showEmptyState ? (
+          <div className='flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 py-8 md:min-h-[160px]'>
+            <p className='font-body text-center text-sm text-gray-500 md:text-base'>
+              {activeTab === 'all' 
+                ? 'No policies found'
+                : `No ${tabDisplayName} Policies`
+              }
+            </p>
+          </div>
+        ) : (
+        // ⭐ Policy cards grid
+        <div className='grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3'>
+          {displayPolicies?.map((policy, idx) => (
+            <Card
+              key={`${policy?.policy_no || 'skeleton'}_#_${idx}`}
+              data={policy}
+              onShowDetail={navigateToDetailScreen}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

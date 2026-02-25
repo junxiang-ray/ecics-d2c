@@ -131,7 +131,11 @@ const PortalPageHeader = (): JSX.Element => {
               <MenuOutlined className='text-gray-700' height='18' width='18' />
             </button>
             <div className='absolute left-1/2 flex -translate-x-1/2 items-center md:static md:mr-auto md:translate-x-0'>
-              <EcicsIcon height='28' width='auto' />
+              <Link href={ROUTES.PORTAL.HOME.ROOT} legacyBehavior>
+                <a className='cursor-pointer'>
+                  <EcicsIcon height='28' width='auto' />
+                </a>
+              </Link>
             </div>
             <nav className='font-body hidden items-center md:mr-8 md:flex [&>*:not(:last-child)]:mr-8'>
               {navItems.map((navItem) => (
