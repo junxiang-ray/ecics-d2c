@@ -1,66 +1,13 @@
-//src/hook/policy/policy.ts
-import type { AxiosResponse } from 'axios';
-import {
-  Policy,
-  PolicyStatus,
-  PolicyTag,
-  PolicyPayload,
-  PolicyResponseData,
-  PolicyResponse,
-} from '@/libs/types/policy';
+// src/hook/policy/policy.ts
+import { usePolicyData, usePolicyDetail } from './usePolicyData';
+import { PolicyStatus, PolicyTag } from '@/libs/types/policy';
 
-import { useQuery } from '@tanstack/react-query';
-
-import policy from '@/api/base-service/policy';
+export { usePolicyData, usePolicyDetail };
 
 export const usePoliciePreviews = (
   policyStatus?: PolicyStatus,
-  policyTags?: PolicyTag[],
-) => {
-  const fetchPolicies = async (): Promise<PolicyResponse> => {
-    try {
-      const resp: AxiosResponse<PolicyResponseData> = await policy.getPolicies({
-        policyStatus: policyStatus,
-        tags: policyTags?.join(','),
-        pageNo: 1,
-        pageSize: 3,
-      });
+  tags?: PolicyTag[],
+) => usePolicyData({ policyStatus, tags, limit: 10 });
 
-      return resp?.data as unknown as PolicyResponse;
-    } catch (e) {
-      return {
-        meta: {},
-        data: null,
-      } as unknown as PolicyResponse;
-    }
-  };
-
-  return useQuery({
-    queryFn: fetchPolicies,
-    queryKey: ['policy_previews', policyStatus, policyTags],
-    enabled: true,
-  });
-};
-
-export const usePolicies = (params: PolicyPayload | null) => {
-  const fetchPolicies = async (): Promise<PolicyResponse> => {
-    try {
-      const resp: AxiosResponse<PolicyResponse> = await policy.getPolicies(
-        params as unknown as PolicyPayload,
-      );
-
-      return resp?.data as unknown as PolicyResponse;
-    } catch (e) {
-      return {
-        meta: {},
-        data: null,
-      } as unknown as PolicyResponse;
-    }
-  };
-
-  return useQuery({
-    queryFn: fetchPolicies,
-    queryKey: ['policies', params],
-    enabled: !!params,
-  });
-};
+// ⭐ Read filters from URL
+export const usePolicies = () => usePolicyData({ readFromUrl: true });

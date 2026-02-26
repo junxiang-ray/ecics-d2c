@@ -32,6 +32,11 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
     POLICY_TYPE_NAME[data.policy_type as Exclude<PolicyType, 'all'>] ?? '-';
 
   const isPendingRenewal: boolean = data.tags === 'pending_renewal';
+  const isExpired: boolean = data.policy_status === 'expired';
+
+  // ⭐ Show "Renew Now" only for pending renewal or expired policies
+  const showRenewNow: boolean = isPendingRenewal || isExpired;
+
   const tags = getPolicyStatusTag(
     isPendingRenewal ? undefined : data.policy_status,
     data.tags,
@@ -114,10 +119,14 @@ const PolicyCard = ({ data, onShowDetail }: Props): React.ReactNode => {
               </div>
             </>
           )}
-          <div className='font-body flex items-center text-primary transition-all duration-200 hover:text-primary/80'>
-            <span className='mr-2 text-sm font-semibold'>Renew Now</span>
-            <RightOutlined />
-          </div>
+
+          {/* ⭐ Conditionally render "Renew Now" */}
+          {showRenewNow && (
+            <div className='font-body flex items-center text-primary transition-all duration-200 hover:text-primary/80'>
+              <span className='mr-2 text-sm font-semibold'>Renew Now</span>
+              <RightOutlined />
+            </div>
+          )}
         </div>
       </div>
     </div>

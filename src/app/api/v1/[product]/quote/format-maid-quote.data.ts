@@ -363,7 +363,7 @@ export async function formatMaidQuoteInfo(
     orderBy: [{ is_recommended: 'desc' }, { id: 'asc' }],
   });
 
-  plans.forEach((plan) => {
+  plans.forEach((plan: any) => {
     if (plan.title in mappedPlanPremiumWithGST) {
       plan.premium_with_gst = mappedPlanPremiumWithGST[plan.title];
       plan.is_display = mappedPlanEligibility[plan.title];

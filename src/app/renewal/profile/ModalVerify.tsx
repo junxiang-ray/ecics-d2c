@@ -104,9 +104,9 @@ export default function ModalVerify({
         </div>
 
         {/* Testing notice (safe to keep or remove later) */}
-        <div className='rounded-md border border-yellow-200 bg-yellow-50 p-2 text-[11px] text-yellow-700'>
+        {/* <div className='rounded-md border border-yellow-200 bg-yellow-50 p-2 text-[11px] text-yellow-700'>
           <strong>For testing:</strong> Use code <code>123456</code> to verify
-        </div>
+        </div> */}
       </div>
     </Modal>
   );

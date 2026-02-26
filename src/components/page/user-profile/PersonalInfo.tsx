@@ -165,6 +165,8 @@ const PersonalInfo = (): JSX.Element => {
 
   const enableEdit = useCallback<() => void>((): void => setIsEdit(true), []);
   const disableEdit = useCallback<() => void>(() => setIsEdit(false), []);
+  const ENABLE_EDIT_PROFILE =
+    process.env.NEXT_PUBLIC_ENABLE_EDIT_PROFILE === 'true';
 
   return (
     <>
@@ -183,7 +185,9 @@ const PersonalInfo = (): JSX.Element => {
                   <div className='font-heading pb-2 text-base font-semibold text-gray-900'>
                     Personal Info
                   </div>
-                  <BtnEdit hidden={isEdit} onClick={enableEdit} />
+                  {ENABLE_EDIT_PROFILE && (
+                    <BtnEdit hidden={isEdit} onClick={enableEdit} />
+                  )}
                 </div>
                 <Divider className='m-0 mb-4' />
                 <PersonalInfoForm isEdit={isEdit} />

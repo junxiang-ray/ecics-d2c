@@ -345,7 +345,7 @@ export const setCookie = <T>({
       `;path=/${path || ''}` +
       `;expires=${getExpireTime(expireAfter)}`;
   } catch (e) {
-    console.log('Failed to set item to cookies. Detail: ', e);
+    console.error('Failed to set item to cookies. Detail: ', e);
   }
 };
 
@@ -362,7 +362,7 @@ export const getCookie = <T>(name: string): T | undefined => {
 
     return undefined;
   } catch (e) {
-    console.log('Failed to get item from cookies. Detail: ', e);
+    // console.log('Failed to get item from cookies. Detail: ', e);
     return undefined;
   }
 };

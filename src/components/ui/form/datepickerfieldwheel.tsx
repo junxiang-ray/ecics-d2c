@@ -226,7 +226,7 @@ export const DatePickerFieldWheel = ({
                     options={monthOptions}
                     value={selectedMonth}
                     onValueChange={(value) =>
-                      updateDate(selectedYear, value, selectedDay)
+                      updateDate(selectedYear, String(value), selectedDay)
                     }
                     infinite={monthOptions.length >= 12}
                   />
@@ -234,7 +234,7 @@ export const DatePickerFieldWheel = ({
                     options={dayOptions}
                     value={selectedDay}
                     onValueChange={(value) =>
-                      updateDate(selectedYear, selectedMonth, value)
+                      updateDate(selectedYear, selectedMonth, String(value))
                     }
                     infinite={dayOptions.length >= 7}
                   />
@@ -242,7 +242,7 @@ export const DatePickerFieldWheel = ({
                     options={yearOptions}
                     value={selectedYear}
                     onValueChange={(value) =>
-                      updateDate(value, selectedMonth, selectedDay)
+                      updateDate(String(value), selectedMonth, selectedDay)
                     }
                     infinite={false}
                   />

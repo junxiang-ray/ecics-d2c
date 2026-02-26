@@ -1,16 +1,11 @@
 'use client';
 
-import {
-  Policy,
-  PolicyPayload,
-  PolicySummary,
-  PolicyType,
-} from '@/libs/types/policy';
-
-import { useMemo, useRef } from 'react';
-
+import { useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+import { Policy, PolicySummary, PolicyType } from '@/libs/types/policy';
 import { usePolicies } from '@/hook/policy/policy';
+import { usePolicyData } from '@/hook/policy/usePolicyData'; // ⭐ Add this import
 import {
   PolicyContext,
   PolicyNo,
@@ -19,14 +14,6 @@ import {
   QUERY_KEY,
 } from '@/components/contexts/PolicyLayoutContext';
 
-const QUERY_KEYS: QueryKeys[] = [
-  QUERY_KEY.POLICY_NO,
-  QUERY_KEY.POLICY_TYPE,
-  QUERY_KEY.POLICY_STATUS,
-  QUERY_KEY.POLICY_TAGS,
-  QUERY_KEY.SEARCH_QUERY,
-];
-
 interface Props {
   children: React.ReactNode;
 }
@@ -34,56 +21,78 @@ interface Props {
 const PolicyProvider = ({ children }: Props): JSX.Element => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const summaryRef = useRef<PolicySummary>({} as PolicySummary);
-  const policyNo: PolicyNo = decodeURIComponent(
-    searchParams.get(QUERY_KEY.POLICY_NO) ?? '',
-  ) as unknown as PolicyNo;
+
+  const policyNo: PolicyNo =
+    (searchParams.get(QUERY_KEY.POLICY_NO) as PolicyNo) ?? null;
+
   const selPolicyType: PolicyType =
-    (searchParams.get(QUERY_KEY.POLICY_TYPE) as unknown as PolicyType) ?? 'all';
+    (searchParams.get(QUERY_KEY.POLICY_TYPE) as PolicyType) ?? 'all';
+
   const searchQuery = decodeURIComponent(
     searchParams.get(QUERY_KEY.SEARCH_QUERY) ?? '',
   );
 
-  const { data, isFetching } = usePolicies({
-    policyNo: policyNo ?? null,
-    policyStatus: searchParams.get('status') ?? '',
-    policyType: selPolicyType,
-    tags: searchParams.get('tags') ?? '',
-    queryStr: searchQuery,
-  } as PolicyPayload);
+  // ⭐ Filtered policies (reads status/tags from URL automatically)
+  const { data: policies = [], isFetching } = usePolicies();
 
-  const policies = useMemo<Policy[]>(
-    () => (data?.data?.results ?? []) as Policy[],
-    [data],
-  );
+  // ⭐ Unfiltered policies for summary counts
+  const { data: allPolicies = [] } = usePolicyData();
+
+  // ⭐ Compute summary from ALL policies (unfiltered)
   const summary = useMemo<PolicySummary>(() => {
-    if (isFetching) return summaryRef.current;
+    return {
+      total: allPolicies.length,
+      active: allPolicies.filter((p) => p.policy_status === 'active').length,
+      expired: allPolicies.filter((p) => p.policy_status === 'expired').length,
+      pending_renewal: allPolicies.filter((p) => p.tags === 'pending_renewal')
+        .length,
+    } as PolicySummary;
+  }, [allPolicies]);
 
-    return (summaryRef.current = (data?.data?.summary ?? {}) as PolicySummary);
-  }, [data, isFetching]);
+  // ⭐ Filter by search query and policy type (client-side only)
+  const filteredPolicies = useMemo(() => {
+    let result = policies;
+
+    // Filter by policy type
+    if (selPolicyType && selPolicyType !== 'all') {
+      result = result.filter((p) => p.policy_type === selPolicyType);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      result = result.filter((p) => {
+        const matchPolicyNo = p.policy_no?.toLowerCase().includes(searchLower);
+        const matchVehicle = p.vehicle?.registration_no
+          ?.toLowerCase()
+          .includes(searchLower);
+        const matchType = p.policy_type_name
+          ?.toLowerCase()
+          .includes(searchLower);
+        return matchPolicyNo || matchVehicle || matchType;
+      });
+    }
+
+    return result;
+  }, [policies, selPolicyType, searchQuery]);
 
   const policyDetail = useMemo<Policy>(() => {
-    if (!policyNo || !policies) return {} as Policy;
+    if (!policyNo) return {} as Policy;
 
     return (
-      policies?.find((policy) => policy.policy_no === policyNo) ??
-      ({} as Policy)
+      filteredPolicies.find((p) => p.policy_no === policyNo) ?? ({} as Policy)
     );
-  }, [policies, policyNo]);
+  }, [filteredPolicies, policyNo]);
 
   const appendQueryParams = (
     queryParams: { key: QueryKeys; value?: QueryValues }[] = [],
   ): URLSearchParams => {
     const params = new URLSearchParams(searchParams);
+
     for (const { key, value } of queryParams)
       value ? params.set(key, value) : params.delete(key);
 
-    return new URLSearchParams(
-      (Array.from(params.entries()) as [QueryKeys, string][]).sort(
-        ([leftKey], [rightKey]) =>
-          QUERY_KEYS.indexOf(leftKey) - QUERY_KEYS.indexOf(rightKey),
-      ),
-    );
+    return params;
   };
 
   const pushQuery = (
@@ -100,7 +109,7 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
         selPolicyType,
         searchQuery,
         loading: isFetching,
-        policies,
+        policies: filteredPolicies,
         summary,
         policyDetail,
         pushQuery,
@@ -110,4 +119,5 @@ const PolicyProvider = ({ children }: Props): JSX.Element => {
     </PolicyContext.Provider>
   );
 };
+
 export default PolicyProvider;

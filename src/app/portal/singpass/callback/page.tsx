@@ -23,7 +23,6 @@ const SingpassCallbackPage = () => {
 
   useEffect(() => {
     if (hasRun.current) {
-      console.log('⏭️ Skipping duplicate execution');
       return;
     }
     hasRun.current = true;
@@ -31,11 +30,6 @@ const SingpassCallbackPage = () => {
     const init = async () => {
       const code = searchParams.get('code');
       const state = searchParams.get('state');
-
-      console.log('🔑 Singpass callback received:', {
-        code: code?.substring(0, 20) + '...',
-        state,
-      });
 
       if (!code) {
         notification.error({
@@ -67,8 +61,6 @@ const SingpassCallbackPage = () => {
           throw new Error('Invalid OAuth session.');
         }
 
-        console.log('📦 OAuth session valid, exchanging code for NRIC...');
-
         removeCookie(OAUTH_COOKIE);
 
         const exchangeRes = await fetch('/api/v1/auth/singpass/exchange-code', {
@@ -89,8 +81,6 @@ const SingpassCallbackPage = () => {
         }
 
         const nric = exchangeData.nric;
-        console.log('✅ NRIC obtained:', nric);
-
         const checkRes = await fetch('/api/v1/auth/check-nric', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -104,12 +94,9 @@ const SingpassCallbackPage = () => {
         }
 
         if (!checkData.exists) {
-          console.log('👤 New user, redirecting to signup');
           router.replace(`/portal/signup?nric=${nric}`);
           return;
         }
-
-        console.log('👤 Existing user, auto-logging in:', checkData.email);
 
         const authRes = await fetch('/api/v1/auth/cognito-custom-auth', {
           method: 'POST',
@@ -127,7 +114,6 @@ const SingpassCallbackPage = () => {
           throw new Error(authData?.message || 'Auto-login failed');
         }
 
-        console.log('✅ Auto-login successful, redirecting to portal');
         router.replace('/portal/home');
       } catch (error: any) {
         console.error('❌ Callback error:', error);

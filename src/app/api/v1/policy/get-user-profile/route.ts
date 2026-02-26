@@ -57,7 +57,6 @@ export async function POST(_: NextRequest) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          // icno: 'S1452006F',
           icno: authPayload.nric,
         }),
       },

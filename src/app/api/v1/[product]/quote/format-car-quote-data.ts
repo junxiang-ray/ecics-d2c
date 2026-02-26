@@ -92,9 +92,7 @@ export async function formatCarQuoteInfo(
     orderBy: [{ is_recommended: 'desc' }, { id: 'asc' }],
   });
 
-  console.log('plans result', plans);
-  type PlanWithRelations = (typeof plans)[number];
-  plans.forEach((plan: PlanWithRelations) => {
+  plans.forEach((plan: any) => {
     if (plan.code && plan.code in mappedPlanValues) {
       plan.premium_with_gst = mappedPlanValues[plan.code];
       plan.add_ons_included_in_this_plan =

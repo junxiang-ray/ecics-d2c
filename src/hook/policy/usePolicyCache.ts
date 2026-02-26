@@ -1,12 +1,12 @@
 'use client';
-// can delete
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hook/auth/useAuth';
-import type { PolicySummary } from '@/hook/policy/usePolicyData';
+import type { Policy } from '@/libs/types/policy'; // ⭐ Changed from PolicySummary to Policy
 
-export const usePolicyCache = (): PolicySummary[] | undefined => {
+export const usePolicyCache = (): Policy[] | undefined => {
   const queryClient = useQueryClient();
   const { auth } = useAuth();
 
-  return queryClient.getQueryData<PolicySummary[]>(['policies', auth?.nric]);
+  // ⭐ Updated query key to match usePolicyData
+  return queryClient.getQueryData<Policy[]>(['policies', 'list', auth?.nric]);
 };

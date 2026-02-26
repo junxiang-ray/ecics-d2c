@@ -42,7 +42,7 @@ export const useRequestLoginMaid = (
     },
     onError: (error, variables, context) => {
       console.log(error);
-      options?.onError?.(error, variables, context);
+      options?.onError?.(error, variables, context, undefined as any);
     },
   });
 };

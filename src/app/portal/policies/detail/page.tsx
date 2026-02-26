@@ -1,14 +1,11 @@
 'use client';
 
 import { ROUTES } from '@/constants/routes';
-
 import { PolicyType } from '@/libs/types/policy';
-
-import { useContext } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PolicyContext } from '@/components/contexts/PolicyLayoutContext';
+import { usePolicyDetail } from '@/hook/policy/policy';
 
-import { Empty } from 'antd';
+import { Empty, Spin } from 'antd';
 import DownloadOutlined from '@/assets/icons/renewal/download.svg';
 import BackOutlined from '@/assets/icons/renewal/back.svg';
 import PolicyDetail from '@/components/page/policy/policy-detail/PolicyDetail';
@@ -25,9 +22,11 @@ import LowerTextDetail from '@/components/page/policy/policy-detail/LowerTextDet
 const PolicyDetailPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { policyDetail, loading } = useContext(PolicyContext);
 
-  const isNoData = !loading && !policyDetail;
+  const policyNo = searchParams.get('no');
+  const { data: policyDetail, isLoading } = usePolicyDetail(policyNo);
+
+  const isNoData = !isLoading && !policyDetail;
 
   const backToPreviousPage = (): void => {
     if (window.history.length > 0) return router.back();
@@ -44,8 +43,13 @@ const PolicyDetailPage = () => {
     (['car', 'motorcycle'] as unknown as PolicyType[]).includes(
       policyDetail.policy_type,
     );
+
   const isPendingRenewal =
     !!policyDetail && policyDetail.tags === 'pending_renewal';
+
+  if (isLoading) {
+    return <Spin fullscreen delay={150} />;
+  }
 
   return (
     <div>
@@ -70,22 +74,28 @@ const PolicyDetailPage = () => {
           )}
         </div>
       </div>
-      {isNoData && <Empty className='my-[5rem]' />}
-      {isVehicle ? (
-        <VehiclePolicyDetail data={policyDetail} />
-      ) : (
-        <PolicyDetail data={policyDetail} />
-      )}
-      <InsuredMaidDetail data={policyDetail?.maid_info} />
-      <VehicleDetail data={policyDetail?.vehicle} />
-      <PolicyClausesDetail data={policyDetail?.policy_clauses} />
-      <LowerTextDetail data={policyDetail?.lower_text} />
 
-      <ExcessApplicableDetail data={policyDetail?.excess} />
-      <CoverageDetail data={policyDetail?.maid_info} />
-      <PolicyholderDetail data={policyDetail?.policy_holder} />
-      <DriverDetail data={policyDetail?.drivers} />
+      {isNoData && <Empty className='my-[5rem]' />}
+
+      {policyDetail && (
+        <>
+          {isVehicle ? (
+            <VehiclePolicyDetail data={policyDetail} />
+          ) : (
+            <PolicyDetail data={policyDetail} />
+          )}
+          <InsuredMaidDetail data={policyDetail.maid_info} />
+          <VehicleDetail data={policyDetail.vehicle} />
+          <PolicyClausesDetail data={policyDetail.policy_clauses} />
+          <LowerTextDetail data={policyDetail.lower_text} />
+          <ExcessApplicableDetail data={policyDetail.excess} />
+          <CoverageDetail data={policyDetail.maid_info} />
+          <PolicyholderDetail data={policyDetail.policy_holder} />
+          <DriverDetail data={policyDetail.drivers} />
+        </>
+      )}
     </div>
   );
 };
+
 export default PolicyDetailPage;
