@@ -1,3 +1,4 @@
+// src\app\layout.tsx
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata, Viewport } from 'next';
 import { Open_Sans } from 'next/font/google';
