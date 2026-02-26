@@ -47,6 +47,9 @@ const PolicyDetailPage = () => {
   const isPendingRenewal =
     !!policyDetail && policyDetail.tags === 'pending_renewal';
 
+  const ENABLE_DOWNLOAD_POLICY =
+    process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_POLICY === 'true';
+
   if (isLoading) {
     return <Spin fullscreen delay={150} />;
   }
@@ -63,10 +66,12 @@ const PolicyDetailPage = () => {
         </button>
 
         <div className='flex gap-3'>
-          <button className='bg-background font-body flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-[#02ADEF] px-4 py-2 text-sm font-medium leading-none text-[#02ADEF] transition-all hover:bg-[#02ADEF] hover:text-white'>
-            <DownloadOutlined className='h-4 w-4' />
-            Download Policy Schedule
-          </button>
+          {ENABLE_DOWNLOAD_POLICY && (
+            <button className='bg-background font-body flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-[#02ADEF] px-4 py-2 text-sm font-medium leading-none text-[#02ADEF] transition-all hover:bg-[#02ADEF] hover:text-white'>
+              <DownloadOutlined className='h-4 w-4' />
+              Download Policy Schedule
+            </button>
+          )}
           {isPendingRenewal && (
             <button className='font-body h-9 whitespace-nowrap rounded-md bg-[#52c41a] px-4 py-2 text-sm font-medium leading-none text-white outline-none transition-all hover:bg-[#52c41a]/90 disabled:pointer-events-none disabled:opacity-50'>
               Renew Now
