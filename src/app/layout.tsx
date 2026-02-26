@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Open_Sans } from 'next/font/google';
 import Script from 'next/script';
 import { Suspense } from 'react';
-
+import CrispChat from '@/components/CrispChat';
 import '@/styles/app.scss';
 
 import { ReactQueryProvider } from '@/providers/react-query';
@@ -69,6 +69,7 @@ export default function RootLayout({
               })(window, document, "clarity", "script", "rntrxo7r12");
               `}
         </Script>
+        <CrispChat />
 
         <Suspense fallback={null}>
           <ReduxProvider>
