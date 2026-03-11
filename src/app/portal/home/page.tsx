@@ -1,4 +1,5 @@
 // app/portal/home/page.tsx - ✅ PURE REACT QUERY
+// Force push
 'use client';
 import { Spin } from 'antd';
 import { usePolicyData } from '@/hook/policy/usePolicyData';
