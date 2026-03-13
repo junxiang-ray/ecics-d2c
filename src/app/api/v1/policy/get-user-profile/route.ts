@@ -43,6 +43,7 @@ export async function POST(_: NextRequest) {
         { status: 401 },
       );
     }
+    console.log('USER NRIC ', authPayload.nric);
 
     /* ───────── FETCH POLICYHOLDER ───────── */
     const machineToken = await machineTokenManager.getToken();
